@@ -1,0 +1,10 @@
+<TextView android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/text1"
+    android:text="hello_world"
+    android:textStyle="bold"
+    android:textColor="#000000"
+    android:textSize="30dp"
+    android:textColorHighlight="#ff0303"
+    android:textIsSelectable="true"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ваше фото"
+        android:id="@+id/imageButton"
+        android:onClick="onClick" />
+
+    <ImageButton
+        android:layout_width="158dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton2"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.39"
+        android:onClick="onClick" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_gravity="center_horizontal" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameEditText"
+        android:hint="@string/enter_your_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/surnameEditText"
+        android:hint="@string/enter_your_surname"
+        android:layout_below="@+id/nameEditText"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/surnameEditText"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ваш пол"
+            android:id="@+id/textView"
+            android:layout_gravity="center_horizontal" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Мужской"
+            android:id="@+id/radioButtonMale"
+            android:checked="false"
+            android:layout_gravity="center_horizontal" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Женский"
+            android:id="@+id/radioButtonFemale"
+            android:checked="false"
+            android:layout_gravity="center_horizontal" />
+    </RadioGroup>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Далее"
+        android:id="@+id/nextRegistration"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
