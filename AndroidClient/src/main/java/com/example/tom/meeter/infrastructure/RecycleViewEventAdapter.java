@@ -1,4 +1,4 @@
-package com.example.tom.meeter.Infrastructure;
+package com.example.tom.meeter.infrastructure;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -15,14 +15,30 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Tom on 10.02.2017.
+ * created by Tom on 10.02.2017.
  */
 
 public class RecycleViewEventAdapter extends RecyclerView.Adapter<RecycleViewEventAdapter.EventViewHolder>{
 
-    List<Event> events;
+    public static class EventViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.cv)
+        CardView cardView;
 
-    public RecycleViewEventAdapter(List<Event> events){
+        @BindView(R.id.event_name)
+        TextView eventNameTextView;
+
+        @BindView(R.id.event_description)
+        TextView eventDescrTextView;
+
+        EventViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    List<EventDTO> events;
+
+    public RecycleViewEventAdapter(List<EventDTO> events){
         this.events = events;
     }
 
@@ -35,8 +51,8 @@ public class RecycleViewEventAdapter extends RecyclerView.Adapter<RecycleViewEve
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        holder.eventName.setText(events.get(position).Name);
-        holder.eventDescription.setText(events.get(position).Description);
+        holder.eventNameTextView.setText(events.get(position).getName());
+        holder.eventDescrTextView.setText(events.get(position).getDescription());
     }
 
     @Override
@@ -47,15 +63,5 @@ public class RecycleViewEventAdapter extends RecyclerView.Adapter<RecycleViewEve
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-    }
-
-    public static class EventViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.cv) CardView cv;
-        @BindView(R.id.event_name) TextView eventName;
-        @BindView(R.id.event_description) TextView eventDescription;
-        EventViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
     }
 }

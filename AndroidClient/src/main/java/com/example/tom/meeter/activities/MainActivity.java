@@ -1,6 +1,5 @@
-package com.example.tom.meeter.Activities;
+package com.example.tom.meeter.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -11,11 +10,11 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.tom.meeter.NetworkEvents.LoggingEvent;
-import com.example.tom.meeter.NetworkEvents.RightLoginEvent;
-import com.example.tom.meeter.NetworkEvents.WrongLoginEvent;
+import com.example.tom.meeter.network.LoggingEvent;
+import com.example.tom.meeter.network.RightLoginEvent;
+import com.example.tom.meeter.network.WrongLoginEvent;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.Services.NetworkService;
+import com.example.tom.meeter.services.NetworkService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,14 +26,18 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
-    @BindView(R.id.editTextLogin) TextView loginEdit;
-    @BindView(R.id.editTextPassword) TextView passEdit;
+    private static final String MAIN_ACTIVITY_TAG = MainActivity.class.getCanonicalName();
+
+    @BindView(R.id.editTextLogin)
+    TextView loginEdit;
+
+    @BindView(R.id.editTextPassword)
+    TextView passEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG,"onCreate");
+        Log.d(MAIN_ACTIVITY_TAG, "onCreate");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         Intent serviceIntent = new Intent(this, NetworkService.class);
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG,"Bus registered");
+        Log.d(MAIN_ACTIVITY_TAG, "Bus registered");
         EventBus.getDefault().register(this);
     }
 
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG,"Bus disregistered");
+        Log.d(MAIN_ACTIVITY_TAG, "Bus unregistered");
         EventBus.getDefault().unregister(this);
     }
 
@@ -101,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(RightLoginEvent event) {
-        Log.d(TAG,"RightLoginEventCather");
+        Log.d(MAIN_ACTIVITY_TAG, "RightLoginEventCather");
         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
         intent.putExtra(RightLoginEvent.class.getCanonicalName(), event);
         startActivity(intent);
@@ -109,16 +112,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(WrongLoginEvent event) {
-        Log.d(TAG,"WrongLoginEventCather");
+        Log.d(MAIN_ACTIVITY_TAG, "WrongLoginEventCather");
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Ошибка авторизации")
                 .setMessage("Неверная пара логин/пароль")
-                .setNegativeButton("Ок",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
+                .setNegativeButton("Ок", (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
         alert.show();
     }
@@ -128,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().post(new LoggingEvent(loginEdit.getText().toString(),
                 passEdit.getText().toString()));
     }
-    @OnClick (R.id.RegistrationButton)
+
+    @OnClick(R.id.RegistrationButton)
     public void RegistrationClick(Button button) {
         Intent intent = new Intent(this, RegistrationActivity.class);
         startActivity(intent);

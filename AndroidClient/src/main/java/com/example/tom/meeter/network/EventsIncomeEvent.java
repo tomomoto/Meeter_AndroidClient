@@ -1,4 +1,4 @@
-package com.example.tom.meeter.NetworkEvents;
+package com.example.tom.meeter.network;
 
 import org.json.JSONArray;
 
@@ -7,6 +7,7 @@ import org.json.JSONArray;
  */
 
 public class EventsIncomeEvent {
+
     private JSONArray events;
 
     public JSONArray getEvents() {

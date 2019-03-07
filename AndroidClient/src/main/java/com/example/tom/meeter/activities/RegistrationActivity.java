@@ -1,4 +1,4 @@
-package com.example.tom.meeter.Activities;
+package com.example.tom.meeter.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +16,7 @@ import com.example.tom.meeter.R;
  * Created by Tom on 01.12.2016.
  */
 public class RegistrationActivity extends AppCompatActivity implements View.OnClickListener {
+
     private ImageView photo;
 
     @Override
@@ -56,27 +57,29 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             case R.id.imageButton2:
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(pickPhoto , 1);
+                startActivityForResult(pickPhoto, 1);
+            default:
                 break;
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch(requestCode) {
+        switch (requestCode) {
             case 0:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
                     photo = (ImageView) findViewById(R.id.imageView);
                     photo.setImageURI(selectedImage);
                 }
                 break;
             case 1:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
                     photo = (ImageView) findViewById(R.id.imageView);
                     photo.setImageURI(selectedImage);
                 }
+            default:
                 break;
         }
     }

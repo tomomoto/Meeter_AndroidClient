@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 import com.example.tom.meeter.GPSTracker;
 import com.example.tom.meeter.GPSTrackerLocationListener;
-import com.example.tom.meeter.NetworkEvents.EventsIncomeEvent;
-import com.example.tom.meeter.NetworkEvents.FindNewEventsEvent;
+import com.example.tom.meeter.network.EventsIncomeEvent;
+import com.example.tom.meeter.network.FindNewEventsEvent;
 import com.example.tom.meeter.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

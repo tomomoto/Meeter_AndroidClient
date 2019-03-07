@@ -1,4 +1,4 @@
-package com.example.tom.meeter.Activities;
+package com.example.tom.meeter.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -16,13 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tom.meeter.NetworkEvents.RightLoginEvent;
+import com.example.tom.meeter.context.user.UserDTO;
+import com.example.tom.meeter.network.RightLoginEvent;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.fragments.FragmentEvents;
 import com.example.tom.meeter.fragments.FragmentNewEvent;
 import com.example.tom.meeter.fragments.FragmentProfile;
-import com.example.tom.meeter.fragments.SubFragmentEvents;
-import com.example.tom.meeter.fragments.SubFragmentGMaps;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -35,14 +34,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ProfileActivity extends AppCompatActivity {
-
-    private Drawer.Result drawerResult = null;
-
-    private ImageView imgNavHeaderBg, imgProfile;
-    private TextView txtName, txtWebsite;
-
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    private FloatingActionButton fab;
 
     // urls to load navigation header background image
     // and profile image
@@ -57,6 +48,16 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_PROFILE;
 
+    private Drawer.Result drawerResult = null;
+
+    private ImageView imgNavHeaderBg, imgProfile;
+    private TextView txtName, txtWebsite;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    private FloatingActionButton fab;
+
+
     // toolbar titles respected to selected nav menu item
     private String[] activityTitles;
 
@@ -64,30 +65,15 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean shouldLoadHomeFragOnBackPress = true;
     private Handler mHandler;
 
-    public String UserName;
-    public String UserSurname;
-    public String UserInfo;
-    public int UserId;
-    public String UserSex;
-    public String Birthday;
+    private UserDTO user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
-        try {
-            RightLoginEvent myObj = getIntent().getParcelableExtra(
-                    RightLoginEvent.class.getCanonicalName());
-            UserName = myObj.Name;
-            UserSurname = myObj.Surname;
-            UserInfo = myObj.Info;
-            UserId = myObj.UserId;
-            UserSex = myObj.Sex;
-            Birthday = myObj.Birthday;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        RightLoginEvent ev = getIntent().getParcelableExtra(RightLoginEvent.class.getCanonicalName());
+        user = ev.getUser();
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -118,50 +104,47 @@ public class ProfileActivity extends AppCompatActivity {
                         new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(1)
                 )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
+                .withOnDrawerItemClickListener((adapterView, view, i, l, iDrawerItem) -> {
 
-                        switch (iDrawerItem.getIdentifier()) {
-                            //Replacing the main content with ContentFragment Which is our Inbox View;
-                            case 0:
-                                navItemIndex = 0;
-                                CURRENT_TAG = TAG_PROFILE;
-                                break;
-                            case 1:
-                                navItemIndex = 1;
-                                CURRENT_TAG = TAG_EVENTS;
-                                break;
-                            case 2:
-                                navItemIndex = 2;
-                                CURRENT_TAG = TAG_NEW_EVENT;
-                                break;
-                            case 3:
-                                navItemIndex = 3;
-                                CURRENT_TAG = TAG_NOTIFICATIONS;
-                                break;
-                            case 4:
-                                navItemIndex = 4;
-                                CURRENT_TAG = TAG_SETTINGS;
-                                break;
-                            default:
-                                navItemIndex = 0;
-                        }
-
-                        //Checking if the item is in checked state or not, if not make it in checked state
-                        /*if (menuItem.isChecked()) {
-                            menuItem.setChecked(false);
-                        } else {
-                            menuItem.setChecked(true);
-                        }
-                        menuItem.setChecked(true);*/
-
-                        loadHomeFragment();
-
-                        //return true;
-
-                        Log.d("Item", String.valueOf(iDrawerItem.getIdentifier()));
+                    switch (iDrawerItem.getIdentifier()) {
+                        //Replacing the main content with ContentFragment Which is our Inbox View;
+                        case 0:
+                            navItemIndex = 0;
+                            CURRENT_TAG = TAG_PROFILE;
+                            break;
+                        case 1:
+                            navItemIndex = 1;
+                            CURRENT_TAG = TAG_EVENTS;
+                            break;
+                        case 2:
+                            navItemIndex = 2;
+                            CURRENT_TAG = TAG_NEW_EVENT;
+                            break;
+                        case 3:
+                            navItemIndex = 3;
+                            CURRENT_TAG = TAG_NOTIFICATIONS;
+                            break;
+                        case 4:
+                            navItemIndex = 4;
+                            CURRENT_TAG = TAG_SETTINGS;
+                            break;
+                        default:
+                            navItemIndex = 0;
                     }
+
+                    //Checking if the item is in checked state or not, if not make it in checked state
+                    /*if (menuItem.isChecked()) {
+                        menuItem.setChecked(false);
+                    } else {
+                        menuItem.setChecked(true);
+                    }
+                    menuItem.setChecked(true);*/
+
+                    loadHomeFragment();
+
+                    //return true;
+
+                    Log.d("Item", String.valueOf(iDrawerItem.getIdentifier()));
                 })
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -208,16 +191,13 @@ public class ProfileActivity extends AppCompatActivity {
         switch (navItemIndex) {
             case 0:
                 // profile
-                FragmentProfile profileFragment = new FragmentProfile();
-                return  profileFragment;
+                return new FragmentProfile();
             case 1:
                 // events
-                FragmentEvents eventsFragment = new FragmentEvents();
-                return eventsFragment;
+                return new FragmentEvents();
             case 2:
                 // newEvent fragment
-                FragmentNewEvent newEventFragment = new FragmentNewEvent();
-                return newEventFragment;
+                return new FragmentNewEvent();
             default:
                 return new FragmentProfile();
         }
@@ -244,22 +224,17 @@ public class ProfileActivity extends AppCompatActivity {
         // when switching between navigation menus
         // So using runnable, the fragment is loaded with cross fade effect
         // This effect can be seen in GMail app
-        Runnable mPendingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // update the main content by replacing fragments
-                Fragment fragment = getHomeFragment();
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                //fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-                fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
-                fragmentTransaction.commitAllowingStateLoss();
-            }
+        Runnable mPendingRunnable = () -> {
+            // update the main content by replacing fragments
+            Fragment fragment = getHomeFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            //fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+            fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
+            fragmentTransaction.commitAllowingStateLoss();
         };
 
         // If mPendingRunnable is not null, then add to the message queue
-        if (mPendingRunnable != null) {
-            mHandler.post(mPendingRunnable);
-        }
+        mHandler.post(mPendingRunnable);
 
         // show or hide the fab button
         //toggleFab();
@@ -274,18 +249,26 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Toast.makeText(this,"Prof paused", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Prof paused", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Toast.makeText(this,"Prof stopped", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Prof stopped", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this,"Prof deleted", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Prof deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }

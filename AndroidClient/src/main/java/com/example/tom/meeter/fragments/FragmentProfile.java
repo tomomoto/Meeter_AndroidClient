@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.tom.meeter.Activities.ProfileActivity;
+import com.example.tom.meeter.activities.ProfileActivity;
 import com.example.tom.meeter.R;
 
 import java.util.Calendar;
@@ -21,11 +21,18 @@ import butterknife.ButterKnife;
  */
 public class FragmentProfile extends Fragment {
 
-    @BindView(R.id.user_name) TextView UserName;
-    @BindView(R.id.user_age)  TextView UserAge;
-    @BindView(R.id.user_sex)  TextView UserSex;
-    @BindView(R.id.user_info)  TextView UserInfo;
-    //@BindView(R.id.user_)  TextView UserId;
+    @BindView(R.id.user_name)
+    TextView userNameTextView;
+
+    @BindView(R.id.user_age)
+    TextView userAgeTextView;
+
+    @BindView(R.id.user_sex)
+    TextView userGenderTextView;
+
+    @BindView(R.id.user_info)
+    TextView userInfoTextView;
+    //@BindView(R.id.user_)  TextView userId;
 
     public FragmentProfile() {
     }
@@ -47,13 +54,13 @@ public class FragmentProfile extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ProfileActivity activity = (ProfileActivity) getActivity();
-        UserName.setText(activity.UserName + ' ' + activity.UserSurname);
-        UserSex.setText("Пол: "+activity.UserSex);
-        UserInfo.setText("О себе: "+activity.UserInfo);
-        UserAge.setText("Возраст:" + activity.Birthday);
+        userNameTextView.setText(activity.getUser().getName() + ' ' + activity.getUser().getSurname());
+        userGenderTextView.setText("Пол: {}" + activity.getUser().getGender());
+        userInfoTextView.setText("О себе: " + activity.getUser().getInfo());
+        userAgeTextView.setText("Возраст:" + activity.getUser().getBirthday());
     }
 
-    private String GetAgeFromDate(int year, int month, int day){
+    private String GetAgeFromDate(int year, int month, int day) {
         Calendar dob = Calendar.getInstance();
         Calendar today = Calendar.getInstance();
 
@@ -61,7 +68,7 @@ public class FragmentProfile extends Fragment {
 
         int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
 
-        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)){
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
             age--;
         }
 

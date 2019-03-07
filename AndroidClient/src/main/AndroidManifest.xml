@@ -31,17 +31,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.ProfileActivity"
+            android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_activity_two"
-            android:parentActivityName=".Activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tom.myapplication.MainActivity" />
         </activity>
         <activity
-            android:name=".Activities.RegistrationActivity"
+            android:name=".activities.RegistrationActivity"
             android:label="@string/RegistrationActivityTitle"
-            android:parentActivityName=".Activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tom.myapplication.MainActivity" />
@@ -55,7 +55,7 @@
             android:value="AIzaSyCi-fiOf04bOoFE8uYkyYPA9tu2xj6ztIE" />
 
         <service
-            android:name=".Services.NetworkService"
+            android:name=".services.NetworkService"
             android:enabled="true"
             android:exported="true"></service>
 

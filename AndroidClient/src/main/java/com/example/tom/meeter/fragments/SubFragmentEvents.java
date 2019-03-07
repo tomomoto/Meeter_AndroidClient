@@ -15,14 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.tom.meeter.Infrastructure.Event;
-import com.example.tom.meeter.Infrastructure.RecycleViewEventAdapter;
-import com.example.tom.meeter.MyAdapter;
-import com.example.tom.meeter.NetworkEvents.EventsIncomeEvent;
+import com.example.tom.meeter.infrastructure.EventDTO;
+import com.example.tom.meeter.infrastructure.RecycleViewEventAdapter;
+import com.example.tom.meeter.network.EventsIncomeEvent;
 import com.example.tom.meeter.R;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -36,7 +32,8 @@ import java.util.List;
 
 public class SubFragmentEvents extends Fragment {
 
-    private static final String TAG = SubFragmentEvents.class.getName();
+    private static final String SUB_FRAGMENT_EVENTS_TAG = SubFragmentEvents.class.getCanonicalName();
+
     private RecyclerView mRecyclerView;
     private RecycleViewEventAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -45,15 +42,15 @@ public class SubFragmentEvents extends Fragment {
         // Required empty public constructor
     }
 
-    private List<Event> events;
+    private List<EventDTO> events;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         events = new ArrayList<>();
         EventBus.getDefault().register(this);
-        //events.add(new Event(1,"name","descr",1,"","",""));
-        //events.add(new Event(2,"name2","descr2",1,"","",""));
+        //events.add(new EventDTO(1,"name","descr",1,"","",""));
+        //events.add(new EventDTO(2,"name2","descr2",1,"","",""));
     }
 
     @Override
@@ -83,37 +80,26 @@ public class SubFragmentEvents extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(EventsIncomeEvent incomeEvent) {
-        int myJsonArraySize = incomeEvent.getEvents().length();
+    public void onMessageEvent(EventsIncomeEvent event) {
+        int eventsSize = event.getEvents().length();
         events.clear();
-        if (myJsonArraySize > 0) {
-            for (int i = 0; i < myJsonArraySize; i++) {
+        if (eventsSize > 0) {
+            for (int i = 0; i < eventsSize; i++) {
                 try {
-                    JSONObject event = (JSONObject) incomeEvent.getEvents().get(i);
-                    Integer eID = (Integer) event.get("event_id");
-                    String name = (String) event.get("name");
-                    String desc = (String) event.get("description");
-                    Integer oID = (Integer) event.get("creator_id");
-                    double latitude = (double) event.get("latitude");
-                    double longitude = (double) event.get("longitude");
-                    String created = (String) event.get("created");
-                    String starting = (String) event.get("starting");
-                    String ending = (String) event.get("ending");
-                    Event localEvent = new Event(eID, name, desc, oID, created, starting, ending);
-                    events.add(localEvent);
+                    events.add(EventDTO.encode((JSONObject) event.getEvents().get(i)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
         mAdapter = new RecycleViewEventAdapter(events);
-        mRecyclerView.swapAdapter(mAdapter,false);
+        mRecyclerView.swapAdapter(mAdapter, false);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        Log.d(TAG,"unregistered bus");
+        Log.d(SUB_FRAGMENT_EVENTS_TAG, "unregistered bus");
     }
 }

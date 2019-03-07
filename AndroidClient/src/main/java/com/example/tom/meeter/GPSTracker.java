@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GPSTracker extends Service implements LocationListener  {
+public class GPSTracker extends Service implements LocationListener {
 
     private List<GPSTrackerLocationListener> listeners = new ArrayList<>();
 
@@ -31,7 +31,8 @@ public class GPSTracker extends Service implements LocationListener  {
     public void removeGPSTrackerListener(GPSTrackerLocationListener toDelete) {
         listeners.remove(toDelete);
     }
-    private final String LocationTrackerTag = "LocationTracker";
+
+    private static final String GPS_TRACKER_TAG = GPSTracker.class.getCanonicalName();
     private final Context context;
 
     boolean isGPSEnabled = false;
@@ -53,9 +54,9 @@ public class GPSTracker extends Service implements LocationListener  {
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            Log.d(LocationTrackerTag, "GPS Enabled?" + isGPSEnabled);
+            Log.d(GPS_TRACKER_TAG, "GPS Enabled?" + isGPSEnabled);
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            Log.d(LocationTrackerTag, "Network Enabled?" + isNetworkEnabled);
+            Log.d(GPS_TRACKER_TAG, "Network Enabled?" + isNetworkEnabled);
 
             if (!isGPSEnabled && !isNetworkEnabled) {
             } else {
@@ -122,14 +123,14 @@ public class GPSTracker extends Service implements LocationListener  {
     }
 
     public double getLatitude() {
-        if(location != null) {
+        if (location != null) {
             latitude = location.getLatitude();
         }
         return latitude;
     }
 
     public double getLongitude() {
-        if(location != null) {
+        if (location != null) {
             longitude = location.getLongitude();
         }
 

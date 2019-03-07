@@ -1,4 +1,4 @@
-package com.example.tom.meeter.NetworkEvents;
+package com.example.tom.meeter.network;
 
 /**
  * Created by Tom on 14.01.2017.
