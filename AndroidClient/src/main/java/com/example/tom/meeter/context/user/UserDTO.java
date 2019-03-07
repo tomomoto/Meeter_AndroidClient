@@ -66,4 +66,16 @@ public class UserDTO {
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gender='" + gender + '\'' +
+                ", surname='" + surname + '\'' +
+                ", info='" + info + '\'' +
+                ", birthday='" + birthday + '\'' +
+                '}';
+    }
 }

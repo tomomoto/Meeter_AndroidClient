@@ -18,17 +18,17 @@ import butterknife.ButterKnife;
  * created by Tom on 10.02.2017.
  */
 
-public class RecycleViewEventAdapter extends RecyclerView.Adapter<RecycleViewEventAdapter.EventViewHolder>{
+public class RecycleViewEventAdapter extends RecyclerView.Adapter<RecycleViewEventAdapter.EventViewHolder> {
 
-    public static class EventViewHolder extends RecyclerView.ViewHolder {
+    static class EventViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.cv)
         CardView cardView;
 
         @BindView(R.id.event_name)
-        TextView eventNameTextView;
+        TextView eventName;
 
         @BindView(R.id.event_description)
-        TextView eventDescrTextView;
+        TextView eventDescription;
 
         EventViewHolder(View itemView) {
             super(itemView);
@@ -36,23 +36,22 @@ public class RecycleViewEventAdapter extends RecyclerView.Adapter<RecycleViewEve
         }
     }
 
-    List<EventDTO> events;
+    private List<EventDTO> events;
 
-    public RecycleViewEventAdapter(List<EventDTO> events){
+    public RecycleViewEventAdapter(List<EventDTO> events) {
         this.events = events;
     }
 
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_view, parent, false);
-        EventViewHolder pvh = new EventViewHolder(v);
-        return pvh;
+        return new EventViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        holder.eventNameTextView.setText(events.get(position).getName());
-        holder.eventDescrTextView.setText(events.get(position).getDescription());
+        holder.eventName.setText(events.get(position).getName());
+        holder.eventDescription.setText(events.get(position).getDescription());
     }
 
     @Override

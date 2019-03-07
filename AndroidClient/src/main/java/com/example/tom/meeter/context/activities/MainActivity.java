@@ -1,4 +1,4 @@
-package com.example.tom.meeter.activities;
+package com.example.tom.meeter.context.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,11 +10,11 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.tom.meeter.network.LoggingEvent;
-import com.example.tom.meeter.network.RightLoginEvent;
-import com.example.tom.meeter.network.WrongLoginEvent;
+import com.example.tom.meeter.context.network.domain.LoginAttemptEvent;
+import com.example.tom.meeter.context.network.domain.SuccessfulLoginEvent;
+import com.example.tom.meeter.context.network.domain.FailureLoginEvent;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.services.NetworkService;
+import com.example.tom.meeter.context.network.service.NetworkService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String MAIN_ACTIVITY_TAG = MainActivity.class.getCanonicalName();
 
     @BindView(R.id.editTextLogin)
-    TextView loginEdit;
+    TextView login;
 
     @BindView(R.id.editTextPassword)
-    TextView passEdit;
+    TextView password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,18 +103,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(RightLoginEvent event) {
-        Log.d(MAIN_ACTIVITY_TAG, "RightLoginEventCather");
+    public void onMessageEvent(SuccessfulLoginEvent event) {
+        Log.d(MAIN_ACTIVITY_TAG, event.toString());
         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-        intent.putExtra(RightLoginEvent.class.getCanonicalName(), event);
+        intent.putExtra(SuccessfulLoginEvent.class.getCanonicalName(), event);
         startActivity(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(WrongLoginEvent event) {
-        Log.d(MAIN_ACTIVITY_TAG, "WrongLoginEventCather");
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Ошибка авторизации")
+    public void onMessageEvent(FailureLoginEvent event) {
+        Log.d(MAIN_ACTIVITY_TAG, event.toString());
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Ошибка авторизации")
                 .setMessage("Неверная пара логин/пароль")
                 .setNegativeButton("Ок", (dialog, id) -> dialog.cancel());
         AlertDialog alert = builder.create();
@@ -123,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.LoginButton)
     public void LoginClick(Button button) {
-        EventBus.getDefault().post(new LoggingEvent(loginEdit.getText().toString(),
-                passEdit.getText().toString()));
+        EventBus.getDefault().post(
+                new LoginAttemptEvent(login.getText().toString(), password.getText().toString()));
     }
 
     @OnClick(R.id.RegistrationButton)
@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.LoginButton:
-                EventBus.getDefault().post(new LoggingEvent(loginEdit.getText().toString(),
-                        passEdit.getText().toString()));
+                EventBus.getDefault().post(new LoginAttemptEvent(login.getText().toString(),
+                        password.getText().toString()));
                 break;
             case R.id.RegistrationButton:
                 Intent intent = new Intent(this, RegistrationActivity.class);

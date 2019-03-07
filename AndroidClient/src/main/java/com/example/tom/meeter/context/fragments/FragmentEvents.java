@@ -1,4 +1,4 @@
-package com.example.tom.meeter.fragments;
+package com.example.tom.meeter.context.fragments;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;

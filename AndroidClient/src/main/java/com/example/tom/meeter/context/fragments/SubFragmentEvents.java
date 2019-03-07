@@ -1,4 +1,4 @@
-package com.example.tom.meeter.fragments;
+package com.example.tom.meeter.context.fragments;
 
 /**
  * Created by Tom on 09.12.2016.
@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 
 import com.example.tom.meeter.infrastructure.EventDTO;
 import com.example.tom.meeter.infrastructure.RecycleViewEventAdapter;
-import com.example.tom.meeter.network.EventsIncomeEvent;
+import com.example.tom.meeter.context.network.domain.EventsIncomeEvent;
 import com.example.tom.meeter.R;
 
 import org.greenrobot.eventbus.EventBus;
@@ -34,15 +34,15 @@ public class SubFragmentEvents extends Fragment {
 
     private static final String SUB_FRAGMENT_EVENTS_TAG = SubFragmentEvents.class.getCanonicalName();
 
-    private RecyclerView mRecyclerView;
-    private RecycleViewEventAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView rView;
+    private RecycleViewEventAdapter rvEventAdapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private List<EventDTO> events;
+
 
     public SubFragmentEvents() {
         // Required empty public constructor
     }
-
-    private List<EventDTO> events;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,20 +63,20 @@ public class SubFragmentEvents extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
+        rView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        //mRecyclerView.setHasFixedSize(true);
+        //rView.setHasFixedSize(true);
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        layoutManager = new LinearLayoutManager(getActivity());
+        rView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new RecycleViewEventAdapter(events);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.invalidate();
+        rvEventAdapter = new RecycleViewEventAdapter(events);
+        rView.setAdapter(rvEventAdapter);
+        rView.invalidate();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -92,8 +92,8 @@ public class SubFragmentEvents extends Fragment {
                 }
             }
         }
-        mAdapter = new RecycleViewEventAdapter(events);
-        mRecyclerView.swapAdapter(mAdapter, false);
+        rvEventAdapter = new RecycleViewEventAdapter(events);
+        rView.swapAdapter(rvEventAdapter, false);
     }
 
     @Override

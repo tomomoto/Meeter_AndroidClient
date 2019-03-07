@@ -1,4 +1,4 @@
-package com.example.tom.meeter.network;
+package com.example.tom.meeter.context.network.domain;
 
 import org.json.JSONArray;
 

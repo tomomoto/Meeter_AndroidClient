@@ -1,4 +1,4 @@
-package com.example.tom.meeter.activities;
+package com.example.tom.meeter.context.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,24 +11,22 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tom.meeter.context.user.UserDTO;
-import com.example.tom.meeter.network.RightLoginEvent;
+import com.example.tom.meeter.context.network.domain.SuccessfulLoginEvent;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.fragments.FragmentEvents;
-import com.example.tom.meeter.fragments.FragmentNewEvent;
-import com.example.tom.meeter.fragments.FragmentProfile;
+import com.example.tom.meeter.context.fragments.FragmentEvents;
+import com.example.tom.meeter.context.fragments.FragmentNewEvent;
+import com.example.tom.meeter.context.fragments.FragmentProfile;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +46,8 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_PROFILE;
 
+    private static final String PROFILE_ACTIVITY_TAG = ProfileActivity.class.getCanonicalName();
+
     private Drawer.Result drawerResult = null;
 
     private ImageView imgNavHeaderBg, imgProfile;
@@ -55,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     private FloatingActionButton fab;
 
 
@@ -72,7 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
-        RightLoginEvent ev = getIntent().getParcelableExtra(RightLoginEvent.class.getCanonicalName());
+        SuccessfulLoginEvent ev = getIntent().getParcelableExtra(SuccessfulLoginEvent.class.getCanonicalName());
         user = ev.getUser();
 
         setSupportActionBar(toolbar);

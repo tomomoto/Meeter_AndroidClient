@@ -1,4 +1,4 @@
-package com.example.tom.meeter.fragments;
+package com.example.tom.meeter.context.fragments;
 
 /**
  * Created by Tom on 09.12.2016.
@@ -15,10 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.tom.meeter.GPSTracker;
-import com.example.tom.meeter.GPSTrackerLocationListener;
-import com.example.tom.meeter.network.EventsIncomeEvent;
-import com.example.tom.meeter.network.FindNewEventsEvent;
+import com.example.tom.meeter.context.gps.service.GPSTrackerService;
+import com.example.tom.meeter.context.gps.domain.GPSTrackerLocationListener;
+import com.example.tom.meeter.context.network.domain.EventsIncomeEvent;
+import com.example.tom.meeter.context.network.domain.FindNewEventsEvent;
 import com.example.tom.meeter.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,9 +43,11 @@ import java.util.List;
 
 public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener,
         GPSTrackerLocationListener, GoogleMap.OnCameraChangeListener {
-    private final String TAG = "SubFragmentGmap";
+
+    private final String TAG = SubFragmentGMaps.class.getCanonicalName();
+
     private SupportMapFragment sMapFragment;
-    private GPSTracker gps;
+    private GPSTrackerService gpsTrackerService;
     private LatLng myLocation;
     private Marker userMarker;
     private GoogleMap gmap = null;
@@ -53,8 +55,8 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     private CameraPosition camPosition = null;
     private Circle userCircle;
     private double searchArea = 0;
-    private List<Marker> eventMarkers = new ArrayList<Marker>();
-    
+    private List<Marker> eventMarkers = new ArrayList<>();
+
     public SubFragmentGMaps() {
         // Required empty public constructor
     }
@@ -62,12 +64,12 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gps = new GPSTracker(getContext());
+        gpsTrackerService = new GPSTrackerService(getContext());
         sMapFragment = SupportMapFragment.newInstance();
         sMapFragment.getMapAsync(this);
         searchArea = 5000;
         EventBus.getDefault().register(this);
-        Log.d(TAG,"registered bus");
+        Log.d(TAG, "registered bus");
     }
 
     @Override
@@ -75,19 +77,20 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.map,sMapFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.map, sMapFragment).commit();
         return inflater.inflate(R.layout.subfragment_gmaps, container, false);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        if (gps.canGetLocation())
-            myLocation = new LatLng(gps.getLatitude(),gps.getLongitude());
+        if (gpsTrackerService.canGetLocation()) {
+            myLocation = new LatLng(gpsTrackerService.getLatitude(), gpsTrackerService.getLongitude());
+        }
         gmap = googleMap;
         gmap.setOnMapClickListener(this);
         gmap.setOnCameraChangeListener(this);
         //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation,15));
-        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,14),6000,null);
+        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 14), 6000, null);
         // Zoom out to zoom level 10, animating with a duration of 2 seconds.
         //gmap.animateCamera(CameraUpdateFactory.zoomTo(10), 5000, null);
         userCircle = googleMap.addCircle(new CircleOptions().center(myLocation).radius(searchArea)
@@ -95,7 +98,7 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
                 .strokeColor(0x10000000)
                 .strokeWidth(3)
                 .fillColor(0x3aaaffff));
-        gps.addGPSTrackerListener(this);
+        gpsTrackerService.addGPSTrackerListener(this);
         userMarker = googleMap.addMarker(new MarkerOptions().title("I am").position(myLocation));
     }
 
@@ -103,24 +106,25 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     public void onMapClick(LatLng latLng) {
         userMarker.setPosition(new LatLng(latLng.latitude, latLng.longitude));
         //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
-        EventBus.getDefault().post(new FindNewEventsEvent(latLng.latitude, latLng.longitude, searchArea ));
+        EventBus.getDefault().post(new FindNewEventsEvent(latLng.latitude, latLng.longitude, searchArea));
         //!!! userMarker.setIcon(icon);
         //userMarker.zoom
-        if (camPosition != null)
-            gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom),1200,null);
-            //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
+        if (camPosition != null) {
+            gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+        }
+        //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
         userCircle.setCenter(latLng);
         //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,camPosition.zoom));
     }
 
     @Override
     public void onGPSTrackerLocationChanged(Location newLocation) {
-        if (true == trackUser) {
-            Toast.makeText(getContext(),"location changed",Toast.LENGTH_SHORT).show();
+        if (trackUser) {
+            Toast.makeText(getContext(), "location changed", Toast.LENGTH_SHORT).show();
             userMarker.setPosition(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()));
             if (camPosition != null)
-                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom),1200,null);
-                //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+            //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
             userCircle.setCenter(userMarker.getPosition());
         }
     }
@@ -128,10 +132,10 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     @Override
     public void onDestroy() {
         super.onDestroy();
-        gps.removeGPSTrackerListener(this);
-        gps.stopUsingGPS();
+        gpsTrackerService.removeGPSTrackerListener(this);
+        gpsTrackerService.stopUsingGPS();
         EventBus.getDefault().unregister(this);
-        Log.d(TAG,"unregistered bus");
+        Log.d(TAG, "unregistered bus");
     }
 
     @Override
@@ -141,12 +145,12 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventsIncomeEvent incomeEvent) {
-        int myJsonArraySize = incomeEvent.getEvents().length();
-        for (Marker marker: eventMarkers) {
+        int eventsSize = incomeEvent.getEvents().length();
+        for (Marker marker : eventMarkers) {
             marker.remove();
         }
-        eventMarkers = new ArrayList<Marker>();
-        for (int i = 0; i < myJsonArraySize; i++) {
+        eventMarkers = new ArrayList<>();
+        for (int i = 0; i < eventsSize; i++) {
             try {
                 JSONObject event = (JSONObject) incomeEvent.getEvents().get(i);
                 double latitude = (double) event.get("latitude");

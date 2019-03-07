@@ -20,7 +20,7 @@
         android:theme="@style/MyMaterialTheme">
 
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".context.activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
@@ -31,20 +31,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ProfileActivity"
+            android:name=".context.activities.ProfileActivity"
             android:label="@string/title_activity_activity_two"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".context.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tom.myapplication.MainActivity" />
+                android:value="com.example.tom.meeter.context.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.RegistrationActivity"
+            android:name=".context.activities.RegistrationActivity"
             android:label="@string/RegistrationActivityTitle"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".context.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tom.myapplication.MainActivity" />
+                android:value="com.example.tom.meeter.context.activities.MainActivity" />
         </activity>
 
         <meta-data
@@ -55,7 +55,7 @@
             android:value="AIzaSyCi-fiOf04bOoFE8uYkyYPA9tu2xj6ztIE" />
 
         <service
-            android:name=".services.NetworkService"
+            android:name=".context.network.service.NetworkService"
             android:enabled="true"
             android:exported="true"></service>
 

@@ -1,4 +1,4 @@
-package com.example.tom.meeter.fragments;
+package com.example.tom.meeter.context.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.tom.meeter.activities.ProfileActivity;
+import com.example.tom.meeter.context.activities.ProfileActivity;
 import com.example.tom.meeter.R;
 
 import java.util.Calendar;

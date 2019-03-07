@@ -9,6 +9,16 @@ import org.json.JSONObject;
 
 public class EventDTO {
 
+    private static String EVENT_ID_KEY = "event_id";
+    private static String NAME_KEY = "name";
+    private static String DESCRIPTION_KEY = "description";
+    private static String CREATOR_ID_KEY = "creator_id";
+    private static String LATITUDE_KEY = "latitude";
+    private static String LONGITUDE_KEY = "longitude";
+    private static String CREATED_KEY = "created";
+    private static String STARTING_KEY = "starting";
+    private static String ENDING_KEY = "ending";
+
     private Integer id;
     private String name;
     private String description;
@@ -19,21 +29,20 @@ public class EventDTO {
     private String starting;
     private String ending;
 
-
     public EventDTO() {
     }
 
-    public static EventDTO encode(JSONObject event) throws JSONException {
+    public static EventDTO encode(JSONObject json) throws JSONException {
         EventDTO result = new EventDTO();
-        result.id = event.getInt("event_id");
-        result.name = event.getString("name");
-        result.description = event.getString("description");
-        result.objectId = event.getInt("creator_id");
-        result.latitude = event.getDouble("latitude");
-        result.longitude = event.getDouble("longitude");
-        result.created = event.getString("created");
-        result.starting = event.getString("starting");
-        result.ending = event.getString("ending");
+        result.id = json.getInt(EVENT_ID_KEY);
+        result.name = json.getString(NAME_KEY);
+        result.description = json.getString(DESCRIPTION_KEY);
+        result.objectId = json.getInt(CREATOR_ID_KEY);
+        result.latitude = json.getDouble(LATITUDE_KEY);
+        result.longitude = json.getDouble(LONGITUDE_KEY);
+        result.created = json.getString(CREATED_KEY);
+        result.starting = json.getString(STARTING_KEY);
+        result.ending = json.getString(ENDING_KEY);
         return result;
     }
 

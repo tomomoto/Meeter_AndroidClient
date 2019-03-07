@@ -1,4 +1,4 @@
-package com.example.tom.meeter.activities;
+package com.example.tom.meeter.context.activities;
 
 import android.content.Intent;
 import android.net.Uri;

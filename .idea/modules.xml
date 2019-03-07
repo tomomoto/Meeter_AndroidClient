@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidClient/AndroidClient.iml" filepath="$PROJECT_DIR$/AndroidClient/AndroidClient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Meeter.iml" filepath="$PROJECT_DIR$/Meeter.iml" />
       <module fileurl="file://$PROJECT_DIR$/Meeter_AndroidClient.iml" filepath="$PROJECT_DIR$/Meeter_AndroidClient.iml" />
     </modules>
   </component>
