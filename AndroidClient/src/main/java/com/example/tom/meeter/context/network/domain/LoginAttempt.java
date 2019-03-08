@@ -1,10 +1,13 @@
 package com.example.tom.meeter.context.network.domain;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Tom on 14.01.2017.
  */
 
-public class LoginAttemptEvent {
+public class LoginAttempt implements NetworkEvent {
 
     private String login;
     private String password;
@@ -25,16 +28,23 @@ public class LoginAttemptEvent {
         this.password = password;
     }
 
-    public LoginAttemptEvent(String login, String password) {
+    public LoginAttempt(String login, String password) {
         this.login = login;
         this.password = password;
     }
 
     @Override
     public String toString() {
-        return "LoginAttemptEvent{" +
+        return "LoginAttempt{" +
                 "login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    @Override
+    public JSONObject toJson() throws JSONException {
+        return new JSONObject()
+                .put("login", login)
+                .put("password", password);
     }
 }

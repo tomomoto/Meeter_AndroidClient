@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 
 import com.example.tom.meeter.infrastructure.EventDTO;
 import com.example.tom.meeter.infrastructure.RecycleViewEventAdapter;
-import com.example.tom.meeter.context.network.domain.EventsIncomeEvent;
+import com.example.tom.meeter.context.network.domain.IncomeEvents;
 import com.example.tom.meeter.R;
 
 import org.greenrobot.eventbus.EventBus;
@@ -80,7 +80,7 @@ public class SubFragmentEvents extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(EventsIncomeEvent event) {
+    public void onMessageEvent(IncomeEvents event) {
         int eventsSize = event.getEvents().length();
         events.clear();
         if (eventsSize > 0) {

@@ -25,10 +25,14 @@ android {
 dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:23.0.1'
-    implementation 'com.android.support:recyclerview-v7:23.3.0'
-    implementation 'com.android.support:design:23.0.1'
-    implementation 'com.android.support:cardview-v7:23.0.1'
+
+    implementation (
+            [group: 'com.android.support', name: 'appcompat-v7', version: '23.0.1'],
+            [group: 'com.android.support', name: 'recyclerview-v7', version: '23.3.0'],
+            [group: 'com.android.support', name: 'design', version: '23.0.1'],
+            [group: 'com.android.support', name: 'cardview-v7', version: '23.0.1']
+    )
+
     implementation('com.github.nkzawa:socket.io-client:0.3.0') {
         exclude group: 'org.json', module: 'json'
     }
@@ -40,8 +44,10 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.4.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
+    implementation (
+            [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'],
+            [group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.6']
+    )
 
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 

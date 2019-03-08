@@ -5,21 +5,24 @@ import android.os.Parcelable;
 
 import com.example.tom.meeter.context.user.UserDTO;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Tom on 13.01.2017.
  */
 
-public class SuccessfulLoginEvent implements Parcelable {
+public class SuccessfulLogin implements Parcelable, NetworkEvent {
 
-    public static final Creator<SuccessfulLoginEvent> CREATOR = new Creator<SuccessfulLoginEvent>() {
+    public static final Creator<SuccessfulLogin> CREATOR = new Creator<SuccessfulLogin>() {
         @Override
-        public SuccessfulLoginEvent createFromParcel(Parcel in) {
-            return new SuccessfulLoginEvent(in);
+        public SuccessfulLogin createFromParcel(Parcel in) {
+            return new SuccessfulLogin(in);
         }
 
         @Override
-        public SuccessfulLoginEvent[] newArray(int size) {
-            return new SuccessfulLoginEvent[size];
+        public SuccessfulLogin[] newArray(int size) {
+            return new SuccessfulLogin[size];
         }
     };
 
@@ -32,13 +35,13 @@ public class SuccessfulLoginEvent implements Parcelable {
 
     //public BitSet photo;
 
-    public SuccessfulLoginEvent(int userId, String userName, String userSurname, String userGender,
-                                String userInfo, String userBirthday){
+    public SuccessfulLogin(int userId, String userName, String userSurname, String userGender,
+                           String userInfo, String userBirthday){
         user = new UserDTO(userId, userName, userGender, userSurname, userInfo, userBirthday);
         //this.photo = photo;
     }
 
-    private SuccessfulLoginEvent(Parcel in) {
+    private SuccessfulLogin(Parcel in) {
         user = getUser(in);
     }
 
@@ -67,8 +70,13 @@ public class SuccessfulLoginEvent implements Parcelable {
 
     @Override
     public String toString() {
-        return "SuccessfulLoginEvent{" +
+        return "SuccessfulLogin{" +
                 "user=" + user.toString() +
                 '}';
+    }
+
+    @Override
+    public JSONObject toJson() throws JSONException {
+        return new JSONObject().put("user", user);
     }
 }

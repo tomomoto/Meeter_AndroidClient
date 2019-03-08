@@ -17,8 +17,8 @@ import android.widget.Toast;
 
 import com.example.tom.meeter.context.gps.service.GPSTrackerService;
 import com.example.tom.meeter.context.gps.domain.GPSTrackerLocationListener;
-import com.example.tom.meeter.context.network.domain.EventsIncomeEvent;
-import com.example.tom.meeter.context.network.domain.FindNewEventsEvent;
+import com.example.tom.meeter.context.network.domain.IncomeEvents;
+import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -106,7 +106,8 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     public void onMapClick(LatLng latLng) {
         userMarker.setPosition(new LatLng(latLng.latitude, latLng.longitude));
         //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
-        EventBus.getDefault().post(new FindNewEventsEvent(latLng.latitude, latLng.longitude, searchArea));
+        
+        EventBus.getDefault().post(new SearchForEvents(latLng.latitude, latLng.longitude, searchArea));
         //!!! userMarker.setIcon(icon);
         //userMarker.zoom
         if (camPosition != null) {
@@ -144,7 +145,7 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(EventsIncomeEvent incomeEvent) {
+    public void onMessageEvent(IncomeEvents incomeEvent) {
         int eventsSize = incomeEvent.getEvents().length();
         for (Marker marker : eventMarkers) {
             marker.remove();

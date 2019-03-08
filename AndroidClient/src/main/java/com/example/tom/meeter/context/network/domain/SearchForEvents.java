@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * Created by Tom on 14.01.2017.
  */
 
-public class FindNewEventsEvent {
+public class SearchForEvents implements NetworkEvent {
 
     private static String LATITUDE_KEY = "latitude";
     private static String LONGITUDE_KEY = "longitude";
@@ -17,7 +17,7 @@ public class FindNewEventsEvent {
     private double longitude;
     private double area;
 
-    public FindNewEventsEvent(double latitude, double longitude, double area) {
+    public SearchForEvents(double latitude, double longitude, double area) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.area = area;
@@ -49,14 +49,15 @@ public class FindNewEventsEvent {
 
     @Override
     public String toString() {
-        return "FindNewEventsEvent{" +
+        return "SearchForEvents{" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", area=" + area +
                 '}';
     }
 
-    public JSONObject jsonize() throws JSONException {
+    @Override
+    public JSONObject toJson() throws JSONException {
         return new JSONObject()
                 .put(LATITUDE_KEY, latitude)
                 .put(LONGITUDE_KEY, longitude)

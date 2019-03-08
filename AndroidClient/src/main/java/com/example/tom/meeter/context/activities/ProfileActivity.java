@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tom.meeter.context.user.UserDTO;
-import com.example.tom.meeter.context.network.domain.SuccessfulLoginEvent;
+import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.fragments.FragmentEvents;
 import com.example.tom.meeter.context.fragments.FragmentNewEvent;
@@ -73,7 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
-        SuccessfulLoginEvent ev = getIntent().getParcelableExtra(SuccessfulLoginEvent.class.getCanonicalName());
+        SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
         user = ev.getUser();
 
         setSupportActionBar(toolbar);

@@ -52,7 +52,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCi-fiOf04bOoFE8uYkyYPA9tu2xj6ztIE" />
+            android:value="AIzaSyCPeLeAy-WAKZmeeMG2jhJ9w-oTLm8Wk40" />
 
         <service
             android:name=".context.network.service.NetworkService"

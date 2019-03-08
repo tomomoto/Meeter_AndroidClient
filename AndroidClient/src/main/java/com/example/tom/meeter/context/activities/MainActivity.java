@@ -10,9 +10,9 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.tom.meeter.context.network.domain.LoginAttemptEvent;
-import com.example.tom.meeter.context.network.domain.SuccessfulLoginEvent;
-import com.example.tom.meeter.context.network.domain.FailureLoginEvent;
+import com.example.tom.meeter.context.network.domain.LoginAttempt;
+import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
+import com.example.tom.meeter.context.network.domain.FailureLogin;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.network.service.NetworkService;
 
@@ -103,15 +103,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SuccessfulLoginEvent event) {
+    public void onMessageEvent(SuccessfulLogin event) {
         Log.d(MAIN_ACTIVITY_TAG, event.toString());
         Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-        intent.putExtra(SuccessfulLoginEvent.class.getCanonicalName(), event);
+        intent.putExtra(SuccessfulLogin.class.getCanonicalName(), event);
         startActivity(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(FailureLoginEvent event) {
+    public void onMessageEvent(FailureLogin event) {
         Log.d(MAIN_ACTIVITY_TAG, event.toString());
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Ошибка авторизации")
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.LoginButton)
     public void LoginClick(Button button) {
         EventBus.getDefault().post(
-                new LoginAttemptEvent(login.getText().toString(), password.getText().toString()));
+                new LoginAttempt(login.getText().toString(), password.getText().toString()));
     }
 
     @OnClick(R.id.RegistrationButton)
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.LoginButton:
-                EventBus.getDefault().post(new LoginAttemptEvent(login.getText().toString(),
+                EventBus.getDefault().post(new LoginAttempt(login.getText().toString(),
                         password.getText().toString()));
                 break;
             case R.id.RegistrationButton:

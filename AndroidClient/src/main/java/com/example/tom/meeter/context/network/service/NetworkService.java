@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.tom.meeter.context.network.domain.EventsIncomeEvent;
-import com.example.tom.meeter.context.network.domain.FindNewEventsEvent;
-import com.example.tom.meeter.context.network.domain.LoginAttemptEvent;
-import com.example.tom.meeter.context.network.domain.SuccessfulLoginEvent;
-import com.example.tom.meeter.context.network.domain.FailureLoginEvent;
+import com.example.tom.meeter.context.network.domain.IncomeEvents;
+import com.example.tom.meeter.context.network.domain.SearchForEvents;
+import com.example.tom.meeter.context.network.domain.LoginAttempt;
+import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
+import com.example.tom.meeter.context.network.domain.FailureLogin;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
@@ -38,9 +38,9 @@ public class NetworkService extends Service {
 
     private static void successfulLoginEventHandler(Object... args) {
         JSONObject ev = (JSONObject) args[0];
-        SuccessfulLoginEvent payload = null;
+        SuccessfulLogin payload = null;
         try {
-            payload = new SuccessfulLoginEvent(
+            payload = new SuccessfulLogin(
                     ev.getInt("user_id"),
                     ev.getString("name"),
                     ev.getString("surname"),
@@ -57,21 +57,34 @@ public class NetworkService extends Service {
 
     private static void failureLoginEventHandler(Object... args) {
         Log.d(NETWORK_SERVICE_TAG, "failureLoginEventHandler From service");
-        EventBus.getDefault().post(new FailureLoginEvent());
+        EventBus.getDefault().post(new FailureLogin());
     }
 
     private static void foundEventsEventHandler(Object... args) {
         JSONArray events = (JSONArray) args[0];
         Log.d(NETWORK_SERVICE_TAG, "foundEventsEventHandler events: " + events);
-        EventBus.getDefault().post(new EventsIncomeEvent(events));
+        EventBus.getDefault().post(new IncomeEvents(events));
+    }
+
+    public class Binder extends android.os.Binder {
+        public NetworkService getService() {
+            return NetworkService.this;
+        }
     }
 
     private String serverIp;
     private int serverPort;
     private boolean started = false;
     private Socket socketClient;
+    private Binder binder;
 
     public NetworkService() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        binder = new Binder();
     }
 
     @Override
@@ -118,12 +131,11 @@ public class NetworkService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return binder;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(LoginAttemptEvent event) {
+    public void onMessageEvent(LoginAttempt event) {
         Log.d(NETWORK_SERVICE_TAG, event.toString());
         JSONObject payload = new JSONObject();
         try {
@@ -136,10 +148,10 @@ public class NetworkService extends Service {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(FindNewEventsEvent event) {
+    public void onMessageEvent(SearchForEvents event) {
         Log.d(NETWORK_SERVICE_TAG, event.toString());
         try {
-            socketClient.emit("FindEvents", event.jsonize());
+            socketClient.emit("FindEvents", event.toJson());
         } catch (JSONException e) {
             e.printStackTrace();
         }

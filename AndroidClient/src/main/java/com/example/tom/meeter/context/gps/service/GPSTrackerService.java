@@ -59,7 +59,7 @@ public class GPSTrackerService extends Service implements LocationListener {
 
     private void initParameters() throws IOException {
         Properties p = new Properties();
-        p.load(getBaseContext().getAssets().open(APP_PROPERTIES));
+        p.load(context.getAssets().open(APP_PROPERTIES));
         minDistanceChangeForUpdates = Long.valueOf(p.getProperty(GPS_DISTANCE_PROPERTY));
         minTimeBwUpdates = Long.valueOf(p.getProperty(GPS_TIME_PROPERTY));
     }
