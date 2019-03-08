@@ -5,8 +5,13 @@ package com.example.tom.meeter.context.fragments;
  */
 
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -20,6 +25,8 @@ import com.example.tom.meeter.context.gps.domain.GPSTrackerLocationListener;
 import com.example.tom.meeter.context.network.domain.IncomeEvents;
 import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.network.service.NetworkBinder;
+import com.example.tom.meeter.context.network.service.NetworkService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -57,8 +64,32 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     private double searchArea = 0;
     private List<Marker> eventMarkers = new ArrayList<>();
 
+    private NetworkService networkService;
+    private boolean networkServiceBound;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            NetworkBinder binder = (NetworkBinder) service;
+            networkService = binder.getService();
+            networkServiceBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            networkServiceBound = false;
+        }
+    };
+
     public SubFragmentGMaps() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(getContext(), NetworkService.class);
+        getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -106,8 +137,9 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     public void onMapClick(LatLng latLng) {
         userMarker.setPosition(new LatLng(latLng.latitude, latLng.longitude));
         //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
-        
-        EventBus.getDefault().post(new SearchForEvents(latLng.latitude, latLng.longitude, searchArea));
+
+        networkService.searchForEvents(new SearchForEvents(latLng.latitude, latLng.longitude, searchArea));
+        //EventBus.getDefault().post(new SearchForEvents(latLng.latitude, latLng.longitude, searchArea));
         //!!! userMarker.setIcon(icon);
         //userMarker.zoom
         if (camPosition != null) {

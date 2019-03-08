@@ -66,26 +66,13 @@ public class NetworkService extends Service {
         EventBus.getDefault().post(new IncomeEvents(events));
     }
 
-    public class Binder extends android.os.Binder {
-        public NetworkService getService() {
-            return NetworkService.this;
-        }
-    }
-
     private String serverIp;
     private int serverPort;
     private boolean started = false;
     private Socket socketClient;
-    private Binder binder;
 
-    public NetworkService() {
-    }
+    private final NetworkBinder networkBinder = new NetworkBinder(this);
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        binder = new Binder();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -131,7 +118,7 @@ public class NetworkService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        return networkBinder;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -149,6 +136,15 @@ public class NetworkService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SearchForEvents event) {
+        Log.d(NETWORK_SERVICE_TAG, event.toString());
+        try {
+            socketClient.emit("FindEvents", event.toJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void searchForEvents(SearchForEvents event) {
         Log.d(NETWORK_SERVICE_TAG, event.toString());
         try {
             socketClient.emit("FindEvents", event.toJson());
