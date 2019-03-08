@@ -3,6 +3,7 @@ package com.example.tom.meeter.context.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,11 +54,14 @@ public class FragmentProfile extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ProfileActivity activity = (ProfileActivity) getActivity();
-        userNameTextView.setText(activity.getUser().getName() + ' ' + activity.getUser().getSurname());
-        userGenderTextView.setText("Пол: {}" + activity.getUser().getGender());
-        userInfoTextView.setText("О себе: " + activity.getUser().getInfo());
-        userAgeTextView.setText("Возраст:" + activity.getUser().getBirthday());
+        FragmentActivity current = getActivity();
+        if (current instanceof ProfileActivity) {
+            ProfileActivity activity = (ProfileActivity) current;
+            userNameTextView.setText(activity.getUser().getName() + ' ' + activity.getUser().getSurname());
+            userGenderTextView.setText("Пол: {}" + activity.getUser().getGender());
+            userInfoTextView.setText("О себе: " + activity.getUser().getInfo());
+            userAgeTextView.setText("Возраст:" + activity.getUser().getBirthday());
+        }
     }
 
     private String GetAgeFromDate(int year, int month, int day) {

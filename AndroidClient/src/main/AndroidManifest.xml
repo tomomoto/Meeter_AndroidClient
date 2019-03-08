@@ -46,6 +46,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.tom.meeter.context.activities.MainActivity" />
         </activity>
+        <activity
+            android:name=".context.activities.StartActivity"
+            android:label="@string/BotNavBarActivityTitle"
+            android:parentActivityName=".context.activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tom.meeter.context.activities.MainActivity" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

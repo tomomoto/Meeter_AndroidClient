@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(MAIN_ACTIVITY_TAG, "onCreate");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Intent serviceIntent = new Intent(this, NetworkService.class);
-        startService(serviceIntent);
+        startService(new Intent(this, NetworkService.class));
     }
 
     @Override
