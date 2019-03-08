@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Tom on 14.12.2016.
  */
-public class FragmentProfile extends Fragment {
+public class ProfileFragment extends Fragment {
 
     @BindView(R.id.user_name)
     TextView userNameTextView;
@@ -35,7 +35,7 @@ public class FragmentProfile extends Fragment {
     TextView userInfoTextView;
     //@BindView(R.id.user_)  TextView userId;
 
-    public FragmentProfile() {
+    public ProfileFragment() {
     }
 
     @Override

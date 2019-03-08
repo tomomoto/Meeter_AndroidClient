@@ -18,12 +18,15 @@ import java.util.List;
 /**
  * Created by Tom on 14.12.2016.
  */
-public class FragmentEvents extends Fragment {
+public class EventsFragment extends Fragment {
+
+    private static final String MAP_KEY = "Map";
+    private static final String EVENTS_KEY = "Events";
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-    public FragmentEvents() {
+    public EventsFragment() {
         // Required empty public constructor
     }
 
@@ -43,17 +46,17 @@ public class FragmentEvents extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewPager = view.findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        tabLayout = view.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
-        adapter.addFragment(new SubFragmentGMaps(), "Map");
-        adapter.addFragment(new SubFragmentEvents(), "Events");
+        adapter.addFragment(new GoogleMapsFragment(), MAP_KEY);
+        adapter.addFragment(new EventListFragment(), EVENTS_KEY);
         viewPager.setAdapter(adapter);
     }
 

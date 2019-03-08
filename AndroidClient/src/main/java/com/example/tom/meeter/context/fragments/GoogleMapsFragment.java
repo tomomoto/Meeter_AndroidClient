@@ -41,10 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener,
+public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener,
         GPSTrackerLocationListener, GoogleMap.OnCameraChangeListener {
 
-    private final String TAG = SubFragmentGMaps.class.getCanonicalName();
+    private final String TAG = GoogleMapsFragment.class.getCanonicalName();
 
     private SupportMapFragment sMapFragment;
     private GPSTrackerService gpsTrackerService;
@@ -57,7 +57,7 @@ public class SubFragmentGMaps extends Fragment implements OnMapReadyCallback, Go
     private double searchArea = 0;
     private List<Marker> eventMarkers = new ArrayList<>();
 
-    public SubFragmentGMaps() {
+    public GoogleMapsFragment() {
         // Required empty public constructor
     }
 

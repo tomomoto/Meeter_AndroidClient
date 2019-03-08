@@ -8,9 +8,9 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.fragments.FragmentEvents;
-import com.example.tom.meeter.context.fragments.FragmentNewEvent;
-import com.example.tom.meeter.context.fragments.FragmentProfile;
+import com.example.tom.meeter.context.fragments.EventsFragment;
+import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
+import com.example.tom.meeter.context.fragments.ProfileFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,20 +19,19 @@ public class StartActivity extends AppCompatActivity {
 
     private static final String TAG = StartActivity.class.getCanonicalName();
 
-    private static Fragment getFragment(MenuItem menuItem) {
+    private static Fragment resolveFragment(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.bot_nav_home:
-                return new FragmentNewEvent();
+                return new CreateNewEventFragment();
             case R.id.bot_nav_profile:
-                return new FragmentProfile();
+                return new ProfileFragment();
             case R.id.bot_nav_events:
-                return new FragmentEvents();
+                return new EventsFragment();
             case R.id.bot_nav_settings:
-                return new FragmentProfile();
+                return new ProfileFragment();
             default:
-                break;
+                return new ProfileFragment();
         }
-        return null;
     }
 
     @BindView(R.id.bottom_navigation)
@@ -48,7 +47,7 @@ public class StartActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(this::itemSelectedListener);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, new FragmentProfile())
+                .replace(R.id.frame_layout, new ProfileFragment())
                 .commit();
 
         //Used to select an item programmatically
@@ -58,7 +57,7 @@ public class StartActivity extends AppCompatActivity {
     private boolean itemSelectedListener(MenuItem i) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.frame_layout, getFragment(i))
+                .replace(R.id.frame_layout, resolveFragment(i))
                 .commit();
         return true;
     }

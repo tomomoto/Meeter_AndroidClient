@@ -24,9 +24,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
-    private static final String MAIN_ACTIVITY_TAG = MainActivity.class.getCanonicalName();
+    private static final String TAG = LoginActivity.class.getCanonicalName();
 
     @BindView(R.id.editTextLogin)
     TextView login;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(MAIN_ACTIVITY_TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         startService(new Intent(this, NetworkService.class));
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(MAIN_ACTIVITY_TAG, "Bus registered");
+        Log.d(TAG, "Bus registered");
         EventBus.getDefault().register(this);
     }
 
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(MAIN_ACTIVITY_TAG, "Bus unregistered");
+        Log.d(TAG, "Bus unregistered");
         EventBus.getDefault().unregister(this);
     }
 
@@ -103,33 +103,32 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SuccessfulLogin event) {
-        Log.d(MAIN_ACTIVITY_TAG, event.toString());
-        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+        Log.d(TAG, event.toString());
+        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
         intent.putExtra(SuccessfulLogin.class.getCanonicalName(), event);
         startActivity(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(FailureLogin event) {
-        Log.d(MAIN_ACTIVITY_TAG, event.toString());
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+        Log.d(TAG, event.toString());
+        new AlertDialog.Builder(LoginActivity.this)
                 .setTitle("Ошибка авторизации")
                 .setMessage("Неверная пара логин/пароль")
-                .setNegativeButton("Ок", (dialog, id) -> dialog.cancel());
-        AlertDialog alert = builder.create();
-        alert.show();
+                .setNegativeButton("Ок", (dialog, id) -> dialog.cancel())
+                .create()
+                .show();
     }
 
     @OnClick(R.id.LoginButton)
     public void LoginClick(Button button) {
-        EventBus.getDefault().post(
-                new LoginAttempt(login.getText().toString(), password.getText().toString()));
+        EventBus.getDefault()
+                .post(new LoginAttempt(login.getText().toString(), password.getText().toString()));
     }
 
     @OnClick(R.id.RegistrationButton)
     public void RegistrationClick(Button button) {
-        Intent intent = new Intent(this, RegistrationActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, RegistrationActivity.class));
     }
 
     /*@Override

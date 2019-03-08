@@ -29,7 +29,7 @@ import static com.example.tom.meeter.infrastructure.common.Constants.GPS_TIME_PR
 
 public class GPSTrackerService extends Service implements LocationListener {
 
-    private static final String GPS_TRACKER_TAG = GPSTrackerService.class.getCanonicalName();
+    private static final String TAG = GPSTrackerService.class.getCanonicalName();
 
     private long minDistanceChangeForUpdates;
     private long minTimeBwUpdates;
@@ -70,9 +70,9 @@ public class GPSTrackerService extends Service implements LocationListener {
             initParameters();
             lm = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            Log.d(GPS_TRACKER_TAG, "GPS Enabled: " + isGPSEnabled);
+            Log.d(TAG, "GPS Enabled: " + isGPSEnabled);
             isNetworkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            Log.d(GPS_TRACKER_TAG, "Network Enabled: " + isNetworkEnabled);
+            Log.d(TAG, "Network Enabled: " + isNetworkEnabled);
 
             if (isGPSEnabled || isNetworkEnabled) {
                 this.canGetLocation = true;

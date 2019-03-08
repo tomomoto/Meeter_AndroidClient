@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SubFragmentEvents extends Fragment {
+public class EventListFragment extends Fragment {
 
-    private static final String SUB_FRAGMENT_EVENTS_TAG = SubFragmentEvents.class.getCanonicalName();
+    private static final String TAG = EventListFragment.class.getCanonicalName();
 
     private RecyclerView rView;
     private RecycleViewEventAdapter rvEventAdapter;
@@ -40,7 +40,7 @@ public class SubFragmentEvents extends Fragment {
     private List<EventDTO> events;
 
 
-    public SubFragmentEvents() {
+    public EventListFragment() {
         // Required empty public constructor
     }
 
@@ -100,6 +100,6 @@ public class SubFragmentEvents extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        Log.d(SUB_FRAGMENT_EVENTS_TAG, "unregistered bus");
+        Log.d(TAG, "unregistered bus");
     }
 }

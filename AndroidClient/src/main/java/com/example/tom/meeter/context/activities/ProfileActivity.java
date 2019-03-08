@@ -15,12 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
+import com.example.tom.meeter.context.fragments.ProfileFragment;
 import com.example.tom.meeter.context.user.UserDTO;
 import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.fragments.FragmentEvents;
-import com.example.tom.meeter.context.fragments.FragmentNewEvent;
-import com.example.tom.meeter.context.fragments.FragmentProfile;
+import com.example.tom.meeter.context.fragments.EventsFragment;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -46,7 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_PROFILE;
 
-    private static final String PROFILE_ACTIVITY_TAG = ProfileActivity.class.getCanonicalName();
+    private static final String TAG = ProfileActivity.class.getCanonicalName();
 
     private Drawer.Result drawerResult = null;
 
@@ -192,18 +192,18 @@ public class ProfileActivity extends AppCompatActivity {
         switch (navItemIndex) {
             case 0:
                 // profile
-                return new FragmentProfile();
+                return new ProfileFragment();
             case 1:
                 // events
-                return new FragmentEvents();
+                return new EventsFragment();
             case 2:
                 // newEvent fragment
-                return new FragmentNewEvent();
+                return new CreateNewEventFragment();
             case 3:
                 // newEvent fragment
                 //return new StartActivity();
             default:
-                return new FragmentProfile();
+                return new ProfileFragment();
         }
     }
 

@@ -21,14 +21,14 @@ import butterknife.Unbinder;
 /**
  * Created by Tom on 14.12.2016.
  */
-public class FragmentNewEvent extends Fragment {
+public class CreateNewEventFragment extends Fragment {
 
     private GPSTrackerService gpsTrackerService;
 
     @BindView(R.id.new_event_place)
     EditText newEventPlaceTextView;
 
-    public FragmentNewEvent() {
+    public CreateNewEventFragment() {
     }
 
     private Unbinder unbinder;
