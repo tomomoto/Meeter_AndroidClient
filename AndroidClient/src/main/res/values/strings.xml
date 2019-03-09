@@ -37,4 +37,9 @@
     </string-array>
     <string name="try_login">Login</string>
     <string name="app_name">Meeter</string>
+    <string name="profile_user_id">Your ID: %1$s</string>
+    <string name="profile_user_name">User(you): %1$s %2$s.</string>
+    <string name="profile_age">%1$s years old.</string>
+    <string name="profile_gender">Gender: %1$s.</string>
+    <string name="profile_info">Info: %1$s.</string>
 </resources>

@@ -87,11 +87,11 @@ public class ProfileFragment extends Fragment {
         viewModel.init(arguments.getString(USER_ID_KEY));
 
         viewModel.getUser().observe(this, user -> {
-            userIdView.setText("Ваш id: " + user.getId());
-            userNameView.setText("Пользователь (вы): " + user.getName() + ' ' + user.getSurname());
-            userGenderView.setText("Пол: " + user.getGender());
-            userInfoView.setText("О себе: " + user.getInfo());
-            userAgeView.setText("Возраст: " + getAgeFromDate(user.getBirthday()));
+            userIdView.setText(getString(R.string.profile_user_id, user.getId()));
+            userNameView.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
+            userGenderView.setText(getString(R.string.profile_gender, user.getGender()));
+            userAgeView.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
+            userInfoView.setText(getString(R.string.profile_info, user.getInfo()));
         });
     }
 
