@@ -1,7 +1,8 @@
-package com.example.tom.meeter.infrastructure.viewmodule;
+package com.example.tom.meeter.infrastructure.viewmodel;
 
 import android.arch.lifecycle.ViewModel;
 
+import com.example.tom.meeter.context.event.UserEventsViewModel;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
 
 import dagger.Binds;
@@ -15,5 +16,10 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(UserProfileViewModel.class)
     abstract ViewModel userProfileViewModel(UserProfileViewModel userProfileViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserEventsViewModel.class)
+    abstract ViewModel eventViewModel(UserEventsViewModel userEventsViewModel);
 
 }

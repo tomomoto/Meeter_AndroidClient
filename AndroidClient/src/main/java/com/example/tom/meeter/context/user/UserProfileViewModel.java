@@ -21,18 +21,15 @@ public class UserProfileViewModel extends ViewModel {
     }
 
     public void init(String userId) {
+        this.userId = userId;
         if (user != null) {
             return;
         }
-        user = userRepository.getUser(Integer.valueOf(userId));
+        user = userRepository.getUser(userId);
     }
 
     public String getUserId() {
         return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public LiveData<User> getUser() {

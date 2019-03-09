@@ -5,23 +5,43 @@
     android:layout_height="match_parent">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="32dp">
 
         <RelativeLayout
-            android:id="@+id/new_event_name_layout"
+            android:id="@+id/event_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text_background_border">
+
             <EditText
-                android:id="@+id/new_event_name"
+                android:id="@+id/event_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:hint="@string/new_event_event_name"
+                android:hint="@string/name"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/new_event_city_RL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/event_name_layout"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_background_border">
+
+            <EditText
+                android:id="@+id/new_event_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:hint="@string/city"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -30,16 +50,17 @@
             android:id="@+id/new_event_description_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_background_border"
+            android:layout_below="@+id/new_event_city_RL"
             android:layout_marginTop="15dp"
-            android:layout_below="@+id/new_event_name_layout">
+            android:background="@drawable/edit_text_background_border">
+
             <EditText
                 android:id="@+id/new_event_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:hint="@string/new_event_event_description"
+                android:hint="@string/description"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -58,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:hint="@string/new_event_place"
+                android:hint="@string/place"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
 
@@ -77,7 +98,7 @@
                     android:layout_weight="1"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:text="@string/CurrentPlace"
+                    android:text="@string/current"
                     android:textAlignment="center"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
@@ -89,7 +110,7 @@
                     android:layout_weight="1"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:text="@string/AnotherPlace"
+                    android:text="@string/other"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -106,13 +127,25 @@
 
 
             <EditText
-                android:id="@+id/new_event_date"
+                android:id="@+id/new_event_starts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:hint="@string/new_event_date"
+                android:hint="@string/start"
+                android:textAlignment="textStart"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/new_event_ends"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/new_event_starts"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:hint="@string/ending"
                 android:textAlignment="textStart"
                 android:textSize="20sp" />
 
@@ -120,7 +153,7 @@
                 android:id="@+id/date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/new_event_date"
+                android:layout_below="@+id/new_event_ends"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
@@ -133,7 +166,7 @@
                     android:layout_weight="1"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:text="@string/Today"
+                    android:text="@string/today"
                     android:textAllCaps="false" />
 
                 <Button
@@ -143,7 +176,7 @@
                     android:layout_weight="1"
                     android:clickable="true"
                     android:onClick="onClick"
-                    android:text="@string/another_date"
+                    android:text="@string/other2"
                     android:textAllCaps="false" />
 
             </LinearLayout>
@@ -153,11 +186,11 @@
         <Button
             android:id="@+id/create_event"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/date_layout"
             android:layout_marginTop="15dp"
             android:clickable="true"
-            android:text="@string/CreateEventButton"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content" />
+            android:text="@string/create_event"
+            android:textAllCaps="false" />
     </RelativeLayout>
 </ScrollView>

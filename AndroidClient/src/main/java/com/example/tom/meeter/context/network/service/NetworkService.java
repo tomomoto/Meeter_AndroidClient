@@ -32,24 +32,17 @@ public class NetworkService extends Service {
     private static final String SUCCESSFUL_LOGIN_EVENT = "RightLoginEvent";
     private static final String UNSUCCESSFUL_LOGIN_EVENT = "WrongLoginEvent";
     private static final String FOUND_EVENTS = "FoundEvents";
-    private String uri;
 
     private static void successfulLoginEventHandler(Object... args) {
         JSONObject ev = (JSONObject) args[0];
+        Log.d(TAG, "successfulLoginEventHandler, " + ev.toString());
         SuccessfulLogin payload = null;
         try {
-            payload = new SuccessfulLogin(
-                    ev.getInt("id"),
-                    ev.getString("name"),
-                    ev.getString("surname"),
-                    ev.getString("gender"),
-                    ev.getString("info"),
-                    ev.getString("birthday")
-            );
+            payload = new SuccessfulLogin(ev.getString("id"));
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.e(TAG, "successfulLoginEventHandler error" + e.getLocalizedMessage(), e);
         }
-        Log.d(TAG, "successfulLoginEventHandler, " + payload.toString());
         EventBus.getDefault().post(payload);
     }
 

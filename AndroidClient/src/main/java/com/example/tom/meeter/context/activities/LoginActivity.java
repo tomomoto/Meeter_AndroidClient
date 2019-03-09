@@ -102,10 +102,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SuccessfulLogin event) {
-        Log.d(TAG, event.toString());
+    public void onMessageEvent(SuccessfulLogin ev) {
+        Log.d(TAG, ev.toString());
         Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-        intent.putExtra(SuccessfulLogin.class.getCanonicalName(), event);
+        intent.putExtra(SuccessfulLogin.class.getCanonicalName(), ev);
         startActivity(intent);
     }
 

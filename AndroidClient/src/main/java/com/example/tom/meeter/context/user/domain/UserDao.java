@@ -16,8 +16,8 @@ public interface UserDao {
     void save(User user);
 
     @Query("SELECT * FROM user WHERE id = :userId")
-    Maybe<User> load(int userId);
+    Maybe<User> load(String userId);
 
     @Query("SELECT * FROM user WHERE id = :userId")
-    LiveData<User> loadLD(int userId);
+    LiveData<User> loadLD(String userId);
 }

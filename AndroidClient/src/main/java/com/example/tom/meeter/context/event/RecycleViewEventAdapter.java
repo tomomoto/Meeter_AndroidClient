@@ -1,4 +1,4 @@
-package com.example.tom.meeter.infrastructure;
+package com.example.tom.meeter.context.event;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.network.EventDTO;
 
 import java.util.List;
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Meeter</string>
+    <string name="action_settings">Настройки</string>
+    <string name="title_activity_activity_two">Профиль</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="enter_your_name">Введите ваше имя</string>
+    <string name="enter_your_surname">Введите вашу фамилию</string>
+    <string name="RegistrationActivityTitle">Регистрация</string>
+    <string name="BotNavBarActivityTitle">Ниж. навигация</string>
+    <string name="drawer_item_profile">Профиль</string>
+    <string name="drawer_item_events">События</string>
+    <string name="drawer_item_new_event">Новое событие</string>
+    <string name="drawer_item_notifications">Уведомления</string>
+    <string name="drawer_item_settings">Настройки</string>
+    <string name="drawer_item_help">Помощь</string>
+    <string name="drawer_item_open_source">Открытые исходники</string>
+    <string name="drawer_item_contact">Контакт</string>
+    <string name="description">Описание</string>
+    <string name="city">Город</string>
+    <string name="create_event">Создать событие</string>
+    <string name="current">Текущее</string>
+    <string name="other">Другое</string>
+    <string name="today">Сегодня</string>
+    <string name="place">Местоположение</string>
+    <string name="start">Начало</string>
+    <string name="ending">Конец</string>
+    <string name="other2">Другая</string>
+    <string name="try_login">Залогиниться</string>
+    <string name="name">Имя</string>
+    <string name="simple_bot_nav_bar">Ниж. нав бар</string>
+    <string name="profile_user_id">Your ID: %1$s</string>
+    <string name="profile_user_name">Пользователь (Вы): %1$s %2$s</string>
+    <string name="profile_age">%1$s года (лет).</string>
+    <string name="profile_gender">Пол: %1$s.</string>
+    <string name="profile_info">Инфо: %1$s.</string>
+</resources>

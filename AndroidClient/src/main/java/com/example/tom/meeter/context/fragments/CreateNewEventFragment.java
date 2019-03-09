@@ -24,14 +24,13 @@ import butterknife.Unbinder;
 public class CreateNewEventFragment extends Fragment {
 
     private GPSTrackerService gpsTrackerService;
+    private Unbinder unbinder;
 
     @BindView(R.id.new_event_place)
     EditText newEventPlaceTextView;
 
     public CreateNewEventFragment() {
     }
-
-    private Unbinder unbinder;
 
     @OnClick(R.id.create_event)
     public void CreateEvent(Button button) {
@@ -40,7 +39,7 @@ public class CreateNewEventFragment extends Fragment {
 
     @OnClick(R.id.new_event_current_place)
     public void CurrentPlace(Button button) {
-        Location location = gpsTrackerService.getLocation();
+        Location location = gpsTrackerService.getLastKnownLocation();
         newEventPlaceTextView.setText(String.valueOf(location.getLatitude()) + "; " + location.getLongitude());
     }
 

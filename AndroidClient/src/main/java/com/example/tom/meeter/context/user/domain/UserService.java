@@ -11,5 +11,5 @@ public interface UserService {
      * replacement for the {user} placeholder in the @GET path
      */
     @GET("/user/{id}")
-    Call<User> getUser(@Path("id") int userId);
+    Call<User> getUser(@Path("id") String userId);
 }

@@ -2,19 +2,21 @@ package com.example.tom.meeter.context.user.domain;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 @Entity
 public class User {
 
     @PrimaryKey
-    private int id;
+    @NonNull
+    private String id;
     private String name;
     private String gender;
     private String surname;
     private String info;
     private String birthday;
 
-    public User(int id, String name, String gender, String surname,
+    public User(@NonNull String id, String name, String gender, String surname,
                 String info, String birthday) {
         this.id = id;
         this.name = name;
@@ -24,11 +26,12 @@ public class User {
         this.birthday = birthday;
     }
 
-    public int getId() {
+    @NonNull
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 

@@ -15,6 +15,8 @@ import com.example.tom.meeter.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+
 /**
  * Created by Tom on 14.12.2016.
  */
@@ -22,6 +24,7 @@ public class EventsFragment extends Fragment {
 
     private static final String MAP_KEY = "Map";
     private static final String EVENTS_KEY = "Events";
+    private static final String USER_EVENTS_KEY = "User events";
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -55,8 +58,23 @@ public class EventsFragment extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
-        adapter.addFragment(new GoogleMapsFragment(), MAP_KEY);
-        adapter.addFragment(new EventListFragment(), EVENTS_KEY);
+
+        Bundle args = new Bundle();
+        args.putString(USER_ID_KEY, getArguments().getString(USER_ID_KEY));
+
+        GoogleMapsFragment gmaps = new GoogleMapsFragment();
+        gmaps.setArguments(args);
+
+        EventListFragment events = new EventListFragment();
+        events.setArguments(args);
+
+        UserEventsFragment userEvents = new UserEventsFragment();
+        userEvents.setArguments(args);
+
+        adapter.addFragment(gmaps, MAP_KEY);
+        adapter.addFragment(events, EVENTS_KEY);
+        adapter.addFragment(userEvents, USER_EVENTS_KEY);
+
         viewPager.setAdapter(adapter);
     }
 

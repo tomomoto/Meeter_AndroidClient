@@ -28,12 +28,12 @@ public class UserRepository {
         this.executor = executor;
     }
 
-    public LiveData<User> getUser(int userId) {
+    public LiveData<User> getUser(String userId) {
         refreshUser(userId);
         return userDao.loadLD(userId);
     }
 
-    private void refreshUser(final int userId) {
+    private void refreshUser(final String userId) {
         executor.execute(() -> userDao.load(userId)
                 .flatMap(user -> Maybe.empty(), Maybe::error, () -> Maybe.just(new Object()))
                 .flatMapCompletable(ign -> Completable.fromAction(() -> {
