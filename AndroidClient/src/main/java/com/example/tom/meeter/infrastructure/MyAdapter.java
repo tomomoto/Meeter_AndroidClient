@@ -12,6 +12,8 @@ import com.example.tom.meeter.R;
  * Created by Tom on 09.02.2017.
  */
 
+//Don't know why this man still lives...
+@Deprecated
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private String[] mDataset;
 
