@@ -26,23 +26,14 @@ public class SuccessfulLogin implements Parcelable, NetworkEvent {
         }
     };
 
-    private static User getUser(Parcel in) {
-        return new User(in.readInt(), in.readString(), in.readString(), in.readString(),
-                in.readString(), in.readString());
-    }
+    private String userId;
 
-    private User user;
-
-    //public BitSet photo;
-
-    public SuccessfulLogin(int id, String name, String surname, String gender,
-                           String info, String birthday){
-        user = new User(id, name, surname, gender, info, birthday);
-        //this.photo = photo;
+    public SuccessfulLogin(String id) {
+        userId = id;
     }
 
     private SuccessfulLogin(Parcel in) {
-        user = getUser(in);
+        userId = in.readString();
     }
 
     @Override
@@ -52,31 +43,22 @@ public class SuccessfulLogin implements Parcelable, NetworkEvent {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(user.getId());
-        dest.writeString(user.getName());
-        dest.writeString(user.getSurname());
-        dest.writeString(user.getGender());
-        dest.writeString(user.getInfo());
-        dest.writeString(user.getBirthday());
+        dest.writeString(userId);
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public String getUserId() {
+        return userId;
     }
 
     @Override
     public String toString() {
         return "SuccessfulLogin{" +
-                "user=" + user.toString() +
+                "userId='" + userId + '\'' +
                 '}';
     }
 
     @Override
     public JSONObject toJson() throws JSONException {
-        return new JSONObject().put("user", user);
+        return new JSONObject().put("userId", userId);
     }
 }

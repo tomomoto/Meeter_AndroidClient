@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+
 /**
  * Created by Tom on 14.12.2016.
  */
@@ -72,10 +74,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //String userId = getArguments().getString("uID");
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
-        viewModel.init("1");
+        Bundle arguments = getArguments();
+        viewModel.init(arguments.getString(USER_ID_KEY));
 
         viewModel.getUser().observe(this, user -> {
             userNameTextView.setText(user.getName() + ' ' + user.getSurname());

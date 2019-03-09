@@ -37,6 +37,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+
 public class ProfileActivity extends AppCompatActivity {
 
     // urls to load navigation header background image
@@ -72,8 +74,6 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean shouldLoadHomeFragOnBackPress = true;
     private Handler mHandler;
 
-    private User user;
-
     @Inject
     ViewModelFactory viewModelFactory;
 
@@ -84,14 +84,13 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         ((App)getApplication()).getComponent().inject(this);
-
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
-        viewModel.init("1");
+
+        SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
+        viewModel.init(ev.getUserId());
 
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
-        SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
-        user = ev.getUser();
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -248,6 +247,9 @@ public class ProfileActivity extends AppCompatActivity {
         Runnable mPendingRunnable = () -> {
             // update the main content by replacing fragments
             Fragment fragment = getHomeFragment();
+            Bundle args = new Bundle();
+            args.putString(USER_ID_KEY, viewModel.getUserId());
+            fragment.setArguments(args);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             //fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
@@ -283,13 +285,5 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Toast.makeText(this, "Prof deleted", Toast.LENGTH_SHORT).show();
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

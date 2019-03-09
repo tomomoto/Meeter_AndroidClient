@@ -22,6 +22,8 @@ public class Constants {
     public static final String GPS_DISTANCE_PROPERTY = "gps.distance";
     public static final String GPS_TIME_PROPERTY = "gps.time";
 
+    public static final String USER_ID_KEY = "userId";
+
     public static String initServerPath(Context context) throws IOException {
         Properties p = new Properties();
         p.load(context.getAssets().open(APP_PROPERTIES));
