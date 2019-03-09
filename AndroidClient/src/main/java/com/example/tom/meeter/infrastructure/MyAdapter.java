@@ -1,10 +1,12 @@
-package com.example.tom.meeter;
+package com.example.tom.meeter.infrastructure;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.tom.meeter.R;
 
 /**
  * Created by Tom on 09.02.2017.

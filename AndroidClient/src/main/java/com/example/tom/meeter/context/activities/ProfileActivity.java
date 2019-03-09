@@ -19,8 +19,8 @@ import android.widget.Toast;
 import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
 import com.example.tom.meeter.context.fragments.ProfileFragment;
 import com.example.tom.meeter.App;
-import com.example.tom.meeter.infrastructure.viewmodule.ViewModelFactory;
-import com.example.tom.meeter.context.user.domain.User;
+import com.example.tom.meeter.context.fragments.UserEventsFragment;
+import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
 import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.fragments.EventsFragment;
@@ -83,7 +83,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((App)getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
 
         SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
@@ -217,7 +217,8 @@ public class ProfileActivity extends AppCompatActivity {
                 return new CreateNewEventFragment();
             case 3:
                 // newEvent fragment
-                //return new StartActivity();
+                return new UserEventsFragment();
+            //return new StartActivity();
             default:
                 return new ProfileFragment();
         }

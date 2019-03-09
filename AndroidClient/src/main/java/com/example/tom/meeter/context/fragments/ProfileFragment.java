@@ -5,17 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
-import com.example.tom.meeter.infrastructure.viewmodule.ViewModelFactory;
+import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,17 +35,24 @@ public class ProfileFragment extends Fragment {
 
     private static final String TAG = ProfileFragment.class.getCanonicalName();
 
+
+    @BindView(R.id.user_photo)
+    ImageView userImage;
+
+    @BindView(R.id.user_id)
+    TextView userIdView;
+
     @BindView(R.id.user_name)
-    TextView userNameTextView;
+    TextView userNameView;
 
     @BindView(R.id.user_age)
-    TextView userAgeTextView;
+    TextView userAgeView;
 
-    @BindView(R.id.user_sex)
-    TextView userGenderTextView;
+    @BindView(R.id.user_gender)
+    TextView userGenderView;
 
     @BindView(R.id.user_info)
-    TextView userInfoTextView;
+    TextView userInfoView;
     //@BindView(R.id.user_)  TextView userId;
 
     @Inject
@@ -80,10 +87,11 @@ public class ProfileFragment extends Fragment {
         viewModel.init(arguments.getString(USER_ID_KEY));
 
         viewModel.getUser().observe(this, user -> {
-            userNameTextView.setText(user.getName() + ' ' + user.getSurname());
-            userGenderTextView.setText("Пол: " + user.getGender());
-            userInfoTextView.setText("О себе: " + user.getInfo());
-            userAgeTextView.setText("Возраст: " + getAgeFromDate(user.getBirthday()));
+            userIdView.setText("Ваш id: " + user.getId());
+            userNameView.setText("Пользователь (вы): " + user.getName() + ' ' + user.getSurname());
+            userGenderView.setText("Пол: " + user.getGender());
+            userInfoView.setText("О себе: " + user.getInfo());
+            userAgeView.setText("Возраст: " + getAgeFromDate(user.getBirthday()));
         });
     }
 

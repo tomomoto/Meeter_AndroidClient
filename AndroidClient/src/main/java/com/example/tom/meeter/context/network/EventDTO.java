@@ -1,4 +1,4 @@
-package com.example.tom.meeter.infrastructure;
+package com.example.tom.meeter.context.network;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class EventDTO {
 
-    private static String EVENT_ID_KEY = "event_id";
+    private static String EVENT_ID_KEY = "id";
     private static String NAME_KEY = "name";
     private static String DESCRIPTION_KEY = "description";
     private static String CREATOR_ID_KEY = "creator_id";
@@ -19,12 +19,12 @@ public class EventDTO {
     private static String STARTING_KEY = "starting";
     private static String ENDING_KEY = "ending";
 
-    private Integer id;
+    private String id;
     private String name;
     private String description;
     private double latitude;
     private double longitude;
-    private Integer objectId;
+    private String creator_id;
     private String created;
     private String starting;
     private String ending;
@@ -34,10 +34,10 @@ public class EventDTO {
 
     public static EventDTO encode(JSONObject json) throws JSONException {
         EventDTO result = new EventDTO();
-        result.id = json.getInt(EVENT_ID_KEY);
+        result.id = json.getString(EVENT_ID_KEY);
         result.name = json.getString(NAME_KEY);
         result.description = json.getString(DESCRIPTION_KEY);
-        result.objectId = json.getInt(CREATOR_ID_KEY);
+        result.creator_id = json.getString(CREATOR_ID_KEY);
         result.latitude = json.getDouble(LATITUDE_KEY);
         result.longitude = json.getDouble(LONGITUDE_KEY);
         result.created = json.getString(CREATED_KEY);
@@ -46,11 +46,11 @@ public class EventDTO {
         return result;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -86,12 +86,12 @@ public class EventDTO {
         this.longitude = longitude;
     }
 
-    public Integer getObjectId() {
-        return objectId;
+    public String getCreator_id() {
+        return creator_id;
     }
 
-    public void setObjectId(Integer objectId) {
-        this.objectId = objectId;
+    public void setCreator_id(String creator_id) {
+        this.creator_id = creator_id;
     }
 
     public String getCreated() {

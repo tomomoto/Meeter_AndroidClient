@@ -84,7 +84,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback, 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if (gpsTrackerService.canGetLocation()) {
-            myLocation = new LatLng(gpsTrackerService.getLatitude(), gpsTrackerService.getLongitude());
+            myLocation = new LatLng(gpsTrackerService.getLastKnownLatitude(), gpsTrackerService.getLastKnownLongitude());
         }
         gmap = googleMap;
         gmap.setOnMapClickListener(this);

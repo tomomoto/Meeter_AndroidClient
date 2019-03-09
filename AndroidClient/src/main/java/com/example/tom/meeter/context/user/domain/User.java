@@ -16,7 +16,7 @@ public class User {
     private String info;
     private String birthday;
 
-    public User(String id, String name, String gender, String surname,
+    public User(@NonNull String id, String name, String gender, String surname,
                 String info, String birthday) {
         this.id = id;
         this.name = name;
@@ -26,11 +26,12 @@ public class User {
         this.birthday = birthday;
     }
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
