@@ -22,11 +22,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Properties;
 
-import static com.example.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
-import static com.example.tom.meeter.infrastructure.common.Constants.SERVER_IP_PROPERTY;
-import static com.example.tom.meeter.infrastructure.common.Constants.SERVER_PORT_PROPERTY;
+import static com.example.tom.meeter.infrastructure.common.Constants.initServerPath;
 
 public class NetworkService extends Service {
 
@@ -35,16 +32,17 @@ public class NetworkService extends Service {
     private static final String SUCCESSFUL_LOGIN_EVENT = "RightLoginEvent";
     private static final String UNSUCCESSFUL_LOGIN_EVENT = "WrongLoginEvent";
     private static final String FOUND_EVENTS = "FoundEvents";
+    private String uri;
 
     private static void successfulLoginEventHandler(Object... args) {
         JSONObject ev = (JSONObject) args[0];
         SuccessfulLogin payload = null;
         try {
             payload = new SuccessfulLogin(
-                    ev.getInt("user_id"),
+                    ev.getInt("id"),
                     ev.getString("name"),
                     ev.getString("surname"),
-                    ev.getString("sex"),
+                    ev.getString("gender"),
                     ev.getString("info"),
                     ev.getString("birthday")
             );
@@ -72,8 +70,6 @@ public class NetworkService extends Service {
         }
     }
 
-    private String serverIp;
-    private int serverPort;
     private boolean started = false;
     private Socket socketClient;
     private Binder binder;
@@ -90,7 +86,6 @@ public class NetworkService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            initServerPath();
             initSocketHandlers();
         } catch (IOException | URISyntaxException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -98,16 +93,9 @@ public class NetworkService extends Service {
         return START_STICKY;
     }
 
-    private void initServerPath() throws IOException {
-        Properties p = new Properties();
-        p.load(getBaseContext().getAssets().open(APP_PROPERTIES));
-        serverIp = p.getProperty(SERVER_IP_PROPERTY);
-        serverPort = Integer.valueOf(p.getProperty(SERVER_PORT_PROPERTY));
-    }
-
-    private void initSocketHandlers() throws URISyntaxException {
+    private void initSocketHandlers() throws URISyntaxException, IOException {
         if (!started) {
-            socketClient = IO.socket("http://" + serverIp + ":" + serverPort);
+            socketClient = IO.socket(initServerPath(getBaseContext()));
             socketClient.on(SUCCESSFUL_LOGIN_EVENT, NetworkService::successfulLoginEventHandler);
             socketClient.on(UNSUCCESSFUL_LOGIN_EVENT, NetworkService::failureLoginEventHandler);
             socketClient.on(FOUND_EVENTS, NetworkService::foundEventsEventHandler);

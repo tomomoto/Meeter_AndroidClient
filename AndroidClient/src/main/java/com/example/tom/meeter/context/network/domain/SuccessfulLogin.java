@@ -3,7 +3,7 @@ package com.example.tom.meeter.context.network.domain;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.tom.meeter.context.user.UserDTO;
+import com.example.tom.meeter.context.user.domain.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,18 +26,18 @@ public class SuccessfulLogin implements Parcelable, NetworkEvent {
         }
     };
 
-    private static UserDTO getUser(Parcel in) {
-        return new UserDTO(in.readInt(), in.readString(), in.readString(), in.readString(),
+    private static User getUser(Parcel in) {
+        return new User(in.readInt(), in.readString(), in.readString(), in.readString(),
                 in.readString(), in.readString());
     }
 
-    private UserDTO user;
+    private User user;
 
     //public BitSet photo;
 
-    public SuccessfulLogin(int userId, String userName, String userSurname, String userGender,
-                           String userInfo, String userBirthday){
-        user = new UserDTO(userId, userName, userGender, userSurname, userInfo, userBirthday);
+    public SuccessfulLogin(int id, String name, String surname, String gender,
+                           String info, String birthday){
+        user = new User(id, name, surname, gender, info, birthday);
         //this.photo = photo;
     }
 
@@ -60,11 +60,11 @@ public class SuccessfulLogin implements Parcelable, NetworkEvent {
         dest.writeString(user.getBirthday());
     }
 
-    public UserDTO getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

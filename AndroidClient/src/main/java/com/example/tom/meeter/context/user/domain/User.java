@@ -1,7 +1,12 @@
-package com.example.tom.meeter.context.user;
+package com.example.tom.meeter.context.user.domain;
 
-public class UserDTO {
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
+@Entity
+public class User {
+
+    @PrimaryKey
     private int id;
     private String name;
     private String gender;
@@ -9,8 +14,8 @@ public class UserDTO {
     private String info;
     private String birthday;
 
-    public UserDTO(int id, String name, String gender, String surname,
-                   String info, String birthday) {
+    public User(int id, String name, String gender, String surname,
+                String info, String birthday) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -69,7 +74,7 @@ public class UserDTO {
 
     @Override
     public String toString() {
-        return "UserDTO{" +
+        return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", gender='" + gender + '\'' +

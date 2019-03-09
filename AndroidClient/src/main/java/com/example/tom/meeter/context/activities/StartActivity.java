@@ -28,7 +28,6 @@ public class StartActivity extends AppCompatActivity {
             case R.id.bot_nav_events:
                 return new EventsFragment();
             case R.id.bot_nav_settings:
-                return new ProfileFragment();
             default:
                 return new ProfileFragment();
         }

@@ -1,6 +1,7 @@
 package com.example.tom.meeter.context.activities;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -17,16 +18,21 @@ import android.widget.Toast;
 
 import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
 import com.example.tom.meeter.context.fragments.ProfileFragment;
-import com.example.tom.meeter.context.user.UserDTO;
+import com.example.tom.meeter.App;
+import com.example.tom.meeter.infrastructure.viewmodule.ViewModelFactory;
+import com.example.tom.meeter.context.user.domain.User;
 import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.fragments.EventsFragment;
+import com.example.tom.meeter.context.user.UserProfileViewModel;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,11 +72,22 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean shouldLoadHomeFragOnBackPress = true;
     private Handler mHandler;
 
-    private UserDTO user;
+    private User user;
+
+    @Inject
+    ViewModelFactory viewModelFactory;
+
+    UserProfileViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ((App)getApplication()).getComponent().inject(this);
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
+        viewModel.init("1");
+
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
         SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
@@ -268,11 +285,11 @@ public class ProfileActivity extends AppCompatActivity {
         Toast.makeText(this, "Prof deleted", Toast.LENGTH_SHORT).show();
     }
 
-    public UserDTO getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }
