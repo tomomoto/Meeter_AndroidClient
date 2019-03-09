@@ -1,6 +1,7 @@
 package com.example.tom.meeter.context.activities;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -15,18 +16,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tom.meeter.context.user.UserDTO;
+import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
+import com.example.tom.meeter.context.fragments.ProfileFragment;
+import com.example.tom.meeter.App;
+import com.example.tom.meeter.infrastructure.viewmodule.ViewModelFactory;
+import com.example.tom.meeter.context.user.domain.User;
 import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.fragments.FragmentEvents;
-import com.example.tom.meeter.context.fragments.FragmentNewEvent;
-import com.example.tom.meeter.context.fragments.FragmentProfile;
+import com.example.tom.meeter.context.fragments.EventsFragment;
+import com.example.tom.meeter.context.user.UserProfileViewModel;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,7 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG_SETTINGS = "settings";
     public static String CURRENT_TAG = TAG_PROFILE;
 
-    private static final String PROFILE_ACTIVITY_TAG = ProfileActivity.class.getCanonicalName();
+    private static final String TAG = ProfileActivity.class.getCanonicalName();
 
     private Drawer.Result drawerResult = null;
 
@@ -66,11 +72,22 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean shouldLoadHomeFragOnBackPress = true;
     private Handler mHandler;
 
-    private UserDTO user;
+    private User user;
+
+    @Inject
+    ViewModelFactory viewModelFactory;
+
+    UserProfileViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ((App)getApplication()).getComponent().inject(this);
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
+        viewModel.init("1");
+
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
         SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
@@ -98,7 +115,7 @@ public class ProfileActivity extends AppCompatActivity {
                         new PrimaryDrawerItem().withName(R.string.drawer_item_profile).withIcon(FontAwesome.Icon.faw_user).withBadge("99").withIdentifier(0),
                         new PrimaryDrawerItem().withName(R.string.drawer_item_events).withIcon(FontAwesome.Icon.faw_globe).withIdentifier(1),
                         new PrimaryDrawerItem().withName(R.string.drawer_item_new_event).withIcon(FontAwesome.Icon.faw_calendar).withIdentifier(2),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye).withBadge("6").withIdentifier(3),
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_notifications).withIcon(FontAwesome.Icon.faw_eye).withBadge("6").withIdentifier(3),
                         new SectionDrawerItem().withName(R.string.drawer_item_settings),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(12),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).setEnabled(false),
@@ -192,15 +209,18 @@ public class ProfileActivity extends AppCompatActivity {
         switch (navItemIndex) {
             case 0:
                 // profile
-                return new FragmentProfile();
+                return new ProfileFragment();
             case 1:
                 // events
-                return new FragmentEvents();
+                return new EventsFragment();
             case 2:
                 // newEvent fragment
-                return new FragmentNewEvent();
+                return new CreateNewEventFragment();
+            case 3:
+                // newEvent fragment
+                //return new StartActivity();
             default:
-                return new FragmentProfile();
+                return new ProfileFragment();
         }
     }
 
@@ -265,11 +285,11 @@ public class ProfileActivity extends AppCompatActivity {
         Toast.makeText(this, "Prof deleted", Toast.LENGTH_SHORT).show();
     }
 
-    public UserDTO getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

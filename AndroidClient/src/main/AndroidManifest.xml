@@ -14,13 +14,14 @@
 
     <application
         android:allowBackup="true"
+        android:name=".App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/MyMaterialTheme">
 
         <activity
-            android:name=".context.activities.MainActivity"
+            android:name=".context.activities.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
@@ -33,18 +34,26 @@
         <activity
             android:name=".context.activities.ProfileActivity"
             android:label="@string/title_activity_activity_two"
-            android:parentActivityName=".context.activities.MainActivity">
+            android:parentActivityName=".context.activities.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tom.meeter.context.activities.MainActivity" />
+                android:value="com.example.tom.meeter.context.activities.LoginActivity" />
         </activity>
         <activity
             android:name=".context.activities.RegistrationActivity"
             android:label="@string/RegistrationActivityTitle"
-            android:parentActivityName=".context.activities.MainActivity">
+            android:parentActivityName=".context.activities.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tom.meeter.context.activities.MainActivity" />
+                android:value="com.example.tom.meeter.context.activities.LoginActivity" />
+        </activity>
+        <activity
+            android:name=".context.activities.StartActivity"
+            android:label="@string/BotNavBarActivityTitle"
+            android:parentActivityName=".context.activities.LoginActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tom.meeter.context.activities.LoginActivity" />
         </activity>
 
         <meta-data

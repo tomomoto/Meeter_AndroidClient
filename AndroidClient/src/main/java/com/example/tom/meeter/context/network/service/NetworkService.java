@@ -22,47 +22,45 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Properties;
 
-import static com.example.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
-import static com.example.tom.meeter.infrastructure.common.Constants.SERVER_IP_PROPERTY;
-import static com.example.tom.meeter.infrastructure.common.Constants.SERVER_PORT_PROPERTY;
+import static com.example.tom.meeter.infrastructure.common.Constants.initServerPath;
 
 public class NetworkService extends Service {
 
-    private static final String NETWORK_SERVICE_TAG = NetworkService.class.getCanonicalName();
+    private static final String TAG = NetworkService.class.getCanonicalName();
 
     private static final String SUCCESSFUL_LOGIN_EVENT = "RightLoginEvent";
     private static final String UNSUCCESSFUL_LOGIN_EVENT = "WrongLoginEvent";
     private static final String FOUND_EVENTS = "FoundEvents";
+    private String uri;
 
     private static void successfulLoginEventHandler(Object... args) {
         JSONObject ev = (JSONObject) args[0];
         SuccessfulLogin payload = null;
         try {
             payload = new SuccessfulLogin(
-                    ev.getInt("user_id"),
+                    ev.getInt("id"),
                     ev.getString("name"),
                     ev.getString("surname"),
-                    ev.getString("sex"),
+                    ev.getString("gender"),
                     ev.getString("info"),
                     ev.getString("birthday")
             );
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d(NETWORK_SERVICE_TAG, "successfulLoginEventHandler, " + payload.toString());
+        Log.d(TAG, "successfulLoginEventHandler, " + payload.toString());
         EventBus.getDefault().post(payload);
     }
 
     private static void failureLoginEventHandler(Object... args) {
-        Log.d(NETWORK_SERVICE_TAG, "failureLoginEventHandler From service");
+        Log.d(TAG, "failureLoginEventHandler From service");
         EventBus.getDefault().post(new FailureLogin());
     }
 
     private static void foundEventsEventHandler(Object... args) {
         JSONArray events = (JSONArray) args[0];
-        Log.d(NETWORK_SERVICE_TAG, "foundEventsEventHandler events: " + events);
+        Log.d(TAG, "foundEventsEventHandler events: " + events);
         EventBus.getDefault().post(new IncomeEvents(events));
     }
 
@@ -72,8 +70,6 @@ public class NetworkService extends Service {
         }
     }
 
-    private String serverIp;
-    private int serverPort;
     private boolean started = false;
     private Socket socketClient;
     private Binder binder;
@@ -90,30 +86,22 @@ public class NetworkService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            initServerPath();
             initSocketHandlers();
         } catch (IOException | URISyntaxException e) {
-            Log.e(NETWORK_SERVICE_TAG, e.getMessage(), e);
+            Log.e(TAG, e.getMessage(), e);
         }
         return START_STICKY;
     }
 
-    private void initServerPath() throws IOException {
-        Properties p = new Properties();
-        p.load(getBaseContext().getAssets().open(APP_PROPERTIES));
-        serverIp = p.getProperty(SERVER_IP_PROPERTY);
-        serverPort = Integer.valueOf(p.getProperty(SERVER_PORT_PROPERTY));
-    }
-
-    private void initSocketHandlers() throws URISyntaxException {
+    private void initSocketHandlers() throws URISyntaxException, IOException {
         if (!started) {
-            socketClient = IO.socket("http://" + serverIp + ":" + serverPort);
+            socketClient = IO.socket(initServerPath(getBaseContext()));
             socketClient.on(SUCCESSFUL_LOGIN_EVENT, NetworkService::successfulLoginEventHandler);
             socketClient.on(UNSUCCESSFUL_LOGIN_EVENT, NetworkService::failureLoginEventHandler);
             socketClient.on(FOUND_EVENTS, NetworkService::foundEventsEventHandler);
             socketClient.connect();
             EventBus.getDefault().register(this);
-            Log.d(NETWORK_SERVICE_TAG, "Service is going to start... Socket connected from service");
+            Log.d(TAG, "Service is going to start... Socket connected from service");
             started = true;
         }
     }
@@ -125,7 +113,7 @@ public class NetworkService extends Service {
         socketClient.off(SUCCESSFUL_LOGIN_EVENT, NetworkService::successfulLoginEventHandler);
         socketClient.off(UNSUCCESSFUL_LOGIN_EVENT, NetworkService::failureLoginEventHandler);
         socketClient.off(FOUND_EVENTS, NetworkService::foundEventsEventHandler);
-        Log.d(NETWORK_SERVICE_TAG, "Disconnected from service");
+        Log.d(TAG, "Disconnected from service");
         super.onDestroy();
     }
 
@@ -136,7 +124,7 @@ public class NetworkService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(LoginAttempt event) {
-        Log.d(NETWORK_SERVICE_TAG, event.toString());
+        Log.d(TAG, event.toString());
         JSONObject payload = new JSONObject();
         try {
             payload.put("login", event.getLogin());
@@ -149,7 +137,7 @@ public class NetworkService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SearchForEvents event) {
-        Log.d(NETWORK_SERVICE_TAG, event.toString());
+        Log.d(TAG, event.toString());
         try {
             socketClient.emit("FindEvents", event.toJson());
         } catch (JSONException e) {

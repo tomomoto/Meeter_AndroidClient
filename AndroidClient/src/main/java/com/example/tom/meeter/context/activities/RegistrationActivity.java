@@ -69,14 +69,14 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
             case 0:
                 if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
-                    photo = (ImageView) findViewById(R.id.imageView);
+                    photo = findViewById(R.id.imageView);
                     photo.setImageURI(selectedImage);
                 }
                 break;
             case 1:
                 if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
-                    photo = (ImageView) findViewById(R.id.imageView);
+                    photo = findViewById(R.id.imageView);
                     photo.setImageURI(selectedImage);
                 }
             default:
