@@ -1,6 +1,5 @@
 *.iml
 .idea/*
-.gradle
 /local.properties
 /.idea/workspace.xml
 /.idea/codeStyles
