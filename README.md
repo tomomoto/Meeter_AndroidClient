@@ -1,3 +1,4 @@
 # Meeter_AndroidClient
 Test
-https://travis-ci.com/tomomoto/Meeter_AndroidClient.svg?branch=integration
+[![Build Status](https://travis-ci.com/tomomoto/Meeter_AndroidClient.svg?branch=integration)](https://travis-ci.com/tomomoto/Meeter_AndroidClient)
+
