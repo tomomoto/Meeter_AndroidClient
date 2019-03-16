@@ -23,22 +23,10 @@ import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-@Module/*(includes = {ViewModelModule.class})*/
+@Module
 public class AppModule {
 
-    private static String BASE_URL = "http://10.137.57.156:3000/";
-
-/*    private Context appContext;
-
-    public AppModule(Context appContext) {
-        this.appContext = appContext;
-    }
-
-    @Provides
-    @Singleton
-    public Context providesContext() {
-        return appContext;
-    }*/
+    private static String BASE_URL = "http://178.252.118.52:80/";
 
     @Singleton
     @NonNull
@@ -47,7 +35,6 @@ public class AppModule {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                //.addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
                 .create(UserService.class);
     }
