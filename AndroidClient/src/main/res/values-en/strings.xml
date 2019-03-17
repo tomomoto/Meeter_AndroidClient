@@ -6,9 +6,13 @@
     <string name="title_activity_activity_two">Profile</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="passwords_matches">Matching…</string>
+    <string name="enter_your_password">Enter your password</string>
     <string name="register">Register</string>
     <string name="enter_your_name">Enter your name</string>
     <string name="enter_your_surname">Enter your surname</string>
+    <string name="enter_your_info">Enter your info</string>
     <string name="RegistrationActivityTitle">Registration</string>
     <string name="BotNavBarActivityTitle">Bot Navigation</string>
     <string name="drawer_item_profile">Profile</string>
@@ -36,4 +40,13 @@
     <string name="profile_age">%1$s years old.</string>
     <string name="profile_gender">Gender: %1$s.</string>
     <string name="profile_info">Info: %1$s.</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="male_gender">Male</string>
+    <string name="female_gender">Female</string>
+    <string name="your_gender">Your gender</string>
+    <string name="login_failure">Login failed</string>
+    <string name="registration_failure">Registration failed</string>
+    <string name="wrong_credentials">Wrong credentials</string>
+    <string name="ok">OK</string>
 </resources>

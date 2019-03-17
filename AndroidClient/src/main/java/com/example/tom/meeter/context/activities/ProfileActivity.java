@@ -21,7 +21,6 @@ import com.example.tom.meeter.context.fragments.ProfileFragment;
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.context.fragments.UserEventsFragment;
 import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
-import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.fragments.EventsFragment;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
@@ -85,9 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         ((App) getApplication()).getComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
-
-        SuccessfulLogin ev = getIntent().getParcelableExtra(SuccessfulLogin.class.getCanonicalName());
-        viewModel.init(ev.getUserId());
+        viewModel.init(getIntent().getStringExtra(USER_ID_KEY));
 
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);

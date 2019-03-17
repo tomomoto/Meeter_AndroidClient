@@ -1,83 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:fillViewport="true">
 
-    <Button
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ваше фото"
-        android:id="@+id/imageButton"
-        android:onClick="onClick" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
 
-    <ImageButton
-        android:layout_width="158dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageButton2"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.39"
-        android:onClick="onClick" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_gravity="center_horizontal" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/nameEditText"
-        android:hint="@string/enter_your_name"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/surnameEditText"
-        android:hint="@string/enter_your_surname"
-        android:layout_below="@+id/nameEditText"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/surnameEditText"
-        android:layout_alignParentStart="true">
-
-        <TextView
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/cameraButtonId"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ваш пол"
-            android:id="@+id/textView"
-            android:layout_gravity="center_horizontal" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/camera" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/galleryButtonId"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Мужской"
-            android:id="@+id/radioButtonMale"
-            android:checked="false"
-            android:layout_gravity="center_horizontal" />
+            android:layout_below="@+id/cameraButtonId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/gallery" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/imageViewId"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_below="@+id/galleryButtonId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="40dp" />
+
+        <EditText
+            android:id="@+id/nameEditTextId"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Женский"
-            android:id="@+id/radioButtonFemale"
-            android:checked="false"
-            android:layout_gravity="center_horizontal" />
-    </RadioGroup>
+            android:layout_below="@+id/imageViewId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="38dp"
+            android:hint="@string/enter_your_name"
+            android:inputType="" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Далее"
-        android:id="@+id/nextRegistration"
-        android:layout_gravity="center_horizontal" />
-</LinearLayout>
+        <EditText
+            android:id="@+id/surnameEditTextId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/nameEditTextId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/enter_your_surname" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/surnameEditTextId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="55dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/your_gender" />
+
+            <RadioButton
+                android:id="@+id/radioButtonMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:checked="false"
+                android:text="@string/male_gender" />
+
+            <RadioButton
+                android:id="@+id/radioButtonFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:checked="false"
+                android:text="@string/female_gender" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/registrationLoginId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/radioGroupId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="38dp"
+            android:hint="@string/login"
+            android:inputType="" />
+
+        <EditText
+            android:id="@+id/registrationPasswordId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registrationLoginId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/registrationRepeatPasswordId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registrationPasswordId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/repeat_password"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/matchesId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registrationRepeatPasswordId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:enabled="false"
+            android:hint="@string/passwords_matches"
+            android:inputType="none" />
+
+        <EditText
+            android:id="@+id/registrationInfoId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/matchesId"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="38dp"
+            android:hint="@string/enter_your_info"
+            android:inputType="" />
+
+        <Button
+            android:id="@+id/nextRegistrationId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registrationInfoId"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="30dp"
+            android:enabled="false"
+            android:text="@string/register" />
+    </RelativeLayout>
+
+</ScrollView>

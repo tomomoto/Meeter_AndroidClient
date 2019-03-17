@@ -5,9 +5,13 @@
     <string name="title_activity_activity_two">Профиль</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="passwords_matches">Сравниваю…</string>
+    <string name="enter_your_password">Введите пароль</string>
     <string name="register">Зарегистрироваться</string>
     <string name="enter_your_name">Введите ваше имя</string>
     <string name="enter_your_surname">Введите вашу фамилию</string>
+    <string name="enter_your_info">Введите вашу информацию</string>
     <string name="RegistrationActivityTitle">Регистрация</string>
     <string name="BotNavBarActivityTitle">Ниж. навигация</string>
     <string name="drawer_item_profile">Профиль</string>
@@ -36,4 +40,13 @@
     <string name="profile_age">%1$s года (лет).</string>
     <string name="profile_gender">Пол: %1$s.</string>
     <string name="profile_info">Инфо: %1$s.</string>
+    <string name="camera">Камера</string>
+    <string name="gallery">Галерея</string>
+    <string name="male_gender">Мужчина</string>
+    <string name="female_gender">Женщина</string>
+    <string name="your_gender">Ваш пол</string>
+    <string name="login_failure">Ошибка логина</string>
+    <string name="registration_failure">Ошибка регистрации</string>
+    <string name="wrong_credentials">Неверные данные</string>
+    <string name="ok">Окей</string>
 </resources>
