@@ -22,107 +22,107 @@ import butterknife.ButterKnife;
 
 public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<RecycleViewUserEventsAdapter.EventViewHolder> {
 
-    private static class EventDiffCallback extends DiffUtil.Callback {
+  private static class EventDiffCallback extends DiffUtil.Callback {
 
-        private final List<Event> oldPosts, newPosts;
+    private final List<Event> oldPosts, newPosts;
 
-        EventDiffCallback(List<Event> oldPosts, List<Event> newPosts) {
-            this.oldPosts = oldPosts;
-            this.newPosts = newPosts;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldPosts.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newPosts.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldPosts.get(oldItemPosition).getId().equals(newPosts.get(newItemPosition).getId());
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldPosts.get(oldItemPosition).equals(newPosts.get(newItemPosition));
-        }
+    EventDiffCallback(List<Event> oldPosts, List<Event> newPosts) {
+      this.oldPosts = oldPosts;
+      this.newPosts = newPosts;
     }
 
-    static class EventViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getOldListSize() {
+      return oldPosts.size();
+    }
 
-        @BindView(R.id.cv)
-        CardView cardView;
+    @Override
+    public int getNewListSize() {
+      return newPosts.size();
+    }
 
-        @BindView(R.id.event_name)
-        TextView eventName;
+    @Override
+    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+      return oldPosts.get(oldItemPosition).getId().equals(newPosts.get(newItemPosition).getId());
+    }
 
-        @BindView(R.id.event_description)
-        TextView eventDescription;
+    @Override
+    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+      return oldPosts.get(oldItemPosition).equals(newPosts.get(newItemPosition));
+    }
+  }
 
-        EventViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
+  static class EventViewHolder extends RecyclerView.ViewHolder {
 
-        void bind(final Event event) {
-            if (event != null) {
-                eventName.setText(event.getName());
-                eventDescription.setText(event.getDescription());
+    @BindView(R.id.cv)
+    CardView cardView;
+
+    @BindView(R.id.event_name)
+    TextView eventName;
+
+    @BindView(R.id.event_description)
+    TextView eventDescription;
+
+    EventViewHolder(View itemView) {
+      super(itemView);
+      ButterKnife.bind(this, itemView);
+    }
+
+    void bind(final Event event) {
+      if (event != null) {
+        eventName.setText(event.getName());
+        eventDescription.setText(event.getDescription());
                 /*
                 btnDelete.setOnClickListener(v -> {
                     if (onDeleteButtonClickListener != null)
                         onDeleteButtonClickListener.onDeleteButtonClicked(post);
                 });*/
-            }
-        }
+      }
+    }
+  }
+
+  private List<Event> events;
+
+  public RecycleViewUserEventsAdapter() {
+
+  }
+
+  public void setData(List<Event> newEvents) {
+    if (events != null) {
+      EventDiffCallback eventDiffCallback = new EventDiffCallback(events, newEvents);
+      DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(eventDiffCallback);
+      events.clear();
+      events.addAll(newEvents);
+      diffResult.dispatchUpdatesTo(this);
+    } else {
+      events = newEvents;
     }
 
-    private List<Event> events;
+    //Do we need it?
+    notifyDataSetChanged();
+  }
 
-    public RecycleViewUserEventsAdapter() {
+  @Override
+  public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_view, parent, false);
+    return new EventViewHolder(v);
+  }
 
+  @Override
+  public void onBindViewHolder(EventViewHolder holder, int position) {
+    holder.bind(events.get(position));
+  }
+
+  @Override
+  public int getItemCount() {
+    if (events == null) {
+      return 0;
     }
+    return events.size();
+  }
 
-    public void setData(List<Event> newEvents) {
-        if (events != null) {
-            EventDiffCallback eventDiffCallback = new EventDiffCallback(events, newEvents);
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(eventDiffCallback);
-            events.clear();
-            events.addAll(newEvents);
-            diffResult.dispatchUpdatesTo(this);
-        } else {
-            events = newEvents;
-        }
-
-        //Do we need it?
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_view, parent, false);
-        return new EventViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(EventViewHolder holder, int position) {
-        holder.bind(events.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        if (events == null) {
-            return 0;
-        }
-        return events.size();
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
+  @Override
+  public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    super.onAttachedToRecyclerView(recyclerView);
+  }
 }

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -38,40 +39,54 @@ import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY
  */
 public class RegistrationActivity extends AppCompatActivity {
 
-  private static final String TAG = ProfileActivity.class.getCanonicalName();
+  private static final String TAG = RegistrationActivity.class.getCanonicalName();
   private static final String EMPTY_TEXT = "";
   private static final int CAMERA_REQUEST_CODE = 0;
   private static final int GALLERY_REQUEST_CODE = 1;
 
-  @BindView(R.id.imageViewId)
-  ImageView userPhoto;
+  /**
+   * Resolves gender based on gender radio button value.
+   */
+  private static String resolveGender(int radio) {
+    switch (radio) {
+      case R.id.regRadioBtnMale:
+        return "male";
+      case R.id.regRadioBtnFemale:
+        return "female";
+      default:
+        throw new IllegalArgumentException("#args - radio: " + radio);
+    }
+  }
 
-  @BindView(R.id.nameEditTextId)
-  TextView nameEditText;
+  @BindView(R.id.regImageView)
+  ImageView userImage;
 
-  @BindView(R.id.surnameEditTextId)
-  TextView surnameEditText;
+  @BindView(R.id.regNameEditText)
+  EditText name;
 
-  @BindView(R.id.radioGroupId)
-  RadioGroup radioGroup;
+  @BindView(R.id.regSurnameEditText)
+  EditText surname;
 
-  @BindView(R.id.registrationLoginId)
-  TextView registrationLogin;
+  @BindView(R.id.regGenderRadioGroup)
+  RadioGroup gender;
 
-  @BindView(R.id.registrationPasswordId)
-  TextView registrationPassword;
+  @BindView(R.id.regLoginEditText)
+  EditText login;
 
-  @BindView(R.id.registrationRepeatPasswordId)
-  TextView registrationRepeatPassword;
+  @BindView(R.id.regPasswordEditText)
+  EditText password;
 
-  @BindView(R.id.matchesId)
+  @BindView(R.id.regRepeatPasswordEditText)
+  EditText repeatPassword;
+
+  @BindView(R.id.regMatchesEditText)
   TextView passwordsMatches;
 
-  @BindView(R.id.registrationInfoId)
-  TextView registrationInfo;
+  @BindView(R.id.regInfoEditText)
+  EditText info;
 
-  @BindView(R.id.nextRegistrationId)
-  Button nextRegistration;
+  @BindView(R.id.regRegisterBtn)
+  Button register;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -111,60 +126,37 @@ public class RegistrationActivity extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  @OnClick(R.id.cameraButtonId)
+  @OnClick(R.id.registration_camera_btn_id)
   public void cameraClickHandler(Button btn) {
-    Intent takePicture = new Intent(ACTION_IMAGE_CAPTURE);
-    startActivityForResult(takePicture, CAMERA_REQUEST_CODE);
+    startActivityForResult(new Intent(ACTION_IMAGE_CAPTURE), CAMERA_REQUEST_CODE);
   }
 
-  @OnClick(R.id.galleryButtonId)
+  @OnClick(R.id.registration_gallery_btn_id)
   public void galleryClickHandler(Button btn) {
-    Intent pickPhoto = new Intent(ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-    startActivityForResult(pickPhoto, GALLERY_REQUEST_CODE);
+    startActivityForResult(new Intent(ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), GALLERY_REQUEST_CODE);
   }
 
-  @OnTextChanged(
-      value = {R.id.registrationPasswordId, R.id.registrationRepeatPasswordId},
-      callback = AFTER_TEXT_CHANGED
-  )
+  @OnTextChanged(value = {R.id.regPasswordEditText, R.id.regRepeatPasswordEditText}, callback = AFTER_TEXT_CHANGED)
   public void passwordsChangedHandler(Editable text) {
-    CharSequence rpText = registrationPassword.getText();
-    CharSequence rrpText = registrationRepeatPassword.getText();
+    CharSequence pass = password.getText();
+    CharSequence repeatPass = repeatPassword.getText();
 
-    if (rpText == null || EMPTY_TEXT.equals(rpText.toString()) ||
-        rrpText == null || EMPTY_TEXT.equals(rrpText.toString())) {
+    if (pass == null || EMPTY_TEXT.equals(pass.toString())
+        || repeatPass == null || EMPTY_TEXT.equals(repeatPass.toString())) {
       passwordsMatches.setText(getString(R.string.enter_your_password));
-      nextRegistration.setEnabled(false);
+      register.setEnabled(false);
       return;
     }
-    boolean matches = rpText.toString().equals(rrpText.toString());
-    passwordsMatches.setText(matches ? "Matches" : "Doesn't matches");
-    nextRegistration.setEnabled(matches);
+    boolean matches = pass.toString().equals(repeatPass.toString());
+    passwordsMatches.setText(matches ? getString(R.string.matches) : getString(R.string.does_not_match));
+    register.setEnabled(matches);
   }
 
-  @OnClick(R.id.nextRegistrationId)
+  @OnClick(R.id.regRegisterBtn)
   public void registerClickHandler(Button btn) {
-    int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
-
-    String gender = null;
-    switch (checkedRadioButtonId) {
-      case R.id.radioButtonMale:
-        gender = "male";
-        break;
-      case R.id.radioButtonFemale:
-        gender = "female";
-      default:
-        break;
-    }
-
-    EventBus.getDefault().post(new RegistrationAttempt(
-        nameEditText.getText().toString(),
-        surnameEditText.getText().toString(),
-        gender,
-        registrationLogin.getText().toString(),
-        registrationPassword.getText().toString(),
-        registrationInfo.getText().toString(),
-        null
+    EventBus.getDefault().post(new RegistrationAttempt(name.getText().toString(), surname.getText().toString(),
+        resolveGender(gender.getCheckedRadioButtonId()), login.getText().toString(), password.getText().toString(),
+        info.getText().toString(), null//TODO: set datebirth here.
     ));
   }
 
@@ -174,7 +166,7 @@ public class RegistrationActivity extends AppCompatActivity {
       case CAMERA_REQUEST_CODE:
       case GALLERY_REQUEST_CODE:
         if (resultCode == RESULT_OK) {
-          userPhoto.setImageURI(imageReturnedIntent.getData());
+          userImage.setImageURI(imageReturnedIntent.getData());
         }
       default:
         break;
@@ -184,9 +176,8 @@ public class RegistrationActivity extends AppCompatActivity {
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(RegistrationSuccess ev) {
     Log.d(TAG, ev.toString());
-    Intent intent = new Intent(RegistrationActivity.this, ProfileActivity.class);
-    intent.putExtra(USER_ID_KEY, ev.getUserId());
-    startActivity(intent);
+    startActivity(new Intent(RegistrationActivity.this, ProfileActivity.class)
+        .putExtra(USER_ID_KEY, ev.getUserId()));
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)

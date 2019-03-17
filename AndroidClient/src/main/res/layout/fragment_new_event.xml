@@ -10,57 +10,81 @@
         android:padding="32dp">
 
         <RelativeLayout
-            android:id="@+id/event_name_layout"
+            android:id="@+id/newEventLayoutLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/edit_text_background_border">
 
-            <EditText
-                android:id="@+id/event_name"
+            <TextView
+                android:id="@+id/newEventLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:hint="@string/name"
-                android:textAlignment="textStart"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/create_event"
+                android:inputType="none"
+                android:textAlignment="center"
                 android:textSize="20sp" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/new_event_city_RL"
+            android:id="@+id/event_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/event_name_layout"
+            android:layout_below="@+id/newEventLayoutLabel"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background_border">
 
             <EditText
-                android:id="@+id/new_event_city"
+                android:id="@+id/newEventNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:hint="@string/city"
-                android:textAlignment="textStart"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/name"
+                android:textAlignment="center"
                 android:textSize="20sp" />
         </RelativeLayout>
+
+        <!--<RelativeLayout
+                    android:id="@+id/new_event_city_RL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/event_name_layout"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/edit_text_background_border">
+
+                    <EditText
+                        android:id="@+id/new_event_city"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="50dp"
+                        android:hint="@string/city"
+                        android:textAlignment="center"
+                        android:textSize="20sp" />
+                </RelativeLayout>-->
 
         <RelativeLayout
             android:id="@+id/new_event_description_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/new_event_city_RL"
+            android:layout_below="@+id/event_name_layout"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background_border">
 
             <EditText
-                android:id="@+id/new_event_description"
+                android:id="@+id/newEventDescriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
                 android:hint="@string/description"
-                android:textAlignment="textStart"
+                android:textAlignment="center"
                 android:textSize="20sp" />
         </RelativeLayout>
 
@@ -69,51 +93,60 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/new_event_description_layout"
-            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
             android:background="@drawable/edit_text_background_border">
 
             <EditText
-                android:id="@+id/new_event_place"
+                android:id="@+id/newEventLatitudeEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:hint="@string/place"
-                android:textAlignment="textStart"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/latitude"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/newEventLongitudeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/newEventLatitudeEditText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/longitude"
+                android:inputType="text"
+                android:textAlignment="center"
                 android:textSize="20sp" />
 
             <LinearLayout
                 android:id="@+id/place_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/new_event_place"
+                android:layout_below="@id/newEventLongitudeEditText"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp">
 
                 <Button
-                    android:id="@+id/new_event_current_place"
+                    android:id="@+id/newEventCurrentPlaceBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:onClick="onClick"
                     android:text="@string/current"
                     android:textAlignment="center"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
 
                 <Button
-                    android:id="@+id/new_event_place_button"
+                    android:id="@+id/newEventOtherPlaceBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:onClick="onClick"
                     android:text="@string/other"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
             </LinearLayout>
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -121,77 +154,81 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/place_layout"
-            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
             android:background="@drawable/edit_text_background_border">
 
 
             <EditText
-                android:id="@+id/new_event_starts"
+                android:id="@+id/newEventStartsEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginRight="10dp"
-                android:hint="@string/start"
-                android:textAlignment="textStart"
+                android:layout_marginStart="50dp"
+                android:hint="@string/starts"
+                android:inputType="date"
+                android:textAlignment="center"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/new_event_ends"
+                android:id="@+id/newEventEndsEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/new_event_starts"
+                android:layout_below="@+id/newEventStartsEditText"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:hint="@string/ending"
-                android:textAlignment="textStart"
+                android:layout_marginStart="50dp"
+                android:hint="@string/ends"
+                android:inputType="date"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/newEventDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/newEventEndsEditText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="Date validity"
+                android:textAlignment="center"
                 android:textSize="20sp" />
 
             <LinearLayout
                 android:id="@+id/date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/new_event_ends"
+                android:layout_below="@+id/newEventDateTextView"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <Button
-                    android:id="@+id/new_event_current_date"
+                    android:id="@+id/newEventCurrentDateBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:onClick="onClick"
                     android:text="@string/today"
                     android:textAllCaps="false" />
 
                 <Button
-                    android:id="@+id/new_event_date_button"
+                    android:id="@+id/newEventOtherDateBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:onClick="onClick"
                     android:text="@string/other2"
                     android:textAllCaps="false" />
-
             </LinearLayout>
-
         </RelativeLayout>
 
         <Button
-            android:id="@+id/create_event"
+            android:id="@+id/newEventCreateBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/date_layout"
-            android:layout_marginTop="15dp"
-            android:clickable="true"
-            android:focusable="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="47dp"
+            android:enabled="false"
             android:text="@string/create_event"
             android:textAllCaps="false" />
     </RelativeLayout>

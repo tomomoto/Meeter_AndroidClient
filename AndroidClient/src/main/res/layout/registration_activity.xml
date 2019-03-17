@@ -6,12 +6,12 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="1">
 
         <Button
-            android:id="@+id/cameraButtonId"
+            android:id="@+id/registration_camera_btn_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -20,29 +20,29 @@
             android:text="@string/camera" />
 
         <Button
-            android:id="@+id/galleryButtonId"
+            android:id="@+id/registration_gallery_btn_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/cameraButtonId"
+            android:layout_below="@+id/registration_camera_btn_id"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="15dp"
             android:text="@string/gallery" />
 
         <ImageView
-            android:id="@+id/imageViewId"
+            android:id="@+id/regImageView"
             android:layout_width="220dp"
             android:layout_height="220dp"
-            android:layout_below="@+id/galleryButtonId"
+            android:layout_below="@+id/registration_gallery_btn_id"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="40dp" />
 
         <EditText
-            android:id="@+id/nameEditTextId"
+            android:id="@+id/regNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imageViewId"
+            android:layout_below="@+id/regImageView"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="38dp"
@@ -50,20 +50,20 @@
             android:inputType="" />
 
         <EditText
-            android:id="@+id/surnameEditTextId"
+            android:id="@+id/regSurnameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/nameEditTextId"
+            android:layout_below="@+id/regNameEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="20dp"
             android:hint="@string/enter_your_surname" />
 
         <RadioGroup
-            android:id="@+id/radioGroupId"
+            android:id="@+id/regGenderRadioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/surnameEditTextId"
+            android:layout_below="@+id/regSurnameEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="55dp">
@@ -76,27 +76,30 @@
                 android:text="@string/your_gender" />
 
             <RadioButton
-                android:id="@+id/radioButtonMale"
+                android:id="@+id/regRadioBtnMale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
                 android:checked="false"
                 android:text="@string/male_gender" />
 
             <RadioButton
-                android:id="@+id/radioButtonFemale"
+                android:id="@+id/regRadioBtnFemale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
                 android:checked="false"
                 android:text="@string/female_gender" />
+
         </RadioGroup>
 
         <EditText
-            android:id="@+id/registrationLoginId"
+            android:id="@+id/regLoginEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/radioGroupId"
+            android:layout_below="@+id/regGenderRadioGroup"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="38dp"
@@ -104,10 +107,10 @@
             android:inputType="" />
 
         <EditText
-            android:id="@+id/registrationPasswordId"
+            android:id="@+id/regPasswordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registrationLoginId"
+            android:layout_below="@+id/regLoginEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="20dp"
@@ -115,21 +118,21 @@
             android:inputType="textPassword" />
 
         <EditText
-            android:id="@+id/registrationRepeatPasswordId"
+            android:id="@+id/regRepeatPasswordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registrationPasswordId"
+            android:layout_below="@+id/regPasswordEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="20dp"
             android:hint="@string/repeat_password"
             android:inputType="textPassword" />
 
-        <EditText
-            android:id="@+id/matchesId"
+        <TextView
+            android:id="@+id/regMatchesEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registrationRepeatPasswordId"
+            android:layout_below="@+id/regRepeatPasswordEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="20dp"
@@ -138,10 +141,10 @@
             android:inputType="none" />
 
         <EditText
-            android:id="@+id/registrationInfoId"
+            android:id="@+id/regInfoEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/matchesId"
+            android:layout_below="@+id/regMatchesEditText"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="140dp"
             android:layout_marginTop="38dp"
@@ -149,10 +152,10 @@
             android:inputType="" />
 
         <Button
-            android:id="@+id/nextRegistrationId"
+            android:id="@+id/regRegisterBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registrationInfoId"
+            android:layout_below="@+id/regInfoEditText"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="140dp"

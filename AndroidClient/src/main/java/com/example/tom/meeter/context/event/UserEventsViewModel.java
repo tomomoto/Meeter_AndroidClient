@@ -12,29 +12,29 @@ import javax.inject.Inject;
 
 public class UserEventsViewModel extends ViewModel {
 
-    private String userId;
-    private LiveData<List<Event>> userEvents;
+  private String userId;
+  private LiveData<List<Event>> userEvents;
 
-    private EventRepository eventRepository;
+  private EventRepository eventRepository;
 
-    @Inject
-    public UserEventsViewModel(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+  @Inject
+  public UserEventsViewModel(EventRepository eventRepository) {
+    this.eventRepository = eventRepository;
+  }
+
+  public void init(String userId) {
+    this.userId = userId;
+    if (userEvents != null) {
+      return;
     }
+    userEvents = eventRepository.getUserEvents(userId);
+  }
 
-    public void init(String userId) {
-        this.userId = userId;
-        if (userEvents != null) {
-            return;
-        }
-        userEvents = eventRepository.getUserEvents(userId);
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public LiveData<List<Event>> getUserEvents() {
-        return userEvents;
-    }
+  public LiveData<List<Event>> getUserEvents() {
+    return userEvents;
+  }
 }

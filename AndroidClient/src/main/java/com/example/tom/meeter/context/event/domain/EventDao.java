@@ -15,21 +15,24 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface EventDao {
 
-    @Insert(onConflict = REPLACE)
-    void save(Event event);
+  @Insert(onConflict = REPLACE)
+  void save(Event event);
 
-    @Insert(onConflict = REPLACE)
-    void saveAll(List<Event> events);
+  @Insert(onConflict = REPLACE)
+  void saveAll(List<Event> events);
 
-    @Query("SELECT * FROM event WHERE id = :eventId")
-    Maybe<Event> load(String eventId);
+  @Query("SELECT * FROM event WHERE id = :eventId")
+  Maybe<Event> load(String eventId);
 
-    @Query("SELECT * FROM event WHERE creatorId = :userId")
-    Flowable<Event> loadByCreatorId(String userId);
+  @Query("SELECT * FROM event WHERE creatorId = :userId")
+  Flowable<Event> loadByCreatorId(String userId);
 
-    @Query("SELECT * FROM event WHERE id = :eventId")
-    LiveData<Event> loadLD(String eventId);
+  @Query("DELETE FROM event WHERE creatorId = :userId")
+  void deleteByUserId(String userId);
 
-    @Query("SELECT * FROM event WHERE creatorId = :userId")
-    LiveData<List<Event>> loadLDByCreatorId(String userId);
+  @Query("SELECT * FROM event WHERE id = :eventId")
+  LiveData<Event> loadLD(String eventId);
+
+  @Query("SELECT * FROM event WHERE creatorId = :userId")
+  LiveData<List<Event>> loadLDByCreatorId(String userId);
 }

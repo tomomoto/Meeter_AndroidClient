@@ -8,6 +8,8 @@
     <string name="repeat_password">Повторите пароль</string>
     <string name="passwords_matches">Сравниваю…</string>
     <string name="enter_your_password">Введите пароль</string>
+    <string name="matches">Совпадают</string>
+    <string name="does_not_match">Не совпадают</string>
     <string name="register">Зарегистрироваться</string>
     <string name="enter_your_name">Введите ваше имя</string>
     <string name="enter_your_surname">Введите вашу фамилию</string>
@@ -29,8 +31,10 @@
     <string name="other">Другое</string>
     <string name="today">Сегодня</string>
     <string name="place">Местоположение</string>
-    <string name="start">Начало</string>
-    <string name="ending">Конец</string>
+    <string name="latitude">Широта</string>
+    <string name="longitude">Долгота</string>
+    <string name="starts">Начинается (гггг/ММ/дд)</string>
+    <string name="ends">Заканчивается (гггг/ММ/дд)</string>
     <string name="other2">Другая</string>
     <string name="try_login">Залогиниться</string>
     <string name="name">Имя</string>

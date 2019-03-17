@@ -6,6 +6,8 @@
     <string name="repeat_password">Repeat password</string>
     <string name="passwords_matches">Matching…</string>
     <string name="enter_your_password">Enter your password</string>
+    <string name="matches">Matches</string>
+    <string name="does_not_match">Does not match</string>
     <string name="register">Register</string>
     <string name="enter_your_name">Enter your name</string>
     <string name="enter_your_surname">Enter your surname</string>
@@ -28,9 +30,11 @@
     <string name="other">Other</string>
     <string name="today">Today</string>
     <string name="place">Place</string>
-    <string name="start">Start</string>
-    <string name="ending">Ending</string>
-    <string name="other2">Other2</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="starts">Starts (yyyy/MM/dd)</string>
+    <string name="ends">Ends (yyyy/MM/dd)</string>
+    <string name="other2">Other</string>
     <string name="simple_bot_nav_bar">Simple bot nav bar</string>
     <string name="try_login">Login</string>
     <string name="app_name">Meeter</string>

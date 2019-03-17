@@ -14,7 +14,7 @@ public class RegistrationAttempt implements NetworkEvent {
   private String birthday;
 
   public RegistrationAttempt(String name, String surname, String gender, String login, String password, String info,
-                             String birthday) {
+      String birthday) {
     this.name = name;
     this.surname = surname;
     this.gender = gender;
