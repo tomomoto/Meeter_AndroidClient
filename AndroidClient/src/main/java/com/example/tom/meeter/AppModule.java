@@ -26,7 +26,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class AppModule {
 
-    private static String BASE_URL = "http://178.252.118.52:80/";
+    private static String BASE_URL = "http://10.137.57.156:80/";
+    //private static String BASE_URL = "http://178.252.118.52:80/";
 
     @Singleton
     @NonNull
