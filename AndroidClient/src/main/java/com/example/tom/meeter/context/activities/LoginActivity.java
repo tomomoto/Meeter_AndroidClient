@@ -24,6 +24,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = LoginActivity.class.getCanonicalName();
@@ -105,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onMessageEvent(SuccessfulLogin ev) {
         Log.d(TAG, ev.toString());
         Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-        intent.putExtra(SuccessfulLogin.class.getCanonicalName(), ev);
+        intent.putExtra(USER_ID_KEY, ev.getUserId());
         startActivity(intent);
     }
 
@@ -113,9 +115,9 @@ public class LoginActivity extends AppCompatActivity {
     public void onMessageEvent(FailureLogin event) {
         Log.d(TAG, event.toString());
         new AlertDialog.Builder(LoginActivity.this)
-                .setTitle("Ошибка авторизации")
-                .setMessage("Неверная пара логин/пароль")
-                .setNegativeButton("Ок", (dialog, id) -> dialog.cancel())
+                .setTitle(getString(R.string.login_failure))
+                .setMessage(getString(R.string.wrong_credentials))
+                .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
                 .create()
                 .show();
     }
@@ -130,20 +132,4 @@ public class LoginActivity extends AppCompatActivity {
     public void RegistrationClick(Button button) {
         startActivity(new Intent(this, RegistrationActivity.class));
     }
-
-    /*@Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.LoginButton:
-                EventBus.getDefault().post(new LoginAttempt(login.getText().toString(),
-                        password.getText().toString()));
-                break;
-            case R.id.RegistrationButton:
-                Intent intent = new Intent(this, RegistrationActivity.class);
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
-    }*/
 }
