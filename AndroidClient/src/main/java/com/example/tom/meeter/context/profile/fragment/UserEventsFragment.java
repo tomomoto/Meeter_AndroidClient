@@ -1,4 +1,6 @@
-package com.example.tom.meeter.context.fragments;
+package com.example.tom.meeter.context.profile.fragment;
+
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -21,8 +23,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
 public class UserEventsFragment extends Fragment {
 

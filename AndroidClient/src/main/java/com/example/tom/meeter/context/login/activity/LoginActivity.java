@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.activities;
+package com.example.tom.meeter.context.login.activity;
 
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.network.domain.LoginAttempt;
 import com.example.tom.meeter.context.network.service.NetworkService;
+import com.example.tom.meeter.context.profile.activity.ProfileActivity;
+import com.example.tom.meeter.context.registration.activity.RegistrationActivity;
 import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
 import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulLogin;
 

@@ -2,9 +2,9 @@ package com.example.tom.meeter;
 
 import android.app.Application;
 
-import com.example.tom.meeter.context.activities.ProfileActivity;
-import com.example.tom.meeter.context.fragments.ProfileFragment;
-import com.example.tom.meeter.context.fragments.UserEventsFragment;
+import com.example.tom.meeter.context.profile.activity.ProfileActivity;
+import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
+import com.example.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.example.tom.meeter.infrastructure.viewmodel.ViewModelModule;
 
 import javax.inject.Singleton;

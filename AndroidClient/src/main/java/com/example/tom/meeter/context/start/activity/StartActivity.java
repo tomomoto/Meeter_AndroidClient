@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.activities;
+package com.example.tom.meeter.context.start.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
@@ -8,9 +8,9 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.fragments.EventsFragment;
-import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
-import com.example.tom.meeter.context.fragments.ProfileFragment;
+import com.example.tom.meeter.context.profile.fragment.CreateNewEventFragment;
+import com.example.tom.meeter.context.profile.fragment.EventsFragment;
+import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

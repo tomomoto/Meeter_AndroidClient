@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.activities;
+package com.example.tom.meeter.context.profile.activity;
 
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
@@ -22,10 +22,10 @@ import android.widget.Toast;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
-import com.example.tom.meeter.context.fragments.EventsFragment;
-import com.example.tom.meeter.context.fragments.ProfileFragment;
-import com.example.tom.meeter.context.fragments.UserEventsFragment;
+import com.example.tom.meeter.context.profile.fragment.CreateNewEventFragment;
+import com.example.tom.meeter.context.profile.fragment.EventsFragment;
+import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
+import com.example.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
 import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
 import com.mikepenz.iconics.typeface.FontAwesome;

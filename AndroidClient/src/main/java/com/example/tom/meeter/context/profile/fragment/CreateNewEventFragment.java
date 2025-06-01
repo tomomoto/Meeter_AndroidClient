@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.fragments;
+package com.example.tom.meeter.context.profile.fragment;
 
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 

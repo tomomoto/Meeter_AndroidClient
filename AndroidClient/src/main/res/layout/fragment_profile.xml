@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="50dp"
-        tools:context=".context.fragments.ProfileFragment">
+        tools:context=".context.profile.fragment.ProfileFragment">
 
         <TextView
             android:id="@+id/userInformationLabel"

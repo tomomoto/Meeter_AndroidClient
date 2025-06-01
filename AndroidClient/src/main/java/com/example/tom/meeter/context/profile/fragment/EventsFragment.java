@@ -1,8 +1,8 @@
-package com.example.tom.meeter.context.fragments;
+package com.example.tom.meeter.context.profile.fragment;
 
-import static com.example.tom.meeter.context.fragments.EventListFragment.createEventListFragment;
-import static com.example.tom.meeter.context.fragments.GoogleMapsFragment.createGoogleMapsFragment;
-import static com.example.tom.meeter.context.fragments.UserEventsFragment.createUserEventsFragment;
+import static com.example.tom.meeter.context.profile.fragment.EventListFragment.createEventListFragment;
+import static com.example.tom.meeter.context.profile.fragment.GoogleMapsFragment.createGoogleMapsFragment;
+import static com.example.tom.meeter.context.profile.fragment.UserEventsFragment.createUserEventsFragment;
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
 

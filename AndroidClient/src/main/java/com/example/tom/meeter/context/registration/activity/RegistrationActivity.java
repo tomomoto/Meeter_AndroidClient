@@ -1,4 +1,9 @@
-package com.example.tom.meeter.context.activities;
+package com.example.tom.meeter.context.registration.activity;
+
+import static android.content.Intent.ACTION_PICK;
+import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.network.domain.RegistrationAttempt;
+import com.example.tom.meeter.context.profile.activity.ProfileActivity;
 import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationFailed;
 import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationSuccess;
 
@@ -28,11 +34,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-
-import static android.content.Intent.ACTION_PICK;
-import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
-import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
 /**
  * Created by Tom on 01.12.2016.

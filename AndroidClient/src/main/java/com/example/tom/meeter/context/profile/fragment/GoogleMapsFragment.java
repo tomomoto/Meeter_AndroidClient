@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.fragments;
+package com.example.tom.meeter.context.profile.fragment;
 
 /**
  * Created by Tom on 09.12.2016.
