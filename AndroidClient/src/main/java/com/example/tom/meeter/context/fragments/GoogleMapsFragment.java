@@ -15,11 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.tom.meeter.context.gps.service.GPSTrackerService;
-import com.example.tom.meeter.context.gps.domain.GPSTrackerLocationListener;
-import com.example.tom.meeter.context.network.domain.IncomeEvents;
-import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.gps.domain.GPSTrackerLocationListener;
+import com.example.tom.meeter.context.gps.service.GPSTrackerService;
+import com.example.tom.meeter.context.network.domain.SearchForEvents;
+import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,17 +41,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener,
+public class GoogleMapsFragment extends Fragment
+        implements OnMapReadyCallback, GoogleMap.OnMapClickListener,
         GPSTrackerLocationListener, GoogleMap.OnCameraChangeListener {
 
     private final String TAG = GoogleMapsFragment.class.getCanonicalName();
+
+    public static GoogleMapsFragment createGoogleMapsFragment(Bundle args) {
+        GoogleMapsFragment result = new GoogleMapsFragment();
+        result.setArguments(args);
+        return result;
+    }
 
     private SupportMapFragment sMapFragment;
     private GPSTrackerService gpsTrackerService;
     private LatLng myLocation;
     private Marker userMarker;
     private GoogleMap gmap = null;
-    private Boolean trackUser = true;
+    private boolean trackUser = true;
     private CameraPosition camPosition = null;
     private Circle userCircle;
     private int searchArea = 0;
@@ -106,7 +113,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback, 
     public void onMapClick(LatLng latLng) {
         userMarker.setPosition(new LatLng(latLng.latitude, latLng.longitude));
         //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
-        
+
         EventBus.getDefault()
                 .post(
                         new SearchForEvents(

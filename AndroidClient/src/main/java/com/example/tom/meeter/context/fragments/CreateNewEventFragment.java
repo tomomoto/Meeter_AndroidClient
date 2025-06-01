@@ -21,8 +21,8 @@ import android.widget.TextView;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.gps.service.GPSTrackerService;
 import com.example.tom.meeter.context.network.domain.CreateNewEventAttempt;
-import com.example.tom.meeter.context.network.domain.FailureEventCreation;
-import com.example.tom.meeter.context.network.domain.SuccessfulEventCreation;
+import com.example.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
+import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

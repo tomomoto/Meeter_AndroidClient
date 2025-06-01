@@ -13,10 +13,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.network.domain.FailureLogin;
 import com.example.tom.meeter.context.network.domain.LoginAttempt;
-import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.context.network.service.NetworkService;
+import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
+import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulLogin;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

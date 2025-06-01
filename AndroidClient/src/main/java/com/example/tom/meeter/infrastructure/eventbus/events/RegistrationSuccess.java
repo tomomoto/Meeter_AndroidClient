@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.network.domain;
+package com.example.tom.meeter.infrastructure.eventbus.events;
 
 public class RegistrationSuccess {
 

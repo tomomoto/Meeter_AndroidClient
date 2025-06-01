@@ -28,6 +28,12 @@ public class UserEventsFragment extends Fragment {
 
     private static final String TAG = UserEventsFragment.class.getCanonicalName();
 
+    public static UserEventsFragment createUserEventsFragment(Bundle args) {
+        UserEventsFragment result = new UserEventsFragment();
+        result.setArguments(args);
+        return result;
+    }
+
     @BindView(R.id.user_events_rv)
     RecyclerView rView;
 

@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.network.domain.RegistrationAttempt;
-import com.example.tom.meeter.context.network.domain.RegistrationFailed;
-import com.example.tom.meeter.context.network.domain.RegistrationSuccess;
+import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationFailed;
+import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationSuccess;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

@@ -15,10 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.tom.meeter.context.network.EventDTO;
-import com.example.tom.meeter.context.event.RecycleViewEventAdapter;
-import com.example.tom.meeter.context.network.domain.IncomeEvents;
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.event.RecycleViewEventAdapter;
+import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -36,6 +36,12 @@ import butterknife.ButterKnife;
 public class EventListFragment extends Fragment {
 
     private static final String TAG = EventListFragment.class.getCanonicalName();
+
+    public static EventListFragment createEventListFragment(Bundle args) {
+        EventListFragment result = new EventListFragment();
+        result.setArguments(args);
+        return result;
+    }
 
     @BindView(R.id.my_recycler_view)
     RecyclerView rView;

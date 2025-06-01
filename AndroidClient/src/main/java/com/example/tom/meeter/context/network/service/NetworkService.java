@@ -8,17 +8,17 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.tom.meeter.context.network.domain.CreateNewEventAttempt;
-import com.example.tom.meeter.context.network.domain.FailureEventCreation;
-import com.example.tom.meeter.context.network.domain.FailureLogin;
-import com.example.tom.meeter.context.network.domain.IncomeEvents;
 import com.example.tom.meeter.context.network.domain.LoginAttempt;
 import com.example.tom.meeter.context.network.domain.RegistrationAttempt;
-import com.example.tom.meeter.context.network.domain.RegistrationFailed;
-import com.example.tom.meeter.context.network.domain.RegistrationSuccess;
 import com.example.tom.meeter.context.network.domain.SearchForEvents;
-import com.example.tom.meeter.context.network.domain.SuccessfulEventCreation;
-import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
 import com.example.tom.meeter.infrastructure.common.JsonHelper;
+import com.example.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
+import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
+import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
+import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationFailed;
+import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationSuccess;
+import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
+import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulLogin;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

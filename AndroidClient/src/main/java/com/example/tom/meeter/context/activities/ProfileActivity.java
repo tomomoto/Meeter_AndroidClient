@@ -1,5 +1,8 @@
 package com.example.tom.meeter.context.activities;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
+
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -17,14 +20,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
-import com.example.tom.meeter.context.fragments.ProfileFragment;
 import com.example.tom.meeter.App;
-import com.example.tom.meeter.context.fragments.UserEventsFragment;
-import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.fragments.CreateNewEventFragment;
 import com.example.tom.meeter.context.fragments.EventsFragment;
+import com.example.tom.meeter.context.fragments.ProfileFragment;
+import com.example.tom.meeter.context.fragments.UserEventsFragment;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
+import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -32,12 +35,13 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 
+import java.util.function.Consumer;
+
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -205,24 +209,32 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private static Fragment getSelectedFragment(int index) {
-        switch (index) {
+    private static Fragment createFragment(
+            int navigationMenuIndex, Consumer<Fragment> postConstruct) {
+        Fragment result;
+        switch (navigationMenuIndex) {
             case 0:
                 // profile
-                return new ProfileFragment();
+                result = new ProfileFragment();
+                break;
             case 1:
                 // events
-                return new EventsFragment();
+                result = new EventsFragment();
+                break;
             case 2:
                 // newEvent fragment
-                return new CreateNewEventFragment();
+                result = new CreateNewEventFragment();
+                break;
             case 3:
-                // newEvent fragment
-                return new UserEventsFragment();
-            //return new StartActivity();
+                // user events fragment
+                result = new UserEventsFragment();
+                break;
             default:
-                return new ProfileFragment();
+                //return new StartActivity();
+                result = new ProfileFragment();
         }
+        postConstruct.accept(result);
+        return result;
     }
 
     private void loadHomeFragment() {
@@ -251,9 +263,11 @@ public class ProfileActivity extends AppCompatActivity {
         mHandler.post(
                 replaceFragment(
                         getSupportFragmentManager(),
-                        getSelectedFragment(selectedNavigationMenu),
-                        viewModel
-                ));
+                        () -> createFragment(
+                                selectedNavigationMenu,
+                                f -> f.setArguments(
+                                        createBundle(USER_ID_KEY, viewModel.getUserId()))))
+        );
 
         // show or hide the fab button
         //toggleFab();
@@ -265,16 +279,12 @@ public class ProfileActivity extends AppCompatActivity {
         invalidateOptionsMenu();
     }
 
-    private static Runnable replaceFragment(
-            FragmentManager fm, Fragment nextFragment, UserProfileViewModel vm) {
+    private static Runnable replaceFragment(FragmentManager fMgr, Provider<Fragment> fragmentP) {
         return () -> {
             // update the main content by replacing fragments
-            Bundle args = new Bundle();
-            args.putString(USER_ID_KEY, vm.getUserId());
-            nextFragment.setArguments(args);
-            FragmentTransaction fTxn = fm.beginTransaction();
+            FragmentTransaction fTxn = fMgr.beginTransaction();
             //fTxn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-            fTxn.replace(R.id.frame, nextFragment, CURRENT_TAG);
+            fTxn.replace(R.id.frame, fragmentP.get(), CURRENT_TAG);
             fTxn.commitAllowingStateLoss();
         };
     }
@@ -282,18 +292,18 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Toast.makeText(this, "Prof paused", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Profile activity paused", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Toast.makeText(this, "Prof stopped", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Profile activity stopped", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "Prof deleted", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Profile activity deleted", Toast.LENGTH_SHORT).show();
     }
 }

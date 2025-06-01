@@ -1,14 +1,12 @@
-package com.example.tom.meeter.context.network.domain;
+package com.example.tom.meeter.infrastructure.eventbus.events;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by Tom on 14.01.2017.
  */
 
-public class IncomeEvents implements NetworkEvent {
+public class IncomeEvents {
 
     private JSONArray events;
 
@@ -22,11 +20,6 @@ public class IncomeEvents implements NetworkEvent {
 
     public IncomeEvents(JSONArray events) {
         this.events = events;
-    }
-
-    @Override
-    public JSONObject toJson() throws JSONException {
-        return new JSONObject().put("events", events);
     }
 
     @Override
