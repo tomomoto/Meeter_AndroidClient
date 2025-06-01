@@ -1,19 +1,24 @@
 package com.example.tom.meeter.context.network.domain;
 
-import org.json.JSONObject;
-
 /**
  * Created by Tom on 13.01.2017.
  */
-public class FailureLogin implements NetworkEvent {
+public class FailureLogin {
 
-    @Override
-    public String toString() {
-        return "FailureLogin{}";
+    private final String message;
+
+    public FailureLogin(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     @Override
-    public JSONObject toJson() {
-        return new JSONObject();
+    public String toString() {
+        return "FailureLogin{" +
+                "message='" + message + '\'' +
+                '}';
     }
 }

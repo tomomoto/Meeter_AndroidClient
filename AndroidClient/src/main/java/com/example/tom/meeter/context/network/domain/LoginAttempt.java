@@ -9,28 +9,23 @@ import org.json.JSONObject;
 
 public class LoginAttempt implements NetworkEvent {
 
-    private String login;
-    private String password;
+    private final String LOGIN_KEY = "login";
+    private final String PASSWORD_KEY = "password";
+
+    private final String login;
+    private final String password;
+
+    public LoginAttempt(String login, String password) {
+        this.login = login;
+        this.password = password;
+    }
 
     public String getLogin() {
         return login;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public LoginAttempt(String login, String password) {
-        this.login = login;
-        this.password = password;
     }
 
     @Override
@@ -44,7 +39,7 @@ public class LoginAttempt implements NetworkEvent {
     @Override
     public JSONObject toJson() throws JSONException {
         return new JSONObject()
-                .put("login", login)
-                .put("password", password);
+                .put(LOGIN_KEY, login)
+                .put(PASSWORD_KEY, password);
     }
 }

@@ -1,5 +1,7 @@
 package com.example.tom.meeter.context.activities;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -10,10 +12,10 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.network.domain.FailureLogin;
 import com.example.tom.meeter.context.network.domain.LoginAttempt;
 import com.example.tom.meeter.context.network.domain.SuccessfulLogin;
-import com.example.tom.meeter.context.network.domain.FailureLogin;
-import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.network.service.NetworkService;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,8 +25,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "Bus registered");
+        Log.d(TAG, "EventBus registered for " + this);
         EventBus.getDefault().register(this);
     }
 
@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "Bus unregistered");
+        Log.d(TAG, "EventBus unregistered for " + this);
         EventBus.getDefault().unregister(this);
     }
 
@@ -124,8 +124,14 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.LoginButton)
     public void LoginClick(Button button) {
-        EventBus.getDefault()
-                .post(new LoginAttempt(login.getText().toString(), password.getText().toString()));
+        CharSequence loginText = login.getText();
+        CharSequence pwdText = password.getText();
+        if (loginText == null || loginText.toString().isEmpty()
+                || pwdText == null || pwdText.toString().isEmpty()) {
+            Log.d(TAG, "Illegal login request...");
+            return;
+        }
+        EventBus.getDefault().post(new LoginAttempt(loginText.toString(), pwdText.toString()));
     }
 
     @OnClick(R.id.RegistrationButton)

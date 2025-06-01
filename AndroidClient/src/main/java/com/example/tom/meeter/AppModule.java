@@ -3,6 +3,7 @@ package com.example.tom.meeter;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.tom.meeter.context.event.domain.EventDao;
 import com.example.tom.meeter.context.event.domain.EventDatabase;
@@ -26,14 +27,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class AppModule {
 
-    private static String BASE_URL = "http://178.252.118.52:80/";
+    private static final String TAG = AppModule.class.getCanonicalName();
+    private static final String IP = "192.168.127.59";
+    private static final int PORT = 8084;
+    private static final String SERVER_URL = "http://" + IP + ":" + PORT + "/";
+
+
+    public AppModule() {
+        Log.d(TAG, "Configuring AppModule... Server URL is [" + SERVER_URL + "]");
+    }
 
     @Singleton
     @NonNull
     @Provides
     public UserService provideUserService() {
         return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(UserService.class);
@@ -68,7 +77,7 @@ public class AppModule {
     @Provides
     public EventService provideEventService() {
         return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(EventService.class);

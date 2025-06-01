@@ -107,7 +107,7 @@ public class ProfileFragment extends Fragment {
     Calendar today = Calendar.getInstance();
 
     try {
-      dob.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date));
+      dob.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(date));
     } catch (ParseException e) {
       Log.e(TAG, e.getLocalizedMessage(), e);
     }

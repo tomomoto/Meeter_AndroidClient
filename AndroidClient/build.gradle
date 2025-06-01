@@ -1,24 +1,36 @@
-apply plugin: 'com.android.application'
+plugins {
+    alias(libs.plugins.android.application)
+}
 
 android {
-    compileSdkVersion 27
+    namespace 'com.example.tom.meeter'
+    compileSdk 33
+
     defaultConfig {
         applicationId "com.example.tom.meeter"
-        minSdkVersion 21
-        targetSdkVersion 27
+        minSdk 21
+        targetSdk 33
         versionCode 1
         versionName "1.0"
+
+        /*
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        */
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -33,12 +45,13 @@ dependencies {
             [group: 'com.android.support', name: 'cardview-v7', version: '27.0.1']
     )
 
-    implementation('com.github.nkzawa:socket.io-client:0.3.0') {
+    implementation('io.socket:socket.io-client:2.1.2') {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'org.greenrobot:eventbus:3.0.0'
 
-    implementation 'com.google.android.gms:play-services:8.4.0'
+    /*implementation 'com.google.android.gms:play-services:8.4.0'*/
+    implementation 'com.google.android.gms:play-services:12.0.1'
 
     implementation('com.mikepenz.materialdrawer:library:0.9.5@aar') {
         transitive = true
@@ -46,6 +59,10 @@ dependencies {
 
     implementation 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    /*
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+    */
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
@@ -65,7 +82,7 @@ dependencies {
             [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.1']
     )
 
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.0.0'
+    /*implementation 'androidx.lifecycle:lifecycle-viewmodel:2.0.0'*/
 
 
     implementation 'android.arch.lifecycle:extensions:1.1.1'
@@ -89,5 +106,7 @@ dependencies {
     */
 
     testImplementation 'junit:junit:4.12'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 }
 
