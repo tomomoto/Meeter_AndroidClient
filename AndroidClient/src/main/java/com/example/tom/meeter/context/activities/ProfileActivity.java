@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -43,7 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
     // urls to load navigation header background image
     // and profile image
     // index to identify current nav menu item
-    public static int navItemIndex = 0;
+    public static int selectedNavigationMenu = 0;
 
     // tags used to attach the fragments
     private static final String TAG_PROFILE = "profile";
@@ -84,6 +85,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         ((App) getApplication()).getComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
+        Log.d(TAG, "Extra by key " + USER_ID_KEY + ":" + getIntent().getStringExtra(USER_ID_KEY));
         viewModel.init(getIntent().getStringExtra(USER_ID_KEY));
 
         setContentView(R.layout.profile_activity);
@@ -95,7 +97,7 @@ public class ProfileActivity extends AppCompatActivity {
         activityTitles = getResources().getStringArray(R.array.nav_item_activity_titles);
         setNavigationDrawer();
         if (savedInstanceState == null) {
-            navItemIndex = 0;
+            selectedNavigationMenu = 0;
             CURRENT_TAG = TAG_PROFILE;
             loadHomeFragment();
         }
@@ -123,27 +125,27 @@ public class ProfileActivity extends AppCompatActivity {
                     switch (iDrawerItem.getIdentifier()) {
                         //Replacing the main content with ContentFragment Which is our Inbox View;
                         case 0:
-                            navItemIndex = 0;
+                            selectedNavigationMenu = 0;
                             CURRENT_TAG = TAG_PROFILE;
                             break;
                         case 1:
-                            navItemIndex = 1;
+                            selectedNavigationMenu = 1;
                             CURRENT_TAG = TAG_EVENTS;
                             break;
                         case 2:
-                            navItemIndex = 2;
+                            selectedNavigationMenu = 2;
                             CURRENT_TAG = TAG_NEW_EVENT;
                             break;
                         case 3:
-                            navItemIndex = 3;
+                            selectedNavigationMenu = 3;
                             CURRENT_TAG = TAG_NOTIFICATIONS;
                             break;
                         case 4:
-                            navItemIndex = 4;
+                            selectedNavigationMenu = 4;
                             CURRENT_TAG = TAG_SETTINGS;
                             break;
                         default:
-                            navItemIndex = 0;
+                            selectedNavigationMenu = 0;
                     }
 
                     //Checking if the item is in checked state or not, if not make it in checked state
@@ -158,13 +160,15 @@ public class ProfileActivity extends AppCompatActivity {
 
                     //return true;
 
-                    Log.d("Item", String.valueOf(iDrawerItem.getIdentifier()));
+                    Log.d(TAG, "User selected drawers item: " + iDrawerItem.getIdentifier());
                 })
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
                     public void onDrawerOpened(View drawerView) {
                         InputMethodManager inputMethodManager = (InputMethodManager) ProfileActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(ProfileActivity.this.getCurrentFocus().getWindowToken(), 0);
+                        ProfileActivity profileActivity = ProfileActivity.this;
+                        //TODO ? NPE
+                        // inputMethodManager.hideSoftInputFromWindow(profileActivity.getCurrentFocus().getWindowToken(), 0);
                     }
 
                     @Override
@@ -175,7 +179,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setToolbarTitle() {
-        getSupportActionBar().setTitle(activityTitles[navItemIndex]);
+        getSupportActionBar().setTitle(activityTitles[selectedNavigationMenu]);
     }
 
     @Override
@@ -190,8 +194,8 @@ public class ProfileActivity extends AppCompatActivity {
         if (shouldLoadHomeFragOnBackPress) {
             // checking if user is on other navigation menu
             // rather than home
-            if (navItemIndex != 0) {
-                navItemIndex = 0;
+            if (selectedNavigationMenu != 0) {
+                selectedNavigationMenu = 0;
                 CURRENT_TAG = TAG_PROFILE;
                 loadHomeFragment();
                 return;
@@ -201,8 +205,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private Fragment getHomeFragment() {
-        switch (navItemIndex) {
+    private static Fragment getSelectedFragment(int index) {
+        switch (index) {
             case 0:
                 // profile
                 return new ProfileFragment();
@@ -242,20 +246,14 @@ public class ProfileActivity extends AppCompatActivity {
         // when switching between navigation menus
         // So using runnable, the fragment is loaded with cross fade effect
         // This effect can be seen in GMail app
-        Runnable mPendingRunnable = () -> {
-            // update the main content by replacing fragments
-            Fragment fragment = getHomeFragment();
-            Bundle args = new Bundle();
-            args.putString(USER_ID_KEY, viewModel.getUserId());
-            fragment.setArguments(args);
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            //fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-            fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG);
-            fragmentTransaction.commitAllowingStateLoss();
-        };
 
         // If mPendingRunnable is not null, then add to the message queue
-        mHandler.post(mPendingRunnable);
+        mHandler.post(
+                replaceFragment(
+                        getSupportFragmentManager(),
+                        getSelectedFragment(selectedNavigationMenu),
+                        viewModel
+                ));
 
         // show or hide the fab button
         //toggleFab();
@@ -265,6 +263,20 @@ public class ProfileActivity extends AppCompatActivity {
 
         // refresh toolbar menu
         invalidateOptionsMenu();
+    }
+
+    private static Runnable replaceFragment(
+            FragmentManager fm, Fragment nextFragment, UserProfileViewModel vm) {
+        return () -> {
+            // update the main content by replacing fragments
+            Bundle args = new Bundle();
+            args.putString(USER_ID_KEY, vm.getUserId());
+            nextFragment.setArguments(args);
+            FragmentTransaction fTxn = fm.beginTransaction();
+            //fTxn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+            fTxn.replace(R.id.frame, nextFragment, CURRENT_TAG);
+            fTxn.commitAllowingStateLoss();
+        };
     }
 
     @Override

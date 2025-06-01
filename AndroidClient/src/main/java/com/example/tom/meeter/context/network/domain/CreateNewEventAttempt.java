@@ -9,11 +9,12 @@ public class CreateNewEventAttempt implements NetworkEvent {
   private String description;
   private String starting;
   private String ending;
-  private Double latitude;
-  private Double longitude;
+  private Float latitude;
+  private Float longitude;
 
-  public CreateNewEventAttempt(String name, String description, String starting, String ending, Double latitude,
-      Double longitude) {
+  public CreateNewEventAttempt(
+          String name, String description, String starting, String ending,
+          Float latitude, Float longitude) {
     this.name = name;
     this.description = description;
     this.starting = starting;

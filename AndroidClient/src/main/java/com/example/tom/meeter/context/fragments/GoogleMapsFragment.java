@@ -54,7 +54,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback, 
     private Boolean trackUser = true;
     private CameraPosition camPosition = null;
     private Circle userCircle;
-    private double searchArea = 0;
+    private int searchArea = 0;
     private List<Marker> eventMarkers = new ArrayList<>();
 
     public GoogleMapsFragment() {
@@ -107,7 +107,10 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback, 
         userMarker.setPosition(new LatLng(latLng.latitude, latLng.longitude));
         //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
         
-        EventBus.getDefault().post(new SearchForEvents(latLng.latitude, latLng.longitude, searchArea));
+        EventBus.getDefault()
+                .post(
+                        new SearchForEvents(
+                                (float) latLng.latitude, (float) latLng.longitude, searchArea));
         //!!! userMarker.setIcon(icon);
         //userMarker.zoom
         if (camPosition != null) {

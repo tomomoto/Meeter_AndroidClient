@@ -33,8 +33,10 @@
     <string name="place">Местоположение</string>
     <string name="latitude">Широта</string>
     <string name="longitude">Долгота</string>
-    <string name="starts">Начинается (гггг/ММ/дд)</string>
-    <string name="ends">Заканчивается (гггг/ММ/дд)</string>
+    <string name="starts">Начинается (гггг-ММ-дд)</string>
+    <string name="ends">Заканчивается (гггг-ММ-дд)</string>
+    <string name="wrong_date">Неверная дата</string>
+    <string name="correct_date">Дата верна</string>
     <string name="other2">Другая</string>
     <string name="try_login">Залогиниться</string>
     <string name="name">Имя</string>

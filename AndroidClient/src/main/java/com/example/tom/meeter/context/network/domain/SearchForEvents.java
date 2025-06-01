@@ -11,39 +11,39 @@ public class SearchForEvents implements NetworkEvent {
 
     private static String LATITUDE_KEY = "latitude";
     private static String LONGITUDE_KEY = "longitude";
-    private static String AREA_KEY = "area";
+    private static String DISTANCE_KEY = "distance";
 
-    private double latitude;
-    private double longitude;
-    private double area;
+    private float latitude;
+    private float longitude;
+    private int distance;
 
-    public SearchForEvents(double latitude, double longitude, double area) {
+    public SearchForEvents(float latitude, float longitude, int distance) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.area = area;
+        this.distance = distance;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
 
-    public double getArea() {
-        return area;
+    public int getDistance() {
+        return distance;
     }
 
-    public void setArea(double area) {
-        this.area = area;
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
@@ -52,7 +52,7 @@ public class SearchForEvents implements NetworkEvent {
         return "SearchForEvents{" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", area=" + area +
+                ", distance=" + distance +
                 '}';
     }
 
@@ -61,6 +61,6 @@ public class SearchForEvents implements NetworkEvent {
         return new JSONObject()
                 .put(LATITUDE_KEY, latitude)
                 .put(LONGITUDE_KEY, longitude)
-                .put(AREA_KEY, area);
+                .put(DISTANCE_KEY, distance);
     }
 }

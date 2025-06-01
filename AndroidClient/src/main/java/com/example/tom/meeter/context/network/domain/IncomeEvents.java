@@ -8,7 +8,7 @@ import org.json.JSONObject;
  * Created by Tom on 14.01.2017.
  */
 
-public class IncomeEvents implements NetworkEvent{
+public class IncomeEvents implements NetworkEvent {
 
     private JSONArray events;
 
