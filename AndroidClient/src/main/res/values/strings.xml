@@ -61,4 +61,7 @@
         <item>Notifications</item>
         <item>Settings</item>
     </string-array>
+    <string name="starting_time">Starts at (hh:mm)</string>
+    <string name="ending_time">Ends at (hh:mm)</string>
+    <string name="now">Now</string>
 </resources>

@@ -55,4 +55,7 @@
     <string name="registration_failure">Ошибка регистрации</string>
     <string name="wrong_credentials">Неверные данные</string>
     <string name="ok">Окей</string>
+    <string name="starting_time">Начинается в (чч:мм)</string>
+    <string name="ending_time">Заканчивается в (чч:мм)</string>
+    <string name="now">Сейчас</string>
 </resources>

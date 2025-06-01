@@ -1,8 +1,8 @@
 package com.example.tom.meeter.context.fragments;
 
-import static java.text.DateFormat.getDateInstance;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,7 +30,11 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -45,8 +49,9 @@ import butterknife.OnTextChanged;
 public class CreateNewEventFragment extends Fragment {
 
     private static final String TAG = CreateNewEventFragment.class.getCanonicalName();
-    private static final String EMPTY_TEXT = "";
+    private static final String EMPTY_STR = "";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private GPSTrackerService gpsTrackerService;
 
@@ -68,23 +73,50 @@ public class CreateNewEventFragment extends Fragment {
     @BindView(R.id.newEventOtherPlaceBtn)
     Button otherPlace;
 
-    @BindView(R.id.newEventStartsEditText)
-    EditText starts;
+    @BindView(R.id.newEventStartsDateEditText)
+    EditText startsDateEditText;
 
-    @BindView(R.id.newEventEndsEditText)
-    EditText ends;
+    @BindView(R.id.newEventStartsDateTextView)
+    TextView startsDateValidity;
 
-    @BindView(R.id.newEventCurrentDateBtn)
-    Button currentDate;
+    @BindView(R.id.newEventStartsCurrentDateBtn)
+    Button currentDateToStartingDate;
 
-    @BindView(R.id.newEventOtherDateBtn)
-    Button otherDate;
+    @BindView(R.id.newEventStartsOtherDateBtn)
+    Button otherDateToStartingDate;
 
-    @BindView(R.id.newEventDateTextView)
-    TextView dateValidity;
+    @BindView(R.id.newEventStartsTimeEditText)
+    EditText startsTimeEditText;
+
+    @BindView(R.id.newEventStartsCurrentTimeBtn)
+    Button startsCurrentTimeBtn;
+
+    @BindView(R.id.newEventStartsOtherTimeBtn)
+    Button startsOtherTimeBtn;
+
+    @BindView(R.id.newEventEndsDateEditText)
+    EditText endsDateEditText;
+
+    @BindView(R.id.newEventEndsDateTextView)
+    TextView endsDateValidity;
+
+    @BindView(R.id.newEventEndsCurrentDateBtn)
+    Button endsCurrentDateBtn;
+
+    @BindView(R.id.newEventEndsOtherDateBtn)
+    Button endsOtherDateBtn;
+
+    @BindView(R.id.newEventEndsTimeEditText)
+    EditText endsTimeEditText;
+
+    @BindView(R.id.newEventEndsCurrentTimeBtn)
+    Button endsCurrentTimeBtn;
+
+    @BindView(R.id.newEventEndsOtherTimeBtn)
+    Button endsOtherTimeBtn;
 
     @BindView(R.id.newEventCreateBtn)
-    Button createEvent;
+    Button createEventBtn;
 
 
     public CreateNewEventFragment() {
@@ -137,26 +169,71 @@ public class CreateNewEventFragment extends Fragment {
         //TODO: Implement otherPlaceClickHandler
     }
 
-    @OnClick(R.id.newEventCurrentDateBtn)
-    public void currentDateClickHandler(Button button) {
-        String formattedDate = DATE_FORMAT.format(new Date());
-        //DateFormat dateInstance = getDateInstance();
-        //starts.setText(dateInstance.toString());
-        starts.setText(formattedDate);
+    @OnClick(R.id.newEventStartsCurrentDateBtn)
+    public void startsCurrentDateClickHandler(Button button) {
+        startsDateEditText.setText(DATE_FORMAT.format(new Date()));
     }
 
-    @OnClick(R.id.newEventOtherDateBtn)
-    public void otherDateClickHandler(Button button) {
+    @OnClick(R.id.newEventStartsOtherDateBtn)
+    public void startsOtherDateClickHandler(Button button) {
         //TODO: Implement otherDateClickHandler
-        starts.setText(getDateInstance().toString());
+        startsDateEditText.setText(null);
+    }
+
+    @SuppressLint("SetTextI18n")
+    @OnClick(R.id.newEventStartsCurrentTimeBtn)
+    public void startsCurrentTimeClickHandler(Button button) {
+        startsTimeEditText.setText(TIME_FORMAT.format(LocalTime.now()));
+    }
+
+    @OnClick(R.id.newEventStartsOtherTimeBtn)
+    public void startsOtherTimeClickHandler(Button button) {
+        //TODO:
+        startsTimeEditText.setText(null);
+    }
+
+    @OnClick(R.id.newEventEndsCurrentDateBtn)
+    public void endsCurrentDateClickHandler(Button button) {
+        endsDateEditText.setText(DATE_FORMAT.format(new Date()));
+    }
+
+    @OnClick(R.id.newEventEndsOtherDateBtn)
+    public void endsOtherDateClickHandler(Button button) {
+        //TODO: Implement otherDateClickHandler
+        endsDateEditText.setText(null);
+    }
+
+    @SuppressLint("SetTextI18n")
+    @OnClick(R.id.newEventEndsCurrentTimeBtn)
+    public void endsCurrentTimeClickHandler(Button button) {
+        endsTimeEditText.setText(TIME_FORMAT.format(LocalTime.now()));
+    }
+
+    @OnClick(R.id.newEventEndsOtherTimeBtn)
+    public void endsOtherTimeClickHandler(Button button) {
+        //TODO:
+        endsTimeEditText.setText(null);
     }
 
     @OnClick(R.id.newEventCreateBtn)
     public void createEventClickHandler(Button button) {
+        String startDate = startsDateEditText.getText().toString();
+        String startTime = startsTimeEditText.getText().toString();
+        LocalDate localStartDate = LocalDate.parse(startDate);
+        LocalTime localStartTime = LocalTime.parse(startTime);
+
+        String endDate = endsDateEditText.getText().toString();
+        String endTime = endsTimeEditText.getText().toString();
+        LocalDate localEndDate = LocalDate.parse(endDate);
+        LocalTime localEndTime = LocalTime.parse(endTime);
+
+        ZoneOffset offset = OffsetDateTime.now().getOffset();
+        OffsetDateTime starts = OffsetDateTime.of(localStartDate, localStartTime, offset);
+        OffsetDateTime ends = OffsetDateTime.of(localEndDate, localEndTime, offset);
         EventBus.getDefault()
                 .post(new CreateNewEventAttempt(
                         name.getText().toString(), description.getText().toString(),
-                        starts.getText().toString(), ends.getText().toString(),
+                        starts.toString(), ends.toString(),
                         Float.valueOf(latitude.getText().toString()),
                         Float.valueOf(longitude.getText().toString())));
     }
@@ -174,7 +251,7 @@ public class CreateNewEventFragment extends Fragment {
         CharSequence longitude = this.longitude.getText();
 
         if (requiredFieldsNotProvided(name, latitude, longitude)) {
-            createEvent.setEnabled(false);
+            createEventBtn.setEnabled(false);
         } else {
             validateWholeForm();
         }
@@ -182,34 +259,45 @@ public class CreateNewEventFragment extends Fragment {
 
     private static boolean requiredFieldsNotProvided(
             CharSequence name, CharSequence latitude, CharSequence longitude) {
-        return name == null || EMPTY_TEXT.equals(name.toString())
-                || latitude == null || EMPTY_TEXT.equals(latitude.toString())
-                || longitude == null || EMPTY_TEXT.equals(longitude.toString());
+        return name == null || EMPTY_STR.equals(name.toString())
+                || latitude == null || EMPTY_STR.equals(latitude.toString())
+                || longitude == null || EMPTY_STR.equals(longitude.toString());
     }
 
     private void validateWholeForm() {
         if (allSet()) {
-            createEvent.setEnabled(true);
+            createEventBtn.setEnabled(true);
         }
     }
 
     private boolean allSet() {
-        return name.getText() != null && !EMPTY_TEXT.equals(name.getText().toString())
-                && latitude.getText() != null && !EMPTY_TEXT.equals(latitude.getText().toString())
-                && longitude.getText() != null && !EMPTY_TEXT.equals(longitude.getText().toString())
-                && isDateValid(starts.getText().toString()) && isDateValid(ends.getText().toString());
+        return name.getText() != null && !EMPTY_STR.equals(name.getText().toString())
+                && latitude.getText() != null && !EMPTY_STR.equals(latitude.getText().toString())
+                && longitude.getText() != null && !EMPTY_STR.equals(longitude.getText().toString())
+                && isDateValid(startsDateEditText.getText().toString()) && isDateValid(endsDateEditText.getText().toString());
     }
 
-    @OnTextChanged(value = {R.id.newEventStartsEditText, R.id.newEventEndsEditText}, callback = AFTER_TEXT_CHANGED)
-    public void dateChangedListener(Editable text) {
-        String s = starts.getText().toString();
-        String e = ends.getText().toString();
-        if (!isDateValid(s) || !isDateValid(e)) {
-            dateValidity.setText(getString(R.string.wrong_date));
-            createEvent.setEnabled(false);
+    @OnTextChanged(value = R.id.newEventStartsDateEditText, callback = AFTER_TEXT_CHANGED)
+    public void startsDateChangedListener(Editable text) {
+        String s = startsDateEditText.getText().toString();
+        if (!isDateValid(s)) {
+            startsDateValidity.setText(getString(R.string.wrong_date));
+            createEventBtn.setEnabled(false);
             return;
         }
-        dateValidity.setText(getString(R.string.correct_date));
+        startsDateValidity.setText(getString(R.string.correct_date));
+        validateWholeForm();
+    }
+
+    @OnTextChanged(value = R.id.newEventEndsDateEditText, callback = AFTER_TEXT_CHANGED)
+    public void endsDateChangedListener(Editable text) {
+        String e = endsDateEditText.getText().toString();
+        if (!isDateValid(e)) {
+            endsDateValidity.setText(getString(R.string.wrong_date));
+            createEventBtn.setEnabled(false);
+            return;
+        }
+        endsDateValidity.setText(getString(R.string.correct_date));
         validateWholeForm();
     }
 

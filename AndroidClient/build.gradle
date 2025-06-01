@@ -26,6 +26,9 @@ android {
         }
     }
     compileOptions {
+        //LocalDateTime features
+        coreLibraryDesugaringEnabled = true
+
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
@@ -108,5 +111,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+    //LocalDateTime features
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+
 }
 

@@ -55,4 +55,7 @@
     <string name="registration_failure">Registration failed</string>
     <string name="wrong_credentials">Wrong credentials</string>
     <string name="ok">OK</string>
+    <string name="starting_time">Starts at (hh:mm)</string>
+    <string name="ending_time">Ends at (hh:mm)</string>
+    <string name="now">Now</string>
 </resources>

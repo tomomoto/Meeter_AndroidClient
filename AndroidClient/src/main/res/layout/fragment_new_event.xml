@@ -160,7 +160,7 @@
 
 
             <EditText
-                android:id="@+id/newEventStartsEditText"
+                android:id="@+id/newEventStartsDateEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -170,23 +170,11 @@
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
-            <EditText
-                android:id="@+id/newEventEndsEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventStartsEditText"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
-                android:hint="@string/ends"
-                android:inputType="date"
-                android:textAlignment="center"
-                android:textSize="20sp" />
-
             <TextView
-                android:id="@+id/newEventDateTextView"
+                android:id="@+id/newEventStartsDateTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventEndsEditText"
+                android:layout_below="@+id/newEventStartsDateEditText"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="50dp"
                 android:hint="Date validity"
@@ -197,14 +185,14 @@
                 android:id="@+id/date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventDateTextView"
+                android:layout_below="@+id/newEventStartsDateTextView"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <Button
-                    android:id="@+id/newEventCurrentDateBtn"
+                    android:id="@+id/newEventStartsCurrentDateBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -212,13 +200,141 @@
                     android:textAllCaps="false" />
 
                 <Button
-                    android:id="@+id/newEventOtherDateBtn"
+                    android:id="@+id/newEventStartsOtherDateBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/other2"
                     android:textAllCaps="false" />
             </LinearLayout>
+
+            <EditText
+                android:id="@+id/newEventStartsTimeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/date_buttons_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/starting_time"
+                android:inputType="time"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/start_time_buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/newEventStartsTimeEditText"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal"
+                android:paddingTop="5dp">
+
+                <Button
+                    android:id="@+id/newEventStartsCurrentTimeBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/now"
+                    android:textAllCaps="false" />
+
+                <Button
+                    android:id="@+id/newEventStartsOtherTimeBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/other"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/newEventEndsDateEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/start_time_buttons_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/ends"
+                android:inputType="date"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/newEventEndsDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/newEventEndsDateEditText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="Date validity"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/end_date_buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/newEventEndsDateTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal"
+                android:paddingTop="5dp">
+
+                <Button
+                    android:id="@+id/newEventEndsCurrentDateBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/today"
+                    android:textAllCaps="false" />
+
+                <Button
+                    android:id="@+id/newEventEndsOtherDateBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/other2"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/newEventEndsTimeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/end_date_buttons_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:hint="@string/ending_time"
+                android:inputType="time"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <LinearLayout
+                android:id="@+id/end_time_buttons_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/newEventEndsTimeEditText"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal"
+                android:paddingTop="5dp">
+
+                <Button
+                    android:id="@+id/newEventEndsCurrentTimeBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/now"
+                    android:textAllCaps="false" />
+
+                <Button
+                    android:id="@+id/newEventEndsOtherTimeBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/other"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+
         </RelativeLayout>
 
         <Button
