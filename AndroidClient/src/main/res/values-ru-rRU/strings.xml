@@ -41,11 +41,11 @@
     <string name="try_login">Залогиниться</string>
     <string name="name">Имя</string>
     <string name="simple_bot_nav_bar">Ниж. нав бар</string>
-    <string name="profile_user_id">Your ID: %1$s</string>
-    <string name="profile_user_name">Пользователь (Вы): %1$s %2$s</string>
-    <string name="profile_age">%1$s года (лет).</string>
-    <string name="profile_gender">Пол: %1$s.</string>
-    <string name="profile_info">Инфо: %1$s.</string>
+    <string name="profile_user_id">Идентификатор: %1$s</string>
+    <string name="profile_user_name">Пользователь: %1$s %2$s</string>
+    <string name="profile_age">Возраст: %1$s</string>
+    <string name="profile_gender">Пол: %1$s</string>
+    <string name="profile_info">О себе: %1$s</string>
     <string name="camera">Камера</string>
     <string name="gallery">Галерея</string>
     <string name="male_gender">Мужчина</string>
@@ -68,4 +68,5 @@
     <string name="map">Карта</string>
     <string name="events">События</string>
     <string name="your_events">Ваши события</string>
+    <string name="user_information">Пользовательская информация</string>
 </resources>

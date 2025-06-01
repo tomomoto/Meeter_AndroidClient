@@ -41,11 +41,11 @@
     <string name="today">Today</string>
     <string name="other">Other</string>
     <string name="current">Current</string>
-    <string name="profile_user_id">Your ID: %1$s</string>
-    <string name="profile_user_name">User(you): %1$s %2$s.</string>
-    <string name="profile_age">%1$s years old.</string>
-    <string name="profile_gender">Gender: %1$s.</string>
-    <string name="profile_info">Info: %1$s.</string>
+    <string name="profile_user_id">ID: %1$s</string>
+    <string name="profile_user_name">User: %1$s %2$s</string>
+    <string name="profile_age">Age: %1$s</string>
+    <string name="profile_gender">Gender: %1$s</string>
+    <string name="profile_info">Information: %1$s</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="male_gender">Male</string>
@@ -68,4 +68,5 @@
     <string name="map">Map</string>
     <string name="events">Events</string>
     <string name="your_events">Your events</string>
+    <string name="user_information">User information</string>
 </resources>

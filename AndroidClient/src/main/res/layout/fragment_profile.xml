@@ -1,85 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".context.fragments.EventListFragment">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    android:layout_height="match_parent">
+    <!--
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp">
+        android:layout_marginTop="0dp"
+    -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="50dp"
+        tools:context=".context.fragments.ProfileFragment">
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/userInformationLabel"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="50dp"
+            android:hint="@string/user_information"
+            android:inputType="none"
+            android:textAlignment="center"
+            android:textSize="20sp" />
 
-            <ImageView
-                android:id="@+id/user_photo"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="36dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="false"
-                android:src="@color/material_drawer_accent"
-                app:srcCompat="@drawable/ic_launcher"
-                tools:src="@tools:sample/backgrounds/scenic" />
+        <ImageView
+            android:id="@+id/user_photo"
+            android:layout_width="match_parent"
+            android:layout_height="170sp"
+            android:layout_below="@+id/userInformationLabel"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="29dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="content description..."
+            android:src="@drawable/user_612x612" />
+        <!--app:srcCompat="@drawable/ic_launcher"
+        tools:src="@tools:sample/backgrounds/scenic" -->
+        />
 
-            <TextView
-                android:id="@+id/user_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_photo"
-                android:layout_marginTop="30dp"
-                android:text="Id: "
-                android:textSize="20dp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/user_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_photo"
+            android:layout_marginTop="30dp"
+            android:text="@string/profile_user_id"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/user_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_id"
-                android:layout_marginTop="36dp"
-                android:text="Пользователь (вы):"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_id"
+            android:layout_marginTop="45dp"
+            android:text="@string/profile_user_name"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/user_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_name"
-                android:layout_marginTop="36dp"
-                android:text="Возраст: "
-                android:textSize="20dp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/user_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_name"
+            android:layout_marginTop="45dp"
+            android:text="@string/profile_age"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/user_gender"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_age"
-                android:layout_marginTop="45dp"
-                android:text="Пол: "
-                android:textSize="20dp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/user_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_age"
+            android:layout_marginTop="45dp"
+            android:text="@string/profile_gender"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/user_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_gender"
-                android:layout_marginTop="36dp"
-                android:text="О себе: "
-                android:textSize="20dp"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
-    </ScrollView>
-</RelativeLayout>
+        <TextView
+            android:id="@+id/user_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_gender"
+            android:layout_marginTop="45dp"
+            android:text="@string/profile_info"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+</ScrollView>
