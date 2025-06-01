@@ -3,17 +3,19 @@ package com.example.tom.meeter.context.network.domain;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
+
 public class CreateNewEventAttempt implements NetworkEvent {
 
   private String name;
   private String description;
-  private String starting;
-  private String ending;
+  private OffsetDateTime starting;
+  private OffsetDateTime ending;
   private Float latitude;
   private Float longitude;
 
   public CreateNewEventAttempt(
-          String name, String description, String starting, String ending,
+          String name, String description, OffsetDateTime starting, OffsetDateTime ending,
           Float latitude, Float longitude) {
     this.name = name;
     this.description = description;

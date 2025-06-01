@@ -39,16 +39,19 @@ public class NetworkService extends Service {
 
     private static final String GREETINGS_CHANNEL = "greetings";
     private static final String USER_LOGIN_CHANNEL = "user:login";
+    private static final String EVENTS_CREATE_CHANNEL = "events:create";
     private static final String EVENTS_SEARCH_CHANNEL = "events:search";
 
     private static final String SUCCESSFUL_REGISTRATION_EVENT = "SuccessfulRegistrationEvent";
     private static final String FAILED_REGISTRATION_EVENT = "FailedRegistrationEvent";
 
-    private static final String SUCCESSFUL_EVENT_CREATION = "SuccessfulEventCreation";
-    private static final String FAILURE_EVENT_CREATION = "FailureEventCreation";
     private static final String CODE_KEY = "code";
     private static final String ID_KEY = "id";
     private static final String MESSAGE_KEY = "message";
+    private static final int SUCCESS = 200;
+    private static final int CREATED_CODE = 201;
+    private static final int BAD_REQUEST = 400;
+    private static final int UNAUTHORIZED = 401;
 
     private static void greetingsHandler(Object... args) {
         Log.d(TAG, "SocketIO server welcomes the client." + Arrays.toString(args));
@@ -59,13 +62,13 @@ public class NetworkService extends Service {
         int code = JsonHelper.getInt(response, CODE_KEY);
         Log.d(TAG, USER_LOGIN_CHANNEL + " : " + response);
         switch (code) {
-            case 200:
+            case SUCCESS:
                 Log.d(TAG, "Successful login. " + response);
                 EventBus.getDefault()
                         .post(new SuccessfulLogin(JsonHelper.getString(response, ID_KEY)));
                 break;
-            case 400:
-            case 401:
+            case BAD_REQUEST:
+            case UNAUTHORIZED:
                 Log.d(TAG, "Failed login. " + response);
                 EventBus.getDefault()
                         .post(new FailureLogin(JsonHelper.getString(response, MESSAGE_KEY)));
@@ -110,15 +113,24 @@ public class NetworkService extends Service {
         EventBus.getDefault().post(new RegistrationFailed());
     }
 
-    private static void successfulEventCreationHandler(Object... args) {
-        Log.d(TAG, "successfulEventCreationHandler From service");
-        SuccessfulEventCreation payload = new SuccessfulEventCreation((String) args[0]);
-        EventBus.getDefault().post(payload);
-    }
-
-    private static void failureEventCreationHandler(Object... args) {
-        Log.d(TAG, "failureEventCreationHandler From service");
-        EventBus.getDefault().post(new FailureEventCreation());
+    private static void eventsCreateHandler(Object... args) {
+        JSONObject response = getSimpleResponse(JSONObject.class, args);
+        int code = JsonHelper.getInt(response, CODE_KEY);
+        Log.d(TAG, EVENTS_CREATE_CHANNEL + " : " + response);
+        switch (code) {
+            case CREATED_CODE:
+                Log.d(TAG, "Event successfully created. " + response);
+                EventBus.getDefault()
+                        .post(new SuccessfulEventCreation(JsonHelper.getString(response, ID_KEY)));
+                break;
+            case BAD_REQUEST:
+                Log.d(TAG, "Failed event creation. " + response);
+                EventBus.getDefault().post(new FailureEventCreation());
+                break;
+            default:
+                Log.d(TAG, "Unrecognized code from " + EVENTS_CREATE_CHANNEL + " [" + code + "]");
+                break;
+        }
     }
 
     public class Binder extends android.os.Binder {
@@ -158,12 +170,10 @@ public class NetworkService extends Service {
             socketClient.on(GREETINGS_CHANNEL, NetworkService::greetingsHandler);
             socketClient.on(USER_LOGIN_CHANNEL, NetworkService::userLoginHandler);
             socketClient.on(EVENTS_SEARCH_CHANNEL, NetworkService::eventsSearchHandler);
+            socketClient.on(EVENTS_CREATE_CHANNEL, NetworkService::eventsCreateHandler);
 
             socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, NetworkService::userRegisterHandler);
-
             socketClient.on(FAILED_REGISTRATION_EVENT, NetworkService::failureRegistrationEventHandler);
-            socketClient.on(SUCCESSFUL_EVENT_CREATION, NetworkService::successfulEventCreationHandler);
-            socketClient.on(FAILURE_EVENT_CREATION, NetworkService::failureEventCreationHandler);
             socketClient.connect();
             EventBus.getDefault().register(this);
             Log.d(TAG, "SocketIO client is going to start...");
@@ -181,11 +191,10 @@ public class NetworkService extends Service {
         socketClient.off(GREETINGS_CHANNEL, NetworkService::greetingsHandler);
         socketClient.off(USER_LOGIN_CHANNEL, NetworkService::userLoginHandler);
         socketClient.off(EVENTS_SEARCH_CHANNEL, NetworkService::eventsSearchHandler);
+        socketClient.off(EVENTS_CREATE_CHANNEL, NetworkService::eventsCreateHandler);
 
         socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, NetworkService::userRegisterHandler);
         socketClient.off(FAILED_REGISTRATION_EVENT, NetworkService::failureRegistrationEventHandler);
-        socketClient.off(SUCCESSFUL_EVENT_CREATION, NetworkService::successfulEventCreationHandler);
-        socketClient.off(FAILURE_EVENT_CREATION, NetworkService::failureEventCreationHandler);
         Log.d(TAG, "Disconnected from service");
         super.onDestroy();
     }
@@ -216,20 +225,20 @@ public class NetworkService extends Service {
     }
 
     @Subscribe
-    public void onMessageEvent(RegistrationAttempt event) {
-        Log.d(TAG, "onMessageEvent:RegistrationAttempt:" + event.toString());
+    public void onMessageEvent(CreateNewEventAttempt event) {
+        Log.d(TAG, "onMessageEvent:CreateNewEventAttempt: " + event.toString());
         try {
-            socketClient.emit("register", event.toJson());
+            socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
         }
     }
 
     @Subscribe
-    public void onMessageEvent(CreateNewEventAttempt event) {
-        Log.d(TAG, "onMessageEvent:CreateNewEventAttempt:" + event.toString());
+    public void onMessageEvent(RegistrationAttempt event) {
+        Log.d(TAG, "onMessageEvent:RegistrationAttempt: " + event.toString());
         try {
-            socketClient.emit("createNewEvent", event.toJson());
+            socketClient.emit("register", event.toJson());
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
         }

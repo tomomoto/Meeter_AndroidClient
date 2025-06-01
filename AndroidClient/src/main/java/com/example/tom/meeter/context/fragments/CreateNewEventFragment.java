@@ -233,7 +233,7 @@ public class CreateNewEventFragment extends Fragment {
         EventBus.getDefault()
                 .post(new CreateNewEventAttempt(
                         name.getText().toString(), description.getText().toString(),
-                        starts.toString(), ends.toString(),
+                        starts, ends,
                         Float.valueOf(latitude.getText().toString()),
                         Float.valueOf(longitude.getText().toString())));
     }
