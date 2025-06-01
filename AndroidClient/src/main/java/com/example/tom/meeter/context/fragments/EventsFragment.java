@@ -22,10 +22,6 @@ import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY
  */
 public class EventsFragment extends Fragment {
 
-    private static final String MAP_KEY = "Map";
-    private static final String EVENTS_KEY = "Events";
-    private static final String USER_EVENTS_KEY = "User events";
-
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -71,9 +67,9 @@ public class EventsFragment extends Fragment {
         UserEventsFragment userEvents = new UserEventsFragment();
         userEvents.setArguments(args);
 
-        adapter.addFragment(gmaps, MAP_KEY);
-        adapter.addFragment(events, EVENTS_KEY);
-        adapter.addFragment(userEvents, USER_EVENTS_KEY);
+        adapter.addFragment(gmaps, getString(R.string.map));
+        adapter.addFragment(events, getString(R.string.events));
+        adapter.addFragment(userEvents, getString(R.string.your_events));
 
         viewPager.setAdapter(adapter);
     }

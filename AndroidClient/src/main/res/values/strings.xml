@@ -64,4 +64,7 @@
     <string name="starting_time">Starts at (hh:mm)</string>
     <string name="ending_time">Ends at (hh:mm)</string>
     <string name="now">Now</string>
+    <string name="map">Map</string>
+    <string name="events">Events</string>
+    <string name="your_events">Your events</string>
 </resources>

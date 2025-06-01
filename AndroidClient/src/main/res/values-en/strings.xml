@@ -55,7 +55,17 @@
     <string name="registration_failure">Registration failed</string>
     <string name="wrong_credentials">Wrong credentials</string>
     <string name="ok">OK</string>
+    <string-array name="nav_item_activity_titles">
+        <item>Profile</item>
+        <item>Events</item>
+        <item>New event</item>
+        <item>Notifications</item>
+        <item>Settings</item>
+    </string-array>
     <string name="starting_time">Starts at (hh:mm)</string>
     <string name="ending_time">Ends at (hh:mm)</string>
     <string name="now">Now</string>
+    <string name="map">Map</string>
+    <string name="events">Events</string>
+    <string name="your_events">Your events</string>
 </resources>
