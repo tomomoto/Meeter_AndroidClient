@@ -208,7 +208,7 @@ public class ProfileActivity extends AppCompatActivity {
             case DRAWER_NOTIFICATION_ID:
                 selectedNavigationId = drawerItem.getIdentifier();
                 break;
-                /*TODO: not set
+                /*TODO: not set yet
                 DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
                 DRAWER_OPEN_SOURCE_ID = 12;
@@ -218,13 +218,6 @@ public class ProfileActivity extends AppCompatActivity {
                 selectedNavigationId = DRAWER_PROFILE_ID;
         }
         render();
-        //Checking if the item is in checked state or not, if not make it in checked state
-                    /*if (menuItem.isChecked()) {
-                        menuItem.setChecked(false);
-                    } else {
-                        menuItem.setChecked(true);
-                    }
-                    menuItem.setChecked(true);*/
     }
 
     private void render() {
