@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onMessageEvent(SuccessfulLogin ev) {
         Log.d(TAG, ev.toString());
         Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-        intent.putExtra(USER_ID_KEY, ev.getUserId());
+        intent.putExtra(USER_ID_KEY, ev.getId());
         startActivity(intent);
         finish();
     }

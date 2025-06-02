@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.user.domain;
+package com.example.tom.meeter.context.user.database;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -8,6 +8,8 @@ import android.arch.persistence.room.Query;
 import io.reactivex.Maybe;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
+import com.example.tom.meeter.context.user.domain.User;
 
 @Dao
 public interface UserDao {

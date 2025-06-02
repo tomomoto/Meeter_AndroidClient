@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.gps.domain.GPSTrackerLocationListener;
 import com.example.tom.meeter.context.gps.service.GPSTrackerService;
+import com.example.tom.meeter.context.network.EventDTO;
 import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,8 +37,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class GoogleMapsFragment extends Fragment
         return result;
     }
 
-    private SupportMapFragment sMapFragment;
+    private SupportMapFragment supportMapFragment;
     private GPSTrackerService gpsTrackerService;
     private LatLng myLocation;
     private Marker userMarker;
@@ -76,8 +75,6 @@ public class GoogleMapsFragment extends Fragment
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
         gpsTrackerService = new GPSTrackerService(getContext());
-        sMapFragment = SupportMapFragment.newInstance();
-        sMapFragment.getMapAsync(this);
         searchArea = 5000;
         EventBus.getDefault().register(this);
         Log.d(TAG, "registered bus");
@@ -88,9 +85,15 @@ public class GoogleMapsFragment extends Fragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         logMethod(TAG, this);
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.map, sMapFragment).commit();
-        return inflater.inflate(R.layout.subfragment_gmaps, container, false);
+        supportMapFragment = SupportMapFragment.newInstance();
+        supportMapFragment.getMapAsync(this);
+        FragmentManager fm = getFragmentManager();
+        if (fm != null) {
+            fm.beginTransaction()
+                    .replace(R.id.event_fragment_sub_fragment_gmap, supportMapFragment)
+                    .commit();
+        }
+        return inflater.inflate(R.layout.sub_fragment_gmaps, container, false);
     }
 
     @Override
@@ -166,22 +169,15 @@ public class GoogleMapsFragment extends Fragment
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(IncomeEvents incomeEvent) {
-        int eventsSize = incomeEvent.getEvents().length();
         for (Marker marker : eventMarkers) {
             marker.remove();
         }
-        eventMarkers = new ArrayList<>();
-        for (int i = 0; i < eventsSize; i++) {
-            try {
-                JSONObject event = (JSONObject) incomeEvent.getEvents().get(i);
-                double latitude = (double) event.get("latitude");
-                double longitude = (double) event.get("longitude");
-                String name = (String) event.get("name");
-                Marker marker = gmap.addMarker(new MarkerOptions().title(name).position(new LatLng(latitude, longitude)));
-                eventMarkers.add(marker);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        for (EventDTO e : incomeEvent.getEvents()) {
+            Marker marker = gmap.addMarker(
+                    new MarkerOptions()
+                            .title(e.getName())
+                            .position(new LatLng(e.getLatitude(), e.getLongitude())));
+            eventMarkers.add(marker);
         }
     }
 }

@@ -4,16 +4,16 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.example.tom.meeter.context.user.domain.User;
-import com.example.tom.meeter.context.user.domain.UserRepository;
+import com.example.tom.meeter.context.user.repository.UserRepository;
 
 import javax.inject.Inject;
 
 public class UserProfileViewModel extends ViewModel {
 
     private String userId;
-    private LiveData<User> user;
+    private LiveData<User> userLiveData;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Inject
     public UserProfileViewModel(UserRepository userRepository) {
@@ -22,18 +22,17 @@ public class UserProfileViewModel extends ViewModel {
 
     public void init(String userId) {
         this.userId = userId;
-        if (user != null) {
-            return;
+        if (userLiveData == null) {
+            userLiveData = userRepository.getUserLiveData(userId);
         }
-        user = userRepository.getUser(userId);
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public LiveData<User> getUser() {
-        return user;
+    public LiveData<User> getUserLiveData() {
+        return userLiveData;
     }
 
 }

@@ -18,44 +18,33 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.event.RecycleViewEventAdapter;
-import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.context.profile.RecycleViewActiveEventsAdapter;
 import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class EventListFragment extends Fragment {
+public class ActiveEventsFragment extends Fragment {
 
-    private static final String TAG = EventListFragment.class.getCanonicalName();
+    private static final String TAG = ActiveEventsFragment.class.getCanonicalName();
 
-    public static EventListFragment createEventListFragment(Bundle args) {
-        EventListFragment result = new EventListFragment();
+    public static ActiveEventsFragment createEventListFragment(Bundle args) {
+        ActiveEventsFragment result = new ActiveEventsFragment();
         result.setArguments(args);
         return result;
     }
 
-    @BindView(R.id.my_recycler_view)
-    RecyclerView rView;
+    @BindView(R.id.active_events_fragment_recycler_view)
+    RecyclerView recyclerView;
 
-    private RecycleViewEventAdapter rvEventAdapter;
+    private RecycleViewActiveEventsAdapter recycleViewActiveEventsAdapter;
 
-    private RecyclerView.LayoutManager layoutManager;
-
-    private List<EventDTO> events;
-
-
-    public EventListFragment() {
+    public ActiveEventsFragment() {
         logMethod(TAG, this);
     }
 
@@ -63,17 +52,15 @@ public class EventListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        events = new ArrayList<>();
         EventBus.getDefault().register(this);
         Log.d(TAG, "EventListFragment Registering eventBus");
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+        @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.subfragment_events, container, false);
+        View view = inflater.inflate(R.layout.sub_fragment_active_events, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -88,30 +75,21 @@ public class EventListFragment extends Fragment {
         //rView.setHasFixedSize(true);
 
         // use a linear layout manager
-        layoutManager = new LinearLayoutManager(getActivity());
-        rView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
-        rvEventAdapter = new RecycleViewEventAdapter(events);
-        rView.setAdapter(rvEventAdapter);
-        rView.invalidate();
+        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter();
+        recyclerView.setAdapter(recycleViewActiveEventsAdapter);
+        recyclerView.invalidate();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(IncomeEvents event) {
-        int eventsSize = event.getEvents().length();
-        events.clear();
-        if (eventsSize > 0) {
-            for (int i = 0; i < eventsSize; i++) {
-                try {
-                    events.add(EventDTO.encode((JSONObject) event.getEvents().get(i)));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+    public void onMessageEvent(IncomeEvents eventsSearch) {
+        recycleViewActiveEventsAdapter.cleanEvents();
+        if (!eventsSearch.getEvents().isEmpty()) {
+            recycleViewActiveEventsAdapter.addEvents(eventsSearch.getEvents());
         }
-        rvEventAdapter = new RecycleViewEventAdapter(events);
-        rView.swapAdapter(rvEventAdapter, false);
+        recyclerView.requestLayout();
     }
 
     @Override

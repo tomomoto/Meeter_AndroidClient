@@ -1,4 +1,6 @@
-package com.example.tom.meeter.context.user.domain;
+package com.example.tom.meeter.context.user.service;
+
+import com.example.tom.meeter.context.user.domain.User;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

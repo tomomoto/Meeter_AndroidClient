@@ -1,6 +1,6 @@
 package com.example.tom.meeter.context.profile.fragment;
 
-import static com.example.tom.meeter.context.profile.fragment.EventListFragment.createEventListFragment;
+import static com.example.tom.meeter.context.profile.fragment.ActiveEventsFragment.createEventListFragment;
 import static com.example.tom.meeter.context.profile.fragment.GoogleMapsFragment.createGoogleMapsFragment;
 import static com.example.tom.meeter.context.profile.fragment.UserEventsFragment.createUserEventsFragment;
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
@@ -46,8 +46,8 @@ public class EventsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+        LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_events, container, false);
@@ -58,22 +58,22 @@ public class EventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
-        viewPager = view.findViewById(R.id.viewpager);
+        viewPager = view.findViewById(R.id.fragment_events_viewpager);
         viewPager.setAdapter(
-                createViewPagerAdapter(
-                        getChildFragmentManager(),
-                        createBundle(USER_ID_KEY, getArguments().getString(USER_ID_KEY)),
-                        getString(R.string.map),
-                        getString(R.string.events),
-                        getString(R.string.your_events)));
+            createViewPagerAdapter(
+                getChildFragmentManager(),
+                createBundle(USER_ID_KEY, getArguments().getString(USER_ID_KEY)),
+                getString(R.string.map),
+                getString(R.string.events),
+                getString(R.string.your_events)));
 
-        tabLayout = view.findViewById(R.id.tabs);
+        tabLayout = view.findViewById(R.id.fragment_events_tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private static ViewPagerAdapter createViewPagerAdapter(
-            FragmentManager fMgr, Bundle bundle, String mapTitle,
-            String eventsTitle, String yourEventsTitle) {
+        FragmentManager fMgr, Bundle bundle, String mapTitle,
+        String eventsTitle, String yourEventsTitle) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(fMgr);
         adapter.addFragment(createGoogleMapsFragment(bundle), mapTitle);
         adapter.addFragment(createEventListFragment(bundle), eventsTitle);
@@ -82,8 +82,8 @@ public class EventsFragment extends Fragment {
     }
 
     static class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
+        private final List<Fragment> fragments = new ArrayList<>();
+        private final List<String> fragmentsTitles = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -91,22 +91,22 @@ public class EventsFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return mFragmentList.get(position);
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return mFragmentList.size();
+            return fragments.size();
         }
 
         public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
+            fragments.add(fragment);
+            fragmentsTitles.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+            return fragmentsTitles.get(position);
         }
     }
 }

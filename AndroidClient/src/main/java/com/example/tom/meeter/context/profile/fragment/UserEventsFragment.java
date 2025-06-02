@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.event.RecycleViewUserEventsAdapter;
+import com.example.tom.meeter.context.profile.RecycleViewUserEventsAdapter;
 import com.example.tom.meeter.context.event.UserEventsViewModel;
 import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
 
@@ -35,8 +35,8 @@ public class UserEventsFragment extends Fragment {
         return result;
     }
 
-    @BindView(R.id.user_events_rv)
-    RecyclerView rView;
+    @BindView(R.id.user_events_fragment_recycler_view)
+    RecyclerView recyclerView;
 
     private RecycleViewUserEventsAdapter adapter;
 
@@ -57,9 +57,9 @@ public class UserEventsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_user_events, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.sub_fragment_user_events, container, false);
         ButterKnife.bind(this, view);
         logMethod(TAG, this);
         return view;
@@ -82,9 +82,9 @@ public class UserEventsFragment extends Fragment {
 
         adapter = new RecycleViewUserEventsAdapter();
 
-        rView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rView.setAdapter(adapter);
-        rView.invalidate();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
 
         /*
         adapter = new RecycleViewUserEventsAdapter(events);

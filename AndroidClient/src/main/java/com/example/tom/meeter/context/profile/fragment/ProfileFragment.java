@@ -89,7 +89,7 @@ public class ProfileFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
         viewModel.init(getArguments().getString(USER_ID_KEY));
 
-        viewModel.getUser().observe(this, user -> {
+        viewModel.getUserLiveData().observe(this, user -> {
             userIdView.setText(getString(R.string.profile_user_id, user.getId()));
             userNameView.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
             userGenderView.setText(getString(R.string.profile_gender, user.getGender()));

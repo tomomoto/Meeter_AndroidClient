@@ -184,7 +184,7 @@ public class RegistrationActivity extends AppCompatActivity {
   public void onMessageEvent(RegistrationSuccess ev) {
     Log.d(TAG, ev.toString());
     startActivity(new Intent(RegistrationActivity.this, ProfileActivity.class)
-        .putExtra(USER_ID_KEY, ev.getUserId()));
+        .putExtra(USER_ID_KEY, ev.getId()));
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)

@@ -3,15 +3,9 @@ package com.example.tom.meeter.infrastructure.eventbus.events;
 /**
  * Created by Tom on 13.01.2017.
  */
-public class FailureLogin {
-
-    private final String message;
+public class FailureLogin extends BaseMessageEvent {
 
     public FailureLogin(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
+        super(message);
     }
 }

@@ -1,6 +1,13 @@
 package com.example.tom.meeter.infrastructure.eventbus.events;
 
+import com.example.tom.meeter.context.network.EventDTO;
+
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tom on 14.01.2017.
@@ -8,18 +15,20 @@ import org.json.JSONArray;
 
 public class IncomeEvents {
 
-    private JSONArray events;
+    private final List<EventDTO> events = new ArrayList<>();
 
-    public JSONArray getEvents() {
+    public List<EventDTO> getEvents() {
         return events;
     }
 
-    public void setEvents(JSONArray events) {
-        this.events = events;
-    }
-
-    public IncomeEvents(JSONArray events) {
-        this.events = events;
+    public IncomeEvents(JSONArray jsonArray) {
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                events.add(EventDTO.encode((JSONObject) jsonArray.get(i)));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

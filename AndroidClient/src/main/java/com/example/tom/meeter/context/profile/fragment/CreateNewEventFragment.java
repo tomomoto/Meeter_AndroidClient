@@ -320,7 +320,7 @@ public class CreateNewEventFragment extends Fragment {
     public void onMessageEvent(SuccessfulEventCreation ev) {
         Log.d(TAG, ev.toString());
         new AlertDialog.Builder(getContext())
-                .setTitle("Event created, id: " + ev.getEventId())
+                .setTitle("Event created, id: " + ev.getId())
                 .setMessage("Created.")
                 .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
                 .create()

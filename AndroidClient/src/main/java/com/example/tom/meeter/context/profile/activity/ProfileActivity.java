@@ -89,7 +89,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private Drawer.Result drawer = null;
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.profile_activity_toolbar)
     Toolbar toolbar;
 
     // flag to load home fragment when user presses back key
@@ -305,7 +305,7 @@ public class ProfileActivity extends AppCompatActivity {
             // update the main content by replacing fragments
             FragmentTransaction txn = fm.beginTransaction();
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-            txn.replace(R.id.frame, fragmentP.get(), currentTagP.get());
+            txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
             txn.commit();
             //txn.commitAllowingStateLoss();
         };

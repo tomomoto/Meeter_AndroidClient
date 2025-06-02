@@ -11,7 +11,7 @@
         android:elevation="4dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/profile_activity_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
@@ -29,7 +29,7 @@
 
 
     <FrameLayout
-        android:id="@+id/frame"
+        android:id="@+id/profile_activity_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">

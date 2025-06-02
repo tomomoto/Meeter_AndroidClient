@@ -5,12 +5,12 @@ import android.arch.persistence.room.Room;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.tom.meeter.context.event.domain.EventDao;
-import com.example.tom.meeter.context.event.domain.EventDatabase;
-import com.example.tom.meeter.context.event.domain.EventService;
-import com.example.tom.meeter.context.user.domain.UserDao;
-import com.example.tom.meeter.context.user.domain.UserDatabase;
-import com.example.tom.meeter.context.user.domain.UserService;
+import com.example.tom.meeter.context.event.database.EventDao;
+import com.example.tom.meeter.context.event.database.EventDatabase;
+import com.example.tom.meeter.context.event.service.EventService;
+import com.example.tom.meeter.context.user.database.UserDao;
+import com.example.tom.meeter.context.user.database.UserDatabase;
+import com.example.tom.meeter.context.user.service.UserService;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
@@ -42,10 +42,10 @@ public class AppModule {
     @Provides
     public UserService provideUserService() {
         return new Retrofit.Builder()
-                .baseUrl(SERVER_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(UserService.class);
+            .baseUrl(SERVER_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(UserService.class);
     }
 
     @Singleton
@@ -53,8 +53,8 @@ public class AppModule {
     @Provides
     public UserDatabase provideUserDb(Application app) {
         return Room.databaseBuilder(app, UserDatabase.class, "user.db")
-                .fallbackToDestructiveMigration()
-                .build();
+            .fallbackToDestructiveMigration()
+            .build();
     }
 
     @Singleton
@@ -69,7 +69,7 @@ public class AppModule {
     @Provides
     public Executor provideExecutor() {
         return new ThreadPoolExecutor(4, 8, 1000, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(15, false));
+            new ArrayBlockingQueue<>(15, false));
     }
 
     @Singleton
@@ -77,10 +77,10 @@ public class AppModule {
     @Provides
     public EventService provideEventService() {
         return new Retrofit.Builder()
-                .baseUrl(SERVER_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(EventService.class);
+            .baseUrl(SERVER_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(EventService.class);
     }
 
     @Singleton
@@ -88,8 +88,8 @@ public class AppModule {
     @Provides
     public EventDatabase provideEventDb(Application app) {
         return Room.databaseBuilder(app, EventDatabase.class, "event.db")
-                .fallbackToDestructiveMigration()
-                .build();
+            .fallbackToDestructiveMigration()
+            .build();
     }
 
     @Singleton
