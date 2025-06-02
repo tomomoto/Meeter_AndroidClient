@@ -92,6 +92,7 @@ public class RegistrationActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.d(TAG, "RegistrationActivity onCreate()");
     setContentView(R.layout.registration_activity);
     ButterKnife.bind(this);
   }
@@ -99,6 +100,7 @@ public class RegistrationActivity extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_main, menu);
+    Log.d(TAG, "RegistrationActivity onCreateOptionsMenu()");
     return true;
   }
 
@@ -106,18 +108,19 @@ public class RegistrationActivity extends AppCompatActivity {
   protected void onStart() {
     super.onStart();
     EventBus.getDefault().register(this);
-    Log.d(TAG, "Event bus registered...");
+    Log.d(TAG, "RegistrationActivity onStart()... Event bus registered...");
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     EventBus.getDefault().unregister(this);
-    Log.d(TAG, "Event bus unregistered...");
+    Log.d(TAG, "RegistrationActivity onStop()... Event bus unregistered...");
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    Log.d(TAG, "RegistrationActivity onOptionsItemSelected().");
     int id = item.getItemId();
 
     if (id == R.id.action_settings) {

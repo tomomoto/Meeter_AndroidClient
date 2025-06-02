@@ -25,16 +25,21 @@
         <!-- TODO remove^ android:usesCleartextTraffic="true" when start usage of https -->
 
         <activity
-            android:name=".context.login.activity.LoginActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
+            android:name=".context.start.activity.StartActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".context.login.activity.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.tom.meeter.context.start.activity.StartActivity"/>
         </activity>
         <activity
             android:name=".context.profile.activity.ProfileActivity"
@@ -47,14 +52,6 @@
         <activity
             android:name=".context.registration.activity.RegistrationActivity"
             android:label="@string/RegistrationActivityTitle"
-            android:parentActivityName=".context.login.activity.LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tom.meeter.context.login.activity.LoginActivity" />
-        </activity>
-        <activity
-            android:name=".context.start.activity.StartActivity"
-            android:label="@string/BotNavBarActivityTitle"
             android:parentActivityName=".context.login.activity.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

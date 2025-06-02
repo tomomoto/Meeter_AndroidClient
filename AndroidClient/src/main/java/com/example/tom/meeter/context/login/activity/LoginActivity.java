@@ -2,8 +2,11 @@ package com.example.tom.meeter.context.login.activity;
 
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -38,60 +41,84 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.editTextPassword)
     TextView password;
 
+    private ServiceConnection sConn;
+    private boolean nwServiceBound = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
-        setContentView(R.layout.activity_main);
+        sConn = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                Log.d(TAG, "LoginActivity onServiceConnected()");
+                nwServiceBound = true;
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "LoginActivity onServiceDisconnected()");
+                nwServiceBound = false;
+            }
+        };
+        setContentView(R.layout.login_activity);
         ButterKnife.bind(this);
-        startService(new Intent(this, NetworkService.class));
+        //Log.d(TAG, "LoginActivity onCreate()... Starting NetworkService");
+        //startService(new Intent(this, NetworkService.class));
+        Log.d(TAG, "LoginActivity onCreate()... Binding NetworkService");
+        bindService(
+                new Intent(this, NetworkService.class),
+                sConn, BIND_AUTO_CREATE);
     }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "EventBus registered for " + this);
+        Log.d(TAG, "LoginActivity onStart()... EventBus registered for " + this);
         EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "LoginActivity onResume()");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "LoginActivity onPause()");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "EventBus unregistered for " + this);
+        Log.d(TAG, "LoginActivity onStop()... EventBus unregistered for " + this);
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "LoginActivity onRestart()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "LoginActivity onDestroy()... unbindService " + sConn);
+        unbindService(sConn);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        Log.d(TAG, "LoginActivity onCreateOptionsMenu()");
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "LoginActivity onOptionsItemSelected()");
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -105,12 +132,25 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @OnClick(R.id.LoginButton)
+    public void onLoginClick(Button button) {
+        CharSequence loginText = login.getText();
+        CharSequence pwdText = password.getText();
+        if (loginText == null || loginText.toString().isEmpty()
+                || pwdText == null || pwdText.toString().isEmpty()) {
+            Log.d(TAG, "Illegal login request...");
+            return;
+        }
+        EventBus.getDefault().post(new LoginAttempt(loginText.toString(), pwdText.toString()));
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SuccessfulLogin ev) {
         Log.d(TAG, ev.toString());
         Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
         intent.putExtra(USER_ID_KEY, ev.getUserId());
         startActivity(intent);
+        finish();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -124,20 +164,8 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
-    @OnClick(R.id.LoginButton)
-    public void LoginClick(Button button) {
-        CharSequence loginText = login.getText();
-        CharSequence pwdText = password.getText();
-        if (loginText == null || loginText.toString().isEmpty()
-                || pwdText == null || pwdText.toString().isEmpty()) {
-            Log.d(TAG, "Illegal login request...");
-            return;
-        }
-        EventBus.getDefault().post(new LoginAttempt(loginText.toString(), pwdText.toString()));
-    }
-
     @OnClick(R.id.RegistrationButton)
-    public void RegistrationClick(Button button) {
+    public void onRegisterClick(Button button) {
         startActivity(new Intent(this, RegistrationActivity.class));
     }
 }

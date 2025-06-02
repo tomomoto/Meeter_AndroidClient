@@ -5,8 +5,12 @@ import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.network.service.NetworkService;
 import com.example.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.example.tom.meeter.context.profile.fragment.EventsFragment;
 import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
@@ -83,9 +88,29 @@ public class ProfileActivity extends AppCompatActivity {
 
     UserProfileViewModel viewModel;
 
+
+    private ServiceConnection sConn;
+    private boolean nwServiceBound = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sConn = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                Log.d(TAG, "ProfileActivity onServiceConnected()");
+                nwServiceBound = true;
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "ProfileActivity onServiceDisconnected()");
+                nwServiceBound = false;
+            }
+        };
+
+        Log.d(TAG, "ProfileActivity onCreate()... Binding NetworkService");
+        bindService(
+                new Intent(this, NetworkService.class),
+                sConn, BIND_AUTO_CREATE);
 
         ((App) getApplication()).getComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
@@ -304,6 +329,8 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "ProfileActivity onDestroy()... unbindService " + sConn);
+        unbindService(sConn);
         Toast.makeText(this, "Profile activity deleted", Toast.LENGTH_SHORT).show();
     }
 }

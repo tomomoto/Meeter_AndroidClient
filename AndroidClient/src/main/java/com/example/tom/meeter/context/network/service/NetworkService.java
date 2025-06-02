@@ -29,6 +29,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -52,6 +56,7 @@ public class NetworkService extends Service {
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
     private static final int UNAUTHORIZED = 401;
+    private static final String AUTH_HEADER = "user-uuid";
 
     private static void greetingsHandler(Object... args) {
         Log.d(TAG, "SocketIO server welcomes the client." + Arrays.toString(args));
@@ -147,13 +152,34 @@ public class NetworkService extends Service {
     }
 
     @Override
+    public IBinder onBind(Intent intent) {
+        Log.d(TAG, "NetworkService onBind()" + " intent: " + intent);
+        try {
+            initSocketHandlers();
+        } catch (IOException | URISyntaxException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return binder;
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+        Log.d(TAG, "NetworkService onRebind()");
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "NetworkService onCreate()");
         binder = new Binder();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "NetworkService onStartCommand(). already started? " + started
+                + " intent: " + intent + " flags: " + flags
+                + " readFlags: " + readFlags(flags) + " startId: " + startId);
         try {
             initSocketHandlers();
         } catch (IOException | URISyntaxException e) {
@@ -162,11 +188,47 @@ public class NetworkService extends Service {
         return START_STICKY;
     }
 
+    private static String readFlags(int flags) {
+        if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY)
+            return "START_FLAG_REDELIVERY";
+        if ((flags & START_FLAG_RETRY) == START_FLAG_RETRY)
+            return "START_FLAG_RETRY";
+        if (flags == 0) {
+            return "zero";
+        }
+        throw new RuntimeException("flag???" + flags);
+    }
+
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        boolean ret = super.onUnbind(intent);
+        Log.d(TAG, "NetworkService onUnbind()");
+        return ret;
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Log.d(TAG, "NetworkService onTaskRemoved()");
+    }
+
     private void initSocketHandlers() throws URISyntaxException, IOException {
         if (!started) {
             String uri = initSocketIOPath(getBaseContext());
             Log.d(TAG, "Configuring SocketIO client for server: " + uri);
-            socketClient = IO.socket(uri);
+
+            Map<String, List<String>> customHeaders = new HashMap<>();
+            customHeaders.put(
+                    AUTH_HEADER,
+                    Collections.singletonList("988bc772-d5f4-4b1f-a346-277ba4c31f87"));
+
+            // Configure connection options
+            IO.Options options = new IO.Options();
+            options.extraHeaders = customHeaders;
+
+            socketClient = IO.socket(uri, options);
+
             socketClient.on(GREETINGS_CHANNEL, NetworkService::greetingsHandler);
             socketClient.on(USER_LOGIN_CHANNEL, NetworkService::userLoginHandler);
             socketClient.on(EVENTS_SEARCH_CHANNEL, NetworkService::eventsSearchHandler);
@@ -186,6 +248,7 @@ public class NetworkService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "NetworkService onDestroy() ");
         EventBus.getDefault().unregister(this);
         socketClient.disconnect();
         socketClient.off(GREETINGS_CHANNEL, NetworkService::greetingsHandler);
@@ -195,13 +258,8 @@ public class NetworkService extends Service {
 
         socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, NetworkService::userRegisterHandler);
         socketClient.off(FAILED_REGISTRATION_EVENT, NetworkService::failureRegistrationEventHandler);
-        Log.d(TAG, "Disconnected from service");
+        Log.d(TAG, "Disconnected from SocketIO server...");
         super.onDestroy();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
     }
 
     @Subscribe
