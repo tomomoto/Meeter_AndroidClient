@@ -60,13 +60,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = ProfileActivity.class.getCanonicalName();
 
-    // tags used to attach the fragments
-
-    private static final String PROFILE_TAG = "profile";
-    private static final String EVENTS_TAG = "events";
-    private static final String NEW_EVENT_TAG = "new_event";
-    private static final String NOTIFICATIONS_TAG = "notifications";
-    private static final String SETTINGS_TAG = "settings";
     private static final int DRAWER_PROFILE_ID = 0;
     private static final int DRAWER_EVENTS_ID = 1;
     private static final int DRAWER_NEW_EVENT_ID = 2;
@@ -76,29 +69,31 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int DRAWER_OPEN_SOURCE_ID = 12;
     private static final int DRAWER_CONTACT_ID = 13;
 
-    private static final Map<Integer, String> DRAWER_ITEMS = new HashMap<>();
+    private static final Map<Integer, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
+    private final Map<Integer, String> drawerFragmentNames = new HashMap<>();
 
     static {
-        DRAWER_ITEMS.put(DRAWER_PROFILE_ID, PROFILE_TAG);
-        DRAWER_ITEMS.put(DRAWER_EVENTS_ID, EVENTS_TAG);
-        DRAWER_ITEMS.put(DRAWER_NEW_EVENT_ID, NEW_EVENT_TAG);
-        DRAWER_ITEMS.put(DRAWER_NOTIFICATION_ID, NOTIFICATIONS_TAG);
-        DRAWER_ITEMS.put(DRAWER_SETTINGS_ID, SETTINGS_TAG);
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_PROFILE_ID, "profile_fragment_tag");
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_EVENTS_ID, "events_fragment_tag");
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_NEW_EVENT_ID, "new_event_fragment_tag");
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_NOTIFICATION_ID, "notifications_fragment_tag");
         /*
+        DRAWER_NAMES.put(DRAWER_SETTINGS_ID, "settings_fragment_tag");
         DRAWER_ITEMS.put(DRAWER_HELP_ID, null);
         DRAWER_ITEMS.put(DRAWER_OPEN_SOURCE_ID, null);
         DRAWER_ITEMS.put(DRAWER_CONTACT_ID, null);
          */
     }
 
+    private static void setupNameMapping(Map<Integer, String> mapping, String[] namesFromResources) {
+        mapping.put(DRAWER_PROFILE_ID, namesFromResources[0]);
+        mapping.put(DRAWER_EVENTS_ID, namesFromResources[1]);
+        mapping.put(DRAWER_NEW_EVENT_ID, namesFromResources[2]);
+        mapping.put(DRAWER_NOTIFICATION_ID, namesFromResources[3]);
+        mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
+    }
 
-    // toolbar titles respected to selected nav menu item
-    private static String[] NAVIGATION_ITEM_ACTIVITY_TITLES;
-
-    private String currentTag = PROFILE_TAG;
-
-    // index to identify current nav menu item
-    private int selectedNavigationMenu = 0;
+    private int selectedNavigationId = 0;
 
     private Drawer.Result drawer = null;
 
@@ -155,12 +150,12 @@ public class ProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         handler = new Handler();
-        NAVIGATION_ITEM_ACTIVITY_TITLES = getResources().getStringArray(R.array.nav_item_activity_titles);
+        setupNameMapping(drawerFragmentNames,
+                getResources().getStringArray(R.array.nav_item_activity_titles));
         drawer = createDrawer(this, toolbar);
 
         if (savedInstanceState == null) {
-            selectedNavigationMenu = 0;
-            currentTag = PROFILE_TAG;
+            selectedNavigationId = DRAWER_PROFILE_ID;
             render();
         }
     }
@@ -178,11 +173,8 @@ public class ProfileActivity extends AppCompatActivity {
         // This code loads home fragment when back key is pressed
         // when user is in other fragment than home
         if (shouldLoadHomeFragOnBackPress) {
-            // checking if user is on other navigation menu
-            // rather than home
-            if (selectedNavigationMenu != 0) {
-                selectedNavigationMenu = 0;
-                currentTag = PROFILE_TAG;
+            if (selectedNavigationId != DRAWER_PROFILE_ID) {
+                selectedNavigationId = DRAWER_PROFILE_ID;
                 render();
                 return;
             }
@@ -252,7 +244,8 @@ public class ProfileActivity extends AppCompatActivity {
                 DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
                 DRAWER_OPEN_SOURCE_ID = 12;
-                DRAWER_CONTACT_ID = 13;*/
+                DRAWER_CONTACT_ID = 13;
+                */
             default:
                 //return new StartActivity();
                 result = new ProfileFragment();
@@ -262,21 +255,30 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void render() {
-        // selecting appropriate nav menu item
-        //selectNavMenu();
-
-        // set toolbar title
-        setToolbarTitle(getSupportActionBar(), NAVIGATION_ITEM_ACTIVITY_TITLES[selectedNavigationMenu]);
-
+        String tag = DRAWER_FRAGMENT_TAGS.get(selectedNavigationId);
+        if (tag == null) {
+            throw new IllegalStateException("Fragment tag must be present");
+        }
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
-        if (getSupportFragmentManager().findFragmentByTag(currentTag) != null) {
+        if (getSupportFragmentManager().findFragmentByTag(tag) != null) {
             drawer.closeDrawer();
-
-            // show or hide the fab button
             //toggleFab();
             return;
         }
+
+        // Since new navigation comes...
+        String title = drawerFragmentNames.get(selectedNavigationId);
+        if (title == null) {
+            throw new IllegalStateException("Drawer toolbar title should be present");
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            throw new IllegalStateException("ActionBar should be present");
+        }
+        actionBar.setTitle(title);
+        drawer.setSelection(selectedNavigationId);
+
 
         // Sometimes, when fragment has huge data, screen seems hanging
         // when switching between navigation menus
@@ -288,10 +290,10 @@ public class ProfileActivity extends AppCompatActivity {
                 replaceFragment(
                         getSupportFragmentManager(),
                         () -> createFragment(
-                                selectedNavigationMenu,
+                                selectedNavigationId,
                                 f -> f.setArguments(
                                         createBundle(USER_ID_KEY, viewModel.getUserId()))),
-                        () -> currentTag
+                        () -> tag
                 )
         );
 
@@ -299,20 +301,23 @@ public class ProfileActivity extends AppCompatActivity {
         //toggleFab();
 
         //Closing drawer on item click
-        drawer.closeDrawer();
+        //seems this is not necessary.
+        //drawer.closeDrawer();
 
         // refresh toolbar menu
-        invalidateOptionsMenu();
+        //seems this is not necessary.
+        //invalidateOptionsMenu();
     }
 
     private static Runnable replaceFragment(
-            FragmentManager fMgr, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
+            FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
         return () -> {
             // update the main content by replacing fragments
-            FragmentTransaction fTxn = fMgr.beginTransaction();
-            //fTxn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-            fTxn.replace(R.id.frame, fragmentP.get(), currentTagP.get());
-            fTxn.commitAllowingStateLoss();
+            FragmentTransaction txn = fm.beginTransaction();
+            //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+            txn.replace(R.id.frame, fragmentP.get(), currentTagP.get());
+            txn.commit();
+            //txn.commitAllowingStateLoss();
         };
     }
 
@@ -338,30 +343,22 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void onDrawerItemClickListener(
             AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+        Log.d(TAG, "User selected drawer item: " + drawerItem.getIdentifier());
         switch (drawerItem.getIdentifier()) {
-            //Replacing the main content with ContentFragment Which is our Inbox View;
             case DRAWER_PROFILE_ID:
-                selectedNavigationMenu = DRAWER_PROFILE_ID;
-                currentTag = PROFILE_TAG;
-                break;
             case DRAWER_EVENTS_ID:
-                selectedNavigationMenu = DRAWER_EVENTS_ID;
-                currentTag = EVENTS_TAG;
-                break;
             case DRAWER_NEW_EVENT_ID:
-                selectedNavigationMenu = DRAWER_NEW_EVENT_ID;
-                currentTag = NEW_EVENT_TAG;
-                break;
             case DRAWER_NOTIFICATION_ID:
-                selectedNavigationMenu = DRAWER_NOTIFICATION_ID;
-                currentTag = NOTIFICATIONS_TAG;
+                selectedNavigationId = drawerItem.getIdentifier();
                 break;
-            case DRAWER_SETTINGS_ID:
-                selectedNavigationMenu = DRAWER_SETTINGS_ID;
-                currentTag = SETTINGS_TAG;
-                break;
+                /*TODO: not set
+                DRAWER_SETTINGS_ID = 10;
+                DRAWER_HELP_ID = 11;
+                DRAWER_OPEN_SOURCE_ID = 12;
+                DRAWER_CONTACT_ID = 13;
+                */
             default:
-                selectedNavigationMenu = DRAWER_PROFILE_ID;
+                selectedNavigationId = DRAWER_PROFILE_ID;
         }
 
         //Checking if the item is in checked state or not, if not make it in checked state
@@ -371,10 +368,7 @@ public class ProfileActivity extends AppCompatActivity {
                         menuItem.setChecked(true);
                     }
                     menuItem.setChecked(true);*/
-
         render();
-        //return true;
-        Log.d(TAG, "User selected drawers item: " + drawerItem.getIdentifier());
     }
 
     private static Drawer.Result createDrawer(ProfileActivity profileActivity, Toolbar toolbar) {
@@ -401,9 +395,5 @@ public class ProfileActivity extends AppCompatActivity {
                         () -> (InputMethodManager) profileActivity.getSystemService(Activity.INPUT_METHOD_SERVICE))
                 )
                 .build();
-    }
-
-    private static void setToolbarTitle(ActionBar me, String title) {
-        me.setTitle(title);
     }
 }
