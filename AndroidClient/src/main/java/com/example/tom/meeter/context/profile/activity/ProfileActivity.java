@@ -85,14 +85,6 @@ public class ProfileActivity extends AppCompatActivity {
          */
     }
 
-    private static void setupNameMapping(Map<Integer, String> mapping, String[] namesFromResources) {
-        mapping.put(DRAWER_PROFILE_ID, namesFromResources[0]);
-        mapping.put(DRAWER_EVENTS_ID, namesFromResources[1]);
-        mapping.put(DRAWER_NEW_EVENT_ID, namesFromResources[2]);
-        mapping.put(DRAWER_NOTIFICATION_ID, namesFromResources[3]);
-        mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
-    }
-
     private int selectedNavigationId = 0;
 
     private Drawer.Result drawer = null;
@@ -183,23 +175,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private static void updateItemBadge(Drawer.Result drawer, int drawerItemId, String badge) {
-        Optional<IDrawerItem> itemOpt = findDrawerItem(drawer, drawerItemId);
-        if (itemOpt.isEmpty()) return;
-        IDrawerItem target = itemOpt.get();
-        if (target instanceof Badgeable) {
-            ((Badgeable<?>) target).setBadge(badge);
-            drawer.getAdapter().notifyDataSetChanged();
-        }
-    }
-
-    private static Optional<IDrawerItem> findDrawerItem(Drawer.Result drawer, int id) {
-        return drawer.getDrawerItems()
-                .stream()
-                .filter(iDrawerItem -> id == iDrawerItem.getIdentifier())
-                .findAny();
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -221,6 +196,126 @@ public class ProfileActivity extends AppCompatActivity {
         Log.d(TAG, "ProfileActivity unbindService " + sConn);
         unbindService(sConn);
         Toast.makeText(this, "Profile activity deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    private void onDrawerItemClickListener(
+            AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+        Log.d(TAG, "User selected drawer item: " + drawerItem.getIdentifier());
+        switch (drawerItem.getIdentifier()) {
+            case DRAWER_PROFILE_ID:
+            case DRAWER_EVENTS_ID:
+            case DRAWER_NEW_EVENT_ID:
+            case DRAWER_NOTIFICATION_ID:
+                selectedNavigationId = drawerItem.getIdentifier();
+                break;
+                /*TODO: not set
+                DRAWER_SETTINGS_ID = 10;
+                DRAWER_HELP_ID = 11;
+                DRAWER_OPEN_SOURCE_ID = 12;
+                DRAWER_CONTACT_ID = 13;
+                */
+            default:
+                selectedNavigationId = DRAWER_PROFILE_ID;
+        }
+        render();
+        //Checking if the item is in checked state or not, if not make it in checked state
+                    /*if (menuItem.isChecked()) {
+                        menuItem.setChecked(false);
+                    } else {
+                        menuItem.setChecked(true);
+                    }
+                    menuItem.setChecked(true);*/
+    }
+
+    private void render() {
+        drawer.setSelection(selectedNavigationId);
+        String tag = DRAWER_FRAGMENT_TAGS.get(selectedNavigationId);
+        if (tag == null) {
+            throw new IllegalStateException("Fragment tag must be present");
+        }
+        // if user select the current navigation menu again, don't do anything
+        // just close the navigation drawer
+        if (getSupportFragmentManager().findFragmentByTag(tag) != null) {
+            drawer.closeDrawer();
+            //toggleFab();
+            return;
+        }
+
+        // Since new navigation comes...
+        String title = drawerFragmentNames.get(selectedNavigationId);
+        if (title == null) {
+            throw new IllegalStateException("Drawer toolbar title should be present");
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            throw new IllegalStateException("ActionBar should be present");
+        }
+        actionBar.setTitle(title);
+
+        // Sometimes, when fragment has huge data, screen seems hanging
+        // when switching between navigation menus
+        // So using runnable, the fragment is loaded with cross fade effect
+        // This effect can be seen in GMail app
+
+        // If mPendingRunnable is not null, then add to the message queue
+        handler.post(
+                replaceFragment(
+                        getSupportFragmentManager(),
+                        () -> createFragment(
+                                selectedNavigationId,
+                                f -> f.setArguments(
+                                        createBundle(USER_ID_KEY, viewModel.getUserId()))),
+                        () -> tag
+                )
+        );
+
+        // show or hide the fab button
+        //toggleFab();
+
+        //Closing drawer on item click
+        //seems this is not necessary.
+        //drawer.closeDrawer();
+
+        // refresh toolbar menu
+        //seems this is not necessary.
+        //invalidateOptionsMenu();
+    }
+
+    private static void setupNameMapping(Map<Integer, String> mapping, String[] namesFromResources) {
+        mapping.put(DRAWER_PROFILE_ID, namesFromResources[0]);
+        mapping.put(DRAWER_EVENTS_ID, namesFromResources[1]);
+        mapping.put(DRAWER_NEW_EVENT_ID, namesFromResources[2]);
+        mapping.put(DRAWER_NOTIFICATION_ID, namesFromResources[3]);
+        mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
+    }
+
+    private static void updateItemBadge(Drawer.Result drawer, int drawerItemId, String badge) {
+        Optional<IDrawerItem> itemOpt = findDrawerItem(drawer, drawerItemId);
+        if (itemOpt.isEmpty()) return;
+        IDrawerItem target = itemOpt.get();
+        if (target instanceof Badgeable) {
+            ((Badgeable<?>) target).setBadge(badge);
+            drawer.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private static Optional<IDrawerItem> findDrawerItem(Drawer.Result drawer, int id) {
+        return drawer.getDrawerItems()
+                .stream()
+                .filter(iDrawerItem -> id == iDrawerItem.getIdentifier())
+                .findAny();
+    }
+
+    private static Runnable replaceFragment(
+            FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
+        return () -> {
+            // update the main content by replacing fragments
+            FragmentTransaction txn = fm.beginTransaction();
+            //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+            txn.replace(R.id.frame, fragmentP.get(), currentTagP.get());
+            txn.commit();
+            //txn.commitAllowingStateLoss();
+        };
     }
 
 
@@ -254,73 +349,6 @@ public class ProfileActivity extends AppCompatActivity {
         return result;
     }
 
-    private void render() {
-        String tag = DRAWER_FRAGMENT_TAGS.get(selectedNavigationId);
-        if (tag == null) {
-            throw new IllegalStateException("Fragment tag must be present");
-        }
-        // if user select the current navigation menu again, don't do anything
-        // just close the navigation drawer
-        if (getSupportFragmentManager().findFragmentByTag(tag) != null) {
-            drawer.closeDrawer();
-            //toggleFab();
-            return;
-        }
-
-        // Since new navigation comes...
-        String title = drawerFragmentNames.get(selectedNavigationId);
-        if (title == null) {
-            throw new IllegalStateException("Drawer toolbar title should be present");
-        }
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            throw new IllegalStateException("ActionBar should be present");
-        }
-        actionBar.setTitle(title);
-        drawer.setSelection(selectedNavigationId);
-
-
-        // Sometimes, when fragment has huge data, screen seems hanging
-        // when switching between navigation menus
-        // So using runnable, the fragment is loaded with cross fade effect
-        // This effect can be seen in GMail app
-
-        // If mPendingRunnable is not null, then add to the message queue
-        handler.post(
-                replaceFragment(
-                        getSupportFragmentManager(),
-                        () -> createFragment(
-                                selectedNavigationId,
-                                f -> f.setArguments(
-                                        createBundle(USER_ID_KEY, viewModel.getUserId()))),
-                        () -> tag
-                )
-        );
-
-        // show or hide the fab button
-        //toggleFab();
-
-        //Closing drawer on item click
-        //seems this is not necessary.
-        //drawer.closeDrawer();
-
-        // refresh toolbar menu
-        //seems this is not necessary.
-        //invalidateOptionsMenu();
-    }
-
-    private static Runnable replaceFragment(
-            FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
-        return () -> {
-            // update the main content by replacing fragments
-            FragmentTransaction txn = fm.beginTransaction();
-            //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
-            txn.replace(R.id.frame, fragmentP.get(), currentTagP.get());
-            txn.commit();
-            //txn.commitAllowingStateLoss();
-        };
-    }
-
     private static Drawer.OnDrawerListener createOnDrawerListener(
             Provider<View> currentFocusP, Provider<InputMethodManager> immP) {
         return new Drawer.OnDrawerListener() {
@@ -339,36 +367,6 @@ public class ProfileActivity extends AppCompatActivity {
                 logMethod(TAG, this);
             }
         };
-    }
-
-    private void onDrawerItemClickListener(
-            AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
-        Log.d(TAG, "User selected drawer item: " + drawerItem.getIdentifier());
-        switch (drawerItem.getIdentifier()) {
-            case DRAWER_PROFILE_ID:
-            case DRAWER_EVENTS_ID:
-            case DRAWER_NEW_EVENT_ID:
-            case DRAWER_NOTIFICATION_ID:
-                selectedNavigationId = drawerItem.getIdentifier();
-                break;
-                /*TODO: not set
-                DRAWER_SETTINGS_ID = 10;
-                DRAWER_HELP_ID = 11;
-                DRAWER_OPEN_SOURCE_ID = 12;
-                DRAWER_CONTACT_ID = 13;
-                */
-            default:
-                selectedNavigationId = DRAWER_PROFILE_ID;
-        }
-
-        //Checking if the item is in checked state or not, if not make it in checked state
-                    /*if (menuItem.isChecked()) {
-                        menuItem.setChecked(false);
-                    } else {
-                        menuItem.setChecked(true);
-                    }
-                    menuItem.setChecked(true);*/
-        render();
     }
 
     private static Drawer.Result createDrawer(ProfileActivity profileActivity, Toolbar toolbar) {
