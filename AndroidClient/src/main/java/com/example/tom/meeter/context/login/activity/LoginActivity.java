@@ -1,6 +1,7 @@
 package com.example.tom.meeter.context.login.activity;
 
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -48,14 +49,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMethod(TAG, this);
         sConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
-                Log.d(TAG, "LoginActivity onServiceConnected()");
+                logMethod(TAG, this);
                 nwServiceBound = true;
             }
 
             public void onServiceDisconnected(ComponentName name) {
-                Log.d(TAG, "LoginActivity onServiceDisconnected()");
+                logMethod(TAG, this);
                 nwServiceBound = false;
             }
         };
@@ -63,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         //Log.d(TAG, "LoginActivity onCreate()... Starting NetworkService");
         //startService(new Intent(this, NetworkService.class));
-        Log.d(TAG, "LoginActivity onCreate()... Binding NetworkService");
+        Log.d(TAG, "LoginActivity Binding NetworkService");
         bindService(
                 new Intent(this, NetworkService.class),
                 sConn, BIND_AUTO_CREATE);
@@ -72,53 +74,56 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "LoginActivity onStart()... EventBus registered for " + this);
+        logMethod(TAG, this);
         EventBus.getDefault().register(this);
+        Log.d(TAG, "LoginActivity EventBus registered for " + this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "LoginActivity onResume()");
+        logMethod(TAG, this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "LoginActivity onPause()");
+        logMethod(TAG, this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "LoginActivity onStop()... EventBus unregistered for " + this);
+        logMethod(TAG, this);
         EventBus.getDefault().unregister(this);
+        Log.d(TAG, "LoginActivity EventBus unregistered for " + this);
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d(TAG, "LoginActivity onRestart()");
+        logMethod(TAG, this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "LoginActivity onDestroy()... unbindService " + sConn);
+        logMethod(TAG, this);
+        Log.d(TAG, "LoginActivity unbindService " + sConn);
         unbindService(sConn);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        Log.d(TAG, "LoginActivity onCreateOptionsMenu()");
+        logMethod(TAG, this);
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "LoginActivity onOptionsItemSelected()");
+        logMethod(TAG, this);
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.

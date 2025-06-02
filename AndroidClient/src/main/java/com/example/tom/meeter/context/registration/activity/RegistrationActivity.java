@@ -3,6 +3,7 @@ package com.example.tom.meeter.context.registration.activity;
 import static android.content.Intent.ACTION_PICK;
 import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 import android.content.Intent;
@@ -92,7 +93,7 @@ public class RegistrationActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Log.d(TAG, "RegistrationActivity onCreate()");
+    logMethod(TAG, this);
     setContentView(R.layout.registration_activity);
     ButterKnife.bind(this);
   }
@@ -100,27 +101,29 @@ public class RegistrationActivity extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_main, menu);
-    Log.d(TAG, "RegistrationActivity onCreateOptionsMenu()");
+    logMethod(TAG, this);
     return true;
   }
 
   @Override
   protected void onStart() {
     super.onStart();
+    logMethod(TAG, this);
     EventBus.getDefault().register(this);
-    Log.d(TAG, "RegistrationActivity onStart()... Event bus registered...");
+    Log.d(TAG, "RegistrationActivity Event bus registered...");
   }
 
   @Override
   protected void onStop() {
     super.onStop();
+    logMethod(TAG, this);
     EventBus.getDefault().unregister(this);
-    Log.d(TAG, "RegistrationActivity onStop()... Event bus unregistered...");
+    Log.d(TAG, "RegistrationActivity Event bus unregistered...");
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    Log.d(TAG, "RegistrationActivity onOptionsItemSelected().");
+    logMethod(TAG, this);
     int id = item.getItemId();
 
     if (id == R.id.action_settings) {

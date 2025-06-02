@@ -1,5 +1,6 @@
 package com.example.tom.meeter.context.profile.fragment;
 
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 import android.annotation.SuppressLint;
@@ -125,6 +126,7 @@ public class CreateNewEventFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMethod(TAG, this);
         gpsTrackerService = new GPSTrackerService(getContext());
     }
 
@@ -132,6 +134,7 @@ public class CreateNewEventFragment extends Fragment {
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        logMethod(TAG, this);
         View view = inflater.inflate(R.layout.fragment_new_event, container, false);
         ButterKnife.bind(this, view);
         return view;
@@ -140,21 +143,24 @@ public class CreateNewEventFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        logMethod(TAG, this);
         EventBus.getDefault().register(this);
+        Log.d(TAG, "CreateNewEventFragment Event bus registered...");
         //Log.d(TAG, "Time :" + ZonedDateTime.now().toString());
-        Log.d(TAG, "Event bus registered...");
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        logMethod(TAG, this);
         EventBus.getDefault().unregister(this);
-        Log.d(TAG, "Event bus unregistered...");
+        Log.d(TAG, "CreateNewEventFragment Event bus unregistered...");
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        logMethod(TAG, this);
     }
 
     @OnClick(R.id.newEventCurrentPlaceBtn)

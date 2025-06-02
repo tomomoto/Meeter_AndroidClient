@@ -5,6 +5,7 @@ import static com.example.tom.meeter.context.profile.fragment.GoogleMapsFragment
 import static com.example.tom.meeter.context.profile.fragment.UserEventsFragment.createUserEventsFragment;
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,19 +36,19 @@ public class EventsFragment extends Fragment {
 
     public EventsFragment() {
         // Required empty public constructor
-        Log.d(TAG, "EventsFragment()");
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "EventsFragment.onCreate()");
+        logMethod(TAG, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "EventsFragment.onCreateView()");
+        logMethod(TAG, this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_events, container, false);
     }
@@ -56,7 +56,7 @@ public class EventsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "EventsFragment.onViewCreated()");
+        logMethod(TAG, this);
 
         viewPager = view.findViewById(R.id.viewpager);
         viewPager.setAdapter(

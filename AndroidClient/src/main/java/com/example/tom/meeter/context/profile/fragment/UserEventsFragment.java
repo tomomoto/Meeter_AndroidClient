@@ -1,6 +1,7 @@
 package com.example.tom.meeter.context.profile.fragment;
 
 import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -45,11 +46,13 @@ public class UserEventsFragment extends Fragment {
     private UserEventsViewModel viewModel;
 
     public UserEventsFragment() {
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMethod(TAG, this);
         ((App) getActivity().getApplication()).getComponent().inject(this);
     }
 
@@ -58,17 +61,20 @@ public class UserEventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_user_events, container, false);
         ButterKnife.bind(this, view);
+        logMethod(TAG, this);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        logMethod(TAG, this);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        logMethod(TAG, this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserEventsViewModel.class);
         Bundle arguments = getArguments();
         viewModel.init(arguments.getString(USER_ID_KEY));

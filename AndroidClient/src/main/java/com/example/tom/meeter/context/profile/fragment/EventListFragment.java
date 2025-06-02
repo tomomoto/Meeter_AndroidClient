@@ -4,6 +4,8 @@ package com.example.tom.meeter.context.profile.fragment;
  * Created by Tom on 09.12.2016.
  */
 
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,18 +56,22 @@ public class EventListFragment extends Fragment {
 
 
     public EventListFragment() {
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMethod(TAG, this);
         events = new ArrayList<>();
         EventBus.getDefault().register(this);
+        Log.d(TAG, "EventListFragment Registering eventBus");
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        logMethod(TAG, this);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.subfragment_events, container, false);
         ButterKnife.bind(this, view);
@@ -75,6 +81,7 @@ public class EventListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        logMethod(TAG, this);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -110,7 +117,8 @@ public class EventListFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        logMethod(TAG, this);
         EventBus.getDefault().unregister(this);
-        Log.d(TAG, "unregistered bus");
+        Log.d(TAG, "EventListFragment Unregistered event bus");
     }
 }

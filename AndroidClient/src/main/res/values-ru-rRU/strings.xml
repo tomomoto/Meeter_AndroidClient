@@ -20,6 +20,7 @@
     <string name="drawer_item_events">События</string>
     <string name="drawer_item_new_event">Новое событие</string>
     <string name="drawer_item_notifications">Уведомления</string>
+    <string name="drawer_item_additional">Дополнительно</string>
     <string name="drawer_item_settings">Настройки</string>
     <string name="drawer_item_help">Помощь</string>
     <string name="drawer_item_open_source">Открытые исходники</string>

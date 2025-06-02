@@ -5,6 +5,8 @@ package com.example.tom.meeter.context.profile.fragment;
  */
 
 
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -66,11 +68,13 @@ public class GoogleMapsFragment extends Fragment
 
     public GoogleMapsFragment() {
         // Required empty public constructor
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMethod(TAG, this);
         gpsTrackerService = new GPSTrackerService(getContext());
         sMapFragment = SupportMapFragment.newInstance();
         sMapFragment.getMapAsync(this);
@@ -83,6 +87,7 @@ public class GoogleMapsFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        logMethod(TAG, this);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, sMapFragment).commit();
         return inflater.inflate(R.layout.subfragment_gmaps, container, false);
@@ -90,6 +95,7 @@ public class GoogleMapsFragment extends Fragment
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        logMethod(TAG, this);
         if (gpsTrackerService.canGetLocation()) {
             myLocation = new LatLng(gpsTrackerService.getLastKnownLatitude(), gpsTrackerService.getLastKnownLongitude());
         }
@@ -111,6 +117,7 @@ public class GoogleMapsFragment extends Fragment
 
     @Override
     public void onMapClick(LatLng latLng) {
+        logMethod(TAG, this);
         userMarker.setPosition(new LatLng(latLng.latitude, latLng.longitude));
         //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
 
@@ -130,6 +137,7 @@ public class GoogleMapsFragment extends Fragment
 
     @Override
     public void onGPSTrackerLocationChanged(Location newLocation) {
+        logMethod(TAG, this);
         if (trackUser) {
             Toast.makeText(getContext(), "location changed", Toast.LENGTH_SHORT).show();
             userMarker.setPosition(new LatLng(newLocation.getLatitude(), newLocation.getLongitude()));
@@ -143,14 +151,16 @@ public class GoogleMapsFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        logMethod(TAG, this);
         gpsTrackerService.removeGPSTrackerListener(this);
         gpsTrackerService.stopUsingGPS();
         EventBus.getDefault().unregister(this);
-        Log.d(TAG, "unregistered bus");
+        Log.d(TAG, "GoogleMapsFragment Unregistered event bus");
     }
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        logMethod(TAG, this);
         camPosition = cameraPosition;
     }
 
