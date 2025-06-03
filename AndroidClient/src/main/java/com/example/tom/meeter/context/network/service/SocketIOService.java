@@ -37,9 +37,9 @@ import java.util.Map;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
-public class NetworkService extends Service {
+public class SocketIOService extends Service {
 
-    private static final String TAG = NetworkService.class.getCanonicalName();
+    private static final String TAG = SocketIOService.class.getCanonicalName();
 
     private static final String GREETINGS_CHANNEL = "greetings";
     private static final String USER_LOGIN_CHANNEL = "user:login";
@@ -70,13 +70,13 @@ public class NetworkService extends Service {
             case SUCCESS:
                 Log.d(TAG, "Successful login. " + response);
                 EventBus.getDefault()
-                        .post(new SuccessfulLogin(JsonHelper.getString(response, ID_KEY)));
+                      .post(new SuccessfulLogin(JsonHelper.getString(response, ID_KEY)));
                 break;
             case BAD_REQUEST:
             case UNAUTHORIZED:
                 Log.d(TAG, "Failed login. " + response);
                 EventBus.getDefault()
-                        .post(new FailureLogin(JsonHelper.getString(response, MESSAGE_KEY)));
+                      .post(new FailureLogin(JsonHelper.getString(response, MESSAGE_KEY)));
                 break;
             default:
                 Log.d(TAG, "Unrecognized code from " + USER_LOGIN_CHANNEL + " [" + code + "]");
@@ -126,7 +126,7 @@ public class NetworkService extends Service {
             case CREATED_CODE:
                 Log.d(TAG, "Event successfully created. " + response);
                 EventBus.getDefault()
-                        .post(new SuccessfulEventCreation(JsonHelper.getString(response, ID_KEY)));
+                      .post(new SuccessfulEventCreation(JsonHelper.getString(response, ID_KEY)));
                 break;
             case BAD_REQUEST:
                 Log.d(TAG, "Failed event creation. " + response);
@@ -139,8 +139,8 @@ public class NetworkService extends Service {
     }
 
     public class Binder extends android.os.Binder {
-        public NetworkService getService() {
-            return NetworkService.this;
+        public SocketIOService getService() {
+            return SocketIOService.this;
         }
     }
 
@@ -148,7 +148,7 @@ public class NetworkService extends Service {
     private Socket socketClient;
     private Binder binder;
 
-    public NetworkService() {
+    public SocketIOService() {
     }
 
     @Override
@@ -178,8 +178,8 @@ public class NetworkService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "NetworkService onStartCommand(). already started? " + started
-                + " intent: " + intent + " flags: " + flags
-                + " readFlags: " + readFlags(flags) + " startId: " + startId);
+              + " intent: " + intent + " flags: " + flags
+              + " readFlags: " + readFlags(flags) + " startId: " + startId);
         try {
             initSocketHandlers();
         } catch (IOException | URISyntaxException e) {
@@ -220,8 +220,8 @@ public class NetworkService extends Service {
 
             Map<String, List<String>> customHeaders = new HashMap<>();
             customHeaders.put(
-                    AUTH_HEADER,
-                    Collections.singletonList("988bc772-d5f4-4b1f-a346-277ba4c31f87"));
+                  AUTH_HEADER,
+                  Collections.singletonList("988bc772-d5f4-4b1f-a346-277ba4c31f87"));
 
             // Configure connection options
             IO.Options options = new IO.Options();
@@ -229,18 +229,18 @@ public class NetworkService extends Service {
 
             socketClient = IO.socket(uri, options);
 
-            socketClient.on(GREETINGS_CHANNEL, NetworkService::greetingsHandler);
-            socketClient.on(USER_LOGIN_CHANNEL, NetworkService::userLoginHandler);
-            socketClient.on(EVENTS_SEARCH_CHANNEL, NetworkService::eventsSearchHandler);
-            socketClient.on(EVENTS_CREATE_CHANNEL, NetworkService::eventsCreateHandler);
+            socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
+            socketClient.on(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
+            socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+            socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
 
-            socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, NetworkService::userRegisterHandler);
-            socketClient.on(FAILED_REGISTRATION_EVENT, NetworkService::failureRegistrationEventHandler);
+            socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
+            socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
             socketClient.connect();
             EventBus.getDefault().register(this);
             Log.d(TAG, "SocketIO client is going to start...");
             Log.d(TAG, "SocketIO client: connected ?{"
-                    + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
+                  + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
             socketClient.emit(GREETINGS_CHANNEL, "Client greetings.");
             started = true;
         }
@@ -251,13 +251,13 @@ public class NetworkService extends Service {
         Log.d(TAG, "NetworkService onDestroy() ");
         EventBus.getDefault().unregister(this);
         socketClient.disconnect();
-        socketClient.off(GREETINGS_CHANNEL, NetworkService::greetingsHandler);
-        socketClient.off(USER_LOGIN_CHANNEL, NetworkService::userLoginHandler);
-        socketClient.off(EVENTS_SEARCH_CHANNEL, NetworkService::eventsSearchHandler);
-        socketClient.off(EVENTS_CREATE_CHANNEL, NetworkService::eventsCreateHandler);
+        socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
+        socketClient.off(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
+        socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+        socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
 
-        socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, NetworkService::userRegisterHandler);
-        socketClient.off(FAILED_REGISTRATION_EVENT, NetworkService::failureRegistrationEventHandler);
+        socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
+        socketClient.off(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
         Log.d(TAG, "Disconnected from SocketIO server...");
         super.onDestroy();
     }

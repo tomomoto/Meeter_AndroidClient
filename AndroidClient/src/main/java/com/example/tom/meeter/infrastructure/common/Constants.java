@@ -20,8 +20,9 @@ public class Constants {
     public static final String SERVER_PORT_PROPERTY = "server.port";
     public static final String SERVER_IO_PORT_PROPERTY = "server.io_port";
 
-    public static final String GPS_DISTANCE_PROPERTY = "gps.distance";
-    public static final String GPS_TIME_PROPERTY = "gps.time";
+    public static final String LOCATION_DISTANCE_PROPERTY = "location.distance";
+    public static final String LOCATION_TIME_PROPERTY = "location.time";
+    public static final String EVENTS_AREA_PROPERTY = "events.area";
 
     public static final String USER_ID_KEY = "userId";
 

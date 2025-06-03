@@ -29,13 +29,13 @@ import android.widget.Toast;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.network.service.NetworkService;
+import com.example.tom.meeter.context.network.service.SocketIOService;
 import com.example.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.example.tom.meeter.context.profile.fragment.EventsFragment;
 import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.example.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
-import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
+import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -126,9 +126,9 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
 
-        Log.d(TAG, "ProfileActivity binding NetworkService");
+        Log.d(TAG, "ProfileActivity binding SocketIOService");
         bindService(
-                new Intent(this, NetworkService.class),
+                new Intent(this, SocketIOService.class),
                 sConn, BIND_AUTO_CREATE);
 
         ((App) getApplication()).getComponent().inject(this);

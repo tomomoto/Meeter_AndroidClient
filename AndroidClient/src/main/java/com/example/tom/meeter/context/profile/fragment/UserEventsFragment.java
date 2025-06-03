@@ -18,7 +18,7 @@ import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.profile.RecycleViewUserEventsAdapter;
 import com.example.tom.meeter.context.event.UserEventsViewModel;
-import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
+import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 

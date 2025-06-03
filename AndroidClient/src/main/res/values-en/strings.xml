@@ -70,4 +70,6 @@
     <string name="events">Events</string>
     <string name="your_events">Your events</string>
     <string name="user_information">User information</string>
+    <string name="me">Me</string>
+    <string name="location_changed">Location changed</string>
 </resources>

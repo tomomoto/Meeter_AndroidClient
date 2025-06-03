@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.network.domain.LoginAttempt;
-import com.example.tom.meeter.context.network.service.NetworkService;
+import com.example.tom.meeter.context.network.service.SocketIOService;
 import com.example.tom.meeter.context.profile.activity.ProfileActivity;
 import com.example.tom.meeter.context.registration.activity.RegistrationActivity;
 import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
@@ -65,9 +65,9 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         //Log.d(TAG, "LoginActivity onCreate()... Starting NetworkService");
         //startService(new Intent(this, NetworkService.class));
-        Log.d(TAG, "LoginActivity Binding NetworkService");
+        Log.d(TAG, "LoginActivity Binding SocketIOService");
         bindService(
-                new Intent(this, NetworkService.class),
+                new Intent(this, SocketIOService.class),
                 sConn, BIND_AUTO_CREATE);
     }
 

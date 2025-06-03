@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.login.activity.LoginActivity;
-import com.example.tom.meeter.context.network.service.NetworkService;
+import com.example.tom.meeter.context.network.service.SocketIOService;
 
 import butterknife.ButterKnife;
 
@@ -41,12 +41,12 @@ public class StartActivity extends AppCompatActivity {
             }
         };
 
-        Log.d(TAG, "StartActivity onCreate()... Bind NetworkService.");
+        Log.d(TAG, "StartActivity onCreate()... Bind SocketIOService.");
         setContentView(R.layout.start_activity);
         ButterKnife.bind(this);
 
         bindService(
-                new Intent(this, NetworkService.class),
+                new Intent(this, SocketIOService.class),
                 sConn, BIND_AUTO_CREATE);
 
         if (userToken != null && !userToken.isEmpty()) {

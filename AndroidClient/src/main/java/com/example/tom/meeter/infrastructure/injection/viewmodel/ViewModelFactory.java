@@ -1,4 +1,4 @@
-package com.example.tom.meeter.infrastructure.viewmodel;
+package com.example.tom.meeter.infrastructure.injection.viewmodel;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;

@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.user.UserProfileViewModel;
-import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
+import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

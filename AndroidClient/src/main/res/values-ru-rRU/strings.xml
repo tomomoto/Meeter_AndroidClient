@@ -70,4 +70,6 @@
     <string name="events">События</string>
     <string name="your_events">Ваши события</string>
     <string name="user_information">Пользовательская информация</string>
+    <string name="me">Я</string>
+    <string name="location_changed">Локация изменена</string>
 </resources>

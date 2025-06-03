@@ -1,11 +1,17 @@
 package com.example.tom.meeter.context.profile.fragment;
 
+import static android.content.Context.BIND_AUTO_CREATE;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,7 +26,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.gps.service.GPSTrackerService;
+import com.example.tom.meeter.context.gps.service.LocationTrackerService;
 import com.example.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.example.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
 import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
@@ -53,8 +59,6 @@ public class CreateNewEventFragment extends Fragment {
     private static final String EMPTY_STR = "";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
-
-    private GPSTrackerService gpsTrackerService;
 
     @BindView(R.id.newEventNameEditText)
     EditText name;
@@ -119,21 +123,40 @@ public class CreateNewEventFragment extends Fragment {
     @BindView(R.id.newEventCreateBtn)
     Button createEventBtn;
 
+    private ServiceConnection locationServiceConnection;
+    private LocationTrackerService locationService;
+
 
     public CreateNewEventFragment() {
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        gpsTrackerService = new GPSTrackerService(getContext());
+        locationServiceConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder binder) {
+                logMethod(TAG, this);
+                locationService = ((LocationTrackerService.ServiceBinder) binder).getService();
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                logMethod(TAG, this);
+                locationService = null;
+            }
+        };
+        Context ctx = getContext();
+        if (ctx != null) {
+            Intent service = new Intent(ctx, LocationTrackerService.class);
+            ctx.bindService(service, locationServiceConnection, BIND_AUTO_CREATE);
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
         View view = inflater.inflate(R.layout.fragment_new_event, container, false);
         ButterKnife.bind(this, view);
@@ -163,11 +186,31 @@ public class CreateNewEventFragment extends Fragment {
         logMethod(TAG, this);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        logMethod(TAG, this);
+        getContext().unbindService(locationServiceConnection);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
     @OnClick(R.id.newEventCurrentPlaceBtn)
     public void currentPlaceClickHandler(Button button) {
-        Location location = gpsTrackerService.getLastKnownLocation();
-        latitude.setText(String.valueOf(location.getLatitude()));
-        longitude.setText(String.valueOf(location.getLongitude()));
+        Location location = locationService.getLastKnownLocation();
+        if (location != null) {
+            latitude.setText(String.valueOf(location.getLatitude()));
+            longitude.setText(String.valueOf(location.getLongitude()));
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "requestCode = " + requestCode + ", resultCode = " + resultCode);
     }
 
     @OnClick(R.id.newEventOtherPlaceBtn)
@@ -237,20 +280,20 @@ public class CreateNewEventFragment extends Fragment {
         OffsetDateTime starts = OffsetDateTime.of(localStartDate, localStartTime, offset);
         OffsetDateTime ends = OffsetDateTime.of(localEndDate, localEndTime, offset);
         EventBus.getDefault()
-                .post(new CreateNewEventAttempt(
-                        name.getText().toString(), description.getText().toString(),
-                        starts, ends,
-                        Float.valueOf(latitude.getText().toString()),
-                        Float.valueOf(longitude.getText().toString())));
+              .post(new CreateNewEventAttempt(
+                    name.getText().toString(), description.getText().toString(),
+                    starts, ends,
+                    Float.valueOf(latitude.getText().toString()),
+                    Float.valueOf(longitude.getText().toString())));
     }
 
     @OnTextChanged(
-            value = {
-                    R.id.newEventLatitudeEditText,
-                    R.id.newEventLongitudeEditText,
-                    R.id.newEventNameEditText
-            },
-            callback = AFTER_TEXT_CHANGED)
+          value = {
+                R.id.newEventLatitudeEditText,
+                R.id.newEventLongitudeEditText,
+                R.id.newEventNameEditText
+          },
+          callback = AFTER_TEXT_CHANGED)
     public void locationChanges(Editable text) {
         CharSequence name = this.name.getText();
         CharSequence latitude = this.latitude.getText();
@@ -264,10 +307,10 @@ public class CreateNewEventFragment extends Fragment {
     }
 
     private static boolean requiredFieldsNotProvided(
-            CharSequence name, CharSequence latitude, CharSequence longitude) {
+          CharSequence name, CharSequence latitude, CharSequence longitude) {
         return name == null || EMPTY_STR.equals(name.toString())
-                || latitude == null || EMPTY_STR.equals(latitude.toString())
-                || longitude == null || EMPTY_STR.equals(longitude.toString());
+              || latitude == null || EMPTY_STR.equals(latitude.toString())
+              || longitude == null || EMPTY_STR.equals(longitude.toString());
     }
 
     private void validateWholeForm() {
@@ -278,9 +321,9 @@ public class CreateNewEventFragment extends Fragment {
 
     private boolean allSet() {
         return name.getText() != null && !EMPTY_STR.equals(name.getText().toString())
-                && latitude.getText() != null && !EMPTY_STR.equals(latitude.getText().toString())
-                && longitude.getText() != null && !EMPTY_STR.equals(longitude.getText().toString())
-                && isDateValid(startsDateEditText.getText().toString()) && isDateValid(endsDateEditText.getText().toString());
+              && latitude.getText() != null && !EMPTY_STR.equals(latitude.getText().toString())
+              && longitude.getText() != null && !EMPTY_STR.equals(longitude.getText().toString())
+              && isDateValid(startsDateEditText.getText().toString()) && isDateValid(endsDateEditText.getText().toString());
     }
 
     @OnTextChanged(value = R.id.newEventStartsDateEditText, callback = AFTER_TEXT_CHANGED)
@@ -320,11 +363,11 @@ public class CreateNewEventFragment extends Fragment {
     public void onMessageEvent(SuccessfulEventCreation ev) {
         Log.d(TAG, ev.toString());
         new AlertDialog.Builder(getContext())
-                .setTitle("Event created, id: " + ev.getId())
-                .setMessage("Created.")
-                .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
-                .create()
-                .show();
+              .setTitle("Event created, id: " + ev.getId())
+              .setMessage("Created.")
+              .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
+              .create()
+              .show();
     /*startActivity(new Intent(RegistrationActivity.this, ProfileActivity.class
         .putExtra(USER_ID_KEY, ev.getUserId()));*/
     }
@@ -333,10 +376,10 @@ public class CreateNewEventFragment extends Fragment {
     public void onMessageEvent(FailureEventCreation ev) {
         Log.d(TAG, ev.toString());
         new AlertDialog.Builder(getContext())
-                .setTitle("Failed to create event")
-                .setMessage("Failed.")
-                .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
-                .create()
-                .show();
+              .setTitle("Failed to create event")
+              .setMessage("Failed.")
+              .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
+              .create()
+              .show();
     }
 }
