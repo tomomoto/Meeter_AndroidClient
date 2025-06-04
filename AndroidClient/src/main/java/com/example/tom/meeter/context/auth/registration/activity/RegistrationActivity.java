@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.registration.activity;
+package com.example.tom.meeter.context.auth.registration.activity;
 
 import static android.content.Intent.ACTION_PICK;
 import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;

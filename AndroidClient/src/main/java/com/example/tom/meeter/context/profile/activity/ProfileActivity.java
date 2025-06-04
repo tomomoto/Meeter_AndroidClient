@@ -114,6 +114,9 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ((App) getApplication()).getComponent().inject(this);
+
         sConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 logMethod(TAG, this);
@@ -131,7 +134,6 @@ public class ProfileActivity extends AppCompatActivity {
                 new Intent(this, SocketIOService.class),
                 sConn, BIND_AUTO_CREATE);
 
-        ((App) getApplication()).getComponent().inject(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
         Log.d(TAG, "Extra by key " + USER_ID_KEY + ":" + getIntent().getStringExtra(USER_ID_KEY));
         viewModel.init(getIntent().getStringExtra(USER_ID_KEY));

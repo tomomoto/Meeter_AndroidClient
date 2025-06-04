@@ -75,7 +75,6 @@ public class GoogleMapsFragment extends Fragment
     private SupportMapFragment supportMapFragment;
     private ServiceConnection locationServiceConnection;
     private LocationTrackerService locationService;
-    private LatLng userLocation;
     private Marker userMarker;
     private Circle searchCircle;
     private GoogleMap gmap = null;
@@ -140,15 +139,13 @@ public class GoogleMapsFragment extends Fragment
         }
         if (locationService.canGetLocation()) {
             Location lkl = locationService.getLastKnownLocation();
-            userLocation = new LatLng(lkl.getLatitude(), lkl.getLongitude());
+            LatLng lastKnownUserLocation = new LatLng(lkl.getLatitude(), lkl.getLongitude());
             gmap = googleMap;
             gmap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener " + latLng));
             gmap.setOnCameraIdleListener(
                   () -> {
                       camPosition = gmap.getCameraPosition();
-                      LatLng target = camPosition.target;
-                      float zoom = camPosition.zoom;
-                      Log.d(TAG, "onCameraIdleListener " + target + " " + zoom);
+                      Log.d(TAG, "onCameraIdleListener " + camPosition.target + " " + camPosition.zoom);
                       //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
 
                       //!!! userMarker.setIcon(icon);
@@ -168,7 +165,7 @@ public class GoogleMapsFragment extends Fragment
 
                   });
             if (firstOpening) {
-                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, ZOOM_VALUE), 6000, null);
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
             } else {
                 gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
             }
@@ -176,7 +173,7 @@ public class GoogleMapsFragment extends Fragment
             //gmap.animateCamera(CameraUpdateFactory.zoomTo(10), 5000, null);
             searchCircle = googleMap.addCircle(
                   new CircleOptions()
-                        .center(userLocation)
+                        .center(lastKnownUserLocation)
                         .radius(searchArea)
                         //.fillColor(Color.TRANSPARENT)
                         .strokeColor(0x10000000)
@@ -188,10 +185,10 @@ public class GoogleMapsFragment extends Fragment
                   new MarkerOptions()
                         .icon(getUserIconBitmap(getContext()))
                         .title(getString(R.string.me))
-                        .position(userLocation));
+                        .position(lastKnownUserLocation));
             firstOpening = false;
             EventBus.getDefault()
-                  .post(new SearchForEvents((float) userLocation.latitude, (float) userLocation.longitude, searchArea));
+                  .post(new SearchForEvents((float) lastKnownUserLocation.latitude, (float) lastKnownUserLocation.longitude, searchArea));
         } else {
             Log.w(TAG, "Unable to get last known location.");
         }

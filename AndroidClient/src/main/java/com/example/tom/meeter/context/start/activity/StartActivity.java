@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.login.activity.LoginActivity;
+import com.example.tom.meeter.context.auth.login.activity.LoginActivity;
 import com.example.tom.meeter.context.network.service.SocketIOService;
 
 import butterknife.ButterKnife;

@@ -1,13 +1,9 @@
-package com.example.tom.meeter.context.login.activity;
+package com.example.tom.meeter.context.auth.login.activity;
 
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,21 +12,22 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.network.domain.LoginAttempt;
-import com.example.tom.meeter.context.network.service.SocketIOService;
+import com.example.tom.meeter.context.auth.login.message.LoginBody;
+import com.example.tom.meeter.context.auth.login.message.LoginResponse;
+import com.example.tom.meeter.context.auth.service.AuthService;
 import com.example.tom.meeter.context.profile.activity.ProfileActivity;
-import com.example.tom.meeter.context.registration.activity.RegistrationActivity;
-import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
-import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulLogin;
+import com.example.tom.meeter.context.auth.registration.activity.RegistrationActivity;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,41 +39,26 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.editTextPassword)
     TextView password;
 
-    private ServiceConnection sConn;
-    private boolean nwServiceBound = false;
-
+    @Inject
+    AuthService authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        sConn = new ServiceConnection() {
-            public void onServiceConnected(ComponentName name, IBinder binder) {
-                logMethod(TAG, this);
-                nwServiceBound = true;
-            }
 
-            public void onServiceDisconnected(ComponentName name) {
-                logMethod(TAG, this);
-                nwServiceBound = false;
-            }
-        };
+        ((App) getApplication()).getComponent().inject(this);
+
         setContentView(R.layout.login_activity);
         ButterKnife.bind(this);
-        //Log.d(TAG, "LoginActivity onCreate()... Starting NetworkService");
-        //startService(new Intent(this, NetworkService.class));
-        Log.d(TAG, "LoginActivity Binding SocketIOService");
-        bindService(
-                new Intent(this, SocketIOService.class),
-                sConn, BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         logMethod(TAG, this);
-        EventBus.getDefault().register(this);
-        Log.d(TAG, "LoginActivity EventBus registered for " + this);
+        //EventBus.getDefault().register(this);
+        //Log.d(TAG, "LoginActivity EventBus registered for " + this);
     }
 
     @Override
@@ -95,8 +77,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         logMethod(TAG, this);
-        EventBus.getDefault().unregister(this);
-        Log.d(TAG, "LoginActivity EventBus unregistered for " + this);
+        //EventBus.getDefault().unregister(this);
+        //Log.d(TAG, "LoginActivity EventBus unregistered for " + this);
     }
 
     @Override
@@ -109,8 +91,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         logMethod(TAG, this);
-        Log.d(TAG, "LoginActivity unbindService " + sConn);
-        unbindService(sConn);
     }
 
     @Override
@@ -142,31 +122,48 @@ public class LoginActivity extends AppCompatActivity {
         CharSequence loginText = login.getText();
         CharSequence pwdText = password.getText();
         if (loginText == null || loginText.toString().isEmpty()
-                || pwdText == null || pwdText.toString().isEmpty()) {
+              || pwdText == null || pwdText.toString().isEmpty()) {
             Log.d(TAG, "Illegal login request...");
             return;
         }
-        EventBus.getDefault().post(new LoginAttempt(loginText.toString(), pwdText.toString()));
-    }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SuccessfulLogin ev) {
-        Log.d(TAG, ev.toString());
-        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-        intent.putExtra(USER_ID_KEY, ev.getId());
-        startActivity(intent);
-        finish();
-    }
+        Call<LoginResponse> loginCall = authService.login(
+              new LoginBody(loginText.toString(), pwdText.toString()));
+        loginCall.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                logMethod(TAG, this);
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(FailureLogin event) {
-        Log.d(TAG, event.toString());
-        new AlertDialog.Builder(LoginActivity.this)
-                .setTitle(getString(R.string.login_failure))
-                .setMessage(getString(R.string.wrong_credentials))
-                .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
-                .create()
-                .show();
+                if (response.code() == 200) {
+                    Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                    //TODO intent.putExtra(USER_ID_KEY, ev.getId());
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+                if (response.code() == 403) {
+                    new AlertDialog.Builder(LoginActivity.this)
+                          .setTitle(getString(R.string.login_failure))
+                          .setMessage(getString(R.string.wrong_credentials))
+                          .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
+                          .create()
+                          .show();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                logMethod(TAG, this);
+
+                new AlertDialog.Builder(LoginActivity.this)
+                      .setTitle(getString(R.string.login_failure))
+                      .setMessage(getString(R.string.wrong_credentials))
+                      .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
+                      .create()
+                      .show();
+            }
+        });
     }
 
     @OnClick(R.id.RegistrationButton)

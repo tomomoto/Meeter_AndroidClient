@@ -1,9 +1,14 @@
 package com.example.tom.meeter.context.network.service;
 
 import static com.example.tom.meeter.infrastructure.common.Constants.initSocketIOPath;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static io.socket.client.Socket.EVENT_CONNECT;
+import static io.socket.client.Socket.EVENT_CONNECT_ERROR;
+import static io.socket.client.Socket.EVENT_DISCONNECT;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -56,7 +61,201 @@ public class SocketIOService extends Service {
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
     private static final int UNAUTHORIZED = 401;
-    private static final String AUTH_HEADER = "user-uuid";
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String AUTH_VALUE_START = "Bearer ";
+
+    public class ServiceBinder extends Binder {
+        public SocketIOService getService() {
+            return SocketIOService.this;
+        }
+    }
+
+    private boolean initialized = false;
+    private Socket socketClient;
+    private ServiceBinder serviceBinder;
+
+    public SocketIOService() {
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.d(TAG, "NetworkService onBind()" + " intent: " + intent);
+        try {
+            initializeSocketClient(false, "");
+        } catch (IOException | URISyntaxException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return serviceBinder;
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        logMethod(TAG, this);
+        serviceBinder = new ServiceBinder();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "SocketIOService onStartCommand(). already started? " + initialized
+              + " intent: " + intent + " flags: " + flags
+              + " readFlags: " + readFlags(flags) + " startId: " + startId);
+        try {
+            initializeSocketClient(false, "");
+        } catch (IOException | URISyntaxException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return START_STICKY;
+    }
+
+    private static String readFlags(int flags) {
+        if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY)
+            return "START_FLAG_REDELIVERY";
+        if ((flags & START_FLAG_RETRY) == START_FLAG_RETRY)
+            return "START_FLAG_RETRY";
+        if (flags == 0) {
+            return "zero";
+        }
+        throw new RuntimeException("flag???" + flags);
+    }
+
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        boolean ret = super.onUnbind(intent);
+        logMethod(TAG, this);
+        return ret;
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        logMethod(TAG, this);
+    }
+
+    private void initializeSocketClient(
+          boolean forceInit, String authToken) throws URISyntaxException, IOException {
+        if (!initialized || forceInit) {
+            String uri = initSocketIOPath(getBaseContext());
+            Log.d(TAG, "Configuring SocketIOClient for server: " + uri);
+            socketClient = IO.socket(uri, setupOptions(authToken));
+
+            socketClient.on(EVENT_CONNECT,
+                  args -> {
+                      Log.d(TAG, "SocketIOClient successfully connected to the server." + Arrays.toString(args));
+                  });
+            socketClient.on(EVENT_DISCONNECT,
+                  args -> {
+                      Log.d(TAG, "SocketIOClient disconnected from the server." + Arrays.toString(args));
+                  });
+            socketClient.on(EVENT_CONNECT_ERROR,
+                  args -> {
+                      Log.d(TAG, "SocketIOClient received connection error." + Arrays.toString(args));
+                  });
+
+            socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
+            //socketClient.on(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
+            socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+            socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
+
+            socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
+            socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
+            socketClient.connect();
+            EventBus.getDefault().register(this);
+            Log.d(TAG, "SocketIOClient is going to start...");
+            Log.d(TAG, "SocketIOClient: connected ?{"
+                  + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
+            socketClient.emit(GREETINGS_CHANNEL, "Client greetings.");
+            initialized = true;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        logMethod(TAG, this);
+        disconnect();
+        super.onDestroy();
+    }
+
+    public void recreateServer(String authToken) {
+        disconnect();
+        try {
+            initializeSocketClient(initialized, authToken);
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void disconnect() {
+        logMethod(TAG, this);
+        EventBus.getDefault().unregister(this);
+        socketClient.disconnect();
+        socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
+        //socketClient.off(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
+        socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+        socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
+
+        socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
+        socketClient.off(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
+    }
+
+    @Subscribe
+    public void onMessageEvent(LoginAttempt event) {
+        Log.d(TAG, "onMessageEvent:LoginAttempt: " + event.toString());
+        try {
+            socketClient.emit(USER_LOGIN_CHANNEL, event.toJson());
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    @Subscribe
+    public void onMessageEvent(SearchForEvents event) {
+        Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
+        try {
+            socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    @Subscribe
+    public void onMessageEvent(CreateNewEventAttempt event) {
+        Log.d(TAG, "onMessageEvent:CreateNewEventAttempt: " + event.toString());
+        try {
+            socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    @Subscribe
+    public void onMessageEvent(RegistrationAttempt event) {
+        Log.d(TAG, "onMessageEvent:RegistrationAttempt: " + event.toString());
+        try {
+            socketClient.emit("register", event.toJson());
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    private static IO.Options setupOptions(String authToken) {
+        IO.Options result = new IO.Options();
+        result.extraHeaders = setupAuthenticationHeader(authToken);
+        return result;
+    }
+
+    private static Map<String, List<String>> setupAuthenticationHeader(String authToken) {
+        Map<String, List<String>> result = new HashMap<>();
+        result.put(AUTH_HEADER, Collections.singletonList(AUTH_VALUE_START + authToken));
+        return result;
+    }
 
     private static void greetingsHandler(Object... args) {
         Log.d(TAG, "SocketIO server welcomes the client." + Arrays.toString(args));
@@ -137,168 +336,5 @@ public class SocketIOService extends Service {
                 break;
         }
     }
-
-    public class Binder extends android.os.Binder {
-        public SocketIOService getService() {
-            return SocketIOService.this;
-        }
-    }
-
-    private boolean started = false;
-    private Socket socketClient;
-    private Binder binder;
-
-    public SocketIOService() {
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "NetworkService onBind()" + " intent: " + intent);
-        try {
-            initSocketHandlers();
-        } catch (IOException | URISyntaxException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return binder;
-    }
-
-    @Override
-    public void onRebind(Intent intent) {
-        super.onRebind(intent);
-        Log.d(TAG, "NetworkService onRebind()");
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "NetworkService onCreate()");
-        binder = new Binder();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "NetworkService onStartCommand(). already started? " + started
-              + " intent: " + intent + " flags: " + flags
-              + " readFlags: " + readFlags(flags) + " startId: " + startId);
-        try {
-            initSocketHandlers();
-        } catch (IOException | URISyntaxException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return START_STICKY;
-    }
-
-    private static String readFlags(int flags) {
-        if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY)
-            return "START_FLAG_REDELIVERY";
-        if ((flags & START_FLAG_RETRY) == START_FLAG_RETRY)
-            return "START_FLAG_RETRY";
-        if (flags == 0) {
-            return "zero";
-        }
-        throw new RuntimeException("flag???" + flags);
-    }
-
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        boolean ret = super.onUnbind(intent);
-        Log.d(TAG, "NetworkService onUnbind()");
-        return ret;
-    }
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        Log.d(TAG, "NetworkService onTaskRemoved()");
-    }
-
-    private void initSocketHandlers() throws URISyntaxException, IOException {
-        if (!started) {
-            String uri = initSocketIOPath(getBaseContext());
-            Log.d(TAG, "Configuring SocketIO client for server: " + uri);
-
-            Map<String, List<String>> customHeaders = new HashMap<>();
-            customHeaders.put(
-                  AUTH_HEADER,
-                  Collections.singletonList("988bc772-d5f4-4b1f-a346-277ba4c31f87"));
-
-            // Configure connection options
-            IO.Options options = new IO.Options();
-            options.extraHeaders = customHeaders;
-
-            socketClient = IO.socket(uri, options);
-
-            socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
-            socketClient.on(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
-            socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
-            socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
-
-            socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
-            socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
-            socketClient.connect();
-            EventBus.getDefault().register(this);
-            Log.d(TAG, "SocketIO client is going to start...");
-            Log.d(TAG, "SocketIO client: connected ?{"
-                  + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
-            socketClient.emit(GREETINGS_CHANNEL, "Client greetings.");
-            started = true;
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "NetworkService onDestroy() ");
-        EventBus.getDefault().unregister(this);
-        socketClient.disconnect();
-        socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
-        socketClient.off(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
-        socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
-        socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
-
-        socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
-        socketClient.off(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
-        Log.d(TAG, "Disconnected from SocketIO server...");
-        super.onDestroy();
-    }
-
-    @Subscribe
-    public void onMessageEvent(LoginAttempt event) {
-        Log.d(TAG, "onMessageEvent:LoginAttempt: " + event.toString());
-        try {
-            socketClient.emit(USER_LOGIN_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-    }
-
-    @Subscribe
-    public void onMessageEvent(SearchForEvents event) {
-        Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
-        try {
-            socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-    }
-
-    @Subscribe
-    public void onMessageEvent(CreateNewEventAttempt event) {
-        Log.d(TAG, "onMessageEvent:CreateNewEventAttempt: " + event.toString());
-        try {
-            socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-    }
-
-    @Subscribe
-    public void onMessageEvent(RegistrationAttempt event) {
-        Log.d(TAG, "onMessageEvent:RegistrationAttempt: " + event.toString());
-        try {
-            socketClient.emit("register", event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-    }
 }
+
