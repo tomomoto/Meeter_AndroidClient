@@ -1,12 +1,12 @@
-package com.example.tom.meeter.context.auth.login.message;
+package com.example.tom.meeter.context.auth.registration.message;
 
-public class LoginResponse {
+public class RegisterResponse {
     private String token;
 
-    public LoginResponse() {
+    public RegisterResponse() {
     }
 
-    public LoginResponse(String token) {
+    public RegisterResponse(String token) {
         this.token = token;
     }
 

@@ -26,21 +26,30 @@ public class Constants {
 
     public static final String USER_ID_KEY = "userId";
 
+    public static final String AUTH_HEADER = "Authorization";
+    public static final String AUTH_VALUE_START = "Bearer ";
+    public static final String TOKEN_KEY = "token";
+
+
     public static String initServerPath(Context context) throws IOException {
         Properties p = new Properties();
         p.load(context.getAssets().open(APP_PROPERTIES));
         return "http://"
-                + p.getProperty(SERVER_IP_PROPERTY)
-                + ":"
-                + Integer.valueOf(p.getProperty(SERVER_PORT_PROPERTY));
+              + p.getProperty(SERVER_IP_PROPERTY)
+              + ":"
+              + Integer.valueOf(p.getProperty(SERVER_PORT_PROPERTY));
     }
 
     public static String initSocketIOPath(Context context) throws IOException {
         Properties p = new Properties();
         p.load(context.getAssets().open(APP_PROPERTIES));
         return "ws://"
-                + p.getProperty(SERVER_IP_PROPERTY)
-                + ":"
-                + Integer.valueOf(p.getProperty(SERVER_IO_PORT_PROPERTY));
+              + p.getProperty(SERVER_IP_PROPERTY)
+              + ":"
+              + Integer.valueOf(p.getProperty(SERVER_IO_PORT_PROPERTY));
+    }
+
+    public static String getAuthHeader(String token) {
+        return AUTH_VALUE_START + token;
     }
 }

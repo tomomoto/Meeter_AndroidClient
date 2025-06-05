@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.profile.RecycleViewActiveEventsAdapter;
+import com.example.tom.meeter.context.profile.adapter.RecycleViewActiveEventsAdapter;
 import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -32,12 +32,6 @@ import butterknife.ButterKnife;
 public class ActiveEventsFragment extends Fragment {
 
     private static final String TAG = ActiveEventsFragment.class.getCanonicalName();
-
-    public static ActiveEventsFragment createEventListFragment(Bundle args) {
-        ActiveEventsFragment result = new ActiveEventsFragment();
-        result.setArguments(args);
-        return result;
-    }
 
     @BindView(R.id.active_events_fragment_recycler_view)
     RecyclerView recyclerView;
@@ -53,12 +47,12 @@ public class ActiveEventsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
         EventBus.getDefault().register(this);
-        Log.d(TAG, "EventListFragment Registering eventBus");
+        Log.d(TAG, "ActiveEventsFragment Registering eventBus");
     }
 
     @Override
     public View onCreateView(
-        @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
         View view = inflater.inflate(R.layout.sub_fragment_active_events, container, false);
         ButterKnife.bind(this, view);
@@ -97,6 +91,6 @@ public class ActiveEventsFragment extends Fragment {
         super.onDestroy();
         logMethod(TAG, this);
         EventBus.getDefault().unregister(this);
-        Log.d(TAG, "EventListFragment Unregistered event bus");
+        Log.d(TAG, "ActiveEventsFragment Unregistered event bus");
     }
 }

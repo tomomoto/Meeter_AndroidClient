@@ -1,5 +1,7 @@
 package com.example.tom.meeter.context.network.service;
 
+import static com.example.tom.meeter.infrastructure.common.Constants.AUTH_HEADER;
+import static com.example.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
 import static com.example.tom.meeter.infrastructure.common.Constants.initSocketIOPath;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static io.socket.client.Socket.EVENT_CONNECT;
@@ -9,6 +11,7 @@ import static io.socket.client.Socket.EVENT_DISCONNECT;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -16,6 +19,7 @@ import com.example.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.example.tom.meeter.context.network.domain.LoginAttempt;
 import com.example.tom.meeter.context.network.domain.RegistrationAttempt;
 import com.example.tom.meeter.context.network.domain.SearchForEvents;
+import com.example.tom.meeter.infrastructure.common.Constants;
 import com.example.tom.meeter.infrastructure.common.JsonHelper;
 import com.example.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
 import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
@@ -61,8 +65,6 @@ public class SocketIOService extends Service {
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
     private static final int UNAUTHORIZED = 401;
-    private static final String AUTH_HEADER = "Authorization";
-    private static final String AUTH_VALUE_START = "Bearer ";
 
     public class ServiceBinder extends Binder {
         public SocketIOService getService() {
@@ -79,9 +81,11 @@ public class SocketIOService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "NetworkService onBind()" + " intent: " + intent);
+        Log.d(TAG, "SocketIOService onBind()" + " intent: " + intent);
         try {
-            initializeSocketClient(false, "");
+            Bundle extras = intent.getExtras();
+            String token = extras.getString(TOKEN_KEY);
+            initializeSocketClient(false, token);
         } catch (IOException | URISyntaxException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -141,39 +145,41 @@ public class SocketIOService extends Service {
 
     private void initializeSocketClient(
           boolean forceInit, String authToken) throws URISyntaxException, IOException {
-        if (!initialized || forceInit) {
-            String uri = initSocketIOPath(getBaseContext());
-            Log.d(TAG, "Configuring SocketIOClient for server: " + uri);
-            socketClient = IO.socket(uri, setupOptions(authToken));
-
-            socketClient.on(EVENT_CONNECT,
-                  args -> {
-                      Log.d(TAG, "SocketIOClient successfully connected to the server." + Arrays.toString(args));
-                  });
-            socketClient.on(EVENT_DISCONNECT,
-                  args -> {
-                      Log.d(TAG, "SocketIOClient disconnected from the server." + Arrays.toString(args));
-                  });
-            socketClient.on(EVENT_CONNECT_ERROR,
-                  args -> {
-                      Log.d(TAG, "SocketIOClient received connection error." + Arrays.toString(args));
-                  });
-
-            socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
-            //socketClient.on(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
-            socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
-            socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
-
-            socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
-            socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
-            socketClient.connect();
-            EventBus.getDefault().register(this);
-            Log.d(TAG, "SocketIOClient is going to start...");
-            Log.d(TAG, "SocketIOClient: connected ?{"
-                  + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
-            socketClient.emit(GREETINGS_CHANNEL, "Client greetings.");
-            initialized = true;
+        if (initialized && !forceInit) {
+            Log.d(TAG, "SocketIOService is not going to initialize, since it is already initialized.");
+            return;
         }
+        String uri = initSocketIOPath(getBaseContext());
+        Log.d(TAG, "Configuring SocketIOClient for server: " + uri);
+        socketClient = IO.socket(uri, setupOptions(authToken));
+
+        socketClient.on(EVENT_CONNECT,
+              args -> {
+                  Log.d(TAG, "SocketIOClient successfully connected to the server." + Arrays.toString(args));
+              });
+        socketClient.on(EVENT_DISCONNECT,
+              args -> {
+                  Log.d(TAG, "SocketIOClient disconnected from the server." + Arrays.toString(args));
+              });
+        socketClient.on(EVENT_CONNECT_ERROR,
+              args -> {
+                  Log.d(TAG, "SocketIOClient received connection error." + Arrays.toString(args));
+              });
+
+        socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
+        //socketClient.on(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
+        socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+        socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
+
+        socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
+        socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
+        socketClient.connect();
+        EventBus.getDefault().register(this);
+        Log.d(TAG, "SocketIOClient is going to start...");
+        Log.d(TAG, "SocketIOClient: connected ?{"
+              + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
+        socketClient.emit(GREETINGS_CHANNEL, "Client greetings.");
+        initialized = true;
     }
 
     @Override
@@ -253,7 +259,7 @@ public class SocketIOService extends Service {
 
     private static Map<String, List<String>> setupAuthenticationHeader(String authToken) {
         Map<String, List<String>> result = new HashMap<>();
-        result.put(AUTH_HEADER, Collections.singletonList(AUTH_VALUE_START + authToken));
+        result.put(AUTH_HEADER, Collections.singletonList(Constants.getAuthHeader(authToken)));
         return result;
     }
 

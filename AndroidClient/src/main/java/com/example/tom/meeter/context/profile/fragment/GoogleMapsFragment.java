@@ -65,13 +65,6 @@ public class GoogleMapsFragment extends Fragment
     private static final String TAG = GoogleMapsFragment.class.getCanonicalName();
     private static final FontAwesome FONT_AWESOME = new FontAwesome();
     private static final float ZOOM_VALUE = 17;
-
-    public static GoogleMapsFragment createGoogleMapsFragment(Bundle args) {
-        GoogleMapsFragment result = new GoogleMapsFragment();
-        result.setArguments(args);
-        return result;
-    }
-
     private SupportMapFragment supportMapFragment;
     private ServiceConnection locationServiceConnection;
     private LocationTrackerService locationService;
@@ -164,7 +157,7 @@ public class GoogleMapsFragment extends Fragment
                       //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,camPosition.zoom));
 
                   });
-            if (firstOpening) {
+            if (firstOpening || camPosition == null) {
                 gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
             } else {
                 gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));

@@ -15,6 +15,7 @@ import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+@Deprecated
 public class StartActivityTemp extends AppCompatActivity {
 
     private static final String TAG = StartActivityTemp.class.getCanonicalName();

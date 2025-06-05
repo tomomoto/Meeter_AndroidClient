@@ -1,10 +1,5 @@
 package com.example.tom.meeter.context.profile.fragment;
 
-import static com.example.tom.meeter.context.profile.fragment.ActiveEventsFragment.createEventListFragment;
-import static com.example.tom.meeter.context.profile.fragment.GoogleMapsFragment.createGoogleMapsFragment;
-import static com.example.tom.meeter.context.profile.fragment.UserEventsFragment.createUserEventsFragment;
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
-import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.os.Bundle;
@@ -47,7 +42,7 @@ public class EventsFragment extends Fragment {
 
     @Override
     public View onCreateView(
-        LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_events, container, false);
@@ -60,24 +55,23 @@ public class EventsFragment extends Fragment {
 
         viewPager = view.findViewById(R.id.fragment_events_viewpager);
         viewPager.setAdapter(
-            createViewPagerAdapter(
-                getChildFragmentManager(),
-                createBundle(USER_ID_KEY, getArguments().getString(USER_ID_KEY)),
-                getString(R.string.map),
-                getString(R.string.events),
-                getString(R.string.your_events)));
+              createViewPagerAdapter(
+                    getChildFragmentManager(),
+                    getString(R.string.map),
+                    getString(R.string.events),
+                    getString(R.string.your_events)));
 
         tabLayout = view.findViewById(R.id.fragment_events_tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private static ViewPagerAdapter createViewPagerAdapter(
-        FragmentManager fMgr, Bundle bundle, String mapTitle,
-        String eventsTitle, String yourEventsTitle) {
+          FragmentManager fMgr, String mapTitle,
+          String eventsTitle, String yourEventsTitle) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(fMgr);
-        adapter.addFragment(createGoogleMapsFragment(bundle), mapTitle);
-        adapter.addFragment(createEventListFragment(bundle), eventsTitle);
-        adapter.addFragment(createUserEventsFragment(bundle), yourEventsTitle);
+        adapter.addFragment(new GoogleMapsFragment(), mapTitle);
+        adapter.addFragment(new ActiveEventsFragment(), eventsTitle);
+        adapter.addFragment(new UserEventsFragment(), yourEventsTitle);
         return adapter;
     }
 

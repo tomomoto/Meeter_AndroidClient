@@ -1,9 +1,10 @@
 package com.example.tom.meeter.context.profile.activity;
 
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
-import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
+import static com.example.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
+import static com.example.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ComponentName;
@@ -34,7 +35,8 @@ import com.example.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.example.tom.meeter.context.profile.fragment.EventsFragment;
 import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.example.tom.meeter.context.profile.fragment.UserEventsFragment;
-import com.example.tom.meeter.context.user.UserProfileViewModel;
+import com.example.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.example.tom.meeter.infrastructure.common.Constants;
 import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
@@ -105,17 +107,19 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Inject
     ViewModelFactory viewModelFactory;
-
-    UserProfileViewModel viewModel;
+    private ProfileViewModel profileViewModel;
 
     private ServiceConnection sConn;
     private boolean nwServiceBound = false;
+
+    private AccountManager accountManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         ((App) getApplication()).getComponent().inject(this);
+        accountManager = AccountManager.get(this);
 
         sConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -130,22 +134,26 @@ public class ProfileActivity extends AppCompatActivity {
         };
 
         Log.d(TAG, "ProfileActivity binding SocketIOService");
-        bindService(
-                new Intent(this, SocketIOService.class),
-                sConn, BIND_AUTO_CREATE);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
-        Log.d(TAG, "Extra by key " + USER_ID_KEY + ":" + getIntent().getStringExtra(USER_ID_KEY));
-        viewModel.init(getIntent().getStringExtra(USER_ID_KEY));
+        profileViewModel = ViewModelProviders.of(this, viewModelFactory)
+              .get(ProfileViewModel.class);
 
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
+
+        setupTokenAction(accountManager, this,
+              token -> {
+                  Intent service = new Intent(this, SocketIOService.class);
+                  service.putExtra(TOKEN_KEY, token);
+                  bindService(service, sConn, BIND_AUTO_CREATE);
+                  profileViewModel.getProfile(Constants.getAuthHeader(token));
+              });
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         handler = new Handler();
         setupNameMapping(drawerFragmentNames,
-                getResources().getStringArray(R.array.nav_item_activity_titles));
+              getResources().getStringArray(R.array.nav_item_activity_titles));
         drawer = createDrawer(this, toolbar);
 
         if (savedInstanceState == null) {
@@ -201,7 +209,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void onDrawerItemClickListener(
-            AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+          AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
         Log.d(TAG, "User selected drawer item: " + drawerItem.getIdentifier());
         switch (drawerItem.getIdentifier()) {
             case DRAWER_PROFILE_ID:
@@ -254,14 +262,13 @@ public class ProfileActivity extends AppCompatActivity {
 
         // If mPendingRunnable is not null, then add to the message queue
         handler.post(
-                replaceFragment(
-                        getSupportFragmentManager(),
-                        () -> createFragment(
-                                selectedNavigationId,
-                                f -> f.setArguments(
-                                        createBundle(USER_ID_KEY, viewModel.getUserId()))),
-                        () -> tag
-                )
+              replaceFragment(
+                    getSupportFragmentManager(),
+                    () -> createFragment(
+                          selectedNavigationId,
+                          fragment -> {}),
+                    () -> tag
+              )
         );
 
         // show or hide the fab button
@@ -296,26 +303,26 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static Optional<IDrawerItem> findDrawerItem(Drawer.Result drawer, int id) {
         return drawer.getDrawerItems()
-                .stream()
-                .filter(iDrawerItem -> id == iDrawerItem.getIdentifier())
-                .findAny();
+              .stream()
+              .filter(iDrawerItem -> id == iDrawerItem.getIdentifier())
+              .findAny();
     }
 
     private static Runnable replaceFragment(
-            FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
+          FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
         return () -> {
             // update the main content by replacing fragments
             FragmentTransaction txn = fm.beginTransaction();
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
-            txn.commit();
-            //txn.commitAllowingStateLoss();
+            //txn.commit();
+            txn.commitAllowingStateLoss();
         };
     }
 
 
     private static Fragment createFragment(
-            int navigationMenuIndex, Consumer<Fragment> postConstruct) {
+          int navigationMenuIndex, Consumer<Fragment> postConstruct) {
         Fragment result;
         switch (navigationMenuIndex) {
             case DRAWER_PROFILE_ID:
@@ -345,7 +352,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private static Drawer.OnDrawerListener createOnDrawerListener(
-            Provider<View> currentFocusP, Provider<InputMethodManager> immP) {
+          Provider<View> currentFocusP, Provider<InputMethodManager> immP) {
         return new Drawer.OnDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -366,27 +373,27 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static Drawer.Result createDrawer(ProfileActivity profileActivity, Toolbar toolbar) {
         return new Drawer()
-                .withActivity(profileActivity)
-                .withToolbar(toolbar)
-                .withActionBarDrawerToggle(true)
-                .withHeader(R.layout.drawer_header)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_profile).withIcon(FontAwesome.Icon.faw_user).withBadge("99").withIdentifier(DRAWER_PROFILE_ID),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_events).withIcon(FontAwesome.Icon.faw_globe).withIdentifier(DRAWER_EVENTS_ID),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_new_event).withIcon(FontAwesome.Icon.faw_calendar).withIdentifier(DRAWER_NEW_EVENT_ID),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_notifications).withIcon(FontAwesome.Icon.faw_eye).withBadge("6").withIdentifier(DRAWER_NOTIFICATION_ID),
-                        new SectionDrawerItem().withName(R.string.drawer_item_additional),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(DRAWER_SETTINGS_ID),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_coffee).withIdentifier(DRAWER_HELP_ID),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_OPEN_SOURCE_ID).setEnabled(false),
-                        new DividerDrawerItem(),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(DRAWER_CONTACT_ID)
-                )
-                .withOnDrawerItemClickListener(profileActivity::onDrawerItemClickListener)
-                .withOnDrawerListener(createOnDrawerListener(
-                        profileActivity::getCurrentFocus,
-                        () -> (InputMethodManager) profileActivity.getSystemService(Activity.INPUT_METHOD_SERVICE))
-                )
-                .build();
+              .withActivity(profileActivity)
+              .withToolbar(toolbar)
+              .withActionBarDrawerToggle(true)
+              .withHeader(R.layout.drawer_header)
+              .addDrawerItems(
+                    new PrimaryDrawerItem().withName(R.string.drawer_item_profile).withIcon(FontAwesome.Icon.faw_user).withBadge("99").withIdentifier(DRAWER_PROFILE_ID),
+                    new PrimaryDrawerItem().withName(R.string.drawer_item_events).withIcon(FontAwesome.Icon.faw_globe).withIdentifier(DRAWER_EVENTS_ID),
+                    new PrimaryDrawerItem().withName(R.string.drawer_item_new_event).withIcon(FontAwesome.Icon.faw_calendar).withIdentifier(DRAWER_NEW_EVENT_ID),
+                    new PrimaryDrawerItem().withName(R.string.drawer_item_notifications).withIcon(FontAwesome.Icon.faw_eye).withBadge("6").withIdentifier(DRAWER_NOTIFICATION_ID),
+                    new SectionDrawerItem().withName(R.string.drawer_item_additional),
+                    new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(DRAWER_SETTINGS_ID),
+                    new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_coffee).withIdentifier(DRAWER_HELP_ID),
+                    new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_OPEN_SOURCE_ID).setEnabled(false),
+                    new DividerDrawerItem(),
+                    new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(DRAWER_CONTACT_ID)
+              )
+              .withOnDrawerItemClickListener(profileActivity::onDrawerItemClickListener)
+              .withOnDrawerListener(createOnDrawerListener(
+                    profileActivity::getCurrentFocus,
+                    () -> (InputMethodManager) profileActivity.getSystemService(Activity.INPUT_METHOD_SERVICE))
+              )
+              .build();
     }
 }

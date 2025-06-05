@@ -1,7 +1,9 @@
 package com.example.tom.meeter.infrastructure.common;
 
-import android.os.Bundle;
+import android.app.Activity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 public class InfrastructureHelper {
 
@@ -10,10 +12,12 @@ public class InfrastructureHelper {
     private InfrastructureHelper() {
     }
 
-    public static Bundle createBundle(String key, String value) {
-        Bundle result = new Bundle();
-        result.putString(key, value);
-        return result;
+    public static void showMessage(Activity activity, String msg) {
+        if (TextUtils.isEmpty(msg))
+            return;
+
+        activity.runOnUiThread(
+              () -> Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_SHORT).show());
     }
 
     public static void logMethod(String tag, Object obj) {

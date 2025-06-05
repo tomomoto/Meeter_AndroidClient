@@ -43,8 +43,8 @@ public class LocationTrackerService extends Service {
     private long minTimeMilliseconds;
 
     private LocationManager locManager = null;
-    private LocationListener gpsListener;
-    private LocationListener networkListener;
+    private LocationListener gpsListener = null;
+    private LocationListener networkListener = null;
     private ServiceBinder binder;
 
     private final List<LocationTrackerListener> listeners = new ArrayList<>();
@@ -154,8 +154,14 @@ public class LocationTrackerService extends Service {
 
     private void stopListeningForUpdates() {
         if (locManager != null) {
-            locManager.removeUpdates(networkListener);
-            locManager.removeUpdates(gpsListener);
+            if (networkListener != null) {
+                locManager.removeUpdates(networkListener);
+                networkListener = null;
+            }
+            if (gpsListener != null) {
+                locManager.removeUpdates(gpsListener);
+                gpsListener = null;
+            }
         }
     }
 

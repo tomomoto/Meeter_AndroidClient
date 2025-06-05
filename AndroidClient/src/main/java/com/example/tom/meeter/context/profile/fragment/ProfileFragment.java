@@ -1,8 +1,9 @@
 package com.example.tom.meeter.context.profile.fragment;
 
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static com.example.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,7 +18,8 @@ import android.widget.TextView;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.user.UserProfileViewModel;
+import com.example.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.example.tom.meeter.infrastructure.common.Constants;
 import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.text.ParseException;
@@ -58,7 +60,9 @@ public class ProfileFragment extends Fragment {
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private UserProfileViewModel viewModel;
+    private ProfileViewModel profileViewModel;
+
+    private AccountManager accountManager;
 
     public ProfileFragment() {
         logMethod(TAG, this);
@@ -68,13 +72,13 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((App) getActivity().getApplication()).getComponent().inject(this);
+        accountManager = AccountManager.get(this.getContext());
         logMethod(TAG, this);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+          @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
@@ -86,16 +90,21 @@ public class ProfileFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         logMethod(TAG, this);
 
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserProfileViewModel.class);
-        viewModel.init(getArguments().getString(USER_ID_KEY));
+        profileViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProfileViewModel.class);
 
-        viewModel.getUserLiveData().observe(this, user -> {
-            userIdView.setText(getString(R.string.profile_user_id, user.getId()));
-            userNameView.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
-            userGenderView.setText(getString(R.string.profile_gender, user.getGender()));
-            userAgeView.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
-            userInfoView.setText(getString(R.string.profile_info, user.getInfo()));
-        });
+        setupTokenAction(accountManager, this.getActivity(),
+              token -> profileViewModel.getProfile(Constants.getAuthHeader(token)));
+
+        profileViewModel.getUserLiveData()
+              .observe(this, user -> {
+                  if (user != null) {
+                      userIdView.setText(getString(R.string.profile_user_id, user.getId()));
+                      userNameView.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
+                      userGenderView.setText(getString(R.string.profile_gender, user.getGender()));
+                      userAgeView.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
+                      userInfoView.setText(getString(R.string.profile_info, user.getInfo()));
+                  }
+              });
     }
 
     @Override

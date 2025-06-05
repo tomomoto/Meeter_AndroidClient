@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.profile;
+package com.example.tom.meeter.context.profile.adapter;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;

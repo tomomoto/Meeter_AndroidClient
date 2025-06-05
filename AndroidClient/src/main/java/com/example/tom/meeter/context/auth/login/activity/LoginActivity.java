@@ -1,10 +1,15 @@
 package com.example.tom.meeter.context.auth.login.activity;
 
+import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
+import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ARG_IS_ADDING_NEW_ACCOUNT;
+import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.PARAM_USER_PASS;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -16,9 +21,8 @@ import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.auth.login.message.LoginBody;
 import com.example.tom.meeter.context.auth.login.message.LoginResponse;
-import com.example.tom.meeter.context.auth.service.AuthService;
-import com.example.tom.meeter.context.profile.activity.ProfileActivity;
 import com.example.tom.meeter.context.auth.registration.activity.RegistrationActivity;
+import com.example.tom.meeter.context.auth.service.AuthService;
 
 import javax.inject.Inject;
 
@@ -42,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
     @Inject
     AuthService authService;
 
+    private AccountManager accountManager;
+    private AccountAuthenticatorResponse accountAuthenticatorResponse = null;
+    private Bundle accountAuthenticationResult = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,16 +57,39 @@ public class LoginActivity extends AppCompatActivity {
 
         ((App) getApplication()).getComponent().inject(this);
 
+        accountManager = AccountManager.get(this);
+
+        accountAuthenticatorResponse =
+              getIntent().getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+
+        if (accountAuthenticatorResponse != null) {
+            accountAuthenticatorResponse.onRequestContinued();
+        }
+
+
         setContentView(R.layout.login_activity);
         ButterKnife.bind(this);
+    }
+
+
+    @Override
+    public void finish() {
+        if (accountAuthenticatorResponse != null) {
+            // send the result bundle back if set, otherwise send an error.
+            if (accountAuthenticationResult != null) {
+                accountAuthenticatorResponse.onResult(accountAuthenticationResult);
+            } else {
+                accountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
+            }
+            accountAuthenticatorResponse = null;
+        }
+        super.finish();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         logMethod(TAG, this);
-        //EventBus.getDefault().register(this);
-        //Log.d(TAG, "LoginActivity EventBus registered for " + this);
     }
 
     @Override
@@ -77,8 +108,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         logMethod(TAG, this);
-        //EventBus.getDefault().unregister(this);
-        //Log.d(TAG, "LoginActivity EventBus unregistered for " + this);
     }
 
     @Override
@@ -127,43 +156,53 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        Call<LoginResponse> loginCall = authService.login(
-              new LoginBody(loginText.toString(), pwdText.toString()));
+        submit();
+    }
+
+    public void submit() {
+        final String userLogin = login.getText().toString();
+        final String userPass = password.getText().toString();
+        Call<LoginResponse> loginCall = authService.login(new LoginBody(userLogin, userPass));
         loginCall.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                logMethod(TAG, this);
-
                 if (response.code() == 200) {
-                    Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-                    //TODO intent.putExtra(USER_ID_KEY, ev.getId());
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
-                if (response.code() == 403) {
-                    new AlertDialog.Builder(LoginActivity.this)
-                          .setTitle(getString(R.string.login_failure))
-                          .setMessage(getString(R.string.wrong_credentials))
-                          .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
-                          .create()
-                          .show();
-                    return;
+                    Intent intent = new Intent();
+                    intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userLogin);
+                    intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
+                    intent.putExtra(AccountManager.KEY_AUTHTOKEN, response.body().getToken());
+                    intent.putExtra(PARAM_USER_PASS, userPass);
+                    finishLogin(intent);
+                } else {
+                    Log.d(TAG, "Invalid login");
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                logMethod(TAG, this);
 
-                new AlertDialog.Builder(LoginActivity.this)
-                      .setTitle(getString(R.string.login_failure))
-                      .setMessage(getString(R.string.wrong_credentials))
-                      .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
-                      .create()
-                      .show();
             }
         });
+    }
+
+    private void finishLogin(Intent intent) {
+        String login = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+        String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
+        String token = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+        String pass = intent.getStringExtra(PARAM_USER_PASS);
+        boolean addNewAcc = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
+        Account account = new Account(login, accountType);
+        if (addNewAcc) {
+            // Creating the account on the device and setting the auth token we got
+            // (Not setting the auth token will cause another call to the server to authenticate the user)
+            accountManager.addAccountExplicitly(account, pass, null);
+            accountManager.setAuthToken(account, ACCOUNT_TYPE, token);
+        } else {
+            accountManager.setPassword(account, pass);
+        }
+        accountAuthenticationResult = intent.getExtras();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @OnClick(R.id.RegistrationButton)

@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.event;
+package com.example.tom.meeter.context.profile.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+@Deprecated
 public class UserEventsViewModel extends ViewModel {
 
     private String userId;
