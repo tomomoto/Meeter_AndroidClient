@@ -16,8 +16,9 @@ public class User {
     private String info;
     private String birthday;
 
-    public User(@NonNull String id, String name, String gender, String surname,
-                String info, String birthday) {
+    public User(
+          @NonNull String id, String name, String gender, String surname,
+          String info, String birthday) {
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -78,12 +79,12 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", gender='" + gender + '\'' +
-                ", surname='" + surname + '\'' +
-                ", info='" + info + '\'' +
-                ", birthday='" + birthday + '\'' +
-                '}';
+              "id=" + id +
+              ", name='" + name + '\'' +
+              ", gender='" + gender + '\'' +
+              ", surname='" + surname + '\'' +
+              ", info='" + info + '\'' +
+              ", birthday='" + birthday + '\'' +
+              '}';
     }
 }

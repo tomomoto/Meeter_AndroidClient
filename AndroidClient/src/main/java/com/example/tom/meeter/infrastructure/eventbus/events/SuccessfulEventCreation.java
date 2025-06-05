@@ -1,14 +1,8 @@
 package com.example.tom.meeter.infrastructure.eventbus.events;
 
-public class SuccessfulEventCreation {
+public class SuccessfulEventCreation extends BaseIdEvent {
 
-  private String eventId;
-
-  public SuccessfulEventCreation(String eventId) {
-    this.eventId = eventId;
-  }
-
-  public String getEventId() {
-    return eventId;
-  }
+    public SuccessfulEventCreation(String id) {
+        super(id);
+    }
 }

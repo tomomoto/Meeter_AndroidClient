@@ -20,6 +20,7 @@
     <string name="drawer_item_events">События</string>
     <string name="drawer_item_new_event">Новое событие</string>
     <string name="drawer_item_notifications">Уведомления</string>
+    <string name="drawer_item_additional">Дополнительно</string>
     <string name="drawer_item_settings">Настройки</string>
     <string name="drawer_item_help">Помощь</string>
     <string name="drawer_item_open_source">Открытые исходники</string>
@@ -69,4 +70,8 @@
     <string name="events">События</string>
     <string name="your_events">Ваши события</string>
     <string name="user_information">Пользовательская информация</string>
+    <string name="me">Я</string>
+    <string name="location_changed">Локация изменена</string>
+    <string name="need_location_permissions">Пожалуйста, проверьте разрешения на доступ к местоположению.</string>
+    <string name="location_is_disabled">Сервис местоположения выключен.</string>
 </resources>

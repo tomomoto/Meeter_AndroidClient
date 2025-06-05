@@ -1,7 +1,9 @@
 package com.example.tom.meeter.context.profile.fragment;
 
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
+import static com.example.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,9 +17,10 @@ import android.view.ViewGroup;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.event.RecycleViewUserEventsAdapter;
-import com.example.tom.meeter.context.event.UserEventsViewModel;
-import com.example.tom.meeter.infrastructure.viewmodel.ViewModelFactory;
+import com.example.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
+import com.example.tom.meeter.context.profile.adapter.RecycleViewUserEventsAdapter;
+import com.example.tom.meeter.infrastructure.common.Constants;
+import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -28,57 +31,61 @@ public class UserEventsFragment extends Fragment {
 
     private static final String TAG = UserEventsFragment.class.getCanonicalName();
 
-    public static UserEventsFragment createUserEventsFragment(Bundle args) {
-        UserEventsFragment result = new UserEventsFragment();
-        result.setArguments(args);
-        return result;
-    }
-
-    @BindView(R.id.user_events_rv)
-    RecyclerView rView;
+    @BindView(R.id.user_events_fragment_recycler_view)
+    RecyclerView recyclerView;
 
     private RecycleViewUserEventsAdapter adapter;
 
     @Inject
     ViewModelFactory viewModelFactory;
 
-    private UserEventsViewModel viewModel;
+    private ProfileEventsViewModel profileEventsViewModel;
+
+    private AccountManager accountManager;
 
     public UserEventsFragment() {
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logMethod(TAG, this);
         ((App) getActivity().getApplication()).getComponent().inject(this);
+        accountManager = AccountManager.get(this.getContext());
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_user_events, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.sub_fragment_user_events, container, false);
         ButterKnife.bind(this, view);
+        logMethod(TAG, this);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        logMethod(TAG, this);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserEventsViewModel.class);
-        Bundle arguments = getArguments();
-        viewModel.init(arguments.getString(USER_ID_KEY));
-        viewModel.getUserEvents().observe(this, ev -> adapter.setData(ev));
+        logMethod(TAG, this);
+        profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProfileEventsViewModel.class);
+
+        setupTokenAction(accountManager, this.getActivity(),
+              token -> profileEventsViewModel.getProfileEvents(Constants.getAuthHeader(token)));
 
         adapter = new RecycleViewUserEventsAdapter();
+        profileEventsViewModel.getProfileEventsLiveData()
+              .observe(this, ev -> adapter.setData(ev));
 
-        rView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rView.setAdapter(adapter);
-        rView.invalidate();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
 
         /*
         adapter = new RecycleViewUserEventsAdapter(events);

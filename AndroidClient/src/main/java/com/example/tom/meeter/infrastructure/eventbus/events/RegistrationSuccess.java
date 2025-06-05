@@ -1,18 +1,8 @@
 package com.example.tom.meeter.infrastructure.eventbus.events;
 
-public class RegistrationSuccess {
+public class RegistrationSuccess extends BaseIdEvent {
 
-  private String userId;
-
-  public RegistrationSuccess(String userId) {
-    this.userId = userId;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
+    public RegistrationSuccess(String id) {
+        super(id);
+    }
 }

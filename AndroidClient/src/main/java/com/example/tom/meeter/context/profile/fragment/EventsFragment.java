@@ -1,10 +1,6 @@
 package com.example.tom.meeter.context.profile.fragment;
 
-import static com.example.tom.meeter.context.profile.fragment.EventListFragment.createEventListFragment;
-import static com.example.tom.meeter.context.profile.fragment.GoogleMapsFragment.createGoogleMapsFragment;
-import static com.example.tom.meeter.context.profile.fragment.UserEventsFragment.createUserEventsFragment;
-import static com.example.tom.meeter.infrastructure.common.Constants.USER_ID_KEY;
-import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.createBundle;
+import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,19 +31,19 @@ public class EventsFragment extends Fragment {
 
     public EventsFragment() {
         // Required empty public constructor
-        Log.d(TAG, "EventsFragment()");
+        logMethod(TAG, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "EventsFragment.onCreate()");
+        logMethod(TAG, this);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(TAG, "EventsFragment.onCreateView()");
+    public View onCreateView(
+          LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        logMethod(TAG, this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_events, container, false);
     }
@@ -56,34 +51,33 @@ public class EventsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "EventsFragment.onViewCreated()");
+        logMethod(TAG, this);
 
-        viewPager = view.findViewById(R.id.viewpager);
+        viewPager = view.findViewById(R.id.fragment_events_viewpager);
         viewPager.setAdapter(
-                createViewPagerAdapter(
-                        getChildFragmentManager(),
-                        createBundle(USER_ID_KEY, getArguments().getString(USER_ID_KEY)),
-                        getString(R.string.map),
-                        getString(R.string.events),
-                        getString(R.string.your_events)));
+              createViewPagerAdapter(
+                    getChildFragmentManager(),
+                    getString(R.string.map),
+                    getString(R.string.events),
+                    getString(R.string.your_events)));
 
-        tabLayout = view.findViewById(R.id.tabs);
+        tabLayout = view.findViewById(R.id.fragment_events_tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private static ViewPagerAdapter createViewPagerAdapter(
-            FragmentManager fMgr, Bundle bundle, String mapTitle,
-            String eventsTitle, String yourEventsTitle) {
+          FragmentManager fMgr, String mapTitle,
+          String eventsTitle, String yourEventsTitle) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(fMgr);
-        adapter.addFragment(createGoogleMapsFragment(bundle), mapTitle);
-        adapter.addFragment(createEventListFragment(bundle), eventsTitle);
-        adapter.addFragment(createUserEventsFragment(bundle), yourEventsTitle);
+        adapter.addFragment(new GoogleMapsFragment(), mapTitle);
+        adapter.addFragment(new ActiveEventsFragment(), eventsTitle);
+        adapter.addFragment(new UserEventsFragment(), yourEventsTitle);
         return adapter;
     }
 
     static class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
+        private final List<Fragment> fragments = new ArrayList<>();
+        private final List<String> fragmentsTitles = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -91,22 +85,22 @@ public class EventsFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return mFragmentList.get(position);
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return mFragmentList.size();
+            return fragments.size();
         }
 
         public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
+            fragments.add(fragment);
+            fragmentsTitles.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+            return fragmentsTitles.get(position);
         }
     }
 }

@@ -2,10 +2,12 @@ package com.example.tom.meeter;
 
 import android.app.Application;
 
+import com.example.tom.meeter.context.auth.login.activity.LoginActivity;
+import com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.example.tom.meeter.context.profile.activity.ProfileActivity;
 import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.example.tom.meeter.context.profile.fragment.UserEventsFragment;
-import com.example.tom.meeter.infrastructure.viewmodel.ViewModelModule;
+import com.example.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
 
 import javax.inject.Singleton;
 
@@ -33,4 +35,8 @@ public interface AppComponent {
     void inject(ProfileFragment profileFragment);
 
     void inject(UserEventsFragment userEventsFragment);
+
+    void inject(LoginActivity loginActivity);
+
+    void inject(AccountAuthenticator accountAuthenticator);
 }

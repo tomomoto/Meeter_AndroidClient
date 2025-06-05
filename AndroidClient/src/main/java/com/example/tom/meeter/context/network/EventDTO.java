@@ -9,15 +9,15 @@ import org.json.JSONObject;
 
 public class EventDTO {
 
-    private static String EVENT_ID_KEY = "id";
-    private static String NAME_KEY = "name";
-    private static String DESCRIPTION_KEY = "description";
-    private static String CREATOR_ID_KEY = "creator_id";
-    private static String LATITUDE_KEY = "latitude";
-    private static String LONGITUDE_KEY = "longitude";
-    private static String CREATED_KEY = "created";
-    private static String STARTING_KEY = "starting";
-    private static String ENDING_KEY = "ending";
+    private static final String EVENT_ID_KEY = "id";
+    private static final String NAME_KEY = "name";
+    private static final String DESCRIPTION_KEY = "description";
+    private static final String CREATOR_ID_KEY = "creator_id";
+    private static final String LATITUDE_KEY = "latitude";
+    private static final String LONGITUDE_KEY = "longitude";
+    private static final String CREATED_KEY = "created";
+    private static final String STARTING_KEY = "starting";
+    private static final String ENDING_KEY = "ending";
 
     private String id;
     private String name;
