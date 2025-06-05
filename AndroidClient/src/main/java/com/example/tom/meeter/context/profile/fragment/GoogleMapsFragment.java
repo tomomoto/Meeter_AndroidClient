@@ -163,15 +163,12 @@ public class GoogleMapsFragment extends Fragment
         if (lastKnownUserLocation != null) {
             // Zoom out to zoom level 10, animating with a duration of 2 seconds.
             //gmap.animateCamera(CameraUpdateFactory.zoomTo(10), 5000, null);
-            searchCircle = gmap.addCircle(getCircleOptions(lastKnownUserLocation, searchArea));
             userMarker = gmap.addMarker(getMarkerOptions(lastKnownUserLocation, getContext(), meString));
-            searchForEvents(lastKnownUserLocation.latitude, lastKnownUserLocation.longitude, searchArea);
+            searchCircle = gmap.addCircle(getCircleOptions(lastKnownUserLocation, searchArea));
         } else if (camPosition != null) {
             searchCircle = gmap.addCircle(getCircleOptions(camPosition.target, searchArea));
-            searchForEvents(camPosition.target.latitude, camPosition.target.longitude, searchArea);
         } else {
             searchCircle = gmap.addCircle(getCircleOptions(DEFAULT, searchArea));
-            searchForEvents(DEFAULT.latitude, DEFAULT.longitude, searchArea);
         }
         firstOpening = false;
     }
@@ -213,18 +210,25 @@ public class GoogleMapsFragment extends Fragment
     @Override
     public void onLocationChanged(Location location) {
         logMethod(TAG, this);
+        if (gmap == null) {
+            Log.d(TAG, "Gmap is not ready...");
+        }
         if (trackUser) {
             Toast.makeText(getContext(), R.string.location_changed, Toast.LENGTH_SHORT).show();
             if (userMarker == null) {
-                userMarker = gmap.addMarker(getMarkerOptions(mapToLatTng(location), getContext(), meString));
+                if (gmap != null) {
+                    userMarker = gmap.addMarker(getMarkerOptions(mapToLatTng(location), getContext(), meString));
+                }
             } else {
+                //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
                 userMarker.setPosition(mapToLatTng(location));
+                searchCircle.setCenter(userMarker.getPosition());
             }
             if (camPosition != null) {
-                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+                if (gmap != null) {
+                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+                }
             }
-            //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
-            searchCircle.setCenter(userMarker.getPosition());
         }
     }
 
