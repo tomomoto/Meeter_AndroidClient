@@ -68,16 +68,19 @@ public class GoogleMapsFragment extends Fragment
     private static final FontAwesome FONT_AWESOME = new FontAwesome();
     private static final float ZOOM_VALUE = 17;
     private static final LatLng DEFAULT = new LatLng(0.0, 0.0);
+
     private ServiceConnection locationServiceConnection;
     private LocationTrackerService locationService;
-    private Marker userMarker;
-    private Circle searchCircle;
+
+    private String meString;
+    private boolean trackUser;
+    private int searchArea;
+
+    private boolean firstOpening = true;
+    private Marker userMarker = null;
+    private Circle searchCircle = null;
     private GoogleMap gmap = null;
     private CameraPosition camPosition = null;
-    private int searchArea;
-    private boolean trackUser;
-    private boolean firstOpening = true;
-    private String meString;
 
     private final List<Marker> eventMarkers = new ArrayList<>();
 
@@ -114,10 +117,11 @@ public class GoogleMapsFragment extends Fragment
             }
         };
         Context ctx = getContext();
-        if (ctx != null) {
-            Intent service = new Intent(ctx, LocationTrackerService.class);
-            ctx.bindService(service, locationServiceConnection, BIND_AUTO_CREATE);
+        if (ctx == null) {
+            throw new IllegalStateException("Context is null");
         }
+        Intent service = new Intent(ctx, LocationTrackerService.class);
+        ctx.bindService(service, locationServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -140,8 +144,10 @@ public class GoogleMapsFragment extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         logMethod(TAG, this);
+        gmap = googleMap;
+
         if (locationService == null) {
-            Log.w(TAG, "location service is null.");
+            Log.w(TAG, "Location service is not ready...");
         }
         LatLng lastKnownUserLocation = null;
         if (locationService != null && locationService.canGetLocation()) {
@@ -156,8 +162,6 @@ public class GoogleMapsFragment extends Fragment
             Log.w(TAG, "Unable to get last known user location.");
         }
 
-        gmap = googleMap;
-        setupGmap(gmap);
         moveCamera(lastKnownUserLocation, gmap, firstOpening, camPosition);
 
         if (lastKnownUserLocation != null) {
@@ -170,30 +174,40 @@ public class GoogleMapsFragment extends Fragment
         } else {
             searchCircle = gmap.addCircle(getCircleOptions(DEFAULT, searchArea));
         }
+        gmap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener() " + latLng));
+        gmap.setOnCameraIdleListener(this::idleListener);
         firstOpening = false;
     }
 
-    private void setupGmap(GoogleMap googleMap) {
-        googleMap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener " + latLng));
-        googleMap.setOnCameraIdleListener(
-              () -> {
-                  camPosition = googleMap.getCameraPosition();
-                  Log.d(TAG, "onCameraIdleListener " + camPosition.target + " " + camPosition.zoom);
-                  //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
+    @Override
+    public void onLocationChanged(Location location) {
+        logMethod(TAG, this);
+        if (trackUser) {
+            Toast.makeText(getContext(), R.string.location_changed, Toast.LENGTH_SHORT).show();
+            if (gmap == null) {
+                Log.w(TAG, "Gmap is not ready...");
+                if (userMarker != null) {
+                    userMarker.setPosition(mapToLatTng(location));
+                }
+            } else {
+                if (userMarker == null) {
+                    userMarker = gmap.addMarker(getMarkerOptions(mapToLatTng(location), getContext(), meString));
+                } else {
+                    userMarker.setPosition(mapToLatTng(location));
+                }
+                searchCircle.setCenter(userMarker.getPosition());
+                if (camPosition != null) {
+                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+                }
+            }
+        }
+    }
 
-                  //!!! userMarker.setIcon(icon);
-                  //userMarker.zoom
-                  if (camPosition != null) {
-                      //_OLD_gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
-                      //_NEW_gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, camPosition.zoom), 1200, null);
-                  }
-                  //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
-                  if (searchCircle != null) {
-                      searchCircle.setCenter(camPosition.target);
-                  }
-                  searchForEvents(camPosition.target.latitude, camPosition.target.longitude, searchArea);
-                  //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,camPosition.zoom));
-              });
+    private void idleListener() {
+        camPosition = gmap.getCameraPosition();
+        Log.d(TAG, "onCameraIdleListener() target:" + camPosition.target + " zoom:" + camPosition.zoom);
+        searchCircle.setCenter(camPosition.target);
+        searchForEvents(camPosition.target.latitude, camPosition.target.longitude, searchArea);
     }
 
     private static void moveCamera(
@@ -204,31 +218,6 @@ public class GoogleMapsFragment extends Fragment
             }
         } else if (camPosition != null) {
             gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        logMethod(TAG, this);
-        if (gmap == null) {
-            Log.d(TAG, "Gmap is not ready...");
-        }
-        if (trackUser) {
-            Toast.makeText(getContext(), R.string.location_changed, Toast.LENGTH_SHORT).show();
-            if (userMarker == null) {
-                if (gmap != null) {
-                    userMarker = gmap.addMarker(getMarkerOptions(mapToLatTng(location), getContext(), meString));
-                }
-            } else {
-                //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
-                userMarker.setPosition(mapToLatTng(location));
-                searchCircle.setCenter(userMarker.getPosition());
-            }
-            if (camPosition != null) {
-                if (gmap != null) {
-                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
-                }
-            }
         }
     }
 
@@ -297,7 +286,7 @@ public class GoogleMapsFragment extends Fragment
         myCanvas.drawText(
               String.valueOf(FontAwesome.Icon.faw_child.getCharacter()), 20, 90, paint);
 
-        //BitmapDescriptorFactory.fromResource(myBitmap);
+        //BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
         //BitmapDescriptorFactory.fromAsset(myBitmap);
         //BitmapDescriptorFactory.fromFile(myBitmap);
         //BitmapDescriptorFactory.fromPath(myBitmap);
