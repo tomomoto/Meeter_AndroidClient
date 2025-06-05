@@ -118,6 +118,8 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        logMethod(TAG, this);
+
         ((App) getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this);
 

@@ -71,4 +71,6 @@
     <string name="user_information">User information</string>
     <string name="me">Me</string>
     <string name="location_changed">Location changed</string>
+    <string name="need_location_permissions">Please check permissions for location access.</string>
+    <string name="location_is_disabled">Location service is disabled.</string>
 </resources>

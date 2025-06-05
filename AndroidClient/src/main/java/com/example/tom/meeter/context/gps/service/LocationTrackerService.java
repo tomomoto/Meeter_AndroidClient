@@ -14,7 +14,6 @@ import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.
 
 import android.app.AlertDialog;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -24,7 +23,9 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.gps.domain.LocationTrackerListener;
 
 import java.io.IOException;
@@ -56,8 +57,7 @@ public class LocationTrackerService extends Service {
         binder = new ServiceBinder();
         locManager = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
         readLocationParameters();
-        tryRequestLocationUpdates();
-        getLastKnownLocation();
+        setupLocationUpdateListeners();
     }
 
     @Override
@@ -83,10 +83,7 @@ public class LocationTrackerService extends Service {
         logMethod(TAG, this);
     }
 
-    public LocationTrackerService(Context context) {
-    }
-
-    private void tryRequestLocationUpdates() {
+    private void setupLocationUpdateListeners() {
         if (locManager == null) {
             Log.w(TAG, "Location manager is null.");
             return;
@@ -100,7 +97,10 @@ public class LocationTrackerService extends Service {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Log.w(TAG, ACCESS_FINE_LOCATION + " and " + ACCESS_COARSE_LOCATION + "are not set.");
+            Toast.makeText(
+                        getBaseContext(), R.string.need_location_permissions, Toast.LENGTH_SHORT)
+                  .show();
+            Log.w(TAG, ACCESS_FINE_LOCATION + " and " + ACCESS_COARSE_LOCATION + " are not set.");
             return;
         }
 
@@ -108,22 +108,17 @@ public class LocationTrackerService extends Service {
         boolean nwEnabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         if (!gpsEnabled && !nwEnabled) {
             Log.w(TAG, "GPS Provider and Network Provides are disabled.");
-            return;
         }
 
-        if (locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            networkListener = newLocationListener(this::onLocationUpdate, "NETWORK");
-            locManager.requestLocationUpdates(
-                  LocationManager.NETWORK_PROVIDER, minTimeMilliseconds,
-                  minDistanceMeters, networkListener);
-        }
+        networkListener = newLocationListener(this::onLocationUpdate, "NETWORK");
+        locManager.requestLocationUpdates(
+              LocationManager.NETWORK_PROVIDER, minTimeMilliseconds,
+              minDistanceMeters, networkListener);
 
-        if (locManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            gpsListener = newLocationListener(this::onLocationUpdate, "GPS");
-            locManager.requestLocationUpdates(
-                  LocationManager.GPS_PROVIDER, minTimeMilliseconds,
-                  minDistanceMeters, gpsListener);
-        }
+        gpsListener = newLocationListener(this::onLocationUpdate, "GPS");
+        locManager.requestLocationUpdates(
+              LocationManager.GPS_PROVIDER, minTimeMilliseconds,
+              minDistanceMeters, gpsListener);
     }
 
     private void readLocationParameters() {
@@ -138,11 +133,8 @@ public class LocationTrackerService extends Service {
     }
 
     public Location getLastKnownLocation() {
-        boolean fineLocGranted = ActivityCompat.checkSelfPermission(
-              getBaseContext(), ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
-        boolean coarseLocGranted = ActivityCompat.checkSelfPermission(
-              getBaseContext(), ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
-        if (!fineLocGranted && !coarseLocGranted) {
+        if (noPermission()) {
+            Log.w(TAG, ACCESS_FINE_LOCATION + " and " + ACCESS_COARSE_LOCATION + " are not set.");
             return null;
         }
         Location gpsLKL = getLastKnownLocation(locManager, LocationManager.GPS_PROVIDER);
@@ -150,6 +142,21 @@ public class LocationTrackerService extends Service {
             return gpsLKL;
         }
         return getLastKnownLocation(locManager, LocationManager.NETWORK_PROVIDER);
+    }
+
+    private boolean noPermission() {
+        // TODO: Consider calling
+        //    ActivityCompat#requestPermissions
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for ActivityCompat#requestPermissions for more details.
+        boolean fineLocGranted = ActivityCompat.checkSelfPermission(
+              getBaseContext(), ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
+        boolean coarseLocGranted = ActivityCompat.checkSelfPermission(
+              getBaseContext(), ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
+        return !fineLocGranted && !coarseLocGranted;
     }
 
     private void stopListeningForUpdates() {
@@ -200,7 +207,6 @@ public class LocationTrackerService extends Service {
     }
 
     private void onLocationUpdate(Location loc) {
-        getLastKnownLocation();
         for (LocationTrackerListener l : listeners) {
             l.onLocationChanged(loc);
         }
@@ -229,7 +235,7 @@ public class LocationTrackerService extends Service {
         try {
             return manager.getLastKnownLocation(provider);
         } catch (SecurityException e) {
-            Log.w(TAG, "getLastKnownLocation " + e);
+            Log.w(TAG, "getLastKnownLocation for provider " + provider + " failed : " + e);
             return null;
         }
     }

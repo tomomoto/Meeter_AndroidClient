@@ -72,4 +72,6 @@
     <string name="user_information">Пользовательская информация</string>
     <string name="me">Я</string>
     <string name="location_changed">Локация изменена</string>
+    <string name="need_location_permissions">Пожалуйста, проверьте разрешения на доступ к местоположению.</string>
+    <string name="location_is_disabled">Сервис местоположения выключен.</string>
 </resources>

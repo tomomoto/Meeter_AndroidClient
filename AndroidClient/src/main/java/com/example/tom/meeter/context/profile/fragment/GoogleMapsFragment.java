@@ -7,7 +7,8 @@ package com.example.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 import static com.example.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
-import static com.example.tom.meeter.infrastructure.common.Constants.EVENTS_AREA_PROPERTY;
+import static com.example.tom.meeter.infrastructure.common.Constants.MAP_EVENTS_AREA_PROPERTY;
+import static com.example.tom.meeter.infrastructure.common.Constants.MAP_TRACK_USER_PROPERTY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.ComponentName;
@@ -37,6 +38,7 @@ import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -65,7 +67,7 @@ public class GoogleMapsFragment extends Fragment
     private static final String TAG = GoogleMapsFragment.class.getCanonicalName();
     private static final FontAwesome FONT_AWESOME = new FontAwesome();
     private static final float ZOOM_VALUE = 17;
-    private SupportMapFragment supportMapFragment;
+    private static final LatLng DEFAULT = new LatLng(0.0, 0.0);
     private ServiceConnection locationServiceConnection;
     private LocationTrackerService locationService;
     private Marker userMarker;
@@ -73,13 +75,21 @@ public class GoogleMapsFragment extends Fragment
     private GoogleMap gmap = null;
     private CameraPosition camPosition = null;
     private int searchArea;
-    private boolean trackUser = true;
+    private boolean trackUser;
     private boolean firstOpening = true;
+    private String meString;
 
     private final List<Marker> eventMarkers = new ArrayList<>();
 
     public GoogleMapsFragment() {
         logMethod(TAG, this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        logMethod(TAG, this);
+        super.onAttach(context);
+        meString = getString(R.string.me);
     }
 
     @Override
@@ -95,6 +105,7 @@ public class GoogleMapsFragment extends Fragment
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 logMethod(TAG, this);
                 locationService = ((LocationTrackerService.ServiceBinder) binder).getService();
+                locationService.addLocationTrackerListener(GoogleMapsFragment.this);
             }
 
             public void onServiceDisconnected(ComponentName name) {
@@ -113,12 +124,14 @@ public class GoogleMapsFragment extends Fragment
     public View onCreateView(
           LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        supportMapFragment = SupportMapFragment.newInstance();
-        supportMapFragment.getMapAsync(this);
+        GoogleMapOptions opts = new GoogleMapOptions();
+        opts.zoomControlsEnabled(true);
+        SupportMapFragment sMapFragment = SupportMapFragment.newInstance(opts);
+        sMapFragment.getMapAsync(this);
         FragmentManager fm = getFragmentManager();
         if (fm != null) {
             fm.beginTransaction()
-                  .replace(R.id.event_fragment_sub_fragment_gmap, supportMapFragment)
+                  .replace(R.id.event_fragment_sub_fragment_gmap, sMapFragment)
                   .commit();
         }
         return inflater.inflate(R.layout.sub_fragment_gmaps, container, false);
@@ -128,62 +141,72 @@ public class GoogleMapsFragment extends Fragment
     public void onMapReady(GoogleMap googleMap) {
         logMethod(TAG, this);
         if (locationService == null) {
-            return;
+            Log.w(TAG, "location service is null.");
         }
-        if (locationService.canGetLocation()) {
+        LatLng lastKnownUserLocation = null;
+        if (locationService != null && locationService.canGetLocation()) {
             Location lkl = locationService.getLastKnownLocation();
-            LatLng lastKnownUserLocation = new LatLng(lkl.getLatitude(), lkl.getLongitude());
-            gmap = googleMap;
-            gmap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener " + latLng));
-            gmap.setOnCameraIdleListener(
-                  () -> {
-                      camPosition = gmap.getCameraPosition();
-                      Log.d(TAG, "onCameraIdleListener " + camPosition.target + " " + camPosition.zoom);
-                      //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
-
-                      //!!! userMarker.setIcon(icon);
-                      //userMarker.zoom
-                      if (camPosition != null) {
-                          //_OLD_gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
-                          //_NEW_gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, camPosition.zoom), 1200, null);
-                      }
-                      //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
-                      searchCircle.setCenter(camPosition.target);
-                      EventBus.getDefault()
-                            .post(new SearchForEvents(
-                                  (float) camPosition.target.latitude,
-                                  (float) camPosition.target.longitude,
-                                  searchArea));
-                      //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,camPosition.zoom));
-
-                  });
-            if (firstOpening || camPosition == null) {
-                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
+            if (lkl != null) {
+                lastKnownUserLocation = mapToLatTng(lkl);
             } else {
-                gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+                Log.w(TAG, "Can get location, but service returns null.");
             }
+        } else {
+            Toast.makeText(getContext(), R.string.location_is_disabled, Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Unable to get last known user location.");
+        }
+
+        gmap = googleMap;
+        setupGmap(gmap);
+        moveCamera(lastKnownUserLocation, gmap, firstOpening, camPosition);
+
+        if (lastKnownUserLocation != null) {
             // Zoom out to zoom level 10, animating with a duration of 2 seconds.
             //gmap.animateCamera(CameraUpdateFactory.zoomTo(10), 5000, null);
-            searchCircle = googleMap.addCircle(
-                  new CircleOptions()
-                        .center(lastKnownUserLocation)
-                        .radius(searchArea)
-                        //.fillColor(Color.TRANSPARENT)
-                        .strokeColor(0x10000000)
-                        .strokeWidth(3)
-                        .fillColor(0x3aaaffff));
-            locationService.addLocationTrackerListener(this);
-
-            userMarker = googleMap.addMarker(
-                  new MarkerOptions()
-                        .icon(getUserIconBitmap(getContext()))
-                        .title(getString(R.string.me))
-                        .position(lastKnownUserLocation));
-            firstOpening = false;
-            EventBus.getDefault()
-                  .post(new SearchForEvents((float) lastKnownUserLocation.latitude, (float) lastKnownUserLocation.longitude, searchArea));
+            searchCircle = gmap.addCircle(getCircleOptions(lastKnownUserLocation, searchArea));
+            userMarker = gmap.addMarker(getMarkerOptions(lastKnownUserLocation, getContext(), meString));
+            searchForEvents(lastKnownUserLocation.latitude, lastKnownUserLocation.longitude, searchArea);
+        } else if (camPosition != null) {
+            searchCircle = gmap.addCircle(getCircleOptions(camPosition.target, searchArea));
+            searchForEvents(camPosition.target.latitude, camPosition.target.longitude, searchArea);
         } else {
-            Log.w(TAG, "Unable to get last known location.");
+            searchCircle = gmap.addCircle(getCircleOptions(DEFAULT, searchArea));
+            searchForEvents(DEFAULT.latitude, DEFAULT.longitude, searchArea);
+        }
+        firstOpening = false;
+    }
+
+    private void setupGmap(GoogleMap googleMap) {
+        googleMap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener " + latLng));
+        googleMap.setOnCameraIdleListener(
+              () -> {
+                  camPosition = googleMap.getCameraPosition();
+                  Log.d(TAG, "onCameraIdleListener " + camPosition.target + " " + camPosition.zoom);
+                  //!!! BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
+
+                  //!!! userMarker.setIcon(icon);
+                  //userMarker.zoom
+                  if (camPosition != null) {
+                      //_OLD_gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+                      //_NEW_gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, camPosition.zoom), 1200, null);
+                  }
+                  //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(),camPosition.zoom));
+                  if (searchCircle != null) {
+                      searchCircle.setCenter(camPosition.target);
+                  }
+                  searchForEvents(camPosition.target.latitude, camPosition.target.longitude, searchArea);
+                  //gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,camPosition.zoom));
+              });
+    }
+
+    private static void moveCamera(
+          LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening, CameraPosition camPosition) {
+        if (firstOpening) {
+            if (lastKnownUserLocation != null) {
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
+            }
+        } else if (camPosition != null) {
+            gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
         }
     }
 
@@ -192,7 +215,11 @@ public class GoogleMapsFragment extends Fragment
         logMethod(TAG, this);
         if (trackUser) {
             Toast.makeText(getContext(), R.string.location_changed, Toast.LENGTH_SHORT).show();
-            userMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+            if (userMarker == null) {
+                userMarker = gmap.addMarker(getMarkerOptions(mapToLatTng(location), getContext(), meString));
+            } else {
+                userMarker.setPosition(mapToLatTng(location));
+            }
             if (camPosition != null) {
                 gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
             }
@@ -205,7 +232,9 @@ public class GoogleMapsFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
         logMethod(TAG, this);
-        locationService.removeLocationTrackerListener(this);
+        if (locationService != null) {
+            locationService.removeLocationTrackerListener(this);
+        }
         getContext().unbindService(locationServiceConnection);
         EventBus.getDefault().unregister(this);
         Log.d(TAG, "GoogleMapsFragment Unregistered event bus");
@@ -237,13 +266,18 @@ public class GoogleMapsFragment extends Fragment
         } catch (IOException e) {
             Log.e(TAG, e.getLocalizedMessage(), e);
         }
-        searchArea = Integer.parseInt(p.getProperty(EVENTS_AREA_PROPERTY));
+        searchArea = Integer.parseInt(p.getProperty(MAP_EVENTS_AREA_PROPERTY));
+        trackUser = Boolean.parseBoolean(p.getProperty(MAP_TRACK_USER_PROPERTY));
     }
 
     private static MarkerOptions mapToMarkerOpts(EventDTO e) {
         return new MarkerOptions()
               .title(e.getName())
               .position(new LatLng(e.getLatitude(), e.getLongitude()));
+    }
+
+    private static LatLng mapToLatTng(Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     private static BitmapDescriptor getUserIconBitmap(Context context) {
@@ -264,5 +298,27 @@ public class GoogleMapsFragment extends Fragment
         //BitmapDescriptorFactory.fromFile(myBitmap);
         //BitmapDescriptorFactory.fromPath(myBitmap);
         return BitmapDescriptorFactory.fromBitmap(myBitmap);
+    }
+
+    private static MarkerOptions getMarkerOptions(LatLng latLng, Context context, String title) {
+        return new MarkerOptions()
+              .icon(getUserIconBitmap(context))
+              .title(title)
+              .position(latLng);
+    }
+
+    private static CircleOptions getCircleOptions(LatLng center, int searchArea) {
+        return new CircleOptions()
+              .center(center)
+              .radius(searchArea)
+              //.fillColor(Color.TRANSPARENT)
+              .strokeColor(0x10000000)
+              .strokeWidth(3)
+              .fillColor(0x3aaaffff);
+    }
+
+    private static void searchForEvents(double latitude, double longitude, int searchArea) {
+        EventBus.getDefault().post(new SearchForEvents(
+              (float) latitude, (float) longitude, searchArea));
     }
 }

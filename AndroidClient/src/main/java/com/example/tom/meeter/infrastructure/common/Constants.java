@@ -22,7 +22,8 @@ public class Constants {
 
     public static final String LOCATION_DISTANCE_PROPERTY = "location.distance";
     public static final String LOCATION_TIME_PROPERTY = "location.time";
-    public static final String EVENTS_AREA_PROPERTY = "events.area";
+    public static final String MAP_EVENTS_AREA_PROPERTY = "map.events_area";
+    public static final String MAP_TRACK_USER_PROPERTY = "map.track_user";
 
     public static final String USER_ID_KEY = "userId";
 
