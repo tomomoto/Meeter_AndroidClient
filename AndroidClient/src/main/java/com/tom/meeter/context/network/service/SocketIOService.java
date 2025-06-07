@@ -105,18 +105,6 @@ public class SocketIOService extends Service {
         return START_STICKY;
     }
 
-    private static String readFlags(int flags) {
-        if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY)
-            return "START_FLAG_REDELIVERY";
-        if ((flags & START_FLAG_RETRY) == START_FLAG_RETRY)
-            return "START_FLAG_RETRY";
-        if (flags == 0) {
-            return "zero";
-        }
-        throw new RuntimeException("flag???" + flags);
-    }
-
-
     @Override
     public boolean onUnbind(Intent intent) {
         boolean ret = super.onUnbind(intent);
@@ -207,6 +195,17 @@ public class SocketIOService extends Service {
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
         }
+    }
+
+    private static String readFlags(int flags) {
+        if ((flags & START_FLAG_REDELIVERY) == START_FLAG_REDELIVERY)
+            return "START_FLAG_REDELIVERY";
+        if ((flags & START_FLAG_RETRY) == START_FLAG_RETRY)
+            return "START_FLAG_RETRY";
+        if (flags == 0) {
+            return "zero";
+        }
+        throw new RuntimeException("flag???" + flags);
     }
 
     private static IO.Options setupOptions(String authToken) {

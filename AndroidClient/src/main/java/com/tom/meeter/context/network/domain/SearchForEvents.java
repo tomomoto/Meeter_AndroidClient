@@ -9,9 +9,9 @@ import org.json.JSONObject;
 
 public class SearchForEvents implements NetworkEvent {
 
-    private static String LATITUDE_KEY = "latitude";
-    private static String LONGITUDE_KEY = "longitude";
-    private static String DISTANCE_KEY = "distance";
+    private static final String LATITUDE_KEY = "latitude";
+    private static final String LONGITUDE_KEY = "longitude";
+    private static final String DISTANCE_KEY = "distance";
 
     private float latitude;
     private float longitude;
@@ -50,17 +50,17 @@ public class SearchForEvents implements NetworkEvent {
     @Override
     public String toString() {
         return "SearchForEvents{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", distance=" + distance +
-                '}';
+              "latitude=" + latitude +
+              ", longitude=" + longitude +
+              ", distance=" + distance +
+              '}';
     }
 
     @Override
     public JSONObject toJson() throws JSONException {
         return new JSONObject()
-                .put(LATITUDE_KEY, latitude)
-                .put(LONGITUDE_KEY, longitude)
-                .put(DISTANCE_KEY, distance);
+              .put(LATITUDE_KEY, latitude)
+              .put(LONGITUDE_KEY, longitude)
+              .put(DISTANCE_KEY, distance);
     }
 }

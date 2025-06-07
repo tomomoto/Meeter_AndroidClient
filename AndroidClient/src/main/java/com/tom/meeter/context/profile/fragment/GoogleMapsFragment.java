@@ -1,10 +1,5 @@
 package com.tom.meeter.context.profile.fragment;
 
-/**
- * Created by Tom on 09.12.2016.
- */
-
-
 import static android.content.Context.BIND_AUTO_CREATE;
 import static com.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
 import static com.tom.meeter.infrastructure.common.Constants.MAP_EVENTS_AREA_PROPERTY;
@@ -64,7 +59,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
-
+/**
+ * Created by Tom on 09.12.2016.
+ */
 public class GoogleMapsFragment extends Fragment
       implements OnMapReadyCallback, LocationTrackerListener {
 
@@ -185,22 +182,6 @@ public class GoogleMapsFragment extends Fragment
         firstOpening = false;
     }
 
-    private boolean markerClickListener(Marker marker) {
-        Log.d(TAG, "OnMarkerClickListener() " + marker.getId());
-        GMapEvent search = null;
-        for (GMapEvent event : events.values()) {
-            if (marker.getId().equals(event.getMarkerId())) {
-                search = event;
-                break;
-            }
-        }
-        if (search != null) {
-            //start event description activity etc...
-            Log.d(TAG, "OnMarkerClickListener() find event " + search.getName());
-        }
-        return false;
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         logMethod(TAG, this);
@@ -241,15 +222,20 @@ public class GoogleMapsFragment extends Fragment
         }
     }
 
-    private static void moveCamera(
-          LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening, CameraPosition camPosition) {
-        if (firstOpening) {
-            if (lastKnownUserLocation != null) {
-                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
+    private boolean markerClickListener(Marker marker) {
+        Log.d(TAG, "OnMarkerClickListener() " + marker.getId());
+        GMapEvent search = null;
+        for (GMapEvent event : events.values()) {
+            if (marker.getId().equals(event.getMarkerId())) {
+                search = event;
+                break;
             }
-        } else if (camPosition != null) {
-            gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
         }
+        if (search != null) {
+            //start event description activity etc...
+            Log.d(TAG, "OnMarkerClickListener() find event " + search.getName());
+        }
+        return false;
     }
 
     private void putExistingMarkersOnMap() {
@@ -318,6 +304,17 @@ public class GoogleMapsFragment extends Fragment
         trackUser = Boolean.parseBoolean(p.getProperty(MAP_TRACK_USER_PROPERTY));
     }
 
+    private static void moveCamera(
+          LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening, CameraPosition camPosition) {
+        if (firstOpening) {
+            if (lastKnownUserLocation != null) {
+                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
+            }
+        } else if (camPosition != null) {
+            gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+        }
+    }
+
     private static void updateWith(GMapEvent me, EventDTO update) {
         if (!update.getName().equals(me.getName())) {
             me.updateName(update.getName());
@@ -378,8 +375,8 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private static void searchForEvents(double latitude, double longitude, int searchArea) {
-        EventBus.getDefault().post(new SearchForEvents(
-              (float) latitude, (float) longitude, searchArea));
+        EventBus.getDefault()
+              .post(new SearchForEvents((float) latitude, (float) longitude, searchArea));
     }
 
     static class GMapEvent {
