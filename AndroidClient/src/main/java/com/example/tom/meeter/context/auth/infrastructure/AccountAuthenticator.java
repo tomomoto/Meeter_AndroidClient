@@ -13,7 +13,7 @@ import android.text.TextUtils;
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.context.auth.login.activity.LoginActivity;
 import com.example.tom.meeter.context.auth.login.message.LoginBody;
-import com.example.tom.meeter.context.auth.login.message.LoginResponse;
+import com.example.tom.meeter.context.auth.message.TokenResponse;
 import com.example.tom.meeter.context.auth.service.AuthService;
 
 import java.io.IOException;
@@ -24,21 +24,13 @@ import retrofit2.Response;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
-    /**
-     * Account type id
-     */
+    public static final String ACCOUNT_TYPE_KEY = "account-type";
     public static final String ACCOUNT_TYPE = "com.example.tom.meeter.account";
-
-    /**
-     * Account name
-     */
-    public static final String ACCOUNT_NAME = "Meeter";
-
-    public static final String JWT_TOKEN = "jwt-auth";
-    public static final String ARG_IS_ADDING_NEW_ACCOUNT = "is-adding-new-account";
-    public static final String PARAM_USER_PASS = "user-password";
-    public static final String ARG_AUTH_TYPE = "arg-auth-type";
-    public static final String ARG_ACCOUNT_TYPE = "arg-account-type";
+    public static final String AUTH_TYPE_KEY = "auth-type";
+    public static final String AUTH_TYPE = "jwt_auth";
+    public static final String IS_ADDING_NEW_ACCOUNT_KEY = "is-adding-new-account";
+    public static final String USER_PASS_KEY = "the-password";
+    //public static final String ACCOUNT_NAME = "Meeter";
 
     private Context context;
     private AccountManager accountManager;
@@ -62,9 +54,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(
           AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         final Intent intent = new Intent(context, LoginActivity.class);
-        intent.putExtra(ARG_ACCOUNT_TYPE, accountType);
-        intent.putExtra(ARG_AUTH_TYPE, authTokenType);
-        intent.putExtra(ARG_IS_ADDING_NEW_ACCOUNT, true);
+        intent.putExtra(ACCOUNT_TYPE_KEY, accountType);
+        intent.putExtra(AUTH_TYPE_KEY, authTokenType);
+        intent.putExtra(IS_ADDING_NEW_ACCOUNT_KEY, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
@@ -89,7 +81,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             final String password = accountManager.getPassword(account);
             if (password != null) {
                 try {
-                    Response<LoginResponse> execute = authService.login(new LoginBody(account.name, password))
+                    Response<TokenResponse> execute = authService.login(new LoginBody(account.name, password))
                           .execute();
                     authToken = execute.body().getToken();
                 } catch (IOException e) {
@@ -112,8 +104,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         // an intent to display our LoginActivity.
         Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        intent.putExtra(ARG_ACCOUNT_TYPE, account.type);
-        intent.putExtra(ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(ACCOUNT_TYPE_KEY, account.type);
+        intent.putExtra(AUTH_TYPE_KEY, authTokenType);
         Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;

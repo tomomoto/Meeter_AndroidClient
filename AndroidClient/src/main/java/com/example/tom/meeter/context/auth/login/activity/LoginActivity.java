@@ -1,8 +1,8 @@
 package com.example.tom.meeter.context.auth.login.activity;
 
 import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
-import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ARG_IS_ADDING_NEW_ACCOUNT;
-import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.PARAM_USER_PASS;
+import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.IS_ADDING_NEW_ACCOUNT_KEY;
+import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.USER_PASS_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.Account;
@@ -10,17 +10,20 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
+import com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.example.tom.meeter.context.auth.login.message.LoginBody;
-import com.example.tom.meeter.context.auth.login.message.LoginResponse;
+import com.example.tom.meeter.context.auth.message.TokenResponse;
 import com.example.tom.meeter.context.auth.registration.activity.RegistrationActivity;
 import com.example.tom.meeter.context.auth.service.AuthService;
 
@@ -37,10 +40,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = LoginActivity.class.getCanonicalName();
 
-    @BindView(R.id.editTextLogin)
+    private static final int REQ_SIGN_UP_OK = 1;
+
+    @BindView(R.id.loginLoginEditText)
     TextView login;
 
-    @BindView(R.id.editTextPassword)
+    @BindView(R.id.loginPasswordEditText)
     TextView password;
 
     @Inject
@@ -75,7 +80,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void finish() {
         if (accountAuthenticatorResponse != null) {
-            // send the result bundle back if set, otherwise send an error.
             if (accountAuthenticationResult != null) {
                 accountAuthenticatorResponse.onResult(accountAuthenticationResult);
             } else {
@@ -146,13 +150,14 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.LoginButton)
+    @OnClick(R.id.loginSubmit)
     public void onLoginClick(Button button) {
         CharSequence loginText = login.getText();
         CharSequence pwdText = password.getText();
         if (loginText == null || loginText.toString().isEmpty()
               || pwdText == null || pwdText.toString().isEmpty()) {
-            Log.d(TAG, "Illegal login request...");
+            Toast.makeText(getApplicationContext(), R.string.fill_login_params, Toast.LENGTH_SHORT)
+                  .show();
             return;
         }
 
@@ -160,27 +165,36 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void submit() {
-        final String userLogin = login.getText().toString();
-        final String userPass = password.getText().toString();
-        Call<LoginResponse> loginCall = authService.login(new LoginBody(userLogin, userPass));
+        String userLogin = login.getText().toString();
+        String userPass = password.getText().toString();
+        Call<TokenResponse> loginCall = authService.login(new LoginBody(userLogin, userPass));
         loginCall.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
                 if (response.code() == 200) {
                     Intent intent = new Intent();
                     intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
                     intent.putExtra(AccountManager.KEY_AUTHTOKEN, response.body().getToken());
-                    intent.putExtra(PARAM_USER_PASS, userPass);
+                    intent.putExtra(USER_PASS_KEY, userPass);
                     finishLogin(intent);
                 } else {
-                    Log.d(TAG, "Invalid login");
+                    new AlertDialog.Builder(LoginActivity.this)
+                          .setTitle(getString(R.string.error))
+                          .setMessage(getString(R.string.wrong_credentials))
+                          .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
+                          .create()
+                          .show();
+                    Log.d(TAG, "Invalid login.");
                 }
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-
+            public void onFailure(Call<TokenResponse> call, Throwable t) {
+                int serverIsUnreachable = R.string.server_is_unreachable;
+                Toast.makeText(getApplicationContext(), serverIsUnreachable, Toast.LENGTH_SHORT)
+                      .show();
+                Log.d(TAG, "Login: " + getResources().getString(serverIsUnreachable));
             }
         });
     }
@@ -189,14 +203,14 @@ public class LoginActivity extends AppCompatActivity {
         String login = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
         String token = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-        String pass = intent.getStringExtra(PARAM_USER_PASS);
-        boolean addNewAcc = getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false);
+        String pass = intent.getStringExtra(AccountAuthenticator.USER_PASS_KEY);
+        boolean addNewAcc = getIntent().getBooleanExtra(AccountAuthenticator.IS_ADDING_NEW_ACCOUNT_KEY, false);
         Account account = new Account(login, accountType);
         if (addNewAcc) {
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             accountManager.addAccountExplicitly(account, pass, null);
-            accountManager.setAuthToken(account, ACCOUNT_TYPE, token);
+            accountManager.setAuthToken(account, AccountAuthenticator.ACCOUNT_TYPE, token);
         } else {
             accountManager.setPassword(account, pass);
         }
@@ -205,8 +219,21 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    @OnClick(R.id.RegistrationButton)
-    public void onRegisterClick(Button button) {
-        startActivity(new Intent(this, RegistrationActivity.class));
+    @OnClick(R.id.loginRegistrationButton)
+    public void onRegisterClick(Button btn) {
+        Intent signup = new Intent(getBaseContext(), RegistrationActivity.class);
+        signup.putExtras(getIntent().getExtras());
+        startActivityForResult(signup, REQ_SIGN_UP_OK);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // The sign up activity returned that the user has successfully created an account
+        if (requestCode == REQ_SIGN_UP_OK && resultCode == RESULT_OK) {
+            finishLogin(data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

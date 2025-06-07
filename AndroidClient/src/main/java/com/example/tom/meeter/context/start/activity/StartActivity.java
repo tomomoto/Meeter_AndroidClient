@@ -6,17 +6,20 @@ import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
@@ -42,6 +45,18 @@ public class StartActivity extends AppCompatActivity {
     }
 
     @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+        logMethod(TAG, this);
+        return super.onCreateView(parent, name, context, attrs);
+    }
+
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        logMethod(TAG, this);
+        return super.onCreateView(name, context, attrs);
+    }
+
+    @Override
     public void onPostCreate(
           @Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onPostCreate(savedInstanceState, persistentState);
@@ -64,16 +79,29 @@ public class StartActivity extends AppCompatActivity {
         if (accounts.length == 0) {
             addNewAccount(
                   bundle -> {
-                      showMessage(StartActivity.this, "Account was created");
+                      showMessage(StartActivity.this, getString(R.string.account_created));
                       Log.d(TAG, "AddNewAccount Bundle is " + bundle);
                       checkTokenAndStartProfileActivity();
                   });
         } else if (accounts.length == 1) {
-            //removeAccount(accounts);
-            showMessage(StartActivity.this, "Check token and run.");
+            showMessage(StartActivity.this, getString(R.string.check_token));
             checkTokenAndStartProfileActivity();
         } else {
-            //???
+            removeAllAccounts(accounts, accountManager, this);
+            addNewAccount(
+                  bundle -> {
+                      showMessage(StartActivity.this, "Account was created");
+                      Log.d(TAG, "AddNewAccount Bundle is " + bundle);
+                      checkTokenAndStartProfileActivity();
+                  });
+        }
+    }
+
+    private static void removeAllAccounts(
+          Account[] accounts, AccountManager am, Activity activity) {
+        for (Account acc : accounts) {
+            Log.d(TAG, "Acc :" + acc.toString());
+            removeAccount(acc, am, activity);
         }
     }
 
@@ -109,14 +137,14 @@ public class StartActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private AccountManagerFuture<Bundle> removeAccount(Account[] accounts) {
+    private static AccountManagerFuture<Bundle> removeAccount(
+          Account account, AccountManager am, Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            return accountManager.removeAccount(accounts[0], this, new AccountManagerCallback<Bundle>() {
-                @Override
-                public void run(AccountManagerFuture<Bundle> future) {
-                    Log.d(TAG, "removeAccount succeed");
-                }
-            }, null);
+            return am.removeAccount(
+                  account,
+                  activity,
+                  future -> Log.d(TAG, "Remove" + account.toString() + " succeed."),
+                  null);
         }
         return null;
     }
@@ -142,7 +170,7 @@ public class StartActivity extends AppCompatActivity {
     private void addNewAccount(Consumer<Bundle> bundleConsumer) {
         accountManager.addAccount(
               AccountAuthenticator.ACCOUNT_TYPE,
-              AccountAuthenticator.JWT_TOKEN,
+              AccountAuthenticator.AUTH_TYPE,
               null,
               null,
               this,

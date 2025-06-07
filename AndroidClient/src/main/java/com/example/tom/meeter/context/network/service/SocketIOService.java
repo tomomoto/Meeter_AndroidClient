@@ -175,9 +175,8 @@ public class SocketIOService extends Service {
         socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
         socketClient.connect();
         EventBus.getDefault().register(this);
-        Log.d(TAG, "SocketIOClient is going to start...");
-        Log.d(TAG, "SocketIOClient: connected ?{"
-              + socketClient.connected() + "}. isActive? ?{" + socketClient.isActive() + "}.");
+        Log.d(TAG, "SocketIOClient is going to start... connected? {"
+              + socketClient.connected() + "}, isActive? {" + socketClient.isActive() + "}.");
         socketClient.emit(GREETINGS_CHANNEL, "Client greetings.");
         initialized = true;
     }

@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
 
     private static final String TAG = AppModule.class.getCanonicalName();
-    private static final String IP = "192.168.127.59";
+    private static final String IP = "192.168.47.59";
     private static final int PORT = 8084;
     private static final String SERVER_URL = "http://" + IP + ":" + PORT + "/";
 

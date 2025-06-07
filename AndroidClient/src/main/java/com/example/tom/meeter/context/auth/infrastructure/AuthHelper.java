@@ -22,7 +22,7 @@ public final class AuthHelper {
         Account[] accounts = am.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
         if (accounts.length == 1) {
             getTokenWithConsumer(
-                  am, activity, accounts[0], AccountAuthenticator.JWT_TOKEN,
+                  am, activity, accounts[0], AccountAuthenticator.AUTH_TYPE,
                   bundle -> bundle.getString(AccountManager.KEY_AUTHTOKEN),
                   tokenConsumer);
         } else {

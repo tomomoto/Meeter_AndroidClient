@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/registerLoginEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="38dp"
+            android:hint="@string/login"
+            android:inputType=""
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/registerPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerLoginEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/registerRepeatPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerPasswordEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/repeat_password"
+            android:inputType="textPassword"
+            android:minHeight="48dp" />
+
+        <TextView
+            android:id="@+id/registerMatchesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerRepeatPasswordEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="20dp"
+            android:enabled="false"
+            android:hint="@string/passwords_matches"
+            android:inputType="none" />
+
+        <EditText
+            android:id="@+id/registerNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerMatchesEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="38dp"
+            android:hint="@string/enter_your_name"
+            android:inputType=""
+            android:minHeight="48dp" />
+
+        <TextView
+            android:id="@+id/registerGenderTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerNameEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="left"
+            android:layout_marginTop="20dp"
+            android:text="@string/your_gender" />
+
+        <RadioGroup
+            android:id="@+id/registerGenderRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerGenderTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/registerRadioBtnMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="false"
+                android:minHeight="48dp"
+                android:text="@string/male_gender" />
+
+            <RadioButton
+                android:id="@+id/registerRadioBtnFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:checked="false"
+                android:minHeight="48dp"
+                android:text="@string/female_gender" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/registerRegisterBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/registerGenderRadioGroup"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="30dp"
+            android:enabled="false"
+            android:text="@string/register" />
+    </RelativeLayout>
+
+</ScrollView>
