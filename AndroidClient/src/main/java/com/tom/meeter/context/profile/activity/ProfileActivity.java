@@ -339,6 +339,7 @@ public class ProfileActivity extends AppCompatActivity {
             FragmentTransaction txn = fm.beginTransaction();
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
+            //for some reasons txn.commit leads to errors and txn.commitAllowingStateLoss doesn't
             //txn.commit();
             txn.commitAllowingStateLoss();
         };
