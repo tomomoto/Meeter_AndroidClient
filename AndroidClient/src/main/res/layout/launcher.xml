@@ -4,26 +4,26 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/start_activity_frame_layout"
+        android:id="@+id/launcher_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#060678"
         android:animateLayoutChanges="true">
 
-        <!--<TextView
-            android:id="@+id/start_activity_frame_label"
+        <TextView
+            android:id="@+id/launcher_frame_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:hint="Application starting..."
             android:inputType="none"
             android:textAlignment="center"
-            android:textSize="60sp" />-->
+            android:textSize="60sp" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/meeter_logo_612" />
+        <!--        <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/meeter_logo_612" />-->
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

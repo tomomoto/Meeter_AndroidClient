@@ -28,19 +28,16 @@ import com.tom.meeter.context.profile.activity.ProfileActivity;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import butterknife.ButterKnife;
+public class Launcher extends AppCompatActivity {
 
-public class StartActivity extends AppCompatActivity {
-
-    private static final String TAG = StartActivity.class.getCanonicalName();
+    private static final String TAG = Launcher.class.getCanonicalName();
     private AccountManager accountManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        setContentView(R.layout.start_activity);
-        ButterKnife.bind(this);
+        setContentView(R.layout.launcher);
         accountManager = AccountManager.get(this);
     }
 
@@ -79,18 +76,18 @@ public class StartActivity extends AppCompatActivity {
         if (accounts.length == 0) {
             addNewAccount(
                   bundle -> {
-                      showMessage(StartActivity.this, getString(R.string.account_created));
+                      showMessage(this, getString(R.string.account_created));
                       Log.d(TAG, "AddNewAccount Bundle is " + bundle);
                       checkTokenAndStartProfileActivity();
                   });
         } else if (accounts.length == 1) {
-            showMessage(StartActivity.this, getString(R.string.check_token));
+            showMessage(this, getString(R.string.check_token));
             checkTokenAndStartProfileActivity();
         } else {
             removeAllAccounts(accounts, accountManager, this);
             addNewAccount(
                   bundle -> {
-                      showMessage(StartActivity.this, "Account was created");
+                      showMessage(this, "Account was created");
                       Log.d(TAG, "AddNewAccount Bundle is " + bundle);
                       checkTokenAndStartProfileActivity();
                   });

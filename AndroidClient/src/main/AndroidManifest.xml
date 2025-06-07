@@ -25,7 +25,7 @@
         android:required="true" />
 
     <application
-        android:name="com.tom.meeter.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@drawable/ic_meeter_lr"
         android:label="@string/app_name"
@@ -35,7 +35,7 @@
         <!-- TODO remove^ android:usesCleartextTraffic="true" when start usage of https -->
 
         <activity
-            android:name="com.tom.meeter.context.launcher.StartActivity"
+            android:name=".context.launcher.Launcher"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>
@@ -45,29 +45,29 @@
         </activity>
 
         <activity
-            android:name="com.tom.meeter.context.auth.activity.LoginActivity"
+            android:name=".context.auth.activity.LoginActivity"
             android:label="@string/login"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.tom.meeter.context.launcher.StartActivity" />
+                android:value=".context.launcher.Launcher" />
         </activity>
         <activity
-            android:name="com.tom.meeter.context.profile.activity.ProfileActivity"
+            android:name=".context.profile.activity.ProfileActivity"
             android:label="@string/profile_activity_label"
-            android:parentActivityName="com.tom.meeter.context.auth.activity.LoginActivity">
+            android:parentActivityName=".context.auth.activity.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.tom.meeter.context.auth.activity.LoginActivity" />
+                android:value=".context.auth.activity.LoginActivity" />
         </activity>
         <activity
-            android:name="com.tom.meeter.context.auth.activity.RegistrationActivity"
+            android:name=".context.auth.activity.RegistrationActivity"
             android:label="@string/RegistrationActivityTitle"
-            android:parentActivityName="com.tom.meeter.context.auth.activity.LoginActivity">
+            android:parentActivityName=".context.auth.activity.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.tom.meeter.context.auth.activity.LoginActivity" />
+                android:value=".context.auth.activity.LoginActivity" />
         </activity>
 
         <meta-data
@@ -78,16 +78,16 @@
             android:value="AIzaSyCPeLeAy-WAKZmeeMG2jhJ9w-oTLm8Wk40" />
 
         <service
-            android:name="com.tom.meeter.context.network.service.SocketIOService"
+            android:name=".context.network.service.SocketIOService"
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name="com.tom.meeter.context.gps.service.LocationTrackerService"
+            android:name=".context.gps.service.LocationTrackerService"
             android:enabled="true"
             android:exported="false" />
 
         <service
-            android:name="com.tom.meeter.context.auth.service.MeeterAuthenticatorService"
+            android:name=".context.auth.service.MeeterAuthenticatorService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />

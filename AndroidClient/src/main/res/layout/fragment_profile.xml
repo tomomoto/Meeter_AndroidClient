@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="50dp"
-        tools:context="com.tom.meeter.context.profile.fragment.ProfileFragment">
+        tools:context=".context.profile.fragment.ProfileFragment">
 
         <TextView
             android:id="@+id/userInformationLabel"

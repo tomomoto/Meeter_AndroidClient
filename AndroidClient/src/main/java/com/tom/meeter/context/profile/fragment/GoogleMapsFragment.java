@@ -30,12 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.tom.meeter.R;
-import com.tom.meeter.context.gps.domain.LocationTrackerListener;
-import com.tom.meeter.context.gps.service.LocationTrackerService;
-import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.context.network.domain.SearchForEvents;
-import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -49,16 +43,26 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.common.collect.Sets;
 import com.mikepenz.iconics.typeface.FontAwesome;
+import com.tom.meeter.R;
+import com.tom.meeter.context.gps.domain.LocationTrackerListener;
+import com.tom.meeter.context.gps.service.LocationTrackerService;
+import com.tom.meeter.context.network.domain.SearchForEvents;
+import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 
 
 public class GoogleMapsFragment extends Fragment
@@ -81,8 +85,7 @@ public class GoogleMapsFragment extends Fragment
     private Circle searchCircle = null;
     private GoogleMap gmap = null;
     private CameraPosition camPosition = null;
-
-    private final List<Marker> eventMarkers = new ArrayList<>();
+    private final Map<String, GMapEvent> events = new HashMap<>();
 
     public GoogleMapsFragment() {
         logMethod(TAG, this);
@@ -146,6 +149,8 @@ public class GoogleMapsFragment extends Fragment
         logMethod(TAG, this);
         gmap = googleMap;
 
+        putExistingMarkersOnMap();
+
         if (locationService == null) {
             Log.w(TAG, "Location service is not ready...");
         }
@@ -176,6 +181,13 @@ public class GoogleMapsFragment extends Fragment
         }
         gmap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener() " + latLng));
         gmap.setOnCameraIdleListener(this::idleListener);
+        gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.d(TAG, "OnMarkerClickListener() " + marker.getId());
+                return false;
+            }
+        });
         firstOpening = false;
     }
 
@@ -204,10 +216,19 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private void idleListener() {
-        camPosition = gmap.getCameraPosition();
-        Log.d(TAG, "onCameraIdleListener() target:" + camPosition.target + " zoom:" + camPosition.zoom);
-        searchCircle.setCenter(camPosition.target);
-        searchForEvents(camPosition.target.latitude, camPosition.target.longitude, searchArea);
+        if (camPosition == null
+              || camPosition.target.latitude != gmap.getCameraPosition().target.latitude
+              || camPosition.target.longitude != gmap.getCameraPosition().target.longitude) {
+            camPosition = gmap.getCameraPosition();
+            LatLng position = camPosition.target;
+            Log.d(TAG, "onCameraIdleListener() target:" + position + " zoom:" + camPosition.zoom);
+            searchCircle.setCenter(position);
+            searchForEvents(position.latitude, position.longitude, searchArea);
+        } else {
+            // As new coordinates income...
+            camPosition = gmap.getCameraPosition();
+            searchCircle.setCenter(camPosition.target);
+        }
     }
 
     private static void moveCamera(
@@ -218,6 +239,12 @@ public class GoogleMapsFragment extends Fragment
             }
         } else if (camPosition != null) {
             gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+        }
+    }
+
+    private void putExistingMarkersOnMap() {
+        for (GMapEvent e : events.values()) {
+            e.replaceMarker(gmap.addMarker(createFreshOpts(e.getEvent())));
         }
     }
 
@@ -234,21 +261,33 @@ public class GoogleMapsFragment extends Fragment
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(IncomeEvents incomeEvent) {
-        removeMarkers();
-        incomeEvent.getEvents()
-              .stream()
-              .map(GoogleMapsFragment::mapToMarkerOpts)
-              .forEach(this::addMarker);
-    }
+    public void onMessageEvent(IncomeEvents msg) {
+        Map<String, EventDTO> incomeEvents = new HashMap<>();
+        for (EventDTO e : msg.getEvents()) {
+            incomeEvents.put(e.getId(), e);
+        }
 
-    private void addMarker(MarkerOptions options) {
-        eventMarkers.add(gmap.addMarker(options));
-    }
+        Set<String> currentEventIds = new HashSet<>(events.keySet());
+        Set<String> incomeEventIds = incomeEvents.keySet();
 
-    private void removeMarkers() {
-        for (Marker marker : eventMarkers) {
-            marker.remove();
+        Sets.SetView<String> toRemove = Sets.difference(currentEventIds, incomeEventIds);
+        Sets.SetView<String> toAdd = Sets.difference(incomeEventIds, currentEventIds);
+        Sets.SetView<String> toUpdate = Sets.intersection(currentEventIds, incomeEventIds);
+
+        // Events to remove -
+        for (String eId : toRemove) {
+            events.remove(eId).removeMarker();
+        }
+
+        // Events to add -
+        for (String eId : toAdd) {
+            EventDTO eventToAdd = incomeEvents.get(eId);
+            events.put(eId, new GMapEvent(eventToAdd, gmap.addMarker(createFreshOpts(eventToAdd))));
+        }
+
+        // Intersection - need to apply events update, if any
+        for (String eId : toUpdate) {
+            updateWith(events.get(eId), incomeEvents.get(eId));
         }
     }
 
@@ -263,7 +302,20 @@ public class GoogleMapsFragment extends Fragment
         trackUser = Boolean.parseBoolean(p.getProperty(MAP_TRACK_USER_PROPERTY));
     }
 
-    private static MarkerOptions mapToMarkerOpts(EventDTO e) {
+    private static void updateWith(GMapEvent me, EventDTO update) {
+        EventDTO eventDto = me.getEvent();
+        if (!update.getName().equals(eventDto.getName())) {
+            me.updateName(update.getName());
+        }
+        if (update.getLatitude() != eventDto.getLatitude()
+              || update.getLongitude() != eventDto.getLongitude()) {
+            Log.d(TAG, "Location for event " + update.getName()
+                  + " " + update.getId() + " is changed. Moving the marker.");
+            me.updatePosition(update.getLatitude(), update.getLongitude());
+        }
+    }
+
+    private static MarkerOptions createFreshOpts(EventDTO e) {
         return new MarkerOptions()
               .title(e.getName())
               .position(new LatLng(e.getLatitude(), e.getLongitude()));
@@ -313,5 +365,111 @@ public class GoogleMapsFragment extends Fragment
     private static void searchForEvents(double latitude, double longitude, int searchArea) {
         EventBus.getDefault().post(new SearchForEvents(
               (float) latitude, (float) longitude, searchArea));
+    }
+
+    static class GMapEvent {
+
+        private EventDTO event;
+        private Marker marker;
+
+        public GMapEvent(EventDTO event, Marker marker) {
+            validate(event, marker);
+            this.event = event;
+            this.marker = marker;
+        }
+
+        public void removeMarker() {
+            marker.remove();
+        }
+
+        public EventDTO getEvent() {
+            return event;
+        }
+
+        public void updateName(String name) {
+            event.setName(name);
+            marker.setTitle(name);
+        }
+
+        public void updatePosition(double latitude, double longitude) {
+            event.setLatitude(latitude);
+            event.setLongitude(longitude);
+            marker.setPosition(new LatLng(latitude, longitude));
+        }
+
+        public void replaceMarker(Marker marker) {
+            validate(event, marker);
+            this.marker = marker;
+        }
+
+        private static void validate(EventDTO event, Marker marker) {
+            String name = event.getName();
+            String title = marker.getTitle();
+            if (!name.equals(title)) {
+                throw new IllegalArgumentException("Names are not equals " + name + ":" + title);
+            }
+            LatLng position = marker.getPosition();
+            double latitude = event.getLatitude();
+            if (latitude != position.latitude) {
+                throw new IllegalArgumentException(
+                      "Latitudes are not equals " + latitude + ":" + position.latitude);
+            }
+            double longitude = event.getLongitude();
+            if (longitude != position.longitude) {
+                throw new IllegalArgumentException(
+                      "Longitude are not equals " + longitude + ":" + position.longitude);
+            }
+        }
+    }
+
+    static class EventKey {
+
+        private String id;
+        private double latitude;
+        private double longitude;
+
+        public EventKey(String id, double latitude, double longitude) {
+            this.id = id;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            EventKey eventKey = (EventKey) o;
+            return Double.compare(latitude, eventKey.latitude) == 0
+                  && Double.compare(longitude, eventKey.longitude) == 0
+                  && Objects.equals(id, eventKey.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, latitude, longitude);
+        }
     }
 }

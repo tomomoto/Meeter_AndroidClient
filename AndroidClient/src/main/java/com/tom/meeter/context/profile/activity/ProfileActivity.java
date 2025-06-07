@@ -346,7 +346,7 @@ public class ProfileActivity extends AppCompatActivity {
                 DRAWER_CONTACT_ID = 13;
                 */
             default:
-                //return new StartActivity();
+                //return new Launcher();
                 result = new ProfileFragment();
         }
         postConstruct.accept(result);
