@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.start.activity;
+package com.example.tom.meeter.context.launcher;
 
 import static com.example.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;

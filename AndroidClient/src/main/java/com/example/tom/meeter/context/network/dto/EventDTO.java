@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.network;
+package com.example.tom.meeter.context.network.dto;
 
 import org.json.JSONException;
 import org.json.JSONObject;

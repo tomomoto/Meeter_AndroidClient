@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Meeter</string>
     <string name="action_settings">Настройки</string>
-    <string name="profile_activity_label">Профиль</string>
+    <string name="profile_activity_label">Meeter</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
     <string name="repeat_password">Повторите пароль</string>
@@ -72,9 +72,9 @@
     <string name="user_information">Пользовательская информация</string>
     <string name="me">Я</string>
     <string name="location_changed">Локация изменена</string>
-    <string name="need_location_permissions">Пожалуйста, проверьте разрешения на доступ к местоположению.</string>
+    <string name="need_location_permissions">Проверьте разрешения на доступ к местоположению.</string>
     <string name="location_is_disabled">Сервис местоположения выключен.</string>
-    <string name="fill_login_params">Пожалуйста, заполните параметры входа.</string>
+    <string name="fill_login_params">Заполните параметры входа.</string>
     <string name="meeter_account">Meeter</string>
     <string name="check_token">Проверка токена и запуск.</string>
     <string name="account_created">Аккаунт создан.</string>

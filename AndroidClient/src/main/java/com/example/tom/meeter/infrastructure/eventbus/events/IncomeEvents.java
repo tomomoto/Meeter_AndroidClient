@@ -1,6 +1,6 @@
 package com.example.tom.meeter.infrastructure.eventbus.events;
 
-import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.context.network.dto.EventDTO;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -33,7 +33,7 @@ import android.widget.Toast;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.example.tom.meeter.context.gps.service.LocationTrackerService;
-import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.context.network.dto.EventDTO;
 import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 import com.google.android.gms.maps.CameraUpdateFactory;

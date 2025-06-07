@@ -1,6 +1,6 @@
 package com.example.tom.meeter.context.event.service;
 
-import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.context.network.dto.EventDTO;
 
 import java.util.List;
 

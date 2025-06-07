@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.start.activity;
+package com.example.tom.meeter.context.launcher;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;

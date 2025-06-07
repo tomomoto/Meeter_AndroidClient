@@ -35,7 +35,7 @@
         <!-- TODO remove^ android:usesCleartextTraffic="true" when start usage of https -->
 
         <activity
-            android:name=".context.start.activity.StartActivity"
+            android:name=".context.launcher.StartActivity"
             android:exported="true"
             android:noHistory="true">
             <intent-filter>
@@ -51,7 +51,7 @@
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.tom.meeter.context.start.activity.StartActivity" />
+                android:value="com.example.tom.meeter.context.launcher.StartActivity" />
         </activity>
         <activity
             android:name=".context.profile.activity.ProfileActivity"

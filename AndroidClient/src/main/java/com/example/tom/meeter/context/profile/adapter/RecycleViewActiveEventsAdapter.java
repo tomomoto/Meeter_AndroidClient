@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tom.meeter.R;
-import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.context.network.dto.EventDTO;
 
 import java.util.ArrayList;
 import java.util.List;

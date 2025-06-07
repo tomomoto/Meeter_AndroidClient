@@ -6,7 +6,7 @@ import android.util.Log;
 import com.example.tom.meeter.context.event.database.EventDao;
 import com.example.tom.meeter.context.event.domain.Event;
 import com.example.tom.meeter.context.event.service.EventService;
-import com.example.tom.meeter.context.network.EventDTO;
+import com.example.tom.meeter.context.network.dto.EventDTO;
 
 import java.io.IOException;
 import java.util.ArrayList;
