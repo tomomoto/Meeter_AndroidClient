@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.auth.registration.message;
+package com.example.tom.meeter.context.auth.message;
 
 public class RegisterBody {
     private String login;

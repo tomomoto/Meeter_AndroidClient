@@ -1,4 +1,4 @@
-package com.example.tom.meeter.context.auth.registration.activity;
+package com.example.tom.meeter.context.auth.activity;
 
 import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -23,7 +23,7 @@ import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.example.tom.meeter.context.auth.message.TokenResponse;
-import com.example.tom.meeter.context.auth.registration.message.RegisterBody;
+import com.example.tom.meeter.context.auth.message.RegisterBody;
 import com.example.tom.meeter.context.auth.service.AuthService;
 
 import javax.inject.Inject;
@@ -162,10 +162,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TokenResponse> call, Throwable t) {
-                int registerError = R.string.register_error;
-                Toast.makeText(getApplicationContext(), registerError, Toast.LENGTH_SHORT)
+                int serverIsUnreachable = R.string.server_is_unreachable;
+                Toast.makeText(getApplicationContext(), serverIsUnreachable, Toast.LENGTH_SHORT)
                       .show();
-                Log.d(TAG, "Register: " + getResources().getString(registerError));
+                Log.d(TAG, "Register: " + getResources().getString(serverIsUnreachable));
             }
         });
     }

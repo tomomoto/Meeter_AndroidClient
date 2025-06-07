@@ -16,18 +16,12 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.tom.meeter.context.network.domain.CreateNewEventAttempt;
-import com.example.tom.meeter.context.network.domain.LoginAttempt;
-import com.example.tom.meeter.context.network.domain.RegistrationAttempt;
 import com.example.tom.meeter.context.network.domain.SearchForEvents;
 import com.example.tom.meeter.infrastructure.common.Constants;
 import com.example.tom.meeter.infrastructure.common.JsonHelper;
 import com.example.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
-import com.example.tom.meeter.infrastructure.eventbus.events.FailureLogin;
 import com.example.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
-import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationFailed;
-import com.example.tom.meeter.infrastructure.eventbus.events.RegistrationSuccess;
 import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
-import com.example.tom.meeter.infrastructure.eventbus.events.SuccessfulLogin;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -51,20 +45,13 @@ public class SocketIOService extends Service {
     private static final String TAG = SocketIOService.class.getCanonicalName();
 
     private static final String GREETINGS_CHANNEL = "greetings";
-    private static final String USER_LOGIN_CHANNEL = "user:login";
     private static final String EVENTS_CREATE_CHANNEL = "events:create";
     private static final String EVENTS_SEARCH_CHANNEL = "events:search";
 
-    private static final String SUCCESSFUL_REGISTRATION_EVENT = "SuccessfulRegistrationEvent";
-    private static final String FAILED_REGISTRATION_EVENT = "FailedRegistrationEvent";
-
     private static final String CODE_KEY = "code";
     private static final String ID_KEY = "id";
-    private static final String MESSAGE_KEY = "message";
-    private static final int SUCCESS = 200;
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
-    private static final int UNAUTHORIZED = 401;
 
     public class ServiceBinder extends Binder {
         public SocketIOService getService() {
@@ -167,12 +154,8 @@ public class SocketIOService extends Service {
               });
 
         socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
-        //socketClient.on(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
         socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
-
-        socketClient.on(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
-        socketClient.on(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
         socketClient.connect();
         EventBus.getDefault().register(this);
         Log.d(TAG, "SocketIOClient is going to start... connected? {"
@@ -202,22 +185,8 @@ public class SocketIOService extends Service {
         EventBus.getDefault().unregister(this);
         socketClient.disconnect();
         socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
-        //socketClient.off(USER_LOGIN_CHANNEL, SocketIOService::userLoginHandler);
         socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
-
-        socketClient.off(SUCCESSFUL_REGISTRATION_EVENT, SocketIOService::userRegisterHandler);
-        socketClient.off(FAILED_REGISTRATION_EVENT, SocketIOService::failureRegistrationEventHandler);
-    }
-
-    @Subscribe
-    public void onMessageEvent(LoginAttempt event) {
-        Log.d(TAG, "onMessageEvent:LoginAttempt: " + event.toString());
-        try {
-            socketClient.emit(USER_LOGIN_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
     }
 
     @Subscribe
@@ -240,16 +209,6 @@ public class SocketIOService extends Service {
         }
     }
 
-    @Subscribe
-    public void onMessageEvent(RegistrationAttempt event) {
-        Log.d(TAG, "onMessageEvent:RegistrationAttempt: " + event.toString());
-        try {
-            socketClient.emit("register", event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-    }
-
     private static IO.Options setupOptions(String authToken) {
         IO.Options result = new IO.Options();
         result.extraHeaders = setupAuthenticationHeader(authToken);
@@ -264,28 +223,6 @@ public class SocketIOService extends Service {
 
     private static void greetingsHandler(Object... args) {
         Log.d(TAG, "SocketIO server welcomes the client." + Arrays.toString(args));
-    }
-
-    private static void userLoginHandler(Object... args) {
-        JSONObject response = getSimpleResponse(JSONObject.class, args);
-        int code = JsonHelper.getInt(response, CODE_KEY);
-        Log.d(TAG, USER_LOGIN_CHANNEL + " : " + response);
-        switch (code) {
-            case SUCCESS:
-                Log.d(TAG, "Successful login. " + response);
-                EventBus.getDefault()
-                      .post(new SuccessfulLogin(JsonHelper.getString(response, ID_KEY)));
-                break;
-            case BAD_REQUEST:
-            case UNAUTHORIZED:
-                Log.d(TAG, "Failed login. " + response);
-                EventBus.getDefault()
-                      .post(new FailureLogin(JsonHelper.getString(response, MESSAGE_KEY)));
-                break;
-            default:
-                Log.d(TAG, "Unrecognized code from " + USER_LOGIN_CHANNEL + " [" + code + "]");
-                break;
-        }
     }
 
     private static void eventsSearchHandler(Object... args) {
@@ -309,17 +246,6 @@ public class SocketIOService extends Service {
             return false;
         }
         return true;
-    }
-
-    private static void userRegisterHandler(Object... args) {
-        String userId = getSimpleResponse(String.class, args);
-        Log.d(TAG, "successRegistrationEventHandler with " + userId);
-        EventBus.getDefault().post(new RegistrationSuccess(userId));
-    }
-
-    private static void failureRegistrationEventHandler(Object... args) {
-        Log.d(TAG, "failureRegistrationEventHandler From service");
-        EventBus.getDefault().post(new RegistrationFailed());
     }
 
     private static void eventsCreateHandler(Object... args) {

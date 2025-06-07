@@ -3,8 +3,8 @@ package com.example.tom.meeter;
 import android.app.Application;
 
 import com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.example.tom.meeter.context.auth.login.activity.LoginActivity;
-import com.example.tom.meeter.context.auth.registration.activity.RegistrationActivity;
+import com.example.tom.meeter.context.auth.activity.LoginActivity;
+import com.example.tom.meeter.context.auth.activity.RegistrationActivity;
 import com.example.tom.meeter.context.profile.activity.ProfileActivity;
 import com.example.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.example.tom.meeter.context.profile.fragment.UserEventsFragment;

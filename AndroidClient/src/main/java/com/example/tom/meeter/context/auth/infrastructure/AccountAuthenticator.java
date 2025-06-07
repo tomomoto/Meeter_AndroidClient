@@ -11,8 +11,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.example.tom.meeter.App;
-import com.example.tom.meeter.context.auth.login.activity.LoginActivity;
-import com.example.tom.meeter.context.auth.login.message.LoginBody;
+import com.example.tom.meeter.context.auth.activity.LoginActivity;
+import com.example.tom.meeter.context.auth.message.LoginBody;
 import com.example.tom.meeter.context.auth.message.TokenResponse;
 import com.example.tom.meeter.context.auth.service.AuthService;
 
@@ -30,6 +30,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public static final String AUTH_TYPE = "jwt_auth";
     public static final String IS_ADDING_NEW_ACCOUNT_KEY = "is-adding-new-account";
     public static final String USER_PASS_KEY = "the-password";
+    private static final String LABEL = " label";
     //public static final String ACCOUNT_NAME = "Meeter";
 
     private Context context;
@@ -113,7 +114,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        return "";
+        return authTokenType + LABEL;
     }
 
     @Override

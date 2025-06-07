@@ -1,8 +1,8 @@
 package com.example.tom.meeter.context.auth.service;
 
-import com.example.tom.meeter.context.auth.login.message.LoginBody;
+import com.example.tom.meeter.context.auth.message.LoginBody;
 import com.example.tom.meeter.context.auth.message.TokenResponse;
-import com.example.tom.meeter.context.auth.registration.message.RegisterBody;
+import com.example.tom.meeter.context.auth.message.RegisterBody;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

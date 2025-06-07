@@ -25,8 +25,6 @@ public class Constants {
     public static final String MAP_EVENTS_AREA_PROPERTY = "map.events_area";
     public static final String MAP_TRACK_USER_PROPERTY = "map.track_user";
 
-    public static final String USER_ID_KEY = "userId";
-
     public static final String AUTH_HEADER = "Authorization";
     public static final String AUTH_VALUE_START = "Bearer ";
     public static final String TOKEN_KEY = "token";

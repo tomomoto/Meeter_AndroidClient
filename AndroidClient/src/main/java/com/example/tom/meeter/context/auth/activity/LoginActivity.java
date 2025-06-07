@@ -1,7 +1,6 @@
-package com.example.tom.meeter.context.auth.login.activity;
+package com.example.tom.meeter.context.auth.activity;
 
 import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
-import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.IS_ADDING_NEW_ACCOUNT_KEY;
 import static com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator.USER_PASS_KEY;
 import static com.example.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -22,9 +21,8 @@ import android.widget.Toast;
 import com.example.tom.meeter.App;
 import com.example.tom.meeter.R;
 import com.example.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.example.tom.meeter.context.auth.login.message.LoginBody;
+import com.example.tom.meeter.context.auth.message.LoginBody;
 import com.example.tom.meeter.context.auth.message.TokenResponse;
-import com.example.tom.meeter.context.auth.registration.activity.RegistrationActivity;
 import com.example.tom.meeter.context.auth.service.AuthService;
 
 import javax.inject.Inject;
