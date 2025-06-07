@@ -81,4 +81,5 @@
     <string name="server_is_unreachable">Server is unreachable.</string>
     <string name="register_error">Registration error.</string>
     <string name="error">Error</string>
+    <string name="logout">Logout</string>
 </resources>

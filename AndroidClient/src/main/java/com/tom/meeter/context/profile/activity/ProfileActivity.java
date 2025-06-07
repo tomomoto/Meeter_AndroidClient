@@ -4,12 +4,14 @@ import static com.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAc
 import static com.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -26,18 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.tom.meeter.App;
-import com.tom.meeter.R;
-import com.tom.meeter.context.network.service.SocketIOService;
-import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
-import com.tom.meeter.context.profile.fragment.EventsFragment;
-import com.tom.meeter.context.profile.fragment.ProfileFragment;
-import com.tom.meeter.context.profile.fragment.UserEventsFragment;
-import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
-import com.tom.meeter.infrastructure.common.Constants;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -46,6 +37,17 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.tom.meeter.App;
+import com.tom.meeter.R;
+import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
+import com.tom.meeter.context.network.service.SocketIOService;
+import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
+import com.tom.meeter.context.profile.fragment.EventsFragment;
+import com.tom.meeter.context.profile.fragment.ProfileFragment;
+import com.tom.meeter.context.profile.fragment.UserEventsFragment;
+import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
     private static final int DRAWER_HELP_ID = 11;
     private static final int DRAWER_OPEN_SOURCE_ID = 12;
     private static final int DRAWER_CONTACT_ID = 13;
+    private static final int DRAWER_LOGOUT_ID = 99;
 
     private static final Map<Integer, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
     private final Map<Integer, String> drawerFragmentNames = new HashMap<>();
@@ -109,8 +112,8 @@ public class ProfileActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
     private ProfileViewModel profileViewModel;
 
-    private ServiceConnection sConn;
-    private boolean nwServiceBound = false;
+    private ServiceConnection socketServiceConnection;
+    private SocketIOService socketIOService;
 
     private AccountManager accountManager;
 
@@ -123,19 +126,17 @@ public class ProfileActivity extends AppCompatActivity {
         ((App) getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        sConn = new ServiceConnection() {
+        socketServiceConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 logMethod(TAG, this);
-                nwServiceBound = true;
+                socketIOService = ((SocketIOService.ServiceBinder) binder).getService();
             }
 
             public void onServiceDisconnected(ComponentName name) {
                 logMethod(TAG, this);
-                nwServiceBound = false;
+                socketIOService = null;
             }
         };
-
-        Log.d(TAG, "ProfileActivity binding SocketIOService");
 
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
@@ -145,9 +146,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         setupTokenAction(accountManager, this,
               token -> {
+                  Log.d(TAG, "ProfileActivity binding SocketIOService");
                   Intent service = new Intent(this, SocketIOService.class);
                   service.putExtra(TOKEN_KEY, token);
-                  bindService(service, sConn, BIND_AUTO_CREATE);
+                  bindService(service, socketServiceConnection, BIND_AUTO_CREATE);
                   profileViewModel.getProfile(Constants.getAuthHeader(token));
               });
 
@@ -160,7 +162,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             selectedNavigationId = DRAWER_PROFILE_ID;
-            render();
+            renderSelectedFragment();
         }
     }
 
@@ -179,7 +181,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (shouldLoadHomeFragOnBackPress) {
             if (selectedNavigationId != DRAWER_PROFILE_ID) {
                 selectedNavigationId = DRAWER_PROFILE_ID;
-                render();
+                renderSelectedFragment();
                 return;
             }
         }
@@ -191,23 +193,29 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         logMethod(TAG, this);
-        Toast.makeText(this, "Profile activity paused", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         logMethod(TAG, this);
-        Toast.makeText(this, "Profile activity stopped", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         logMethod(TAG, this);
-        Log.d(TAG, "ProfileActivity unbindService " + sConn);
-        unbindService(sConn);
-        Toast.makeText(this, "Profile activity deleted", Toast.LENGTH_SHORT).show();
+        unbindSocketService();
+    }
+
+    private void unbindSocketService() {
+        if (socketIOService != null && socketServiceConnection != null) {
+            Log.d(TAG, "ProfileActivity unbinds SocketIOService via connection "
+                  + socketServiceConnection);
+            unbindService(socketServiceConnection);
+            socketIOService = null;
+            socketServiceConnection = null;
+        }
     }
 
     private void onDrawerItemClickListener(
@@ -220,6 +228,9 @@ public class ProfileActivity extends AppCompatActivity {
             case DRAWER_NOTIFICATION_ID:
                 selectedNavigationId = drawerItem.getIdentifier();
                 break;
+            case DRAWER_LOGOUT_ID:
+                handleLogout();
+                break;
                 /*TODO: not set yet
                 DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
@@ -229,10 +240,10 @@ public class ProfileActivity extends AppCompatActivity {
             default:
                 selectedNavigationId = DRAWER_PROFILE_ID;
         }
-        render();
+        renderSelectedFragment();
     }
 
-    private void render() {
+    private void renderSelectedFragment() {
         drawer.setSelection(selectedNavigationId);
         String tag = DRAWER_FRAGMENT_TAGS.get(selectedNavigationId);
         if (tag == null) {
@@ -266,9 +277,8 @@ public class ProfileActivity extends AppCompatActivity {
         handler.post(
               replaceFragment(
                     getSupportFragmentManager(),
-                    () -> createFragment(
-                          selectedNavigationId,
-                          fragment -> {}),
+                    () -> createFragment(selectedNavigationId, fragment -> {
+                    }),
                     () -> tag
               )
         );
@@ -283,6 +293,18 @@ public class ProfileActivity extends AppCompatActivity {
         // refresh toolbar menu
         //seems this is not necessary.
         //invalidateOptionsMenu();
+    }
+
+    private void handleLogout() {
+        Account[] accs = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            accountManager.removeAccount(
+                  accs[0], this, future -> {
+                      Log.d(TAG, "Account " + accs[0].name + " removed...");
+                      unbindSocketService();
+                      finish();
+                  }, null);
+        }
     }
 
     private static void setupNameMapping(Map<Integer, String> mapping, String[] namesFromResources) {
@@ -389,7 +411,9 @@ public class ProfileActivity extends AppCompatActivity {
                     new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_coffee).withIdentifier(DRAWER_HELP_ID),
                     new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_OPEN_SOURCE_ID).setEnabled(false),
                     new DividerDrawerItem(),
-                    new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(DRAWER_CONTACT_ID)
+                    new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(DRAWER_CONTACT_ID),
+                    new DividerDrawerItem(),
+                    new PrimaryDrawerItem().withName(R.string.logout).withIcon(FontAwesome.Icon.faw_power_off).withIdentifier(DRAWER_LOGOUT_ID)
               )
               .withOnDrawerItemClickListener(profileActivity::onDrawerItemClickListener)
               .withOnDrawerListener(createOnDrawerListener(

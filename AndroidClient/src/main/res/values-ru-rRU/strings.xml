@@ -81,4 +81,5 @@
     <string name="server_is_unreachable">Сервер недоступен.</string>
     <string name="register_error">Ошибка регистрации.</string>
     <string name="error">Ошибка</string>
+    <string name="logout">Выход</string>
 </resources>
