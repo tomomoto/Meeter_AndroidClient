@@ -181,14 +181,24 @@ public class GoogleMapsFragment extends Fragment
         }
         gmap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener() " + latLng));
         gmap.setOnCameraIdleListener(this::idleListener);
-        gmap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Log.d(TAG, "OnMarkerClickListener() " + marker.getId());
-                return false;
-            }
-        });
+        gmap.setOnMarkerClickListener(this::markerClickListener);
         firstOpening = false;
+    }
+
+    private boolean markerClickListener(Marker marker) {
+        Log.d(TAG, "OnMarkerClickListener() " + marker.getId());
+        GMapEvent search = null;
+        for (GMapEvent event : events.values()) {
+            if (marker.getId().equals(event.getMarkerId())) {
+                search = event;
+                break;
+            }
+        }
+        if (search != null) {
+            //start event description activity etc...
+            Log.d(TAG, "OnMarkerClickListener() find event " + search.getName());
+        }
+        return false;
     }
 
     @Override
@@ -244,7 +254,9 @@ public class GoogleMapsFragment extends Fragment
 
     private void putExistingMarkersOnMap() {
         for (GMapEvent e : events.values()) {
-            e.replaceMarker(gmap.addMarker(createFreshOpts(e.getEvent())));
+            e.replaceMarker(
+                  gmap.addMarker(
+                        createFreshOpts(e.getName(), e.getLatitude(), e.getLongitude())));
         }
     }
 
@@ -281,8 +293,12 @@ public class GoogleMapsFragment extends Fragment
 
         // Events to add -
         for (String eId : toAdd) {
-            EventDTO eventToAdd = incomeEvents.get(eId);
-            events.put(eId, new GMapEvent(eventToAdd, gmap.addMarker(createFreshOpts(eventToAdd))));
+            EventDTO ev = incomeEvents.get(eId);
+            events.put(
+                  eId,
+                  new GMapEvent(
+                        ev, gmap.addMarker(
+                        createFreshOpts(ev.getName(), ev.getLatitude(), ev.getLongitude()))));
         }
 
         // Intersection - need to apply events update, if any
@@ -303,22 +319,21 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private static void updateWith(GMapEvent me, EventDTO update) {
-        EventDTO eventDto = me.getEvent();
-        if (!update.getName().equals(eventDto.getName())) {
+        if (!update.getName().equals(me.getName())) {
             me.updateName(update.getName());
         }
-        if (update.getLatitude() != eventDto.getLatitude()
-              || update.getLongitude() != eventDto.getLongitude()) {
+        if (update.getLatitude() != me.getLatitude()
+              || update.getLongitude() != me.getLongitude()) {
             Log.d(TAG, "Location for event " + update.getName()
                   + " " + update.getId() + " is changed. Moving the marker.");
             me.updatePosition(update.getLatitude(), update.getLongitude());
         }
     }
 
-    private static MarkerOptions createFreshOpts(EventDTO e) {
+    private static MarkerOptions createFreshOpts(String name, double latitude, double longitude) {
         return new MarkerOptions()
-              .title(e.getName())
-              .position(new LatLng(e.getLatitude(), e.getLongitude()));
+              .title(name)
+              .position(new LatLng(latitude, longitude));
     }
 
     private static LatLng mapToLatTng(Location location) {
@@ -382,8 +397,20 @@ public class GoogleMapsFragment extends Fragment
             marker.remove();
         }
 
-        public EventDTO getEvent() {
-            return event;
+        public String getName() {
+            return event.getName();
+        }
+
+        public double getLatitude() {
+            return event.getLatitude();
+        }
+
+        public double getLongitude() {
+            return event.getLongitude();
+        }
+
+        public String getMarkerId() {
+            return marker.getId();
         }
 
         public void updateName(String name) {
