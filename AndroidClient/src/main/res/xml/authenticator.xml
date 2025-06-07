@@ -1,6 +1,6 @@
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountPreferences="@xml/prefs"
-    android:accountType="com.example.tom.meeter.account"
+    android:accountType="com.tom.meeter.account"
     android:icon="@drawable/ic_meeter_lr"
     android:label="@string/meeter_account"
     android:smallIcon="@drawable/ic_meeter_lr" />

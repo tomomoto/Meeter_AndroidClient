@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.tom.meeter'
+    namespace 'com.tom.meeter'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.tom.meeter"
+        applicationId "com.tom.meeter"
         minSdk 21
         targetSdk 33
         versionCode 1
