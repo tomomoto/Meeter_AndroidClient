@@ -17,6 +17,9 @@ import com.tom.meeter.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Tom on 14.12.2016.
  */
@@ -24,9 +27,9 @@ public class EventsFragment extends Fragment {
 
     private static final String TAG = EventsFragment.class.getCanonicalName();
 
-    //@BindView(R.id.tabs)
+    @BindView(R.id.fragment_events_tabs)
     TabLayout tabLayout;
-    //@BindView(R.id.viewpager)
+    @BindView(R.id.fragment_events_viewpager)
     ViewPager viewPager;
 
     public EventsFragment() {
@@ -44,16 +47,15 @@ public class EventsFragment extends Fragment {
     public View onCreateView(
           LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_events, container, false);
+        View view = inflater.inflate(R.layout.fragment_events, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-
-        viewPager = view.findViewById(R.id.fragment_events_viewpager);
         viewPager.setAdapter(
               createViewPagerAdapter(
                     getChildFragmentManager(),
@@ -61,7 +63,6 @@ public class EventsFragment extends Fragment {
                     getString(R.string.events),
                     getString(R.string.your_events)));
 
-        tabLayout = view.findViewById(R.id.fragment_events_tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
