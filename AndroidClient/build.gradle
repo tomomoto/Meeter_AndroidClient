@@ -63,14 +63,6 @@ dependencies {
     implementation libs.rxandroid
     implementation libs.rxjava
 
-
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    androidTestImplementation libs.testcore
-    testImplementation libs.junit.jupiter
-    testImplementation libs.junit.jupiter.api
-
     implementation libs.jackson.core
     implementation libs.jackson.annotations
     implementation libs.jackson.databind
@@ -80,6 +72,7 @@ dependencies {
     // Retrofit & OkHttp
     implementation libs.retrofit
     implementation libs.retrofitconvertergson
+    implementation libs.okhttp
 
     // Dagger 2
     implementation libs.dagger
@@ -90,12 +83,24 @@ dependencies {
     implementation libs.roomrxjava2
     annotationProcessor libs.roomcompiler
 
-    implementation libs.okhttp
 
     //LocalDateTime features
     coreLibraryDesugaring libs.desugar.jdk.libs
 
     implementation libs.guava
 
+
+    /*TESTS*/
+
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    //androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.0.4"
+    androidTestImplementation libs.testcore
+
+
+    testImplementation(libs.junit.junit)
+    //testImplementation("org.powermock:powermock-module-junit4:2.0.9")
 }
 

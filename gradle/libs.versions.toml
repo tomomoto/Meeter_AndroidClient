@@ -29,11 +29,9 @@ jacksonCore = "2.4.1"
 desugar_jdk_libs = "2.0.3"
 
 #testing
-junitJupiter = "5.13.0"
-junitJupiterApi = "5.13.0"
-testcore = "1.0.0"
+testcore = "1.6.1"
+junit = "4.13.2"
 
-#junit = "4.13.2"
 #junitVersion = "1.2.1"
 #espressoCore = "3.6.1"
 #appcompat = "1.6.1"
@@ -80,12 +78,9 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 
-
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
-junit-jupiter-api = { group = "org.junit.jupiter", name= "junit-jupiter-api", version.ref = "junitJupiterApi" }
 testcore = { module = "androidx.test:core", version.ref = "testcore" }
+junit-junit = { module = "junit:junit", version.ref = "junit" }
 
-#junit = { group = "junit", name = "junit", version.ref = "junit" }
 #ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 #espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 #material = { group = "com.google.android.material", name = "material", version.ref = "material" }
