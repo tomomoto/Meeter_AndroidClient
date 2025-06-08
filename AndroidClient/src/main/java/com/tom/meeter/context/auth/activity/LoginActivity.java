@@ -12,8 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -25,12 +24,10 @@ import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.tom.meeter.context.auth.message.LoginBody;
 import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
+import com.tom.meeter.databinding.LoginActivityBinding;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,11 +38,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final int REQ_SIGN_UP_OK = 1;
 
-    @BindView(R.id.loginLoginEditText)
-    TextView login;
-
-    @BindView(R.id.loginPasswordEditText)
-    TextView password;
+    LoginActivityBinding binding;
 
     @Inject
     AuthService authService;
@@ -70,9 +63,12 @@ public class LoginActivity extends AppCompatActivity {
             accountAuthenticatorResponse.onRequestContinued();
         }
 
+        binding = LoginActivityBinding.inflate(getLayoutInflater());
 
-        setContentView(R.layout.login_activity);
-        ButterKnife.bind(this);
+        binding.loginSubmit.setOnClickListener(v -> onLoginClick());
+        binding.loginRegistrationButton.setOnClickListener(v -> onRegisterClick());
+        View view = binding.getRoot();
+        setContentView(view);
     }
 
 
@@ -149,10 +145,9 @@ public class LoginActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.loginSubmit)
-    public void onLoginClick(Button button) {
-        CharSequence loginText = login.getText();
-        CharSequence pwdText = password.getText();
+    public void onLoginClick() {
+        CharSequence loginText = binding.loginLoginEditText.getText();
+        CharSequence pwdText = binding.loginPasswordEditText.getText();
         if (loginText == null || loginText.toString().isEmpty()
               || pwdText == null || pwdText.toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), R.string.fill_login_params, Toast.LENGTH_SHORT)
@@ -164,8 +159,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void submit() {
-        String userLogin = login.getText().toString();
-        String userPass = password.getText().toString();
+        String userLogin = binding.loginLoginEditText.getText().toString();
+        String userPass = binding.loginPasswordEditText.getText().toString();
         Call<TokenResponse> loginCall = authService.login(new LoginBody(userLogin, userPass));
         loginCall.enqueue(new Callback<>() {
             @Override
@@ -218,8 +213,7 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    @OnClick(R.id.loginRegistrationButton)
-    public void onRegisterClick(Button btn) {
+    public void onRegisterClick() {
         Intent signup = new Intent(getBaseContext(), RegistrationActivity.class);
         signup.putExtras(getIntent().getExtras());
         startActivityForResult(signup, REQ_SIGN_UP_OK);

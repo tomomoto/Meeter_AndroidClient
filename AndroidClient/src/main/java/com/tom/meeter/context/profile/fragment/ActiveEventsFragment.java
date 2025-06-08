@@ -16,26 +16,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.R;
 import com.tom.meeter.context.profile.adapter.RecycleViewActiveEventsAdapter;
+import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-
 public class ActiveEventsFragment extends Fragment {
 
     private static final String TAG = ActiveEventsFragment.class.getCanonicalName();
 
-    @BindView(R.id.active_events_fragment_recycler_view)
-    RecyclerView recyclerView;
+    SubFragmentActiveEventsBinding binding;
 
     private RecycleViewActiveEventsAdapter recycleViewActiveEventsAdapter;
 
@@ -55,9 +49,8 @@ public class ActiveEventsFragment extends Fragment {
     public View onCreateView(
           @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        View view = inflater.inflate(R.layout.sub_fragment_active_events, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+        binding = SubFragmentActiveEventsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -70,12 +63,12 @@ public class ActiveEventsFragment extends Fragment {
         //rView.setHasFixedSize(true);
 
         // use a linear layout manager
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
         recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter();
-        recyclerView.setAdapter(recycleViewActiveEventsAdapter);
-        recyclerView.invalidate();
+        binding.activeEventsFragmentRecyclerView.setAdapter(recycleViewActiveEventsAdapter);
+        binding.activeEventsFragmentRecyclerView.invalidate();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -84,7 +77,7 @@ public class ActiveEventsFragment extends Fragment {
         if (!eventsSearch.getEvents().isEmpty()) {
             recycleViewActiveEventsAdapter.addEvents(eventsSearch.getEvents());
         }
-        recyclerView.requestLayout();
+        binding.activeEventsFragmentRecyclerView.requestLayout();
     }
 
     @Override

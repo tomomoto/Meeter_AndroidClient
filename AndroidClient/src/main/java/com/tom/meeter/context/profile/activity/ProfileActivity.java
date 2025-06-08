@@ -47,6 +47,7 @@ import com.tom.meeter.context.profile.fragment.EventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -57,9 +58,6 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -91,12 +89,11 @@ public class ProfileActivity extends AppCompatActivity {
          */
     }
 
+    ProfileActivityBinding binding;
+
     private int selectedNavigationId = 0;
 
     private Drawer.Result drawer = null;
-
-    @BindView(R.id.profile_activity_toolbar)
-    Toolbar toolbar;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
@@ -142,8 +139,9 @@ public class ProfileActivity extends AppCompatActivity {
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
 
-        setContentView(R.layout.profile_activity);
-        ButterKnife.bind(this);
+        binding = ProfileActivityBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         setupTokenAction(accountManager, this,
               token -> {
@@ -154,12 +152,13 @@ public class ProfileActivity extends AppCompatActivity {
                   profileViewModel.getProfile(Constants.getAuthHeader(token));
               });
 
-        setSupportActionBar(toolbar);
+        Toolbar profileActivityToolbar = binding.profileActivityToolbar;
+        setSupportActionBar(profileActivityToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         handler = new Handler();
         setupNameMapping(drawerFragmentNames,
               getResources().getStringArray(R.array.nav_item_activity_titles));
-        drawer = createDrawer(this, toolbar);
+        drawer = createDrawer(this, profileActivityToolbar);
 
         if (savedInstanceState == null) {
             selectedNavigationId = DRAWER_PROFILE_ID;

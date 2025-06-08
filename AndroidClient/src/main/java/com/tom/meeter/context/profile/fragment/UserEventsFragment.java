@@ -14,26 +14,21 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.App;
-import com.tom.meeter.R;
 import com.tom.meeter.context.profile.adapter.RecycleViewUserEventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
+import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class UserEventsFragment extends Fragment {
 
     private static final String TAG = UserEventsFragment.class.getCanonicalName();
 
-    @BindView(R.id.user_events_fragment_recycler_view)
-    RecyclerView recyclerView;
+    SubFragmentUserEventsBinding binding;
 
     private RecycleViewUserEventsAdapter adapter;
 
@@ -59,10 +54,9 @@ public class UserEventsFragment extends Fragment {
     @Override
     public View onCreateView(
           @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.sub_fragment_user_events, container, false);
-        ButterKnife.bind(this, view);
         logMethod(TAG, this);
-        return view;
+        binding = SubFragmentUserEventsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -84,9 +78,9 @@ public class UserEventsFragment extends Fragment {
         profileEventsViewModel.getProfileEventsLiveData()
               .observe(this, ev -> adapter.setData(ev));
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
-        recyclerView.invalidate();
+        binding.userEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.userEventsFragmentRecyclerView.setAdapter(adapter);
+        binding.userEventsFragmentRecyclerView.invalidate();
 
         /*
         adapter = new RecycleViewUserEventsAdapter(events);

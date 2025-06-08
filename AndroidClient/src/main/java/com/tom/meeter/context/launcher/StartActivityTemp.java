@@ -5,47 +5,32 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tom.meeter.R;
-import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
-import com.tom.meeter.context.profile.fragment.EventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import com.tom.meeter.databinding.StartActivityTempBinding;
 
 @Deprecated
 public class StartActivityTemp extends AppCompatActivity {
 
     private static final String TAG = StartActivityTemp.class.getCanonicalName();
 
-    private static Fragment resolveFragment(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.bot_nav_home:
-                return new CreateNewEventFragment();
-            case R.id.bot_nav_profile:
-                return new ProfileFragment();
-            case R.id.bot_nav_events:
-                return new EventsFragment();
-            case R.id.bot_nav_settings:
-            default:
-                return new ProfileFragment();
-        }
-    }
-
-    @BindView(R.id.bottom_navigation)
-    BottomNavigationView bottomNavigationView;
+    StartActivityTempBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
         setContentView(R.layout.start_activity_temp);
-        ButterKnife.bind(this);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(this::itemSelectedListener);
+        binding = StartActivityTempBinding.inflate(getLayoutInflater());
+        CoordinatorLayout view = binding.getRoot();
+        setContentView(view);
+
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(
+              this::itemSelectedListener);
 
         getSupportFragmentManager().beginTransaction()
               .replace(R.id.frame_layout, new ProfileFragment())
@@ -61,5 +46,20 @@ public class StartActivityTemp extends AppCompatActivity {
               .replace(R.id.frame_layout, resolveFragment(i))
               .commit();
         return true;
+    }
+
+    private static Fragment resolveFragment(MenuItem menuItem) {
+        return new ProfileFragment();
+/*        switch (menuItem.getItemId()) {
+            case R.id.bot_nav_home:
+                return new CreateNewEventFragment();
+            case R.id.bot_nav_profile:
+                return new ProfileFragment();
+            case R.id.bot_nav_events:
+                return new EventsFragment();
+            case R.id.bot_nav_settings:
+            default:
+                return new ProfileFragment();
+        }*/
     }
 }

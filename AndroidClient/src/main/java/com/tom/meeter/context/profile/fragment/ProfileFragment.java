@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +18,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -29,9 +28,6 @@ import java.util.Calendar;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * Created by Tom on 14.12.2016.
  */
@@ -39,24 +35,7 @@ public class ProfileFragment extends Fragment {
 
     private static final String TAG = ProfileFragment.class.getCanonicalName();
 
-
-    @BindView(R.id.user_photo)
-    ImageView userImage;
-
-    @BindView(R.id.user_id)
-    TextView userIdView;
-
-    @BindView(R.id.user_name)
-    TextView userNameView;
-
-    @BindView(R.id.user_age)
-    TextView userAgeView;
-
-    @BindView(R.id.user_gender)
-    TextView userGenderView;
-
-    @BindView(R.id.user_info)
-    TextView userInfoView;
+    private FragmentProfileBinding binding;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -81,9 +60,8 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(
           @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -99,11 +77,11 @@ public class ProfileFragment extends Fragment {
         profileViewModel.getUserLiveData()
               .observe(this, user -> {
                   if (user != null) {
-                      userIdView.setText(getString(R.string.profile_user_id, user.getId()));
-                      userNameView.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
-                      userGenderView.setText(getString(R.string.profile_gender, user.getGender()));
-                      userAgeView.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
-                      userInfoView.setText(getString(R.string.profile_info, user.getInfo()));
+                      binding.userId.setText(getString(R.string.profile_user_id, user.getId()));
+                      binding.userName.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
+                      binding.userGender.setText(getString(R.string.profile_gender, user.getGender()));
+                      binding.userAge.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
+                      binding.userInfo.setText(getString(R.string.profile_info, user.getInfo()));
                   }
               });
     }

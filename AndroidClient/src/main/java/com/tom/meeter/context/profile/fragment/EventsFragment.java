@@ -10,16 +10,12 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.tabs.TabLayout;
 import com.tom.meeter.R;
+import com.tom.meeter.databinding.FragmentEventsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Tom on 14.12.2016.
@@ -28,10 +24,7 @@ public class EventsFragment extends Fragment {
 
     private static final String TAG = EventsFragment.class.getCanonicalName();
 
-    @BindView(R.id.fragment_events_tabs)
-    TabLayout tabLayout;
-    @BindView(R.id.fragment_events_viewpager)
-    ViewPager viewPager;
+    FragmentEventsBinding binding;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -48,23 +41,22 @@ public class EventsFragment extends Fragment {
     public View onCreateView(
           LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        View view = inflater.inflate(R.layout.fragment_events, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+        binding = FragmentEventsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-        viewPager.setAdapter(
+        binding.fragmentEventsViewpager.setAdapter(
               createViewPagerAdapter(
                     getChildFragmentManager(),
                     getString(R.string.map),
                     getString(R.string.events),
                     getString(R.string.your_events)));
 
-        tabLayout.setupWithViewPager(viewPager);
+        binding.fragmentEventsTabs.setupWithViewPager(binding.fragmentEventsViewpager);
     }
 
     private static ViewPagerAdapter createViewPagerAdapter(

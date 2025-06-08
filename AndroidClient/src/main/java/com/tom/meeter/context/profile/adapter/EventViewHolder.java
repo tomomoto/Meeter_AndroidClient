@@ -8,20 +8,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.R;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 class EventViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R.id.event_card_view)
-    CardView cardView;
-    @BindView(R.id.event_name_card_view)
-    TextView eventName;
-    @BindView(R.id.event_description_card_view)
-    TextView eventDescription;
+
+    private final CardView cardView;
+    private final TextView eventName;
+    private final TextView eventDescription;
 
     public EventViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(this, itemView);
+        cardView = itemView.findViewById(R.id.event_card_view);
+        eventName = itemView.findViewById(R.id.event_name_card_view);
+        eventDescription = itemView.findViewById(R.id.event_description_card_view);
     }
 
     public CardView getCardView() {

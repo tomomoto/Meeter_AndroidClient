@@ -2,19 +2,16 @@ package com.tom.meeter.context.auth.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
-import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -26,13 +23,10 @@ import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.tom.meeter.context.auth.message.RegisterBody;
 import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
+import com.tom.meeter.databinding.RegisterActivityBinding;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,28 +42,35 @@ public class RegistrationActivity extends AppCompatActivity {
     @Inject
     AuthService authService;
 
-    @BindView(R.id.registerLoginEditText)
-    EditText login;
-    @BindView(R.id.registerPasswordEditText)
-    EditText password;
-    @BindView(R.id.registerRepeatPasswordEditText)
-    EditText repeatPassword;
-    @BindView(R.id.registerMatchesEditText)
-    TextView passwordsMatches;
-    @BindView(R.id.registerNameEditText)
-    EditText name;
-    @BindView(R.id.registerGenderRadioGroup)
-    RadioGroup gender;
-    @BindView(R.id.registerRegisterBtn)
-    Button register;
+    RegisterActivityBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
         ((App) getApplication()).getComponent().inject(this);
-        setContentView(R.layout.register_activity);
-        ButterKnife.bind(this);
+        binding = RegisterActivityBinding.inflate(getLayoutInflater());
+        binding.registerRegisterBtn.setOnClickListener(v -> submit());
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                passwordsChangedHandler(s);
+            }
+        };
+        binding.registerPasswordEditText.addTextChangedListener(watcher);
+        binding.registerRepeatPasswordEditText.addTextChangedListener(watcher);
+        View view = binding.getRoot();
+        setContentView(view);
     }
 
     @Override
@@ -103,34 +104,27 @@ public class RegistrationActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnTextChanged(
-          value = {R.id.registerPasswordEditText, R.id.registerRepeatPasswordEditText},
-          callback = AFTER_TEXT_CHANGED)
     public void passwordsChangedHandler(Editable text) {
-        CharSequence pass = password.getText();
-        CharSequence repeatedPass = repeatPassword.getText();
+        CharSequence pass = binding.registerPasswordEditText.getText();
+        CharSequence repeatedPass = binding.registerRepeatPasswordEditText.getText();
 
         if (pass == null || EMPTY_TEXT.equals(pass.toString())
               || repeatedPass == null || EMPTY_TEXT.equals(repeatedPass.toString())) {
-            passwordsMatches.setText(getString(R.string.enter_your_password));
-            register.setEnabled(false);
+            binding.registerMatchesEditText.setText(getString(R.string.enter_your_password));
+            binding.registerRegisterBtn.setEnabled(false);
             return;
         }
         boolean matches = pass.toString().equals(repeatedPass.toString());
-        passwordsMatches.setText(matches ? getString(R.string.matches) : getString(R.string.does_not_match));
-        register.setEnabled(matches);
-    }
-
-    @OnClick(R.id.registerRegisterBtn)
-    public void registerClickHandler(Button btn) {
-        submit();
+        binding.registerMatchesEditText.setText(
+              matches ? getString(R.string.matches) : getString(R.string.does_not_match));
+        binding.registerRegisterBtn.setEnabled(matches);
     }
 
     public void submit() {
-        String userLogin = login.getText().toString();
-        String userPass = password.getText().toString();
-        String userName = name.getText().toString();
-        String userGender = resolveGender(gender.getCheckedRadioButtonId());
+        String userLogin = binding.registerLoginEditText.getText().toString();
+        String userPass = binding.registerPasswordEditText.getText().toString();
+        String userName = binding.registerNameEditText.getText().toString();
+        String userGender = resolveGender();
         Call<TokenResponse> registerCall = authService.register(
               new RegisterBody(userLogin, userPass, userName, userGender));
         registerCall.enqueue(new Callback<>() {
@@ -177,14 +171,14 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private static String resolveGender(int radio) {
-        switch (radio) {
-            case R.id.registerRadioBtnMale:
-                return "male";
-            case R.id.registerRadioBtnFemale:
-                return "female";
-            default:
-                throw new IllegalArgumentException("#args - radio: " + radio);
+    private String resolveGender() {
+        int id = binding.registerGenderRadioGroup.getCheckedRadioButtonId();
+        if (id == binding.registerRadioBtnMale.getId()) {
+            return "male";
         }
+        if (id == binding.registerRadioBtnFemale.getId()) {
+            return "female";
+        }
+        throw new IllegalArgumentException("#args - radio: " + id);
     }
 }
