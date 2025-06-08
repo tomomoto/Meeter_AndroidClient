@@ -244,7 +244,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void renderSelectedFragment() {
-        drawer.setSelection(selectedNavigationId);
+        drawer.setSelection(selectedNavigationId, false);
         String tag = DRAWER_FRAGMENT_TAGS.get(selectedNavigationId);
         if (tag == null) {
             throw new IllegalStateException("Fragment tag must be present");
@@ -392,6 +392,11 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 logMethod(TAG, this);
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                //logMethod(TAG, this);
             }
         };
     }
