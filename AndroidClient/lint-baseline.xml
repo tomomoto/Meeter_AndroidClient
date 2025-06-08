@@ -44,7 +44,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="61"
+            line="54"
             column="57"/>
     </issue>
 
@@ -55,7 +55,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="150"
+            line="128"
             column="25"/>
     </issue>
 
@@ -71,743 +71,6 @@
     </issue>
 
     <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.active_events_fragment_recycler_view)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ActiveEventsFragment.java"
-            line="37"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventNameEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="64"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventDescriptionEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="67"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventLatitudeEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="70"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventLongitudeEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="73"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventCurrentPlaceBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="76"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventOtherPlaceBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="79"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsDateEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="82"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsDateTextView)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="85"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsCurrentDateBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="88"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsOtherDateBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="91"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsTimeEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="94"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsCurrentTimeBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="97"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventStartsOtherTimeBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="100"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsDateEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="103"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsDateTextView)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="106"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsCurrentDateBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="109"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsOtherDateBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="112"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsTimeEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="115"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsCurrentTimeBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="118"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventEndsOtherTimeBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="121"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.newEventCreateBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="124"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventCurrentPlaceBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="202"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventOtherPlaceBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="217"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventStartsCurrentDateBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="222"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventStartsOtherDateBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="227"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventStartsCurrentTimeBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="234"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventStartsOtherTimeBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="239"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventEndsCurrentDateBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="245"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventEndsOtherDateBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="250"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventEndsCurrentTimeBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="257"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventEndsOtherTimeBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="262"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.newEventCreateBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="268"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnTextChanged(value = R.id.newEventStartsDateEditText, callback = AFTER_TEXT_CHANGED)"
-        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="330"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnTextChanged(value = R.id.newEventEndsDateEditText, callback = AFTER_TEXT_CHANGED)"
-        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="342"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_card_view)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/adapter/EventViewHolder.java"
-            line="15"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_name_card_view)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/adapter/EventViewHolder.java"
-            line="17"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_description_card_view)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/adapter/EventViewHolder.java"
-            line="19"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.fragment_events_tabs)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/EventsFragment.java"
-            line="31"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.fragment_events_viewpager)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/EventsFragment.java"
-            line="33"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.loginLoginEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
-            line="44"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.loginPasswordEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
-            line="47"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.loginSubmit)"
-        errorLine2="             ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
-            line="152"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.loginRegistrationButton)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
-            line="221"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.profile_activity_toolbar)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/activity/ProfileActivity.java"
-            line="98"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_photo)"
-        errorLine2="              ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="43"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_id)"
-        errorLine2="              ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="46"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_name)"
-        errorLine2="              ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="49"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_age)"
-        errorLine2="              ~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="52"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_gender)"
-        errorLine2="              ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="55"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_info)"
-        errorLine2="              ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="58"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerLoginEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="51"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerPasswordEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="53"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerRepeatPasswordEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="55"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerMatchesEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="57"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerNameEditText)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="59"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerGenderRadioGroup)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="61"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.registerRegisterBtn)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="63"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.registerRegisterBtn)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="124"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="            case R.id.registerRadioBtnMale:"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="182"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="            case R.id.registerRadioBtnFemale:"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
-            line="184"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="            case R.id.bot_nav_home:"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
-            line="26"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="            case R.id.bot_nav_profile:"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
-            line="28"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="            case R.id.bot_nav_events:"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
-            line="30"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="            case R.id.bot_nav_settings:"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
-            line="32"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.bottom_navigation)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
-            line="38"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_events_fragment_recycler_view)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/UserEventsFragment.java"
-            line="35"
-            column="15"/>
-    </issue>
-
-    <issue
         id="GradleDependency"
         message="A newer version of `compileSdkVersion` than 33 is available: 35"
         errorLine1="    compileSdk 33"
@@ -816,39 +79,6 @@
             file="build.gradle"
             line="7"
             column="5"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.google.code.gson:gson than 2.8.5 is available: 2.11.0"
-        errorLine1="    implementation &apos;com.google.code.gson:gson:2.8.5&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="68"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.test:core than 1.0.0 is available: 1.6.1"
-        errorLine1="    androidTestImplementation &apos;androidx.test:core:1.0.0&apos;"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="79"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.android.tools:desugar_jdk_libs than 2.0.3 is available: 2.1.5"
-        errorLine1="    coreLibraryDesugaring &apos;com.android.tools:desugar_jdk_libs:2.0.3&apos;"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="107"
-            column="27"/>
     </issue>
 
     <issue
@@ -913,7 +143,7 @@
         errorLine2="       ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="13"
+            line="16"
             column="8"/>
     </issue>
 
@@ -924,7 +154,7 @@
         errorLine2="       ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="13"
+            line="16"
             column="8"/>
     </issue>
 
@@ -935,8 +165,74 @@
         errorLine2="       ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="13"
+            line="16"
             column="8"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.code.gson:gson than 2.8.5 is available: 2.11.0"
+        errorLine1="gson = &quot;2.8.5&quot;"
+        errorLine2="       ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="25"
+            column="8"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.fasterxml.jackson.core:jackson-annotations than 2.4.1 is available: 2.19.0"
+        errorLine1="jacksonCore = &quot;2.4.1&quot;"
+        errorLine2="              ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="27"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.fasterxml.jackson.core:jackson-core than 2.4.1 is available: 2.19.0"
+        errorLine1="jacksonCore = &quot;2.4.1&quot;"
+        errorLine2="              ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="27"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.fasterxml.jackson.core:jackson-databind than 2.4.1 is available: 2.19.0"
+        errorLine1="jacksonCore = &quot;2.4.1&quot;"
+        errorLine2="              ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="27"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.android.tools:desugar_jdk_libs than 2.0.3 is available: 2.1.5"
+        errorLine1="desugar_jdk_libs = &quot;2.0.3&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="29"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.test:core than 1.0.0 is available: 1.6.1"
+        errorLine1="testcore = &quot;1.0.0&quot;"
+        errorLine2="           ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="34"
+            column="12"/>
     </issue>
 
     <issue
@@ -1707,83 +1003,6 @@
             file="src/main/AndroidManifest.xml"
             line="22"
             column="33"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation(&quot;com.google.android.gms:play-services-maps:19.2.0&quot;)"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="60"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.google.code.gson:gson:2.8.5&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="68"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    androidTestImplementation &apos;androidx.test:core:1.0.0&apos;"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="79"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.squareup.retrofit2:retrofit:2.5.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="90"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.squareup.retrofit2:converter-gson:2.5.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="91"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    testImplementation &apos;org.junit.jupiter:junit-jupiter-api:5.13.0&apos;"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="102"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    coreLibraryDesugaring &apos;com.android.tools:desugar_jdk_libs:2.0.3&apos;"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="107"
-            column="27"/>
     </issue>
 
     <issue

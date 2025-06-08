@@ -37,8 +37,6 @@ android {
     }
 
     lint {
-        // https://github.com/bumptech/glide/issues/4940
-        lintConfig = file("android_google_firebase_lint_workaround.xml")
         baseline = file("lint-baseline.xml")
     }
 }
