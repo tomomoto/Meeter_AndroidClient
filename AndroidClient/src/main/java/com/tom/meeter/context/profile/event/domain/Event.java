@@ -1,13 +1,13 @@
 package com.tom.meeter.context.profile.event.domain;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
+import static androidx.room.ForeignKey.CASCADE;
+
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 
 import com.tom.meeter.context.profile.user.domain.User;
-
-import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity
 public class Event {

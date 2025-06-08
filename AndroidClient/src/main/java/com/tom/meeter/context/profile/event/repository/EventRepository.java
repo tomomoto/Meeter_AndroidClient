@@ -1,12 +1,13 @@
 package com.tom.meeter.context.profile.event.repository;
 
-import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.domain.Event;
 import com.tom.meeter.context.profile.event.service.EventService;
-import com.tom.meeter.context.network.dto.EventDTO;
 
 import java.io.IOException;
 import java.util.ArrayList;

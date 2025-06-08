@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.10.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.10.0)" variant="all" version="8.10.0">
+<issues format="6" by="lint 8.10.1" type="baseline" client="gradle" dependencies="false" name="AGP (8.10.1)" variant="all" version="8.10.1">
 
     <issue
-        id="ObsoleteLintCustomCheck"
-        message="Lint found one or more custom checks that could not be loaded. The most likely reason for this is that it is using an older, incompatible or unsupported API in lint. Make sure these lint checks are updated to the new APIs. The issue registry class is butterknife.lint.LintRegistry. The class loading issue is com/android/tools/lint/detector/api/Detector$JavaScanner: ClassLoader.defineClass1(null:-2)←ClassLoader.defineClass(null:-1)←UrlClassLoader.consumeClassData(UrlClassLoader.java:297)←JdkZipResourceFile.findClass(JdkZipResourceFile.java:90)←JarLoader.findClass(JarLoader.java:58)←ClassPath.findClassInLoader(ClassPath.java:240)←ClassPath.findClass(ClassPath.java:190)←UrlClassLoader.findClass(UrlClassLoader.java:224)←ClassLoader.loadClass(null:-1)←ClassLoader.loadClass(null:-1)←LintRegistry.getIssues(LintRegistry.java:14)←JarFileIssueRegistry$Factory.loadIssueRegistry(JarFileIssueRegistry.kt:270)←JarFileIssueRegistry$Factory.get(JarFileIssueRegistry.kt:184)←JarFileIssueRegistry$Factory.get(JarFileIssueRegistry.kt:147)←JarFileIssueRegistry$Factory.get$default(JarFileIssueRegistry.kt:120)←LintDriver.registerCustomDetectors(LintDriver.kt:699)←LintDriver.initializeExtraRegistries(LintDriver.kt:594)←LintDriver.doAnalyze(LintDriver.kt:490)←LintDriver.doAnalyze$default(LintDriver.kt:478)←LintDriver.mergeOnly(LintDriver.kt:464)←LintCliClient$mergeOnly$1.invoke(LintCliClient.kt:300)←LintCliClient$mergeOnly$1.invoke(LintCliClient.kt:297)←LintCliClient.run(LintCliClient.kt:328)←LintCliClient.mergeOnly(LintCliClient.kt:297)←Main.run(Main.java:1773)←Main.run(Main.java:282)←DirectMethodHandleAccessor.invoke(null:-1)←Method.invoke(null:-1)←AndroidLintWorkAction.invokeLintMainRunMethod(AndroidLintWorkAction.kt:103)←AndroidLintWorkAction.runLint(AndroidLintWorkAction.kt:90)←AndroidLintWorkAction.execute(AndroidLintWorkAction.kt:64)←DefaultWorkerServer.execute(DefaultWorkerServer.java:63)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)←ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)←NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)←AbstractWorker$1.call(AbstractWorker.java:44)←AbstractWorker$1.call(AbstractWorker.java:41)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)←AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)←NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)←DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)←FutureTask.run(null:-1)←DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)←DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)←DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)←Factories$1.create(Factories.java:31)←DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)←DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)←DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)←Executors$RunnableAdapter.call(null:-1)←FutureTask.run(null:-1)←ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)←AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)←ThreadPoolExecutor.runWorker(null:-1)←ThreadPoolExecutor$Worker.run(null:-1)←Thread.run(null:-1)">
+        id="DuplicatePlatformClasses"
+        message="`json` defines classes that conflict with classes now provided by Android. Solutions include finding newer versions or alternative libraries that don&apos;t have the same problem (for example, for `httpclient` use `HttpUrlConnection` or `okhttp` instead), or repackaging the library using something like `jarjar`.">
         <location
-            file="C:/Users/Tom/.gradle/caches/8.14.1/transforms/b934ddf4d77306bfa5930b893db69f98/transformed/butterknife-8.4.0/jars/lint.jar"/>
+            file="build.gradle"/>
+    </issue>
+
+    <issue
+        id="DuplicatePlatformClasses"
+        message="`json` defines classes that conflict with classes now provided by Android. Solutions include finding newer versions or alternative libraries that don&apos;t have the same problem (for example, for `httpclient` use `HttpUrlConnection` or `okhttp` instead), or repackaging the library using something like `jarjar`.">
+        <location
+            file="build.gradle"/>
     </issue>
 
     <issue
@@ -15,7 +22,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="8"
+            line="7"
             column="36"/>
     </issue>
 
@@ -36,31 +43,42 @@
         errorLine1="    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);"
         errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="53"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="61"
             column="57"/>
     </issue>
 
     <issue
         id="SimpleDateFormat"
         message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
-        errorLine1="      dob.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).parse(date));"
-        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            dob.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).parse(date));"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="110"
-            column="19"/>
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="150"
+            column="25"/>
     </issue>
 
     <issue
         id="UnusedAttribute"
         message="Attribute `usesCleartextTraffic` is only used in API level 23 and higher (current min is 21)"
-        errorLine1="        android:usesCleartextTraffic=&quot;true&quot;"
+        errorLine1="        android:usesCleartextTraffic=&quot;true&quot;>"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="23"
+            line="34"
             column="9"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.active_events_fragment_recycler_view)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ActiveEventsFragment.java"
+            line="37"
+            column="15"/>
     </issue>
 
     <issue
@@ -69,8 +87,8 @@
         errorLine1="    @BindView(R.id.newEventNameEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="58"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="64"
             column="15"/>
     </issue>
 
@@ -80,8 +98,8 @@
         errorLine1="    @BindView(R.id.newEventDescriptionEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="61"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="67"
             column="15"/>
     </issue>
 
@@ -91,8 +109,8 @@
         errorLine1="    @BindView(R.id.newEventLatitudeEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="64"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="70"
             column="15"/>
     </issue>
 
@@ -102,8 +120,8 @@
         errorLine1="    @BindView(R.id.newEventLongitudeEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="67"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="73"
             column="15"/>
     </issue>
 
@@ -113,8 +131,8 @@
         errorLine1="    @BindView(R.id.newEventCurrentPlaceBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="70"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="76"
             column="15"/>
     </issue>
 
@@ -124,8 +142,8 @@
         errorLine1="    @BindView(R.id.newEventOtherPlaceBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="73"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="79"
             column="15"/>
     </issue>
 
@@ -135,8 +153,8 @@
         errorLine1="    @BindView(R.id.newEventStartsDateEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="76"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="82"
             column="15"/>
     </issue>
 
@@ -146,8 +164,8 @@
         errorLine1="    @BindView(R.id.newEventStartsDateTextView)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="79"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="85"
             column="15"/>
     </issue>
 
@@ -157,8 +175,8 @@
         errorLine1="    @BindView(R.id.newEventStartsCurrentDateBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="82"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="88"
             column="15"/>
     </issue>
 
@@ -168,8 +186,8 @@
         errorLine1="    @BindView(R.id.newEventStartsOtherDateBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="85"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="91"
             column="15"/>
     </issue>
 
@@ -179,8 +197,8 @@
         errorLine1="    @BindView(R.id.newEventStartsTimeEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="88"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="94"
             column="15"/>
     </issue>
 
@@ -190,8 +208,8 @@
         errorLine1="    @BindView(R.id.newEventStartsCurrentTimeBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="91"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="97"
             column="15"/>
     </issue>
 
@@ -201,8 +219,8 @@
         errorLine1="    @BindView(R.id.newEventStartsOtherTimeBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="94"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="100"
             column="15"/>
     </issue>
 
@@ -212,8 +230,8 @@
         errorLine1="    @BindView(R.id.newEventEndsDateEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="97"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="103"
             column="15"/>
     </issue>
 
@@ -223,8 +241,8 @@
         errorLine1="    @BindView(R.id.newEventEndsDateTextView)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="100"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="106"
             column="15"/>
     </issue>
 
@@ -234,8 +252,8 @@
         errorLine1="    @BindView(R.id.newEventEndsCurrentDateBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="103"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="109"
             column="15"/>
     </issue>
 
@@ -245,8 +263,8 @@
         errorLine1="    @BindView(R.id.newEventEndsOtherDateBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="106"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="112"
             column="15"/>
     </issue>
 
@@ -256,8 +274,8 @@
         errorLine1="    @BindView(R.id.newEventEndsTimeEditText)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="109"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="115"
             column="15"/>
     </issue>
 
@@ -267,8 +285,8 @@
         errorLine1="    @BindView(R.id.newEventEndsCurrentTimeBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="112"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="118"
             column="15"/>
     </issue>
 
@@ -278,8 +296,8 @@
         errorLine1="    @BindView(R.id.newEventEndsOtherTimeBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="115"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="121"
             column="15"/>
     </issue>
 
@@ -289,8 +307,8 @@
         errorLine1="    @BindView(R.id.newEventCreateBtn)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="118"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="124"
             column="15"/>
     </issue>
 
@@ -300,8 +318,8 @@
         errorLine1="    @OnClick(R.id.newEventCurrentPlaceBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="160"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="202"
             column="14"/>
     </issue>
 
@@ -311,8 +329,8 @@
         errorLine1="    @OnClick(R.id.newEventOtherPlaceBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="167"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="217"
             column="14"/>
     </issue>
 
@@ -322,8 +340,8 @@
         errorLine1="    @OnClick(R.id.newEventStartsCurrentDateBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="172"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="222"
             column="14"/>
     </issue>
 
@@ -333,8 +351,8 @@
         errorLine1="    @OnClick(R.id.newEventStartsOtherDateBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="177"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="227"
             column="14"/>
     </issue>
 
@@ -344,8 +362,8 @@
         errorLine1="    @OnClick(R.id.newEventStartsCurrentTimeBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="184"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="234"
             column="14"/>
     </issue>
 
@@ -355,8 +373,8 @@
         errorLine1="    @OnClick(R.id.newEventStartsOtherTimeBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="189"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="239"
             column="14"/>
     </issue>
 
@@ -366,8 +384,8 @@
         errorLine1="    @OnClick(R.id.newEventEndsCurrentDateBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="195"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="245"
             column="14"/>
     </issue>
 
@@ -377,8 +395,8 @@
         errorLine1="    @OnClick(R.id.newEventEndsOtherDateBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="200"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="250"
             column="14"/>
     </issue>
 
@@ -388,8 +406,8 @@
         errorLine1="    @OnClick(R.id.newEventEndsCurrentTimeBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="207"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="257"
             column="14"/>
     </issue>
 
@@ -399,8 +417,8 @@
         errorLine1="    @OnClick(R.id.newEventEndsOtherTimeBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="212"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="262"
             column="14"/>
     </issue>
 
@@ -410,8 +428,8 @@
         errorLine1="    @OnClick(R.id.newEventCreateBtn)"
         errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="218"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="268"
             column="14"/>
     </issue>
 
@@ -421,8 +439,8 @@
         errorLine1="    @OnTextChanged(value = R.id.newEventStartsDateEditText, callback = AFTER_TEXT_CHANGED)"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="280"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="330"
             column="28"/>
     </issue>
 
@@ -432,172 +450,51 @@
         errorLine1="    @OnTextChanged(value = R.id.newEventEndsDateEditText, callback = AFTER_TEXT_CHANGED)"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="292"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
+            line="342"
             column="28"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.my_recycler_view)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.event_card_view)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/EventListFragment.java"
-            line="46"
+            file="src/main/java/com/tom/meeter/context/profile/adapter/EventViewHolder.java"
+            line="15"
             column="15"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.editTextLogin)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.event_name_card_view)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/login/activity/LoginActivity.java"
-            line="38"
+            file="src/main/java/com/tom/meeter/context/profile/adapter/EventViewHolder.java"
+            line="17"
             column="15"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.editTextPassword)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.event_description_card_view)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/login/activity/LoginActivity.java"
-            line="41"
+            file="src/main/java/com/tom/meeter/context/profile/adapter/EventViewHolder.java"
+            line="19"
             column="15"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.LoginButton)"
-        errorLine2="             ~~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.fragment_events_tabs)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/login/activity/LoginActivity.java"
-            line="135"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @OnClick(R.id.RegistrationButton)"
-        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/login/activity/LoginActivity.java"
-            line="167"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.toolbar)"
-        errorLine2="              ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/activity/ProfileActivity.java"
-            line="73"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.user_photo)"
-        errorLine2="            ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="39"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.user_id)"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="42"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.user_name)"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="45"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.user_age)"
-        errorLine2="            ~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="48"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.user_gender)"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="51"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.user_info)"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="54"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.cv)"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewEventAdapter.java"
-            line="25"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_name)"
-        errorLine2="              ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewEventAdapter.java"
-            line="28"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_description)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewEventAdapter.java"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/EventsFragment.java"
             line="31"
             column="15"/>
     </issue>
@@ -605,10 +502,175 @@
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.cv)"
-        errorLine2="              ~~~~~~~">
+        errorLine1="    @BindView(R.id.fragment_events_viewpager)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewUserEventsAdapter.java"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/EventsFragment.java"
+            line="33"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.loginLoginEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
+            line="44"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.loginPasswordEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
+            line="47"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @OnClick(R.id.loginSubmit)"
+        errorLine2="             ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
+            line="152"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @OnClick(R.id.loginRegistrationButton)"
+        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/LoginActivity.java"
+            line="221"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.profile_activity_toolbar)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/activity/ProfileActivity.java"
+            line="98"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.user_photo)"
+        errorLine2="              ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="43"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.user_id)"
+        errorLine2="              ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="46"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.user_name)"
+        errorLine2="              ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="49"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.user_age)"
+        errorLine2="              ~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="52"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.user_gender)"
+        errorLine2="              ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="55"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.user_info)"
+        errorLine2="              ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
+            line="58"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.registerLoginEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="51"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.registerPasswordEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="53"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.registerRepeatPasswordEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="55"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.registerMatchesEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
             line="57"
             column="15"/>
     </issue>
@@ -616,188 +678,67 @@
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_name)"
-        errorLine2="              ~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.registerNameEditText)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewUserEventsAdapter.java"
-            line="60"
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="59"
             column="15"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.event_description)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.registerGenderRadioGroup)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewUserEventsAdapter.java"
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="61"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @BindView(R.id.registerRegisterBtn)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
             line="63"
             column="15"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="    @OnClick(R.id.registerRegisterBtn)"
+        errorLine2="             ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="124"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="      case R.id.regRadioBtnMale:"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            case R.id.registerRadioBtnMale:"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="53"
-            column="12"/>
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="182"
+            column="18"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them in switch case statements"
-        errorLine1="      case R.id.regRadioBtnFemale:"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            case R.id.registerRadioBtnFemale:"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="55"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regImageView)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="62"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regNameEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="65"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regSurnameEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="68"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regGenderRadioGroup)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="71"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regLoginEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="74"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regPasswordEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="77"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regRepeatPasswordEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="80"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regMatchesEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="83"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regInfoEditText)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="86"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @BindView(R.id.regRegisterBtn)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="89"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @OnClick(R.id.registration_camera_btn_id)"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="133"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @OnClick(R.id.registration_gallery_btn_id)"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="138"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="NonConstantResourceId"
-        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="  @OnClick(R.id.regRegisterBtn)"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/example/tom/meeter/context/registration/activity/RegistrationActivity.java"
-            line="159"
-            column="12"/>
+            file="src/main/java/com/tom/meeter/context/auth/activity/RegistrationActivity.java"
+            line="184"
+            column="18"/>
     </issue>
 
     <issue
@@ -806,8 +747,8 @@
         errorLine1="            case R.id.bot_nav_home:"
         errorLine2="                 ~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/start/activity/StartActivityTemp.java"
-            line="24"
+            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
+            line="26"
             column="18"/>
     </issue>
 
@@ -817,8 +758,8 @@
         errorLine1="            case R.id.bot_nav_profile:"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/start/activity/StartActivityTemp.java"
-            line="26"
+            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
+            line="28"
             column="18"/>
     </issue>
 
@@ -828,8 +769,8 @@
         errorLine1="            case R.id.bot_nav_events:"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/start/activity/StartActivityTemp.java"
-            line="28"
+            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
+            line="30"
             column="18"/>
     </issue>
 
@@ -839,8 +780,8 @@
         errorLine1="            case R.id.bot_nav_settings:"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/start/activity/StartActivityTemp.java"
-            line="30"
+            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
+            line="32"
             column="18"/>
     </issue>
 
@@ -850,42 +791,20 @@
         errorLine1="    @BindView(R.id.bottom_navigation)"
         errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/start/activity/StartActivityTemp.java"
-            line="36"
+            file="src/main/java/com/tom/meeter/context/launcher/StartActivityTemp.java"
+            line="38"
             column="15"/>
     </issue>
 
     <issue
         id="NonConstantResourceId"
         message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
-        errorLine1="    @BindView(R.id.user_events_rv)"
-        errorLine2="              ~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    @BindView(R.id.user_events_fragment_recycler_view)"
+        errorLine2="              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/profile/fragment/UserEventsFragment.java"
-            line="37"
+            file="src/main/java/com/tom/meeter/context/profile/fragment/UserEventsFragment.java"
+            line="35"
             column="15"/>
-    </issue>
-
-    <issue
-        id="RedundantLabel"
-        message="Redundant label can be removed"
-        errorLine1="            android:label=&quot;@string/app_name&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="40"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AndroidGradlePluginVersion"
-        message="A newer version of com.android.application than 8.10.0 is available: 8.10.1"
-        errorLine1="agp = &quot;8.10.0&quot;"
-        errorLine2="      ~~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="2"
-            column="7"/>
     </issue>
 
     <issue
@@ -901,68 +820,24 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of org.greenrobot:eventbus than 3.0.0 is available: 3.3.1"
-        errorLine1="    implementation &apos;org.greenrobot:eventbus:3.0.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="60"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.jakewharton:butterknife than 8.4.0 is available: 10.2.3"
-        errorLine1="    implementation &apos;com.jakewharton:butterknife:8.4.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="69"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.jakewharton:butterknife-compiler than 8.4.0 is available: 10.2.3"
-        errorLine1="    annotationProcessor &apos;com.jakewharton:butterknife-compiler:8.4.0&apos;"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="70"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
         message="A newer version of com.google.code.gson:gson than 2.8.5 is available: 2.11.0"
         errorLine1="    implementation &apos;com.google.code.gson:gson:2.8.5&apos;"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="76"
+            line="68"
             column="20"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of com.google.dagger:dagger than 2.16 is available: 2.28.3"
-        errorLine1="    implementation &apos;com.google.dagger:dagger:2.16&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="A newer version of androidx.test:core than 1.0.0 is available: 1.6.1"
+        errorLine1="    androidTestImplementation &apos;androidx.test:core:1.0.0&apos;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="105"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of junit:junit than 4.12 is available: 4.13.2"
-        errorLine1="    testImplementation &apos;junit:junit:4.12&apos;"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="117"
-            column="24"/>
+            line="79"
+            column="31"/>
     </issue>
 
     <issue
@@ -972,8 +847,96 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="122"
+            line="107"
             column="27"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.appcompat:appcompat than 1.0.0 is available: 1.7.1"
+        errorLine1="appcompat = &quot;1.0.0&quot;"
+        errorLine2="            ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="5"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.recyclerview:recyclerview than 1.0.0 is available: 1.4.0"
+        errorLine1="recyclerview = &quot;1.0.0&quot;"
+        errorLine2="               ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="6"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-extensions than 2.0.0 is available: 2.2.0"
+        errorLine1="lifecycleextensions = &quot;2.0.0&quot;"
+        errorLine2="                      ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="8"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-compiler than 2.0.0 is available: 2.9.1"
+        errorLine1="lifecyclecompiler = &quot;2.0.0&quot;"
+        errorLine2="                    ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="9"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.0.0 is available: 1.12.0"
+        errorLine1="material = &quot;1.0.0&quot;"
+        errorLine2="           ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.room:room-compiler than 2.0.0 is available: 2.7.1"
+        errorLine1="room = &quot;2.0.0&quot;"
+        errorLine2="       ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="13"
+            column="8"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.room:room-runtime than 2.0.0 is available: 2.7.1"
+        errorLine1="room = &quot;2.0.0&quot;"
+        errorLine2="       ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="13"
+            column="8"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.room:room-rxjava2 than 2.0.0 is available: 2.7.1"
+        errorLine1="room = &quot;2.0.0&quot;"
+        errorLine2="       ~~~~~~~">
+        <location
+            file="../gradle/libs.versions.toml"
+            line="13"
+            column="8"/>
     </issue>
 
     <issue
@@ -983,7 +946,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="41"
+            line="50"
             column="13"/>
     </issue>
 
@@ -999,24 +962,13 @@
     </issue>
 
     <issue
-        id="SpUsage"
-        message="Should use &quot;`sp`&quot; instead of &quot;`dp`&quot; for text sizes"
-        errorLine1="    android:textSize=&quot;30dp&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/my_text_view.xml"
-            line="7"
-            column="5"/>
-    </issue>
-
-    <issue
         id="DiscouragedApi"
         message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
         errorLine1="            android:screenOrientation=&quot;portrait&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="41"
+            line="50"
             column="13"/>
     </issue>
 
@@ -1027,52 +979,19 @@
         errorLine2="     ~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="9"
+            line="8"
             column="6"/>
     </issue>
 
     <issue
         id="NotifyDataSetChanged"
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="    notifyDataSetChanged();"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        notifyDataSetChanged();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/example/tom/meeter/context/event/RecycleViewUserEventsAdapter.java"
-            line="102"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="LifecycleAnnotationProcessorWithJava8"
-        message="Use the Lifecycle Java 8 API provided by the `lifecycle-common` library instead of Lifecycle annotations for faster incremental build."
-        errorLine1="    annotationProcessor &apos;android.arch.lifecycle:compiler:1.1.1&apos;"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="98"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="UseOfBundledGooglePlayServices"
-        message="Avoid using bundled version of Google Play services SDK."
-        errorLine1="    implementation &apos;com.google.android.gms:play-services:12.0.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="63"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.menu.bot_nav_menu` appears to be unused"
-        errorLine1="&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
-        errorLine2="^">
-        <location
-            file="src/main/res/menu/bot_nav_menu.xml"
-            line="2"
-            column="1"/>
+            file="src/main/java/com/tom/meeter/context/profile/adapter/RecycleViewUserEventsAdapter.java"
+            line="33"
+            column="9"/>
     </issue>
 
     <issue
@@ -1165,41 +1084,63 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_account_circle_black_24dp` appears to be unused">
+        message="The resource `R.mipmap.ic_launcher` appears to be unused">
         <location
-            file="src/main/res/drawable-hdpi/ic_account_circle_black_24dp.png"/>
+            file="src/main/res/mipmap-hdpi/ic_launcher.png"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_home_black_24dp` appears to be unused">
+        message="The resource `R.drawable.ic_meeter_hr` appears to be unused">
         <location
-            file="src/main/res/drawable-hdpi/ic_home_black_24dp.png"/>
+            file="src/main/res/drawable-hdpi/ic_meeter_hr.png"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_map_black_24dp` appears to be unused">
+        message="The resource `R.drawable.meeter_logo_1024` appears to be unused">
         <location
-            file="src/main/res/drawable-hdpi/ic_map_black_24dp.png"/>
+            file="src/main/res/drawable/meeter_logo_1024.png"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.drawable.ic_settings_black_24dp` appears to be unused">
+        message="The resource `R.drawable.meeter_logo_612` appears to be unused">
         <location
-            file="src/main/res/drawable-hdpi/ic_settings_black_24dp.png"/>
+            file="src/main/res/drawable/meeter_logo_612.png"/>
     </issue>
 
     <issue
         id="UnusedResources"
-        message="The resource `R.layout.start_activity_temp` appears to be unused"
-        errorLine1="&lt;android.support.design.widget.CoordinatorLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        message="The resource `R.layout.registration_activity` appears to be unused"
+        errorLine1="&lt;ScrollView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
         errorLine2="^">
         <location
-            file="src/main/res/layout/start_activity_temp.xml"
+            file="src/main/res/layout/registration_activity.xml"
             line="2"
             column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.enter_your_surname` appears to be unused"
+        errorLine1="    &lt;string name=&quot;enter_your_surname&quot;>Enter your surname&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.enter_your_info` appears to be unused"
+        errorLine1="    &lt;string name=&quot;enter_your_info&quot;>Enter your info&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="14"
+            column="13"/>
     </issue>
 
     <issue
@@ -1220,7 +1161,7 @@
         errorLine2="            ~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="27"
+            line="28"
             column="13"/>
     </issue>
 
@@ -1231,7 +1172,7 @@
         errorLine2="            ~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="32"
+            line="33"
             column="13"/>
     </issue>
 
@@ -1242,24 +1183,57 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="40"
+            line="41"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.camera` appears to be unused"
+        errorLine1="    &lt;string name=&quot;camera&quot;>Camera&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="49"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.gallery` appears to be unused"
+        errorLine1="    &lt;string name=&quot;gallery&quot;>Gallery&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="50"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.login_failure` appears to be unused"
+        errorLine1="    &lt;string name=&quot;login_failure&quot;>Login failed&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="54"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.registration_failure` appears to be unused"
+        errorLine1="    &lt;string name=&quot;registration_failure&quot;>Registration failed&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="55"
             column="13"/>
     </issue>
 
     <issue
         id="RedundantNamespace"
         message="This namespace declaration is redundant"
-        errorLine1="    &lt;android.support.v7.widget.RecyclerView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/layout_user_events.xml"
-            line="5"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="RedundantNamespace"
-        message="This namespace declaration is redundant"
         errorLine1="    &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1277,17 +1251,6 @@
             file="src/main/res/layout/registration_activity.xml"
             line="7"
             column="21"/>
-    </issue>
-
-    <issue
-        id="RedundantNamespace"
-        message="This namespace declaration is redundant"
-        errorLine1="    &lt;android.support.v7.widget.RecyclerView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/subfragment_events.xml"
-            line="6"
-            column="45"/>
     </issue>
 
     <issue
@@ -1310,6 +1273,20 @@
             file="src/main/res/layout/registration_activity.xml"
             line="7"
             column="21"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/meeter_logo_1024.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/meeter_logo_1024.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/meeter_logo_612.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/meeter_logo_612.png"/>
     </issue>
 
     <issue
@@ -1324,6 +1301,27 @@
         message="Found bitmap drawable `res/drawable/user_612x612.jpg` in densityless folder">
         <location
             file="src/main/res/drawable/user_612x612.jpg"/>
+    </issue>
+
+    <issue
+        id="IconDensities"
+        message="Missing the following drawables in `drawable-mdpi`: ic_meeter_hr.png, ic_meeter_lr.png">
+        <location
+            file="src/main/res/drawable-mdpi"/>
+    </issue>
+
+    <issue
+        id="IconDensities"
+        message="Missing the following drawables in `drawable-xhdpi`: ic_meeter_hr.png, ic_meeter_lr.png">
+        <location
+            file="src/main/res/drawable-xhdpi"/>
+    </issue>
+
+    <issue
+        id="IconDensities"
+        message="Missing the following drawables in `drawable-xxhdpi`: ic_meeter_hr.png, ic_meeter_lr.png">
+        <location
+            file="src/main/res/drawable-xxhdpi"/>
     </issue>
 
     <issue
@@ -1465,7 +1463,7 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="16"
+            line="17"
             column="10"/>
     </issue>
 
@@ -1575,7 +1573,7 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="16"
+            line="17"
             column="10"/>
     </issue>
 
@@ -1586,7 +1584,51 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="29"
+            line="30"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/register_activity.xml"
+            line="13"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/register_activity.xml"
+            line="24"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/register_activity.xml"
+            line="36"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/register_activity.xml"
+            line="60"
             column="10"/>
     </issue>
 
@@ -1663,15 +1705,15 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="11"
+            line="22"
             column="33"/>
     </issue>
 
     <issue
         id="UseTomlInstead"
         message="Use version catalog instead"
-        errorLine1="    implementation &apos;org.greenrobot:eventbus:3.0.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    implementation(&quot;com.google.android.gms:play-services-maps:19.2.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
             line="60"
@@ -1681,67 +1723,23 @@
     <issue
         id="UseTomlInstead"
         message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.google.android.gms:play-services:12.0.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="63"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.jakewharton:butterknife:8.4.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="69"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    annotationProcessor &apos;com.jakewharton:butterknife-compiler:8.4.0&apos;"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="70"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
         errorLine1="    implementation &apos;com.google.code.gson:gson:2.8.5&apos;"
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="76"
+            line="68"
             column="20"/>
     </issue>
 
     <issue
         id="UseTomlInstead"
         message="Use version catalog instead"
-        errorLine1="    implementation &apos;android.arch.lifecycle:extensions:1.1.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    androidTestImplementation &apos;androidx.test:core:1.0.0&apos;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="97"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    annotationProcessor &apos;android.arch.lifecycle:compiler:1.1.1&apos;"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="98"
-            column="25"/>
+            line="79"
+            column="31"/>
     </issue>
 
     <issue
@@ -1751,7 +1749,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="101"
+            line="90"
             column="20"/>
     </issue>
 
@@ -1762,85 +1760,19 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
+            line="91"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    testImplementation &apos;org.junit.jupiter:junit-jupiter-api:5.13.0&apos;"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
             line="102"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.google.dagger:dagger:2.16&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="105"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    annotationProcessor &apos;com.google.dagger:dagger-compiler:2.16&apos;"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="106"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;android.arch.persistence.room:runtime:1.1.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="109"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;android.arch.persistence.room:rxjava2:1.1.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="110"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    annotationProcessor &apos;android.arch.persistence.room:compiler:1.1.1&apos;"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="111"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    testImplementation &apos;junit:junit:4.12&apos;"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="117"
             column="24"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    implementation &apos;com.squareup.okhttp3:okhttp:4.12.0&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="119"
-            column="20"/>
     </issue>
 
     <issue
@@ -1850,7 +1782,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="122"
+            line="107"
             column="27"/>
     </issue>
 
@@ -1894,7 +1826,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="51"
+            line="56"
             column="13"/>
     </issue>
 
@@ -1977,23 +1909,12 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;hello_world&quot;, should use `@string` resource"
-        errorLine1="    android:text=&quot;hello_world&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/my_text_view.xml"
-            line="4"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="HardcodedText"
         message="Hardcoded string &quot;Application starting...&quot;, should use `@string` resource"
         errorLine1="            android:hint=&quot;Application starting...&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/start_activity.xml"
-            line="17"
+            file="src/main/res/layout/launcher.xml"
+            line="18"
             column="13"/>
     </issue>
 
@@ -2044,12 +1965,23 @@
     <issue
         id="RtlHardcoded"
         message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 33"
-        errorLine1="            android:layout_alignParentLeft=&quot;true&quot; />"
+        errorLine1="            android:layout_alignParentLeft=&quot;true&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="42"
+            line="36"
             column="13"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Use &quot;`start`&quot; instead of &quot;`left`&quot; to ensure correct behavior in right-to-left locales"
+        errorLine1="            android:layout_gravity=&quot;left&quot;"
+        errorLine2="                                    ~~~~">
+        <location
+            file="src/main/res/layout/register_activity.xml"
+            line="78"
+            column="37"/>
     </issue>
 
 </issues>

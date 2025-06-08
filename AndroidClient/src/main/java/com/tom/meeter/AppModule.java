@@ -1,9 +1,10 @@
 package com.tom.meeter;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.room.Room;
 
 import com.tom.meeter.context.auth.service.AuthService;
 import com.tom.meeter.context.profile.event.database.EventDao;

@@ -21,9 +21,10 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
 
 import com.tom.meeter.R;
 import com.tom.meeter.context.gps.domain.LocationTrackerListener;

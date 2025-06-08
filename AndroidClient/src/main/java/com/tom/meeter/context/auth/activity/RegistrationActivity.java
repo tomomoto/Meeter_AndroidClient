@@ -7,8 +7,6 @@ import static butterknife.OnTextChanged.Callback.AFTER_TEXT_CHANGED;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
@@ -19,11 +17,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.message.RegisterBody;
+import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
 
 import javax.inject.Inject;

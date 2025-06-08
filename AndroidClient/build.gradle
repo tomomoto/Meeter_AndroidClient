@@ -45,24 +45,25 @@ android {
 
 dependencies {
 
-    //implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation libs.appcompat
+    implementation libs.recyclerview
+    implementation libs.material
+    implementation libs.cardview
 
-    implementation libs.appcompat.v7
-    implementation libs.recyclerview.v7
-    implementation libs.design
-    implementation libs.cardview.v7
+    implementation libs.lifecycleextensions
+    annotationProcessor libs.lifecyclecompiler
 
-    implementation libs.socket.io.client
+    implementation libs.socketioclient
     implementation libs.eventbus
 
-    implementation 'com.google.android.gms:play-services:12.0.1'
-    //need androidx to use p-s-l
-    /*implementation("com.google.android.gms:play-services-location:21.3.0")*/
+/*    implementation 'com.google.android.gms:play-services:12.0.1'*/
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
+//    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     implementation libs.materialdrawer
 
     implementation libs.butterknife
-    annotationProcessor libs.butterknife.compiler
+    annotationProcessor libs.butterknifecompiler
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
@@ -72,21 +73,18 @@ dependencies {
     )
 
 
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    androidTestImplementation 'androidx.test:core:1.0.0'
+    testImplementation libs.junit.jupiter
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.0'
 
-    implementation(
-            [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.4.1'],
-            [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.4.1'],
-            [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.4.1']
-    )
+    implementation libs.jackson.core
+    implementation libs.jackson.annotations
+    implementation libs.jackson.databind
 
     /*implementation 'androidx.lifecycle:lifecycle-viewmodel:2.0.0'*/
-
-
-    implementation libs.arch.extensions
-    annotationProcessor libs.arch.compiler
 
     // Retrofit & OkHttp
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
@@ -94,18 +92,12 @@ dependencies {
 
     // Dagger 2
     implementation libs.dagger
-    annotationProcessor libs.dagger.compiler
+    annotationProcessor libs.daggercompiler
 
     // Room
-    implementation 'android.arch.persistence.room:runtime:1.1.1'
-    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
-    annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
-    /*
-    implementation 'com.google.dagger:dagger:2.16'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.x'
-    */
-
-    testImplementation 'junit:junit:4.12'
+    implementation libs.roomruntime
+    implementation libs.roomrxjava2
+    annotationProcessor libs.roomcompiler
 
     implementation libs.okhttp
 

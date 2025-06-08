@@ -1,12 +1,13 @@
 package com.tom.meeter.context.launcher;
 
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tom.meeter.R;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
@@ -47,8 +48,8 @@ public class StartActivityTemp extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(this::itemSelectedListener);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, new ProfileFragment())
-                .commit();
+              .replace(R.id.frame_layout, new ProfileFragment())
+              .commit();
 
         //Used to select an item programmatically
         //bottomNavigationView.getMenu().getItem(2).setChecked(true);
@@ -56,9 +57,9 @@ public class StartActivityTemp extends AppCompatActivity {
 
     private boolean itemSelectedListener(MenuItem i) {
         getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_layout, resolveFragment(i))
-                .commit();
+              .beginTransaction()
+              .replace(R.id.frame_layout, resolveFragment(i))
+              .commit();
         return true;
     }
 }

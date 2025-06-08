@@ -2,8 +2,8 @@ package com.tom.meeter.context.profile.viewmodel;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.user.repository.UserRepository;

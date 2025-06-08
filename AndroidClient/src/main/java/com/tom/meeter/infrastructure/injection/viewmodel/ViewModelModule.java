@@ -1,10 +1,10 @@
 package com.tom.meeter.infrastructure.injection.viewmodel;
 
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.profile.viewmodel.UserEventsViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.context.profile.viewmodel.UserEventsViewModel;
 import com.tom.meeter.context.profile.viewmodel.UserProfileViewModel;
 
 import dagger.Binds;

@@ -2,9 +2,10 @@ package com.tom.meeter.infrastructure.injection.viewmodel;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.util.Log;
+
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Map;
 

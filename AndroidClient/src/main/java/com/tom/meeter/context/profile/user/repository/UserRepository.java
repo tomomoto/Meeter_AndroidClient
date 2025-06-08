@@ -2,8 +2,9 @@ package com.tom.meeter.context.profile.user.repository;
 
 import static com.tom.meeter.infrastructure.common.Constants.getAuthHeader;
 
-import android.arch.lifecycle.LiveData;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.domain.User;
