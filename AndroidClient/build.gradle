@@ -94,6 +94,9 @@ dependencies {
 
     implementation libs.guava
 
+    // https://mvnrepository.com/artifact/androidx.preference/preference
+    implementation 'androidx.preference:preference:1.2.1'
+
 
     /*TESTS*/
 

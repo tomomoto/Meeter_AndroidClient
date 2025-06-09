@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="@string/common_preferences">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/prefs_need_track_user"
+            android:summary="@string/track_user"
+            android:title="@string/track_user_title" />
+        <SeekBarPreference
+            android:defaultValue="1000"
+            android:key="@string/prefs_search_area"
+            android:max="5000"
+            android:summary="@string/search_area"
+            android:title="@string/search_area_title"
+            app:showSeekBarValue="true" />
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

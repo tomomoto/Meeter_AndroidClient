@@ -1,6 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
 import static com.tom.meeter.infrastructure.common.Constants.MAP_EVENTS_AREA_PROPERTY;
 import static com.tom.meeter.infrastructure.common.Constants.MAP_TRACK_USER_PROPERTY;
@@ -10,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -100,7 +102,7 @@ public class GoogleMapsFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        readParameters();
+        readPreferences();
         EventBus.getDefault().register(this);
 
         Log.d(TAG, "GoogleMapsFragment registered event bus");
@@ -294,15 +296,19 @@ public class GoogleMapsFragment extends Fragment
         }
     }
 
-    private void readParameters() {
+    private void readPreferences() {
         Properties p = new Properties();
         try {
             p.load(getContext().getAssets().open(APP_PROPERTIES));
         } catch (IOException e) {
             Log.e(TAG, e.getLocalizedMessage(), e);
         }
-        searchArea = Integer.parseInt(p.getProperty(MAP_EVENTS_AREA_PROPERTY));
-        trackUser = Boolean.parseBoolean(p.getProperty(MAP_TRACK_USER_PROPERTY));
+
+        SharedPreferences prefs = getDefaultSharedPreferences(this.getContext());
+        trackUser = prefs.getBoolean(getString(R.string.prefs_need_track_user),
+              Boolean.parseBoolean(p.getProperty(MAP_TRACK_USER_PROPERTY)));
+        searchArea = prefs.getInt(getString(R.string.prefs_search_area),
+              Integer.parseInt(p.getProperty(MAP_EVENTS_AREA_PROPERTY)));
     }
 
     private static void moveCamera(
@@ -376,8 +382,10 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private static void searchForEvents(double latitude, double longitude, int searchArea) {
-        EventBus.getDefault()
-              .post(new SearchForEvents((float) latitude, (float) longitude, searchArea));
+        if (searchArea > 0) {
+            EventBus.getDefault()
+                  .post(new SearchForEvents((float) latitude, (float) longitude, searchArea));
+        }
     }
 
     static class GMapEvent {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="entries">
+        <item>entries1</item>
+        <item>entries2</item>
+        <item>entries3</item>
+        <item>entries4</item>
+        <item>entries5</item>
+    </string-array>
+    <string-array name="entry_values">
+        <item>entry_values1</item>
+        <item>entry_values2</item>
+        <item>entry_values3</item>
+        <item>entry_values4</item>
+        <item>entry_values5</item>
+    </string-array>
+</resources>
