@@ -40,7 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Sets;
-import com.mikepenz.iconics.typeface.FontAwesome;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.tom.meeter.R;
 import com.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.tom.meeter.context.gps.service.LocationTrackerService;

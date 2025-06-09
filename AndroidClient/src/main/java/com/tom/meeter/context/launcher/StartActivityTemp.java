@@ -3,9 +3,9 @@ package com.tom.meeter.context.launcher;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.tom.meeter.R;
@@ -23,10 +23,9 @@ public class StartActivityTemp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
-        setContentView(R.layout.start_activity_temp);
 
         binding = StartActivityTempBinding.inflate(getLayoutInflater());
-        CoordinatorLayout view = binding.getRoot();
+        View view = binding.getRoot();
         setContentView(view);
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener(

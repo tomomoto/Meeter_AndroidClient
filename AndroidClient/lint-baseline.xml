@@ -83,6 +83,17 @@
 
     <issue
         id="GradleDependency"
+        message="A newer version of androidx.test.ext:junit than 1.1.1 is available: 1.2.1"
+        errorLine1="    androidTestImplementation &apos;androidx.test.ext:junit:1.1.1&apos;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="98"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
         message="A newer version of androidx.appcompat:appcompat than 1.0.0 is available: 1.7.1"
         errorLine1="appcompat = &quot;1.0.0&quot;"
         errorLine2="            ~~~~~~~">
@@ -222,17 +233,6 @@
             file="../gradle/libs.versions.toml"
             line="29"
             column="20"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.test:core than 1.0.0 is available: 1.6.1"
-        errorLine1="testcore = &quot;1.0.0&quot;"
-        errorLine2="           ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="34"
-            column="12"/>
     </issue>
 
     <issue
@@ -1003,6 +1003,17 @@
             file="src/main/AndroidManifest.xml"
             line="22"
             column="33"/>
+    </issue>
+
+    <issue
+        id="UseTomlInstead"
+        message="Use version catalog instead"
+        errorLine1="    androidTestImplementation &apos;androidx.test.ext:junit:1.1.1&apos;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="98"
+            column="31"/>
     </issue>
 
     <issue

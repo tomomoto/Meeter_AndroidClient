@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,8 +29,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.mikepenz.iconics.typeface.FontAwesome;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -63,18 +63,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = ProfileActivity.class.getCanonicalName();
 
-    private static final int DRAWER_PROFILE_ID = 0;
-    private static final int DRAWER_EVENTS_ID = 1;
-    private static final int DRAWER_NEW_EVENT_ID = 2;
-    private static final int DRAWER_NOTIFICATION_ID = 3;
-    private static final int DRAWER_SETTINGS_ID = 10;
-    private static final int DRAWER_HELP_ID = 11;
-    private static final int DRAWER_OPEN_SOURCE_ID = 12;
-    private static final int DRAWER_CONTACT_ID = 13;
-    private static final int DRAWER_LOGOUT_ID = 99;
+    private static final long DRAWER_PROFILE_ID = 0;
+    private static final long DRAWER_EVENTS_ID = 1;
+    private static final long DRAWER_NEW_EVENT_ID = 2;
+    private static final long DRAWER_NOTIFICATION_ID = 3;
+    private static final long DRAWER_SETTINGS_ID = 10;
+    private static final long DRAWER_HELP_ID = 11;
+    private static final long DRAWER_OPEN_SOURCE_ID = 12;
+    private static final long DRAWER_CONTACT_ID = 13;
+    private static final long DRAWER_LOGOUT_ID = 99;
 
-    private static final Map<Integer, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
-    private final Map<Integer, String> drawerFragmentNames = new HashMap<>();
+    private static final Map<Long, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
+    private final Map<Long, String> drawerFragmentNames = new HashMap<>();
 
     static {
         DRAWER_FRAGMENT_TAGS.put(DRAWER_PROFILE_ID, "profile_fragment_tag");
@@ -91,13 +91,13 @@ public class ProfileActivity extends AppCompatActivity {
 
     ProfileActivityBinding binding;
 
-    private int selectedNavigationId = 0;
+    private long selectedNavigationId = 0;
 
-    private Drawer.Result drawer = null;
+    private Drawer drawer = null;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
-    private Handler handler;
+    private Handler replaceFragmentHandler;
 
     // urls to load navigation header background image
     // and profile image
@@ -155,7 +155,7 @@ public class ProfileActivity extends AppCompatActivity {
         Toolbar profileActivityToolbar = binding.profileActivityToolbar;
         setSupportActionBar(profileActivityToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        handler = new Handler();
+        replaceFragmentHandler = new Handler();
         setupNameMapping(drawerFragmentNames,
               getResources().getStringArray(R.array.nav_item_activity_titles));
         drawer = createDrawer(this, profileActivityToolbar);
@@ -218,29 +218,26 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void onDrawerItemClickListener(
-          AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
-        Log.d(TAG, "User selected drawer item: " + drawerItem.getIdentifier());
-        switch (drawerItem.getIdentifier()) {
-            case DRAWER_PROFILE_ID:
-            case DRAWER_EVENTS_ID:
-            case DRAWER_NEW_EVENT_ID:
-            case DRAWER_NOTIFICATION_ID:
-                selectedNavigationId = drawerItem.getIdentifier();
-                break;
-            case DRAWER_LOGOUT_ID:
-                handleLogout();
-                break;
-                /*TODO: not set yet
+    private boolean onDrawerItemClickListener(
+          View view, int position, IDrawerItem drawerItem) {
+        long identifier = drawerItem.getIdentifier();
+        Log.d(TAG, "User selected drawer item: " + identifier);
+        if (identifier == DRAWER_PROFILE_ID || identifier == DRAWER_EVENTS_ID
+              || identifier == DRAWER_NEW_EVENT_ID || identifier == DRAWER_NOTIFICATION_ID) {
+            selectedNavigationId = identifier;
+        } else if (identifier == DRAWER_LOGOUT_ID) {
+            handleLogout();
+        } else {
+            selectedNavigationId = DRAWER_PROFILE_ID;
+        }
+        /*TODO: not set yet
                 DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
                 DRAWER_OPEN_SOURCE_ID = 12;
                 DRAWER_CONTACT_ID = 13;
-                */
-            default:
-                selectedNavigationId = DRAWER_PROFILE_ID;
-        }
+        */
         renderSelectedFragment();
+        return true;
     }
 
     private void renderSelectedFragment() {
@@ -274,21 +271,16 @@ public class ProfileActivity extends AppCompatActivity {
         // This effect can be seen in GMail app
 
         // If mPendingRunnable is not null, then add to the message queue
-        handler.post(
+        replaceFragmentHandler.post(
               replaceFragment(
                     getSupportFragmentManager(),
-                    () -> createFragment(selectedNavigationId, fragment -> {
-                    }),
-                    () -> tag
-              )
+                    () -> createFragment(selectedNavigationId),
+                    () -> tag)
         );
 
         // show or hide the fab button
         //toggleFab();
-
-        //Closing drawer on item click
-        //seems this is not necessary.
-        //drawer.closeDrawer();
+        drawer.closeDrawer();
 
         // refresh toolbar menu
         //seems this is not necessary.
@@ -307,7 +299,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private static void setupNameMapping(Map<Integer, String> mapping, String[] namesFromResources) {
+    private static void setupNameMapping(Map<Long, String> mapping, String[] namesFromResources) {
         mapping.put(DRAWER_PROFILE_ID, namesFromResources[0]);
         mapping.put(DRAWER_EVENTS_ID, namesFromResources[1]);
         mapping.put(DRAWER_NEW_EVENT_ID, namesFromResources[2]);
@@ -315,17 +307,17 @@ public class ProfileActivity extends AppCompatActivity {
         mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
     }
 
-    private static void updateItemBadge(Drawer.Result drawer, int drawerItemId, String badge) {
+    private static void updateItemBadge(Drawer drawer, int drawerItemId, String badge) {
         Optional<IDrawerItem> itemOpt = findDrawerItem(drawer, drawerItemId);
         if (itemOpt.isEmpty()) return;
         IDrawerItem target = itemOpt.get();
         if (target instanceof Badgeable) {
-            ((Badgeable<?>) target).setBadge(badge);
+            ((Badgeable<?>) target).withBadge(badge);
             drawer.getAdapter().notifyDataSetChanged();
         }
     }
 
-    private static Optional<IDrawerItem> findDrawerItem(Drawer.Result drawer, int id) {
+    private static Optional<IDrawerItem> findDrawerItem(Drawer drawer, int id) {
         return drawer.getDrawerItems()
               .stream()
               .filter(iDrawerItem -> id == iDrawerItem.getIdentifier())
@@ -346,33 +338,25 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    private static Fragment createFragment(
-          int navigationMenuIndex, Consumer<Fragment> postConstruct) {
+    private static Fragment createFragment(long navigationMenuIndex) {
         Fragment result;
-        switch (navigationMenuIndex) {
-            case DRAWER_PROFILE_ID:
-                result = new ProfileFragment();
-                break;
-            case DRAWER_EVENTS_ID:
-                result = new EventsFragment();
-                break;
-            case DRAWER_NEW_EVENT_ID:
-                result = new CreateNewEventFragment();
-                break;
-            case DRAWER_NOTIFICATION_ID:
-                result = new UserEventsFragment();
-                break;
-            /*TODO: not set
+        if (navigationMenuIndex == DRAWER_PROFILE_ID) {
+            result = new ProfileFragment();
+        } else if (navigationMenuIndex == DRAWER_EVENTS_ID) {
+            result = new EventsFragment();
+        } else if (navigationMenuIndex == DRAWER_NEW_EVENT_ID) {
+            result = new CreateNewEventFragment();
+        } else if (navigationMenuIndex == DRAWER_NOTIFICATION_ID) {
+            result = new UserEventsFragment();
+        } else {
+            result = new ProfileFragment();
+        }
+        /*TODO: not set
                 DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
                 DRAWER_OPEN_SOURCE_ID = 12;
                 DRAWER_CONTACT_ID = 13;
-                */
-            default:
-                //return new Launcher();
-                result = new ProfileFragment();
-        }
-        postConstruct.accept(result);
+        */
         return result;
     }
 
@@ -401,8 +385,8 @@ public class ProfileActivity extends AppCompatActivity {
         };
     }
 
-    private static Drawer.Result createDrawer(ProfileActivity profileActivity, Toolbar toolbar) {
-        return new Drawer()
+    private static Drawer createDrawer(ProfileActivity profileActivity, Toolbar toolbar) {
+        return new DrawerBuilder()
               .withActivity(profileActivity)
               .withToolbar(toolbar)
               .withActionBarDrawerToggle(true)
@@ -415,7 +399,7 @@ public class ProfileActivity extends AppCompatActivity {
                     new SectionDrawerItem().withName(R.string.drawer_item_additional),
                     new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(DRAWER_SETTINGS_ID),
                     new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_coffee).withIdentifier(DRAWER_HELP_ID),
-                    new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_OPEN_SOURCE_ID).setEnabled(false),
+                    new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_OPEN_SOURCE_ID).withEnabled(false),
                     new DividerDrawerItem(),
                     new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(DRAWER_CONTACT_ID),
                     new DividerDrawerItem(),
