@@ -36,7 +36,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.Badgeable;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
@@ -53,8 +52,6 @@ import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -169,7 +166,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         logMethod(TAG, this);
-        //updateItemBadge(drawer, DRAWER_EVENTS_ID, "ok");
+        //drawer.updateBadge(DRAWER_CONTACT_ID, new StringHolder("okok"));
 
         if (drawer.isDrawerOpen()) {
             drawer.closeDrawer();
@@ -307,22 +304,6 @@ public class ProfileActivity extends AppCompatActivity {
         mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
     }
 
-    private static void updateItemBadge(Drawer drawer, int drawerItemId, String badge) {
-        Optional<IDrawerItem> itemOpt = findDrawerItem(drawer, drawerItemId);
-        if (itemOpt.isEmpty()) return;
-        IDrawerItem target = itemOpt.get();
-        if (target instanceof Badgeable) {
-            ((Badgeable<?>) target).withBadge(badge);
-            drawer.getAdapter().notifyDataSetChanged();
-        }
-    }
-
-    private static Optional<IDrawerItem> findDrawerItem(Drawer drawer, int id) {
-        return drawer.getDrawerItems()
-              .stream()
-              .filter(iDrawerItem -> id == iDrawerItem.getIdentifier())
-              .findAny();
-    }
 
     private static Runnable replaceFragment(
           FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
