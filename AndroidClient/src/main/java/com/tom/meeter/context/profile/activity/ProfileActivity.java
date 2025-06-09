@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -103,7 +104,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     ProfileActivityBinding binding;
 
-    private long selectedNavigationId = 0;
+    private long lastNavItemId = 0;
 
     private Drawer drawer = null;
 
@@ -164,18 +165,19 @@ public class ProfileActivity extends AppCompatActivity {
                   profileViewModel.getProfile(Constants.getAuthHeader(token));
               });
 
-        Toolbar profileActivityToolbar = binding.profileActivityToolbar;
-        setSupportActionBar(profileActivityToolbar);
+        Toolbar toolbar = binding.profileActivityToolbar;
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        replaceFragmentHandler = new Handler();
-        setupNameMapping(drawerFragmentNames,
+        replaceFragmentHandler = new Handler(Looper.getMainLooper());
+        setupNameMapping(
+              drawerFragmentNames,
               getResources().getStringArray(R.array.nav_item_activity_titles));
-        setupDrawer(profileActivityToolbar, icons);
+        setupDrawer(toolbar, icons);
 
         drawer.getAdapter().withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
 
         if (savedInstanceState == null) {
-            selectedNavigationId = DRAWER_PROFILE_ID;
+            lastNavItemId = DRAWER_PROFILE_ID;
             renderSelectedFragment();
         }
     }
@@ -195,8 +197,8 @@ public class ProfileActivity extends AppCompatActivity {
         // This code loads home fragment when back key is pressed
         // when user is in other fragment than home
         if (shouldLoadHomeFragOnBackPress) {
-            if (selectedNavigationId != DRAWER_PROFILE_ID) {
-                selectedNavigationId = DRAWER_PROFILE_ID;
+            if (lastNavItemId != DRAWER_PROFILE_ID) {
+                lastNavItemId = DRAWER_PROFILE_ID;
                 renderSelectedFragment();
                 return;
             }
@@ -238,17 +240,19 @@ public class ProfileActivity extends AppCompatActivity {
           View view, int position, IDrawerItem drawerItem) {
         long identifier = drawerItem.getIdentifier();
         Log.d(TAG, "User selected drawer item: "
-              + identifier + " previous was: " + selectedNavigationId);
+              + identifier + " previous was: " + lastNavItemId);
         if (identifier == DRAWER_PROFILE_ID || identifier == DRAWER_EVENTS_ID
               || identifier == DRAWER_NEW_EVENT_ID || identifier == DRAWER_NOTIFICATION_ID) {
-            selectedNavigationId = identifier;
+            lastNavItemId = identifier;
         } else if (identifier == DRAWER_LOGOUT_ID) {
             handleLogout();
+        } else if (identifier == DRAWER_SETTINGS_ID) {
+            handleSettings();
+            return true;
         } else {
-            selectedNavigationId = DRAWER_PROFILE_ID;
+            lastNavItemId = DRAWER_PROFILE_ID;
         }
         /*TODO: not set yet
-                DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
                 DRAWER_OPEN_SOURCE_ID = 12;
                 DRAWER_CONTACT_ID = 13;
@@ -257,9 +261,16 @@ public class ProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    private void handleSettings() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
+        drawer.setSelection(lastNavItemId, false);
+        drawer.closeDrawer();
+    }
+
     private void renderSelectedFragment() {
-        drawer.setSelection(selectedNavigationId, false);
-        String tag = DRAWER_FRAGMENT_TAGS.get(selectedNavigationId);
+        drawer.setSelection(lastNavItemId, false);
+        String tag = DRAWER_FRAGMENT_TAGS.get(lastNavItemId);
         if (tag == null) {
             throw new IllegalStateException("Fragment tag must be present");
         }
@@ -272,7 +283,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // Since new navigation comes...
-        String title = drawerFragmentNames.get(selectedNavigationId);
+        String title = drawerFragmentNames.get(lastNavItemId);
         if (title == null) {
             throw new IllegalStateException("Drawer toolbar title should be present");
         }
@@ -291,7 +302,7 @@ public class ProfileActivity extends AppCompatActivity {
         replaceFragmentHandler.post(
               replaceFragment(
                     getSupportFragmentManager(),
-                    () -> createFragment(selectedNavigationId),
+                    () -> createFragment(lastNavItemId),
                     () -> tag)
         );
 

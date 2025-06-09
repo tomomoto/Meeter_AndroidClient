@@ -70,6 +70,12 @@
                 android:value=".context.auth.activity.LoginActivity" />
         </activity>
 
+        <activity
+            android:name=".context.profile.activity.SettingsActivity"
+            android:label="Settings"
+            android:parentActivityName=".context.profile.activity.ProfileActivity">
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
