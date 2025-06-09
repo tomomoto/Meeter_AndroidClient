@@ -29,8 +29,8 @@ android {
         //LocalDateTime features
         coreLibraryDesugaringEnabled = true
 
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_16
+        targetCompatibility JavaVersion.VERSION_16
     }
     buildFeatures {
         viewBinding true
@@ -59,6 +59,9 @@ dependencies {
     implementation (libs.materialdrawer)
     // https://mvnrepository.com/artifact/com.mikepenz/fontawesome-typeface
     implementation("com.mikepenz:fontawesome-typeface:5.3.1.1")
+    //try it
+    // https://mvnrepository.com/artifact/com.mikepenz/google-material-typeface
+    implementation("com.mikepenz:google-material-typeface:3.0.1.3.original")
 
     implementation libs.gson
 

@@ -24,7 +24,7 @@
     <string name="drawer_item_settings">Настройки</string>
     <string name="drawer_item_help">Помощь</string>
     <string name="drawer_item_open_source">Открытые исходники</string>
-    <string name="drawer_item_contact">Контакт</string>
+    <string name="drawer_item_contact">Связаться</string>
     <string name="description">Описание</string>
     <string name="city">Город</string>
     <string name="create_event">Создать событие</string>

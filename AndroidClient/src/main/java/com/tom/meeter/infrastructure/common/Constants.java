@@ -26,7 +26,7 @@ public class Constants {
     public static final String MAP_TRACK_USER_PROPERTY = "map.track_user";
 
     public static final String AUTH_HEADER = "Authorization";
-    public static final String AUTH_VALUE_START = "Bearer ";
+    public static final String BEARER_FORMAT = "Bearer %s";
     public static final String TOKEN_KEY = "token";
 
 
@@ -49,6 +49,6 @@ public class Constants {
     }
 
     public static String getAuthHeader(String token) {
-        return AUTH_VALUE_START + token;
+        return String.format(BEARER_FORMAT, token);
     }
 }

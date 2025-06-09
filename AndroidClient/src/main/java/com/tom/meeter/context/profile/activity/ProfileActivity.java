@@ -30,8 +30,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.typeface.IIcon;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.BaseDrawerItem;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -52,6 +55,7 @@ import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -69,6 +73,13 @@ public class ProfileActivity extends AppCompatActivity {
     private static final long DRAWER_OPEN_SOURCE_ID = 12;
     private static final long DRAWER_CONTACT_ID = 13;
     private static final long DRAWER_LOGOUT_ID = 99;
+
+    private enum IconPackEnum {
+        FONT_AWESOME,
+        GOOGLE_MATERIALS
+    }
+
+    private IconPackEnum icons = IconPackEnum.FONT_AWESOME;
 
     private static final Map<Long, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
     private final Map<Long, String> drawerFragmentNames = new HashMap<>();
@@ -155,7 +166,7 @@ public class ProfileActivity extends AppCompatActivity {
         replaceFragmentHandler = new Handler();
         setupNameMapping(drawerFragmentNames,
               getResources().getStringArray(R.array.nav_item_activity_titles));
-        drawer = createDrawer(this, profileActivityToolbar);
+        setupDrawer(profileActivityToolbar, icons);
 
         if (savedInstanceState == null) {
             selectedNavigationId = DRAWER_PROFILE_ID;
@@ -167,6 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         logMethod(TAG, this);
         //drawer.updateBadge(DRAWER_CONTACT_ID, new StringHolder("okok"));
+        //updateDrawerIcons(drawer, GOOGLE_MATERIAL_ICONS);
 
         if (drawer.isDrawerOpen()) {
             drawer.closeDrawer();
@@ -366,31 +378,153 @@ public class ProfileActivity extends AppCompatActivity {
         };
     }
 
-    private static Drawer createDrawer(ProfileActivity profileActivity, Toolbar toolbar) {
-        return new DrawerBuilder()
-              .withActivity(profileActivity)
+    private void setupDrawer(Toolbar toolbar, IconPackEnum icons) {
+        drawer = new DrawerBuilder()
+              .withActivity(this)
               .withToolbar(toolbar)
               .withActionBarDrawerToggle(true)
               .withHeader(R.layout.drawer_header)
               .addDrawerItems(
-                    new PrimaryDrawerItem().withName(R.string.drawer_item_profile).withIcon(FontAwesome.Icon.faw_user).withBadge("99").withIdentifier(DRAWER_PROFILE_ID),
-                    new PrimaryDrawerItem().withName(R.string.drawer_item_events).withIcon(FontAwesome.Icon.faw_globe).withIdentifier(DRAWER_EVENTS_ID),
-                    new PrimaryDrawerItem().withName(R.string.drawer_item_new_event).withIcon(FontAwesome.Icon.faw_calendar).withIdentifier(DRAWER_NEW_EVENT_ID),
-                    new PrimaryDrawerItem().withName(R.string.drawer_item_notifications).withIcon(FontAwesome.Icon.faw_eye).withBadge("6").withIdentifier(DRAWER_NOTIFICATION_ID),
-                    new SectionDrawerItem().withName(R.string.drawer_item_additional),
-                    new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(DRAWER_SETTINGS_ID),
-                    new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_coffee).withIdentifier(DRAWER_HELP_ID),
-                    new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_OPEN_SOURCE_ID).withEnabled(false),
+                    new PrimaryDrawerItem()
+                          .withIdentifier(DRAWER_PROFILE_ID).withName(R.string.drawer_item_profile)
+                          .withBadge("99"),
+                    new PrimaryDrawerItem()
+                          .withIdentifier(DRAWER_EVENTS_ID).withName(R.string.drawer_item_events),
+                    new PrimaryDrawerItem()
+                          .withIdentifier(DRAWER_NEW_EVENT_ID).withName(R.string.drawer_item_new_event),
+                    new PrimaryDrawerItem()
+                          .withIdentifier(DRAWER_NOTIFICATION_ID).withName(R.string.drawer_item_notifications)
+                          .withBadge("6"),
+                    new SectionDrawerItem()
+                          .withName(R.string.drawer_item_additional),
+                    new SecondaryDrawerItem()
+                          .withIdentifier(DRAWER_SETTINGS_ID).withName(R.string.drawer_item_settings),
+                    new SecondaryDrawerItem()
+                          .withIdentifier(DRAWER_HELP_ID).withName(R.string.drawer_item_help),
+                    new SecondaryDrawerItem()
+                          .withIdentifier(DRAWER_OPEN_SOURCE_ID).withName(R.string.drawer_item_open_source)
+                          .withEnabled(false),
                     new DividerDrawerItem(),
-                    new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_github).withBadge("12+").withIdentifier(DRAWER_CONTACT_ID),
+                    new SecondaryDrawerItem()
+                          .withIdentifier(DRAWER_CONTACT_ID).withName(R.string.drawer_item_contact)
+                          .withBadge("12+"),
                     new DividerDrawerItem(),
-                    new PrimaryDrawerItem().withName(R.string.logout).withIcon(FontAwesome.Icon.faw_power_off).withIdentifier(DRAWER_LOGOUT_ID)
+                    new PrimaryDrawerItem()
+                          .withIdentifier(DRAWER_LOGOUT_ID).withName(R.string.logout)
               )
-              .withOnDrawerItemClickListener(profileActivity::onDrawerItemClickListener)
+              .withOnDrawerItemClickListener(this::onDrawerItemClickListener)
               .withOnDrawerListener(createOnDrawerListener(
-                    profileActivity::getCurrentFocus,
-                    () -> (InputMethodManager) profileActivity.getSystemService(Activity.INPUT_METHOD_SERVICE))
-              )
+                    this::getCurrentFocus,
+                    () -> (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE)))
               .build();
+        updateDrawerIcons(icons);
     }
+
+    private void updateDrawerIcons(IconPackEnum iconPack) {
+        Function<Long, IIcon> iconProvider = getIconProvider(iconPack);
+        updateIconFor(drawer, iconProvider, DRAWER_PROFILE_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_EVENTS_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_NEW_EVENT_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_NOTIFICATION_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_SETTINGS_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_HELP_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_OPEN_SOURCE_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_CONTACT_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_LOGOUT_ID);
+    }
+
+    private static Function<Long, IIcon> getIconProvider(IconPackEnum iconPack) {
+        Function<Long, IIcon> iconProvider;
+        switch (iconPack) {
+            case FONT_AWESOME:
+                iconProvider = ProfileActivity::fromFontAwesomeIconPak;
+                break;
+            case GOOGLE_MATERIALS:
+                iconProvider = ProfileActivity::fromGoogleMaterialIconPak;
+                break;
+            default:
+                iconProvider = ProfileActivity::fromFontAwesomeIconPak;
+        }
+        return iconProvider;
+    }
+
+    private static IIcon fromGoogleMaterialIconPak(Long id) {
+        if (id == DRAWER_PROFILE_ID) {
+            //return GoogleMaterial.Icon.gmd_account_box;
+            return GoogleMaterial.Icon.gmd_person;
+        }
+        if (id == DRAWER_EVENTS_ID) {
+            return GoogleMaterial.Icon.gmd_public;
+        }
+        if (id == DRAWER_NEW_EVENT_ID) {
+            return GoogleMaterial.Icon.gmd_event;
+            //return GoogleMaterial.Icon.gmd_perm_contact_calendar;
+        }
+        if (id == DRAWER_NOTIFICATION_ID) {
+            //return GoogleMaterial.Icon.gmd_visibility;
+            //return GoogleMaterial.Icon.gmd_notifications;
+            return GoogleMaterial.Icon.gmd_notifications_active;
+        }
+        if (id == DRAWER_SETTINGS_ID) {
+            return GoogleMaterial.Icon.gmd_memory;
+        }
+        if (id == DRAWER_HELP_ID) {
+            return GoogleMaterial.Icon.gmd_help;
+        }
+        if (id == DRAWER_OPEN_SOURCE_ID) {
+            return GoogleMaterial.Icon.gmd_live_help;
+        }
+        if (id == DRAWER_CONTACT_ID) {
+            return GoogleMaterial.Icon.gmd_email;
+        }
+        if (id == DRAWER_LOGOUT_ID) {
+            return GoogleMaterial.Icon.gmd_settings_power;
+            //return GoogleMaterial.Icon.gmd_close;
+        }
+        return GoogleMaterial.Icon.gmd_help;
+    }
+
+    private static IIcon fromFontAwesomeIconPak(Long id) {
+        if (id == DRAWER_PROFILE_ID) {
+            return FontAwesome.Icon.faw_user;
+        }
+        if (id == DRAWER_EVENTS_ID) {
+            return FontAwesome.Icon.faw_globe;
+        }
+        if (id == DRAWER_NEW_EVENT_ID) {
+            return FontAwesome.Icon.faw_calendar;
+        }
+        if (id == DRAWER_NOTIFICATION_ID) {
+            return FontAwesome.Icon.faw_eye;
+        }
+        if (id == DRAWER_SETTINGS_ID) {
+            return FontAwesome.Icon.faw_cog;
+        }
+        if (id == DRAWER_HELP_ID) {
+            return FontAwesome.Icon.faw_question_circle;
+        }
+        if (id == DRAWER_OPEN_SOURCE_ID) {
+            return FontAwesome.Icon.faw_question;
+        }
+        if (id == DRAWER_CONTACT_ID) {
+            return FontAwesome.Icon.faw_github;
+        }
+        if (id == DRAWER_LOGOUT_ID) {
+            return FontAwesome.Icon.faw_power_off;
+        }
+        return FontAwesome.Icon.faw_coffee;
+    }
+
+    private static void updateIconFor(Drawer drawer, Function<Long, IIcon> iconProvider, long itemId) {
+        IDrawerItem<?, ?> iDrawerItem = drawer.getDrawerItem(itemId);
+        if (iDrawerItem == null) {
+            Log.d(TAG, "Drawer item is not exist " + itemId);
+            return;
+        }
+        if (iDrawerItem instanceof BaseDrawerItem<?, ?> drawerItem) {
+            drawerItem.withIcon(iconProvider.apply(itemId));
+        }
+    }
+
 }
+
