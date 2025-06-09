@@ -27,14 +27,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IItem;
+import com.mikepenz.fastadapter.listeners.OnBindViewHolderListenerImpl;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.typeface.IIcon;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.BaseDrawerItem;
+import com.mikepenz.materialdrawer.holder.ImageHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -168,6 +172,8 @@ public class ProfileActivity extends AppCompatActivity {
               getResources().getStringArray(R.array.nav_item_activity_titles));
         setupDrawer(profileActivityToolbar, icons);
 
+        drawer.getAdapter().withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
+
         if (savedInstanceState == null) {
             selectedNavigationId = DRAWER_PROFILE_ID;
             renderSelectedFragment();
@@ -178,6 +184,7 @@ public class ProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         logMethod(TAG, this);
         //drawer.updateBadge(DRAWER_CONTACT_ID, new StringHolder("okok"));
+        //switchDrawerIcons();
         //updateDrawerIcons(drawer, GOOGLE_MATERIAL_ICONS);
 
         if (drawer.isDrawerOpen()) {
@@ -230,7 +237,8 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean onDrawerItemClickListener(
           View view, int position, IDrawerItem drawerItem) {
         long identifier = drawerItem.getIdentifier();
-        Log.d(TAG, "User selected drawer item: " + identifier);
+        Log.d(TAG, "User selected drawer item: "
+              + identifier + " previous was: " + selectedNavigationId);
         if (identifier == DRAWER_PROFILE_ID || identifier == DRAWER_EVENTS_ID
               || identifier == DRAWER_NEW_EVENT_ID || identifier == DRAWER_NOTIFICATION_ID) {
             selectedNavigationId = identifier;
@@ -353,7 +361,7 @@ public class ProfileActivity extends AppCompatActivity {
         return result;
     }
 
-    private static Drawer.OnDrawerListener createOnDrawerListener(
+    private Drawer.OnDrawerListener createOnDrawerListener(
           Provider<View> currentFocusP, Provider<InputMethodManager> immP) {
         return new Drawer.OnDrawerListener() {
             @Override
@@ -368,12 +376,12 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
+                switchDrawerIcons();
                 logMethod(TAG, this);
             }
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                //logMethod(TAG, this);
             }
         };
     }
@@ -420,6 +428,15 @@ public class ProfileActivity extends AppCompatActivity {
         updateDrawerIcons(icons);
     }
 
+    private void switchDrawerIcons() {
+        logMethod(TAG, this);
+        if (icons == IconPackEnum.FONT_AWESOME) {
+            updateDrawerIcons(IconPackEnum.GOOGLE_MATERIALS);
+        } else {
+            updateDrawerIcons(IconPackEnum.FONT_AWESOME);
+        }
+    }
+
     private void updateDrawerIcons(IconPackEnum iconPack) {
         Function<Long, IIcon> iconProvider = getIconProvider(iconPack);
         updateIconFor(drawer, iconProvider, DRAWER_PROFILE_ID);
@@ -431,24 +448,25 @@ public class ProfileActivity extends AppCompatActivity {
         updateIconFor(drawer, iconProvider, DRAWER_OPEN_SOURCE_ID);
         updateIconFor(drawer, iconProvider, DRAWER_CONTACT_ID);
         updateIconFor(drawer, iconProvider, DRAWER_LOGOUT_ID);
+        icons = iconPack;
     }
 
     private static Function<Long, IIcon> getIconProvider(IconPackEnum iconPack) {
         Function<Long, IIcon> iconProvider;
         switch (iconPack) {
             case FONT_AWESOME:
-                iconProvider = ProfileActivity::fromFontAwesomeIconPak;
+                iconProvider = ProfileActivity::fontAwesomeIconPack;
                 break;
             case GOOGLE_MATERIALS:
-                iconProvider = ProfileActivity::fromGoogleMaterialIconPak;
+                iconProvider = ProfileActivity::googleMaterialIconPack;
                 break;
             default:
-                iconProvider = ProfileActivity::fromFontAwesomeIconPak;
+                iconProvider = ProfileActivity::fontAwesomeIconPack;
         }
         return iconProvider;
     }
 
-    private static IIcon fromGoogleMaterialIconPak(Long id) {
+    private static IIcon googleMaterialIconPack(Long id) {
         if (id == DRAWER_PROFILE_ID) {
             //return GoogleMaterial.Icon.gmd_account_box;
             return GoogleMaterial.Icon.gmd_person;
@@ -484,7 +502,7 @@ public class ProfileActivity extends AppCompatActivity {
         return GoogleMaterial.Icon.gmd_help;
     }
 
-    private static IIcon fromFontAwesomeIconPak(Long id) {
+    private static IIcon fontAwesomeIconPack(Long id) {
         if (id == DRAWER_PROFILE_ID) {
             return FontAwesome.Icon.faw_user;
         }
@@ -521,10 +539,42 @@ public class ProfileActivity extends AppCompatActivity {
             Log.d(TAG, "Drawer item is not exist " + itemId);
             return;
         }
-        if (iDrawerItem instanceof BaseDrawerItem<?, ?> drawerItem) {
-            drawerItem.withIcon(iconProvider.apply(itemId));
-        }
+        drawer.updateIcon(itemId, new ImageHolder(iconProvider.apply(itemId)));
     }
 
-}
+    /**
+     * Workaround for https://github.com/mikepenz/MaterialDrawer/issues/2789
+     * For base implementation look at the {@link OnBindViewHolderListenerImpl}
+     */
+    public static class OnBindViewHolderListenerImplBase extends OnBindViewHolderListenerImpl {
 
+        // Values was received from revers engineered variables for current library.
+        private final int fastadapter_item_adapter = 2131296379;
+        private final int fastadapter_item = 2131296378;
+        private final int unknown_item_id = 2131296441;
+
+        @Override
+        public void unBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            //logMethod(TAG, this);
+            //IItem item = FastAdapter.getHolderAdapterItemTag(viewHolder);
+            var item = (IItem<?, ? super RecyclerView.ViewHolder>) viewHolder.itemView.getTag(fastadapter_item);
+            if (item != null) {
+                item.unbindView(viewHolder);
+                if (viewHolder instanceof FastAdapter.ViewHolder) {
+                    ((FastAdapter.ViewHolder) viewHolder).unbindView(item);
+                }
+                //remove set tag's
+                viewHolder.itemView.setTag(fastadapter_item, null);
+                viewHolder.itemView.setTag(fastadapter_item_adapter, null);
+            }
+            //super.unBindViewHolder(viewHolder, position);
+        }
+
+        //@Override
+        public void unBindViewHolderWithoutUnbind(RecyclerView.ViewHolder viewHolder, int position) {
+            if (FastAdapter.getHolderAdapterItemTag(viewHolder) != null) {
+                super.unBindViewHolder(viewHolder, position);
+            }
+        }
+    }
+}
