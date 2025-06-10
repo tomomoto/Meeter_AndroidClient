@@ -1,17 +1,12 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
-import static com.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
-import static com.tom.meeter.infrastructure.common.Constants.MAP_EVENTS_AREA_PROPERTY;
-import static com.tom.meeter.infrastructure.common.Constants.MAP_TRACK_USER_PROPERTY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -48,18 +43,17 @@ import com.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -297,18 +291,8 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private void readPreferences() {
-        Properties p = new Properties();
-        try {
-            p.load(getContext().getAssets().open(APP_PROPERTIES));
-        } catch (IOException e) {
-            Log.e(TAG, e.getLocalizedMessage(), e);
-        }
-
-        SharedPreferences prefs = getDefaultSharedPreferences(this.getContext());
-        trackUser = prefs.getBoolean(getString(R.string.prefs_need_track_user),
-              Boolean.parseBoolean(p.getProperty(MAP_TRACK_USER_PROPERTY)));
-        searchArea = prefs.getInt(getString(R.string.prefs_search_area),
-              Integer.parseInt(p.getProperty(MAP_EVENTS_AREA_PROPERTY)));
+        searchArea = PreferencesHelper.getSearchArea(getContext());
+        trackUser = PreferencesHelper.getNeedTrackUser(getContext());
     }
 
     private static void moveCamera(

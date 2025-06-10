@@ -30,7 +30,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -56,10 +55,8 @@ import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
-import com.tom.meeter.context.profile.settings.domain.SettingsDomainService;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
-import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
@@ -104,8 +101,10 @@ public class ProfileActivity extends AppCompatActivity {
         DRAWER_FRAGMENT_TAGS.put(DRAWER_EVENTS_ID, "events_fragment_tag");
         DRAWER_FRAGMENT_TAGS.put(DRAWER_NEW_EVENT_ID, "new_event_fragment_tag");
         DRAWER_FRAGMENT_TAGS.put(DRAWER_NOTIFICATION_ID, "notifications_fragment_tag");
+
+        //DRAWER_SETTINGS_ID intentionally don't need to have a tag, because it produces an activity
+
         /*
-        DRAWER_NAMES.put(DRAWER_SETTINGS_ID, "settings_fragment_tag");
         DRAWER_ITEMS.put(DRAWER_HELP_ID, null);
         DRAWER_ITEMS.put(DRAWER_OPEN_SOURCE_ID, null);
         DRAWER_ITEMS.put(DRAWER_CONTACT_ID, null);
@@ -135,8 +134,6 @@ public class ProfileActivity extends AppCompatActivity {
     @Inject
     SettingsService settingsService;
 
-    private ProfileViewModel profileViewModel;
-
     private ServiceConnection socketServiceConnection;
     private SocketIOService socketIOService;
 
@@ -163,9 +160,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
 
-        profileViewModel = ViewModelProviders.of(this, viewModelFactory)
-              .get(ProfileViewModel.class);
-
         binding = ProfileActivityBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -176,9 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
                   Intent service = new Intent(this, SocketIOService.class);
                   service.putExtra(TOKEN_KEY, token);
                   bindService(service, socketServiceConnection, BIND_AUTO_CREATE);
-                  profileViewModel.getProfile(Constants.getAuthHeader(token));
                   setupPreferences(token);
-
               });
 
         Toolbar toolbar = binding.profileActivityToolbar;
@@ -203,30 +195,16 @@ public class ProfileActivity extends AppCompatActivity {
         settings.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                if (res.code() == 200) {
-                    // As settings exist on the server...
-                    if (SettingsDomainService.isDefaulted(ProfileActivity.this)) {
-                        // Default needs to be overwritten
-                        if (res.body() != null) {
-                            SharedPreferences.Editor edit = getDefaultSharedPreferences(ProfileActivity.this)
-                                  .edit();
-                            Integer searchArea = res.body().getSearchArea();
-                            if (searchArea != null) {
-                                edit.putInt(getString(R.string.prefs_search_area), searchArea);
-                            }
-                            Boolean needTrackUser = res.body().getNeedTrackUser();
-                            if (needTrackUser != null) {
-                                edit.putBoolean(getString(R.string.prefs_need_track_user), needTrackUser);
-                            }
-                            if (searchArea != null || needTrackUser != null) {
-                                edit.apply();
-                            }
-                        } else {
-                            Log.d(TAG, "ProfileActivity: getSettings returns null...");
-                        }
-                    }
-                    // Assume they are equals...
+                if (res.code() != 200) {
+                    // no settings on the server etc...
+                    return;
                 }
+                if (res.body() == null) {
+                    Log.d(TAG, "ProfileActivity: /settings returns null...");
+                    return;
+                }
+                // As settings exist on the server...
+                updatePreferences(res.body());
             }
 
             @Override
@@ -264,6 +242,21 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    private void updatePreferences(SettingsResponse res) {
+        SharedPreferences.Editor edit = getDefaultSharedPreferences(this).edit();
+        Integer searchArea = res.getSearchArea();
+        if (searchArea != null) {
+            edit.putInt(getString(R.string.prefs_search_area), searchArea);
+        }
+        Boolean needTrackUser = res.getNeedTrackUser();
+        if (needTrackUser != null) {
+            edit.putBoolean(getString(R.string.prefs_need_track_user), needTrackUser);
+        }
+        if (searchArea != null || needTrackUser != null) {
+            edit.apply();
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -294,7 +287,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private boolean onDrawerItemClickListener(
-          View view, int position, IDrawerItem drawerItem) {
+          View view, int position, IDrawerItem<?,?> drawerItem) {
         long identifier = drawerItem.getIdentifier();
         Log.d(TAG, "User selected drawer item: "
               + identifier + " previous was: " + lastNavItemId);
@@ -304,7 +297,9 @@ public class ProfileActivity extends AppCompatActivity {
         } else if (identifier == DRAWER_LOGOUT_ID) {
             handleLogout();
         } else if (identifier == DRAWER_SETTINGS_ID) {
-            handleSettings();
+            startActivity(new Intent(this, SettingsActivity.class));
+            drawer.setSelection(lastNavItemId, false);
+            drawer.closeDrawer();
             return true;
         } else {
             lastNavItemId = DRAWER_PROFILE_ID;
@@ -316,13 +311,6 @@ public class ProfileActivity extends AppCompatActivity {
         */
         renderSelectedFragment();
         return true;
-    }
-
-    private void handleSettings() {
-        Intent i = new Intent(this, SettingsActivity.class);
-        startActivity(i);
-        drawer.setSelection(lastNavItemId, false);
-        drawer.closeDrawer();
     }
 
     private void renderSelectedFragment() {
@@ -446,6 +434,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
+                //easter egg, just for fun
                 switchDrawerIcons();
                 logMethod(TAG, this);
             }
