@@ -75,15 +75,23 @@ public class ProfileFragment extends Fragment {
               token -> profileViewModel.getProfile(Constants.getAuthHeader(token)));
 
         profileViewModel.getUserLiveData()
-              .observe(this, user -> {
+              .observe(getViewLifecycleOwner(), user -> {
                   if (user != null) {
                       binding.userId.setText(getString(R.string.profile_user_id, user.getId()));
                       binding.userName.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
-                      binding.userGender.setText(getString(R.string.profile_gender, user.getGender()));
+                      binding.userGender.setText(getString(R.string.profile_gender, genderResolver(user.getGender())));
                       binding.userAge.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
                       binding.userInfo.setText(getString(R.string.profile_info, user.getInfo()));
                   }
               });
+    }
+
+    private String genderResolver(String gender) {
+        return switch (gender.toLowerCase()) {
+            case "female" -> getString(R.string.female_gender);
+            case "male" -> getString(R.string.male_gender);
+            default -> throw new IllegalArgumentException("#args " + gender);
+        };
     }
 
     @Override

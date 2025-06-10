@@ -6,6 +6,7 @@ import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.activity.RegistrationActivity;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
@@ -42,4 +43,6 @@ public interface AppComponent {
     void inject(RegistrationActivity registrationActivity);
 
     void inject(AccountAuthenticator accountAuthenticator);
+
+    void inject(SettingsActivity settingsActivity);
 }

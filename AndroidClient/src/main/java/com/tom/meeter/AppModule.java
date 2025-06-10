@@ -10,6 +10,7 @@ import com.tom.meeter.context.auth.service.AuthService;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.database.EventDatabase;
 import com.tom.meeter.context.profile.event.service.EventService;
+import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.database.UserDatabase;
 import com.tom.meeter.context.profile.user.service.UserService;
@@ -110,5 +111,16 @@ public class AppModule {
               .addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(AuthService.class);
+    }
+
+    @Singleton
+    @NonNull
+    @Provides
+    public SettingsService provideSettingsService() {
+        return new Retrofit.Builder()
+              .baseUrl(SERVER_URL)
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(SettingsService.class);
     }
 }

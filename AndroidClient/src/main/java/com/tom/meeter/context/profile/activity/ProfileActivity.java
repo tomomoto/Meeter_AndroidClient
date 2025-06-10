@@ -1,5 +1,6 @@
 package com.tom.meeter.context.profile.activity;
 
+import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
 import static com.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -10,6 +11,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +56,9 @@ import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
+import com.tom.meeter.context.profile.settings.domain.SettingsDomainService;
+import com.tom.meeter.context.profile.settings.message.SettingsResponse;
+import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
@@ -64,6 +70,10 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -121,6 +131,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Inject
     ViewModelFactory viewModelFactory;
+
+    @Inject
+    SettingsService settingsService;
+
     private ProfileViewModel profileViewModel;
 
     private ServiceConnection socketServiceConnection;
@@ -163,6 +177,8 @@ public class ProfileActivity extends AppCompatActivity {
                   service.putExtra(TOKEN_KEY, token);
                   bindService(service, socketServiceConnection, BIND_AUTO_CREATE);
                   profileViewModel.getProfile(Constants.getAuthHeader(token));
+                  setupPreferences(token);
+
               });
 
         Toolbar toolbar = binding.profileActivityToolbar;
@@ -180,6 +196,47 @@ public class ProfileActivity extends AppCompatActivity {
             lastNavItemId = DRAWER_PROFILE_ID;
             renderSelectedFragment();
         }
+    }
+
+    private void setupPreferences(String token) {
+        Call<SettingsResponse> settings = settingsService.getSettings(Constants.getAuthHeader(token));
+        settings.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                if (res.code() == 200) {
+                    // As settings exist on the server...
+                    if (SettingsDomainService.isDefaulted(ProfileActivity.this)) {
+                        // Default needs to be overwritten
+                        if (res.body() != null) {
+                            SharedPreferences.Editor edit = getDefaultSharedPreferences(ProfileActivity.this)
+                                  .edit();
+                            Integer searchArea = res.body().getSearchArea();
+                            if (searchArea != null) {
+                                edit.putInt(getString(R.string.prefs_search_area), searchArea);
+                            }
+                            Boolean needTrackUser = res.body().getNeedTrackUser();
+                            if (needTrackUser != null) {
+                                edit.putBoolean(getString(R.string.prefs_need_track_user), needTrackUser);
+                            }
+                            if (searchArea != null || needTrackUser != null) {
+                                edit.apply();
+                            }
+                        } else {
+                            Log.d(TAG, "ProfileActivity: getSettings returns null...");
+                        }
+                    }
+                    // Assume they are equals...
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SettingsResponse> call, Throwable t) {
+                int serverIsUnreachable = R.string.server_is_unreachable;
+                Toast.makeText(getApplicationContext(), serverIsUnreachable, Toast.LENGTH_SHORT)
+                      .show();
+                Log.d(TAG, "ProfileActivity: " + getResources().getString(serverIsUnreachable));
+            }
+        });
     }
 
     @Override
@@ -316,6 +373,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
+        getDefaultSharedPreferences(ProfileActivity.this)
+              .edit().clear().apply();
         Account[] accs = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             accountManager.removeAccount(
