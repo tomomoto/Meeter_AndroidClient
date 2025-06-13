@@ -64,7 +64,6 @@ import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.http.AuthInvalidator;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -132,9 +131,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView txtName, txtWebsite;
 
     private FloatingActionButton fab;
-
-    @Inject
-    ViewModelFactory viewModelFactory;
     @Inject
     SettingsService settingsService;
     @Inject
@@ -215,6 +211,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void init(String token, boolean isSavedInstanceStateExist) {
+        logMethod(TAG, this);
+
         binding = ProfileActivityBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);

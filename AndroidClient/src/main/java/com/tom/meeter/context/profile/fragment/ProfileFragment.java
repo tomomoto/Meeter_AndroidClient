@@ -19,7 +19,6 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.FragmentProfileBinding;
-import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.text.ParseException;

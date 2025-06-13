@@ -65,19 +65,6 @@ public class Launcher extends AppCompatActivity {
         setContentView(binding.getRoot());
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
-        logMethod(TAG, this);
-        return super.onCreateView(parent, name, context, attrs);
-    }
-
-    @Override
-    public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
-        logMethod(TAG, this);
-        return super.onCreateView(name, context, attrs);
-    }
-
     @Override
     public void onPostCreate(
           @Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
