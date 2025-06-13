@@ -4,6 +4,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 
 import android.util.Log;
 
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,19 +12,19 @@ import androidx.lifecycle.ViewModel;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileViewModel extends ViewModel {
 
     private static final String TAG = ProfileViewModel.class.getCanonicalName();
 
-    private MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
     private final UserService userService;
 
@@ -33,27 +34,20 @@ public class ProfileViewModel extends ViewModel {
         this.userService = userService;
     }
 
-    public void getProfile(String token, Runnable onAuthFail) {
-        userService.getProfile(Constants.getAuthHeader(token)).enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.code() == HttpCodes.OK && response.body() != null) {
-                    userLiveData.setValue(response.body());
-                    return;
-                }
-                //TODO token invalidation
-                if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                    onAuthFail.run();
-                    return;
-                }
-                Log.d(TAG, "/profile: " + response.code() + ":" + response.body());
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
-        });
+    public void getProfile(String token, Fragment fragment) {
+        userService.getProfile(Constants.getAuthHeader(token)).enqueue(
+              new ActivityRestarterOnAuthFailure<>(fragment) {
+                  @Override
+                  public void onResponse(Call<User> call, Response<User> response) {
+                      super.onResponse(call, response);
+                      if (response.code() == HttpCodes.OK && response.body() != null) {
+                          userLiveData.setValue(response.body());
+                          return;
+                      }
+                      Log.i(TAG, "/profile: " + response.code() + " : " + response.body());
+                  }
+              }
+        );
     }
 
     @Override

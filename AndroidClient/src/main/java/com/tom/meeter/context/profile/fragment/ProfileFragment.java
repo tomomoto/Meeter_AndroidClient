@@ -17,8 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
-import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
@@ -76,18 +74,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         logMethod(TAG, this);
-
-        //AuthHelper.setToken(accountManager, Launcher.EXPIRED);
-
-        profileViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProfileViewModel.class);
-        profileViewModel.getProfile(
-              peekToken(accountManager),
-              () -> {
-
-              }
-        );
+        profileViewModel = ViewModelProviders.of(this, viewModelFactory)
+              .get(ProfileViewModel.class);
+        profileViewModel.getProfile(peekToken(accountManager), this);
         profileViewModel.getUserLiveData()
               .observe(getViewLifecycleOwner(), user -> {
                   if (user != null) {

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Meeter</string>
     <string name="action_settings">Настройки</string>
-    <string name="profile_activity_label">Meeter</string>
+    <string name="profile_activity_label">Профиль</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
     <string name="repeat_password">Повторите пароль</string>

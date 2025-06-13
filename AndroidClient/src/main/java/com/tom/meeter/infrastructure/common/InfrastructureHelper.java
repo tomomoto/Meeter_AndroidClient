@@ -1,9 +1,14 @@
 package com.tom.meeter.infrastructure.common;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 public class InfrastructureHelper {
 
@@ -41,5 +46,34 @@ public class InfrastructureHelper {
         4 - target
         * */
         return Thread.currentThread().getStackTrace()[4].getMethodName() + METHOD_ENDING;
+    }
+
+    public static void recreateActivityFromFragment(Fragment me) {
+        new Handler().post(
+              () -> {
+                  FragmentActivity activity = me.getActivity();
+                  activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .remove(me)
+                        .commit();
+                  activity.recreate();
+              });
+    }
+
+    public static void restartActivityFromFragment(Fragment me) {
+        new Handler().post(
+              () -> {
+                  FragmentActivity activity = me.getActivity();
+                  Intent intent = activity.getIntent();
+                  intent.addFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                              | Intent.FLAG_ACTIVITY_NEW_TASK
+                              | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                  activity.overridePendingTransition(0, 0);
+                  activity.finish();
+
+                  activity.overridePendingTransition(0, 0);
+                  me.startActivity(intent);
+              });
     }
 }

@@ -4,6 +4,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 
 import android.util.Log;
 
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 import com.tom.meeter.context.profile.event.domain.Event;
 import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.List;
@@ -18,14 +20,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileEventsViewModel extends ViewModel {
 
     private static final String TAG = ProfileEventsViewModel.class.getCanonicalName();
 
-    private MutableLiveData<List<Event>> profileEventsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Event>> profileEventsLiveData = new MutableLiveData<>();
 
     private final UserService userService;
 
@@ -35,26 +36,20 @@ public class ProfileEventsViewModel extends ViewModel {
         this.userService = userService;
     }
 
-    public void getProfileEvents(String token, Runnable onAuthFail) {
-        userService.getProfileEvents(Constants.getAuthHeader(token)).enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
-                if (response.code() == HttpCodes.OK && response.body() != null) {
-                    profileEventsLiveData.setValue(response.body());
-                    return;
-                }
-                if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                    onAuthFail.run();
-                    return;
-                }
-                Log.d(TAG, "/profile: " + response.code() + ":" + response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<Event>> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
-        });
+    public void getProfileEvents(String token, Fragment fragment) {
+        userService.getProfileEvents(Constants.getAuthHeader(token)).enqueue(
+              new ActivityRestarterOnAuthFailure<>(fragment) {
+                  @Override
+                  public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                      super.onResponse(call, response);
+                      if (response.code() == HttpCodes.OK && response.body() != null) {
+                          profileEventsLiveData.setValue(response.body());
+                          return;
+                      }
+                      Log.i(TAG, "/profile/events: " + response.code() + " : " + response.body());
+                  }
+              }
+        );
     }
 
     @Override

@@ -25,7 +25,7 @@ import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.SettingsActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
-import com.tom.meeter.infrastructure.http.AuthInvalidator;
+import com.tom.meeter.infrastructure.http.AuthInvalidatorOnAuthFail;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -112,24 +112,20 @@ public class SettingsActivity extends AppCompatActivity {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
                     Constants.getAuthHeader(AuthHelper.peekToken(accountManager)))
-              .enqueue(
-                    new AuthInvalidator<>(this, accountManager,
-                          freshToken -> sendSavePrefsRetry(freshToken, searchArea, trackUser),
-                          () -> {
-                              Log.d(TAG, "SettingsActivity: canceled auth. ");
-                              startActivity(new Intent(this, Launcher.class));
-                          }) {
-                        @Override
-                        public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                            if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
-                                Log.d(TAG, "SettingsActivity: created/updated server settings.");
-                            }
-                            Log.d(TAG, "SettingsActivity: failed request. " + res.code() + ":" + res.body());
-                            if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
-                                super.onResponse(call, res);
-                            }
-                        }
-                    });
+              .enqueue(new AuthInvalidatorOnAuthFail<>(this, accountManager,
+                    freshToken -> sendSavePrefsRetry(freshToken, searchArea, trackUser),
+                    () -> {
+                        Log.d(TAG, "SettingsActivity: canceled auth. ");
+                        startActivity(new Intent(this, Launcher.class));
+                    }) {
+                  @Override
+                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                      super.onResponse(call, res);
+                      if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
+                          Log.d(TAG, "SettingsActivity: created/updated server settings.");
+                      }
+                  }
+              });
     }
 
     private void sendSavePrefsRetry(String token, int searchArea, boolean trackUser) {

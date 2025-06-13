@@ -65,12 +65,7 @@ public class UserEventsFragment extends Fragment {
         profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileEventsViewModel.class);
 
-        profileEventsViewModel.getProfileEvents(
-              peekToken(accountManager),
-              () -> {
-                  //FragmentActivity activity = this.getActivity();
-                  //startActivity(new Intent(getContext(), ProfileActivity.class));
-              });
+        profileEventsViewModel.getProfileEvents(peekToken(accountManager), this);
 
         adapter = new RecycleViewUserEventsAdapter();
         profileEventsViewModel.getProfileEventsLiveData()

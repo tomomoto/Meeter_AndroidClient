@@ -62,7 +62,7 @@ import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
-import com.tom.meeter.infrastructure.http.AuthInvalidator;
+import com.tom.meeter.infrastructure.http.AuthInvalidatorOnAuthFail;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -142,6 +142,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     private AccountManager accountManager;
 
+    public ProfileActivity() {
+        logMethod(TAG, this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +174,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void checkExistingToken(boolean isSavedInstanceStateExist) {
         Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
         if (accounts.length != 1) {
-            throw AuthHelper.NOT_IMPLEMENTED;
+            throw AuthHelper.freshNotImplementedError();
         }
         Account account = accounts[0];
         String token = accountManager.peekAuthToken(account, AUTH_TYPE);
@@ -189,29 +193,26 @@ public class ProfileActivity extends AppCompatActivity {
                           finish();
                           return;
                       }
-                      init(result.getString(AccountManager.KEY_AUTHTOKEN), isSavedInstanceStateExist);
+                      onInit(result.getString(AccountManager.KEY_AUTHTOKEN), isSavedInstanceStateExist);
                   }, null);
             return;
         }
         profileService.getProfile(Constants.getAuthHeader(token)).enqueue(
-              new AuthInvalidator<>(
+              new AuthInvalidatorOnAuthFail<>(
                     this, accountManager,
-                    (freshToken) -> init(freshToken, isSavedInstanceStateExist),
+                    (freshToken) -> onInit(freshToken, isSavedInstanceStateExist),
                     this::finish) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
+                      super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK) {
-                          init(token, isSavedInstanceStateExist);
-                          return;
-                      }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          super.onResponse(call, response);
+                          onInit(token, isSavedInstanceStateExist);
                       }
                   }
               });
     }
 
-    private void init(String token, boolean isSavedInstanceStateExist) {
+    private void onInit(String token, boolean isSavedInstanceStateExist) {
         logMethod(TAG, this);
 
         binding = ProfileActivityBinding.inflate(getLayoutInflater());
@@ -241,21 +242,17 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupPreferences(String token) {
         Call<SettingsResponse> settings = settingsService.getSettings(Constants.getAuthHeader(token));
         settings.enqueue(
-              new AuthInvalidator<>(this, accountManager,
+              new AuthInvalidatorOnAuthFail<>(this, accountManager,
                     this::setupPreferencesRetry,
                     this::finish) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                      super.onResponse(call, res);
                       if (res.code() == HttpCodes.NOT_FOUND) {
                           // As no settings on the server ...
                           return;
                       }
-                      if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          super.onResponse(call, res);
-                          return;
-                      }
                       if (res.body() == null) {
-                          Log.d(TAG, "ProfileActivity: /settings returns null...");
                           return;
                       }
                       // As settings exist on the server...
@@ -264,8 +261,8 @@ public class ProfileActivity extends AppCompatActivity {
               });
     }
 
-    private void setupPreferencesRetry(String token) {
-        settingsService.getSettings(Constants.getAuthHeader(token))
+    private void setupPreferencesRetry(String freshToken) {
+        settingsService.getSettings(Constants.getAuthHeader(freshToken))
               .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
@@ -409,6 +406,9 @@ public class ProfileActivity extends AppCompatActivity {
         // So using runnable, the fragment is loaded with cross fade effect
         // This effect can be seen in GMail app
 
+/*        binding.profileActivityFrame.removeAllViews();
+        Fragment fragment = createFragment(lastNavItemId);
+        binding.profileActivityFrame.addView(fragment.getView());*/
         // If mPendingRunnable is not null, then add to the message queue
         replaceFragmentHandler.post(
               replaceFragment(

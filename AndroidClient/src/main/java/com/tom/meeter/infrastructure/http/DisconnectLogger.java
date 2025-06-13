@@ -1,6 +1,6 @@
 package com.tom.meeter.infrastructure.http;
 
-import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -12,17 +12,18 @@ import retrofit2.Callback;
 public abstract class DisconnectLogger<T> implements Callback<T> {
 
     private static final String TAG = DisconnectLogger.class.getCanonicalName();
-    protected final Activity activity;
 
-    public DisconnectLogger(Activity activity) {
-        this.activity = activity;
+    private final Context ctx;
+
+    public DisconnectLogger(Context ctx) {
+        this.ctx = ctx;
     }
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        Toast.makeText(activity, R.string.server_is_unreachable, Toast.LENGTH_SHORT)
-              .show();
-        Log.d(TAG, "DisconnectLogger: " + activity.getComponentName() + ": "
-              + activity.getResources().getString(R.string.server_is_unreachable));
+        Toast.makeText(ctx, R.string.server_is_unreachable, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "DisconnectLogger for " + ctx.getPackageName()
+              + " : " + ctx.getResources().getString(R.string.server_is_unreachable)
+              + ", error: " + t.getMessage());
     }
 }

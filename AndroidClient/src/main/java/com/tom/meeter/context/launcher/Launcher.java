@@ -10,18 +10,14 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PersistableBundle;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,7 +28,7 @@ import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.databinding.LauncherBinding;
 import com.tom.meeter.infrastructure.common.Constants;
-import com.tom.meeter.infrastructure.http.AuthInvalidator;
+import com.tom.meeter.infrastructure.http.AuthInvalidatorOnAuthFail;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
@@ -150,18 +146,15 @@ public class Launcher extends AppCompatActivity {
             return;
         }
         profileService.getProfile(Constants.getAuthHeader(token)).enqueue(
-              new AuthInvalidator<>(
+              new AuthInvalidatorOnAuthFail<>(
                     this, accountManager,
                     (freshToken) -> startActivity(new Intent(this, ProfileActivity.class)),
                     this::finish) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
+                      super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK) {
                           startActivity(new Intent(Launcher.this, ProfileActivity.class));
-                          return;
-                      }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          super.onResponse(call, response);
                       }
                   }
               });
