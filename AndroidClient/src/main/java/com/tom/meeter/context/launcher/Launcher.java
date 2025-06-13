@@ -33,6 +33,7 @@ import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.databinding.LauncherBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.http.AuthInvalidator;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
 
@@ -155,11 +156,11 @@ public class Launcher extends AppCompatActivity {
                     this::finish) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
-                      if (response.code() == 200) {
+                      if (response.code() == HttpCodes.OK) {
                           startActivity(new Intent(Launcher.this, ProfileActivity.class));
                           return;
                       }
-                      if (response.code() == 401) {
+                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
                           super.onResponse(call, response);
                       }
                   }

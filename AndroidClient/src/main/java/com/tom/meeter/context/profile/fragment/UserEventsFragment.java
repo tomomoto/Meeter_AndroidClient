@@ -19,7 +19,6 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.profile.adapter.RecycleViewUserEventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
-import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -66,12 +65,16 @@ public class UserEventsFragment extends Fragment {
         profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileEventsViewModel.class);
 
-        String token = peekToken(accountManager);
-        profileEventsViewModel.getProfileEvents(Constants.getAuthHeader(token));
+        profileEventsViewModel.getProfileEvents(
+              peekToken(accountManager),
+              () -> {
+                  //FragmentActivity activity = this.getActivity();
+                  //startActivity(new Intent(getContext(), ProfileActivity.class));
+              });
 
         adapter = new RecycleViewUserEventsAdapter();
         profileEventsViewModel.getProfileEventsLiveData()
-              .observe(this, ev -> adapter.setData(ev));
+              .observe(getViewLifecycleOwner(), ev -> adapter.setData(ev));
 
         binding.userEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.userEventsFragmentRecyclerView.setAdapter(adapter);

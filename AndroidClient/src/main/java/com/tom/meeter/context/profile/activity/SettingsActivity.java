@@ -27,6 +27,7 @@ import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.http.AuthInvalidator;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
 
@@ -120,11 +121,11 @@ public class SettingsActivity extends AppCompatActivity {
                           }) {
                         @Override
                         public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                            if (res.code() == 200 || res.code() == 201) {
+                            if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
                                 Log.d(TAG, "SettingsActivity: created/updated server settings.");
                             }
                             Log.d(TAG, "SettingsActivity: failed request. " + res.code() + ":" + res.body());
-                            if (res.code() == 401) {
+                            if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
                                 super.onResponse(call, res);
                             }
                         }
@@ -138,7 +139,7 @@ public class SettingsActivity extends AppCompatActivity {
               .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      if (res.code() == 200 || res.code() == 201) {
+                      if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
                           Log.d(TAG, "SettingsActivity: created/updated server settings on retry.");
                           return;
                       }

@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.profile.event.domain.Event;
 import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.List;
 
@@ -33,12 +35,16 @@ public class ProfileEventsViewModel extends ViewModel {
         this.userService = userService;
     }
 
-    public void getProfileEvents(String auth) {
-        userService.getProfileEvents(auth).enqueue(new Callback<>() {
+    public void getProfileEvents(String token, Runnable onAuthFail) {
+        userService.getProfileEvents(Constants.getAuthHeader(token)).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
-                if (response.code() == 200 && response.body() != null) {
+                if (response.code() == HttpCodes.OK && response.body() != null) {
                     profileEventsLiveData.setValue(response.body());
+                    return;
+                }
+                if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                    onAuthFail.run();
                     return;
                 }
                 Log.d(TAG, "/profile: " + response.code() + ":" + response.body());

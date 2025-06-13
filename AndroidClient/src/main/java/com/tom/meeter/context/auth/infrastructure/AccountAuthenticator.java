@@ -17,6 +17,7 @@ import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.message.LoginBody;
 import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -97,9 +98,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                if (resp.code() == 200) {
+                if (resp.code() == HttpCodes.OK) {
                     authToken = resp.body().getToken();
-                } else if (resp.code() == 401) {
+                } else if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
                     Log.d(TAG, "AccountAuthenticator: "
                           + context.getResources().getString(R.string.wrong_credentials));
                 }

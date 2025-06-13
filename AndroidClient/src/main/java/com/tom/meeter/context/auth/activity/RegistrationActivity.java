@@ -24,6 +24,7 @@ import com.tom.meeter.context.auth.message.RegisterBody;
 import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
 import com.tom.meeter.databinding.RegisterActivityBinding;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
 
@@ -130,7 +131,7 @@ public class RegistrationActivity extends AppCompatActivity {
         registerCall.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-                if (response.code() == 200) {
+                if (response.code() == HttpCodes.OK) {
                     Bundle bundle = new Bundle();
                     bundle.putString(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);

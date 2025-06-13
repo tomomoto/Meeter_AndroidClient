@@ -25,6 +25,7 @@ import com.tom.meeter.context.auth.message.LoginBody;
 import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
 import com.tom.meeter.databinding.LoginActivityBinding;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
 
@@ -165,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
         loginCall.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-                if (response.code() == 200) {
+                if (response.code() == HttpCodes.OK) {
                     Intent intent = new Intent();
                     intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);

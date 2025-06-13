@@ -64,6 +64,7 @@ import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.http.AuthInvalidator;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -199,11 +200,11 @@ public class ProfileActivity extends AppCompatActivity {
                     this::finish) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
-                      if (response.code() == 200) {
+                      if (response.code() == HttpCodes.OK) {
                           init(token, isSavedInstanceStateExist);
                           return;
                       }
-                      if (response.code() == 401) {
+                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
                           super.onResponse(call, response);
                       }
                   }
@@ -245,11 +246,11 @@ public class ProfileActivity extends AppCompatActivity {
                     this::finish) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      if (res.code() == 404) {
+                      if (res.code() == HttpCodes.NOT_FOUND) {
                           // As no settings on the server ...
                           return;
                       }
-                      if (res.code() == 401) {
+                      if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
                           super.onResponse(call, res);
                           return;
                       }
@@ -268,7 +269,7 @@ public class ProfileActivity extends AppCompatActivity {
               .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      if (res.code() == 404) {
+                      if (res.code() == HttpCodes.NOT_FOUND) {
                           // no settings on the server etc...
                           return;
                       }
