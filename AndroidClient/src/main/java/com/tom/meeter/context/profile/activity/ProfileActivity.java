@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,6 +58,8 @@ import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.http.AuthInvalidator;
+import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.util.HashMap;
@@ -69,7 +70,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -190,28 +190,47 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupPreferences(String token) {
         Call<SettingsResponse> settings = settingsService.getSettings(Constants.getAuthHeader(token));
-        settings.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                if (res.code() != 200) {
-                    // no settings on the server etc...
-                    return;
-                }
-                if (res.body() == null) {
-                    Log.d(TAG, "ProfileActivity: /settings returns null...");
-                    return;
-                }
-                // As settings exist on the server...
-                updatePreferences(res.body());
-            }
+        settings.enqueue(
+              new AuthInvalidator<>(this, accountManager,
+                    this::setupPreferencesRetry,
+                    this::finish) {
+                  @Override
+                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                      if (res.code() == 404) {
+                          // As no settings on the server ...
+                          return;
+                      }
+                      if (res.code() == 401) {
+                          super.onResponse(call, res);
+                          return;
+                      }
+                      if (res.body() == null) {
+                          Log.d(TAG, "ProfileActivity: /settings returns null...");
+                          return;
+                      }
+                      // As settings exist on the server...
+                      updatePreferences(res.body());
+                  }
+              });
+    }
 
-            @Override
-            public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), R.string.server_is_unreachable, Toast.LENGTH_SHORT)
-                      .show();
-                Log.d(TAG, "ProfileActivity: " + getResources().getString(R.string.server_is_unreachable));
-            }
-        });
+    private void setupPreferencesRetry(String token) {
+        settingsService.getSettings(Constants.getAuthHeader(token))
+              .enqueue(new DisconnectLogger<>(this) {
+                  @Override
+                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                      if (res.code() == 404) {
+                          // no settings on the server etc...
+                          return;
+                      }
+                      if (res.body() == null) {
+                          Log.d(TAG, "ProfileActivity: /settings returns null on retry...");
+                          return;
+                      }
+                      // As settings exist on the server...
+                      updatePreferences(res.body());
+                  }
+              });
     }
 
     @Override
