@@ -3,11 +3,11 @@ package com.tom.meeter.context.profile.activity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +17,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.profile.fragment.SettingsFragment;
 import com.tom.meeter.context.profile.settings.message.SettingsCreateOrUpdate;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
@@ -24,11 +25,12 @@ import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.SettingsActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
+import com.tom.meeter.infrastructure.http.AuthInvalidator;
+import com.tom.meeter.infrastructure.http.DisconnectLogger;
 
 import javax.inject.Inject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -98,36 +100,49 @@ public class SettingsActivity extends AppCompatActivity {
         logMethod(TAG, this);
         int searchArea = PreferencesHelper.getSearchArea(this);
         boolean trackUser = PreferencesHelper.getNeedTrackUser(this);
-        if (searchAreaBeforeChange == searchArea && trackUserBeforeChange == trackUser) {
-            super.onBackPressed();
-            return;
+        if (searchAreaBeforeChange != searchArea || trackUserBeforeChange != trackUser) {
+            sendSavePrefs(searchArea, trackUser);
         }
-        AuthHelper.setupTokenAction(
-              accountManager, this,
-              token -> sendSavePrefs(token, searchArea, trackUser));
+        startActivity(new Intent(this, ProfileActivity.class));
         super.onBackPressed();
     }
 
-    private void sendSavePrefs(String token, int searchArea, boolean trackUser) {
+    private void sendSavePrefs(int searchArea, boolean trackUser) {
+        settingsService.createOrUpdateSettings(
+                    new SettingsCreateOrUpdate(searchArea, trackUser),
+                    Constants.getAuthHeader(AuthHelper.peekToken(accountManager)))
+              .enqueue(
+                    new AuthInvalidator<>(this, accountManager,
+                          freshToken -> sendSavePrefsRetry(freshToken, searchArea, trackUser),
+                          () -> {
+                              Log.d(TAG, "SettingsActivity: canceled auth. ");
+                              startActivity(new Intent(this, Launcher.class));
+                          }) {
+                        @Override
+                        public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                            if (res.code() == 200 || res.code() == 201) {
+                                Log.d(TAG, "SettingsActivity: created/updated server settings.");
+                            }
+                            Log.d(TAG, "SettingsActivity: failed request. " + res.code() + ":" + res.body());
+                            if (res.code() == 401) {
+                                super.onResponse(call, res);
+                            }
+                        }
+                    });
+    }
+
+    private void sendSavePrefsRetry(String token, int searchArea, boolean trackUser) {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
                     Constants.getAuthHeader(token))
-              .enqueue(new Callback<>() {
+              .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == 200 || res.code() == 201) {
-                          Log.d(TAG, "SettingsActivity: created/updated server settings.");
-                      } else {
-                          Log.d(TAG, "SettingsActivity: failed request. " + res.body());
+                          Log.d(TAG, "SettingsActivity: created/updated server settings on retry.");
+                          return;
                       }
-                  }
-
-                  @Override
-                  public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                      int serverIsUnreachable = R.string.server_is_unreachable;
-                      Toast.makeText(getApplicationContext(), serverIsUnreachable, Toast.LENGTH_SHORT)
-                            .show();
-                      Log.d(TAG, "SettingsActivity: " + getResources().getString(serverIsUnreachable));
+                      Log.d(TAG, "SettingsActivity: failed retry request. " + res.body());
                   }
               });
     }

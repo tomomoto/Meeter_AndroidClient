@@ -38,6 +38,7 @@ public class ProfileViewModel extends ViewModel {
                 if (response.body() != null) {
                     userLiveData.setValue(response.body());
                 } else {
+                    //TODO token invalidation
                     Log.d(TAG, "Response is null.");
                 }
             }

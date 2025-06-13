@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity {
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             accountManager.addAccountExplicitly(account, pass, null);
-            accountManager.setAuthToken(account, AccountAuthenticator.ACCOUNT_TYPE, token);
+            accountManager.setAuthToken(account, AccountAuthenticator.AUTH_TYPE, token);
         } else {
             accountManager.setPassword(account, pass);
         }

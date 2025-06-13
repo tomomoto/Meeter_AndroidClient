@@ -1,6 +1,6 @@
 package com.tom.meeter.context.profile.fragment;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -60,19 +60,14 @@ public class UserEventsFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        logMethod(TAG, this);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-        profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProfileEventsViewModel.class);
+        profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory)
+              .get(ProfileEventsViewModel.class);
 
-        setupTokenAction(accountManager, this.getActivity(),
-              token -> profileEventsViewModel.getProfileEvents(Constants.getAuthHeader(token)));
+        String token = peekToken(accountManager);
+        profileEventsViewModel.getProfileEvents(Constants.getAuthHeader(token));
 
         adapter = new RecycleViewUserEventsAdapter();
         profileEventsViewModel.getProfileEventsLiveData()

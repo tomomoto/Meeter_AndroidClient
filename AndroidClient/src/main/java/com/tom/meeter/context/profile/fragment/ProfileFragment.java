@@ -1,6 +1,6 @@
 package com.tom.meeter.context.profile.fragment;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -64,16 +64,23 @@ public class ProfileFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private String genderResolver(String gender) {
+        return switch (gender.toLowerCase()) {
+            case "female" -> getString(R.string.female_gender);
+            case "male" -> getString(R.string.male_gender);
+            default -> throw new IllegalArgumentException("#args " + gender);
+        };
+    }
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         logMethod(TAG, this);
 
         profileViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProfileViewModel.class);
-
-        setupTokenAction(accountManager, this.getActivity(),
-              token -> profileViewModel.getProfile(Constants.getAuthHeader(token)));
-
+        String token = peekToken(accountManager);
+        profileViewModel.getProfile(Constants.getAuthHeader(token));
         profileViewModel.getUserLiveData()
               .observe(getViewLifecycleOwner(), user -> {
                   if (user != null) {
@@ -84,20 +91,6 @@ public class ProfileFragment extends Fragment {
                       binding.userInfo.setText(getString(R.string.profile_info, user.getInfo()));
                   }
               });
-    }
-
-    private String genderResolver(String gender) {
-        return switch (gender.toLowerCase()) {
-            case "female" -> getString(R.string.female_gender);
-            case "male" -> getString(R.string.male_gender);
-            default -> throw new IllegalArgumentException("#args " + gender);
-        };
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        logMethod(TAG, this);
     }
 
     @Override

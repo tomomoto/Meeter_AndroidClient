@@ -1,7 +1,7 @@
 package com.tom.meeter.context.profile.activity;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
 import static com.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -164,14 +164,12 @@ public class ProfileActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        setupTokenAction(accountManager, this,
-              token -> {
-                  Log.d(TAG, "ProfileActivity binding SocketIOService");
-                  Intent service = new Intent(this, SocketIOService.class);
-                  service.putExtra(TOKEN_KEY, token);
-                  bindService(service, socketServiceConnection, BIND_AUTO_CREATE);
-                  setupPreferences(token);
-              });
+        String token = peekToken(accountManager);
+        Log.d(TAG, "ProfileActivity binding SocketIOService");
+        Intent service = new Intent(this, SocketIOService.class);
+        service.putExtra(TOKEN_KEY, token);
+        bindService(service, socketServiceConnection, BIND_AUTO_CREATE);
+        setupPreferences(token);
 
         Toolbar toolbar = binding.profileActivityToolbar;
         setSupportActionBar(toolbar);
@@ -209,10 +207,9 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                int serverIsUnreachable = R.string.server_is_unreachable;
-                Toast.makeText(getApplicationContext(), serverIsUnreachable, Toast.LENGTH_SHORT)
+                Toast.makeText(getApplicationContext(), R.string.server_is_unreachable, Toast.LENGTH_SHORT)
                       .show();
-                Log.d(TAG, "ProfileActivity: " + getResources().getString(serverIsUnreachable));
+                Log.d(TAG, "ProfileActivity: " + getResources().getString(R.string.server_is_unreachable));
             }
         });
     }
@@ -287,7 +284,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private boolean onDrawerItemClickListener(
-          View view, int position, IDrawerItem<?,?> drawerItem) {
+          View view, int position, IDrawerItem<?, ?> drawerItem) {
         long identifier = drawerItem.getIdentifier();
         Log.d(TAG, "User selected drawer item: "
               + identifier + " previous was: " + lastNavItemId);
@@ -410,8 +407,11 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             result = new ProfileFragment();
         }
+
+        // DRAWER_SETTINGS_ID intentionally don't need to have a fragment mapping
+        // because it produces an activity
+
         /*TODO: not set
-                DRAWER_SETTINGS_ID = 10;
                 DRAWER_HELP_ID = 11;
                 DRAWER_OPEN_SOURCE_ID = 12;
                 DRAWER_CONTACT_ID = 13;

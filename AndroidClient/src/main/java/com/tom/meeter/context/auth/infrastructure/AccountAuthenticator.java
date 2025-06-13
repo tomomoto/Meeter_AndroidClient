@@ -9,20 +9,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.tom.meeter.App;
+import com.tom.meeter.R;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.message.LoginBody;
 import com.tom.meeter.context.auth.message.TokenResponse;
 import com.tom.meeter.context.auth.service.AuthService;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 import javax.inject.Inject;
 
 import retrofit2.Response;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
+
+    private static final String TAG = AccountAuthenticator.class.getCanonicalName();
 
     public static final String ACCOUNT_TYPE_KEY = "account-type";
     public static final String ACCOUNT_TYPE = "com.tom.meeter.account";
@@ -81,28 +86,42 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         if (TextUtils.isEmpty(authToken)) {
             final String password = accountManager.getPassword(account);
             if (password != null) {
+                Response<TokenResponse> resp;
                 try {
-                    Response<TokenResponse> execute = authService.login(new LoginBody(account.name, password))
+                    resp = authService.login(new LoginBody(account.name, password))
                           .execute();
-                    authToken = execute.body().getToken();
+                } catch (ConnectException e) {
+                    Log.d(TAG, "AccountAuthenticator: "
+                          + context.getResources().getString(R.string.server_is_unreachable));
+                    return getBundleForFailedSignIn(response, account, authTokenType);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                }
+                if (resp.code() == 200) {
+                    authToken = resp.body().getToken();
+                } else if (resp.code() == 401) {
+                    Log.d(TAG, "AccountAuthenticator: "
+                          + context.getResources().getString(R.string.wrong_credentials));
                 }
             }
         }
 
-        // If we get an authToken - we return it
-        if (!TextUtils.isEmpty(authToken)) {
-            final Bundle result = new Bundle();
-            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-            result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-            return result;
+        if (TextUtils.isEmpty(authToken)) {
+            // If we get here, then we couldn't access the user's password - so we
+            // need to re-prompt them for their credentials. We do that by creating
+            // an intent to display our LoginActivity.
+            return getBundleForFailedSignIn(response, account, authTokenType);
         }
+        // If we get an authToken - we return it
+        final Bundle result = new Bundle();
+        result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+        result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+        result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
+        return result;
+    }
 
-        // If we get here, then we couldn't access the user's password - so we
-        // need to re-prompt them for their credentials. We do that by creating
-        // an intent to display our LoginActivity.
+    private Bundle getBundleForFailedSignIn(
+          AccountAuthenticatorResponse response, Account account, String authTokenType) {
         Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(ACCOUNT_TYPE_KEY, account.type);

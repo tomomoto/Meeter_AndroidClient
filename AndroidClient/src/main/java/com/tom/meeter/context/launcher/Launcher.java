@@ -1,6 +1,7 @@
 package com.tom.meeter.context.launcher;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.setupTokenAction;
+import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
+import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.AUTH_TYPE;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -9,47 +10,70 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.databinding.LauncherBinding;
+import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.http.AuthInvalidator;
 
 import java.io.IOException;
-import java.util.function.Consumer;
+
+import javax.inject.Inject;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class Launcher extends AppCompatActivity {
 
     private static final String TAG = Launcher.class.getCanonicalName();
+    public static final String EXPIRED =
+          "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoidXNlciIsImlkIjoiOTg4YmM3NzItZDVmNC00YjFmLWEzNDYtMjc3Ym" +
+                "E0YzMxZjg3Iiwic3ViIjoiMSIsImlhdCI6MTc0OTU2Nzk5MiwiZXhwIjoxNzQ5NzExOTkyfQ.-Yjws02s" +
+                "kCu_StFdoe7jZefpHkXUqKhuyXKIYLNBMdk";
     private AccountManager accountManager;
+
+    private LauncherBinding binding;
+
+    @Inject
+    UserService profileService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        setContentView(R.layout.launcher);
+        ((App) getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this);
+        binding = LauncherBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
     }
 
+    @Nullable
     @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+    public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
         logMethod(TAG, this);
         return super.onCreateView(parent, name, context, attrs);
     }
 
     @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs) {
+    public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
         logMethod(TAG, this);
         return super.onCreateView(name, context, attrs);
     }
@@ -72,42 +96,86 @@ public class Launcher extends AppCompatActivity {
         super.onStart();
         logMethod(TAG, this);
 
-        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        new Handler(Looper.getMainLooper())
+              .post(this::initialize);
+    }
 
+    private void initialize() {
+        Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
         if (accounts.length == 0) {
-            addNewAccount(
-                  bundle -> {
-                      showMessage(this, getString(R.string.account_created));
-                      Log.d(TAG, "AddNewAccount Bundle is " + bundle);
-                      checkTokenAndStartProfileActivity();
-                  });
+            createAccountAndContinue();
         } else if (accounts.length == 1) {
-            showMessage(this, getString(R.string.check_token));
-            checkTokenAndStartProfileActivity();
+            //accountManager.setAuthToken(accounts[0], AUTH_TYPE, EXPIRED);
+            showMessage(Launcher.this, getString(R.string.check_token));
+            checkExistingToken(accounts[0]);
         } else {
-            removeAllAccounts(accounts, accountManager, this);
-            addNewAccount(
-                  bundle -> {
-                      showMessage(this, "Account was created");
-                      Log.d(TAG, "AddNewAccount Bundle is " + bundle);
-                      checkTokenAndStartProfileActivity();
-                  });
+            removeAllAccounts();
+            createAccountAndContinue();
         }
     }
 
-    private static void removeAllAccounts(
-          Account[] accounts, AccountManager am, Activity activity) {
-        for (Account acc : accounts) {
-            Log.d(TAG, "Acc :" + acc.toString());
-            removeAccount(acc, am, activity);
+    private void createAccountAndContinue() {
+        accountManager.addAccount(
+              ACCOUNT_TYPE, AUTH_TYPE, null, null, this,
+              addAccountBundleF -> {
+                  Bundle bnd;
+                  try {
+                      bnd = addAccountBundleF.getResult();
+                  } catch (OperationCanceledException | AuthenticatorException | IOException e) {
+                      showMessage(this, e.getMessage());
+                      finish();
+                      return;
+                  }
+                  showMessage(this, getString(R.string.account_created));
+                  Log.d(TAG, "AddNewAccount Bundle is " + bnd);
+                  startActivity(new Intent(Launcher.this, ProfileActivity.class));
+              },
+              null);
+    }
+
+    private void removeAllAccounts() {
+        for (Account acc : accountManager.getAccountsByType(ACCOUNT_TYPE)) {
+            Log.d(TAG, "Account to remove: " + acc.toString());
+            removeAccount(acc);
         }
     }
 
-    private void checkTokenAndStartProfileActivity() {
-        setupTokenAction(accountManager, this,
-              token -> {
-                  Intent intent = new Intent(this, ProfileActivity.class);
-                  startActivity(intent);
+    private void checkExistingToken(Account account) {
+        String token = accountManager.peekAuthToken(account, AUTH_TYPE);
+        if (token == null) {
+            accountManager.getAuthToken(
+                  account, AUTH_TYPE, null, Launcher.this,
+                  future -> {
+                      Bundle result;
+                      try {
+                          result = future.getResult();
+                      } catch (AuthenticatorException e) {
+                          throw new RuntimeException(e);
+                      } catch (IOException e) {
+                          throw new RuntimeException(e);
+                      } catch (OperationCanceledException e) {
+                          finish();
+                          return;
+                      }
+                      startActivity(new Intent(Launcher.this, ProfileActivity.class));
+                  }, null);
+            return;
+        }
+        profileService.getProfile(Constants.getAuthHeader(token)).enqueue(
+              new AuthInvalidator<>(
+                    this, accountManager,
+                    (freshToken) -> startActivity(new Intent(this, ProfileActivity.class)),
+                    this::finish) {
+                  @Override
+                  public void onResponse(Call<User> call, Response<User> response) {
+                      if (response.code() == 200) {
+                          startActivity(new Intent(Launcher.this, ProfileActivity.class));
+                          return;
+                      }
+                      if (response.code() == 401) {
+                          super.onResponse(call, response);
+                      }
+                  }
               });
     }
 
@@ -135,52 +203,11 @@ public class Launcher extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private static AccountManagerFuture<Bundle> removeAccount(
-          Account account, AccountManager am, Activity activity) {
+    private void removeAccount(Account account) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            return am.removeAccount(
-                  account,
-                  activity,
-                  future -> Log.d(TAG, "Remove" + account.toString() + " succeed."),
-                  null);
+            accountManager.removeAccount(account, this,
+                  future -> Log.d(TAG, "Remove" + account.toString() + " succeed."), null);
         }
-        return null;
-    }
-
-    private void addNewAccount(String accountType, String authTokenType) {
-        AccountManagerFuture<Bundle> future = accountManager.addAccount(
-              accountType, authTokenType,
-              null,
-              null,
-              this,
-              bundleF -> {
-                  try {
-                      Bundle bnd = bundleF.getResult();
-                      showMessage(this, "Account was created");
-                      Log.d(TAG, "AddNewAccount Bundle is " + bnd);
-                  } catch (Exception e) {
-                      e.printStackTrace();
-                      showMessage(this, e.getMessage());
-                  }
-              }, null);
-    }
-
-    private void addNewAccount(Consumer<Bundle> bundleConsumer) {
-        accountManager.addAccount(
-              AccountAuthenticator.ACCOUNT_TYPE,
-              AccountAuthenticator.AUTH_TYPE,
-              null,
-              null,
-              this,
-              bundleF -> {
-                  try {
-                      Bundle bnd = bundleF.getResult();
-                      bundleConsumer.accept(bnd);
-                  } catch (OperationCanceledException | AuthenticatorException | IOException e) {
-                      showMessage(this, e.getMessage());
-                      throw new RuntimeException(e);
-                  }
-              }, null);
     }
 
     private void getTokenForAccountCreateIfNeeded(String accountType, String authTokenType) {
@@ -227,29 +254,5 @@ public class Launcher extends AppCompatActivity {
                 showMessage(this, e.getMessage());
             }
         }).start();
-    }
-
-
-    //todo rework it
-    private Account addOrFindAccount(String login, String password) {
-        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
-        Account account = getOrCreateAccount(accounts, login);
-
-        if (accounts.length == 0) {
-            accountManager.addAccountExplicitly(account, password, null);
-        } else {
-            accountManager.setPassword(accounts[0], password);
-        }
-        return account;
-    }
-
-    private static Account getOrCreateAccount(Account[] accounts, String login) {
-        if (accounts.length == 0) {
-            return new Account(login, AccountAuthenticator.ACCOUNT_TYPE);
-        }
-        if (accounts.length == 1) {
-            return accounts[0];
-        }
-        throw new RuntimeException("More then 1 account for type");
     }
 }

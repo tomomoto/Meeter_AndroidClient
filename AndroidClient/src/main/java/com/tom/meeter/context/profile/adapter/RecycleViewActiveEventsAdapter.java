@@ -1,13 +1,12 @@
 package com.tom.meeter.context.profile.adapter;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.R;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.databinding.EventViewBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +36,18 @@ public class RecycleViewActiveEventsAdapter extends RecyclerView.Adapter<EventVi
         events.clear();
     }
 
+
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_view, parent, false);
-        return new EventViewHolder(v);
+        return new EventViewHolder(
+              EventViewBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        holder.getEventName().setText(events.get(position).getName());
-        holder.getEventDescription().setText(events.get(position).getDescription());
+        EventDTO event = events.get(position);
+        holder.bind(event.getName(), event.getDescription());
     }
 
     @Override

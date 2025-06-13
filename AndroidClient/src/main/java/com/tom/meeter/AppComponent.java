@@ -2,9 +2,10 @@ package com.tom.meeter;
 
 import android.app.Application;
 
-import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.activity.RegistrationActivity;
+import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
+import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
@@ -45,4 +46,6 @@ public interface AppComponent {
     void inject(AccountAuthenticator accountAuthenticator);
 
     void inject(SettingsActivity settingsActivity);
+
+    void inject(Launcher launcher);
 }

@@ -91,6 +91,7 @@
     <string name="prefs_search_area">prefs_search_area</string>
     <string name="search_area_title">Радиус зоны поиска</string>
     <string name="search_area">Значение радиуса зоны поиска событий на карте.</string>
+    <string name="refreshing_the_token">Обновление токена.</string>
 
 
     <string name="remind_to_take_a_break">Remind me to take a break</string>
