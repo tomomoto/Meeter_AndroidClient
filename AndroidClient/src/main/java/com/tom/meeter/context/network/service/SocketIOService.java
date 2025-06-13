@@ -1,17 +1,17 @@
 package com.tom.meeter.context.network.service;
 
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
 import static com.tom.meeter.infrastructure.common.Constants.AUTH_HEADER;
-import static com.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
 import static com.tom.meeter.infrastructure.common.Constants.initSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static io.socket.client.Socket.EVENT_CONNECT;
 import static io.socket.client.Socket.EVENT_CONNECT_ERROR;
 import static io.socket.client.Socket.EVENT_DISCONNECT;
 
+import android.accounts.AccountManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.engineio.client.EngineIOException;
 
 public class SocketIOService extends Service {
 
@@ -52,6 +54,8 @@ public class SocketIOService extends Service {
     private static final String ID_KEY = "id";
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
+    private static final String UNAUTHORIZED = "401";
+    private AccountManager accountManager;
 
     public class ServiceBinder extends Binder {
         public SocketIOService getService() {
@@ -63,16 +67,22 @@ public class SocketIOService extends Service {
     private Socket socketClient;
     private ServiceBinder serviceBinder;
 
+    private String lastKnownAuthToken;
+
     public SocketIOService() {
+        logMethod(TAG, this);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (accountManager == null) {
+            accountManager = AccountManager.get(getApplicationContext());
+        }
+        //AuthHelper.setToken(accountManager, Launcher.EXPIRED);
         Log.d(TAG, "SocketIOService onBind()" + " intent: " + intent);
         try {
-            Bundle extras = intent.getExtras();
-            String token = extras.getString(TOKEN_KEY);
-            initializeSocketClient(false, token);
+            lastKnownAuthToken = peekToken(accountManager);
+            initializeSocketClient(false, lastKnownAuthToken);
         } catch (IOException | URISyntaxException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -92,7 +102,7 @@ public class SocketIOService extends Service {
         serviceBinder = new ServiceBinder();
     }
 
-    @Override
+/*    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "SocketIOService onStartCommand(). already started? " + initialized
               + " intent: " + intent + " flags: " + flags
@@ -103,7 +113,7 @@ public class SocketIOService extends Service {
             Log.e(TAG, e.getMessage(), e);
         }
         return START_STICKY;
-    }
+    }*/
 
     @Override
     public boolean onUnbind(Intent intent) {
@@ -139,6 +149,26 @@ public class SocketIOService extends Service {
         socketClient.on(EVENT_CONNECT_ERROR,
               args -> {
                   Log.d(TAG, "SocketIOClient received connection error." + Arrays.toString(args));
+                  Object arg = args[0];
+                  if (arg instanceof EngineIOException engineIOException) {
+                      Throwable cause = engineIOException.getCause();
+
+                      if (cause instanceof IOException ioException) {
+
+                          if (cause instanceof SocketTimeoutException socketTimeoutException) {
+                              Log.i(TAG, "SocketIOService received SocketTimeoutException. Server is unavailable.");
+                              return;
+                          }
+                          if (UNAUTHORIZED.equals(ioException.getMessage())) {
+                              Log.i(TAG, "SocketIOService received authorization error. " +
+                                    "It is not possible to connect to the server with provided authorization. " +
+                                    "Server is going to disconnect and not going to receive any " +
+                                    "messages until recreateServer() is called.");
+                              disconnect();
+                              return;
+                          }
+                      }
+                  }
               });
 
         socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
@@ -159,10 +189,11 @@ public class SocketIOService extends Service {
         super.onDestroy();
     }
 
-    public void recreateServer(String authToken) {
+    public void recreateServer() {
         disconnect();
+        lastKnownAuthToken = peekToken(accountManager);
         try {
-            initializeSocketClient(initialized, authToken);
+            initializeSocketClient(initialized, lastKnownAuthToken);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -175,6 +206,7 @@ public class SocketIOService extends Service {
         socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
+        initialized = false;
     }
 
     @Subscribe

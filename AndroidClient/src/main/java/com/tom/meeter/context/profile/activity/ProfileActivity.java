@@ -1,12 +1,13 @@
 package com.tom.meeter.context.profile.activity;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
-import static com.tom.meeter.infrastructure.common.Constants.TOKEN_KEY;
+import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.AUTH_TYPE;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -49,6 +50,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
@@ -56,12 +58,15 @@ import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
+import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.http.AuthInvalidator;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -130,9 +135,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Inject
     ViewModelFactory viewModelFactory;
-
     @Inject
     SettingsService settingsService;
+    @Inject
+    UserService profileService;
 
     private ServiceConnection socketServiceConnection;
     private SocketIOService socketIOService;
@@ -160,15 +166,61 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
 
+        //setToken(accountManager, Launcher.EXPIRED);
+        checkExistingToken(savedInstanceState != null);
+    }
+
+    private void checkExistingToken(boolean isSavedInstanceStateExist) {
+        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        if (accounts.length != 1) {
+            throw AuthHelper.NOT_IMPLEMENTED;
+        }
+        Account account = accounts[0];
+        String token = accountManager.peekAuthToken(account, AUTH_TYPE);
+        if (token == null) {
+            accountManager.getAuthToken(
+                  account, AUTH_TYPE, null, ProfileActivity.this,
+                  future -> {
+                      Bundle result;
+                      try {
+                          result = future.getResult();
+                      } catch (AuthenticatorException e) {
+                          throw new RuntimeException(e);
+                      } catch (IOException e) {
+                          throw new RuntimeException(e);
+                      } catch (OperationCanceledException e) {
+                          finish();
+                          return;
+                      }
+                      init(result.getString(AccountManager.KEY_AUTHTOKEN), isSavedInstanceStateExist);
+                  }, null);
+            return;
+        }
+        profileService.getProfile(Constants.getAuthHeader(token)).enqueue(
+              new AuthInvalidator<>(
+                    this, accountManager,
+                    (freshToken) -> init(freshToken, isSavedInstanceStateExist),
+                    this::finish) {
+                  @Override
+                  public void onResponse(Call<User> call, Response<User> response) {
+                      if (response.code() == 200) {
+                          init(token, isSavedInstanceStateExist);
+                          return;
+                      }
+                      if (response.code() == 401) {
+                          super.onResponse(call, response);
+                      }
+                  }
+              });
+    }
+
+    private void init(String token, boolean isSavedInstanceStateExist) {
         binding = ProfileActivityBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-        String token = peekToken(accountManager);
         Log.d(TAG, "ProfileActivity binding SocketIOService");
-        Intent service = new Intent(this, SocketIOService.class);
-        service.putExtra(TOKEN_KEY, token);
-        bindService(service, socketServiceConnection, BIND_AUTO_CREATE);
+        bindService(new Intent(this, SocketIOService.class), socketServiceConnection, BIND_AUTO_CREATE);
         setupPreferences(token);
 
         Toolbar toolbar = binding.profileActivityToolbar;
@@ -181,8 +233,7 @@ public class ProfileActivity extends AppCompatActivity {
         setupDrawer(toolbar, icons);
 
         drawer.getAdapter().withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
-
-        if (savedInstanceState == null) {
+        if (!isSavedInstanceStateExist) {
             lastNavItemId = DRAWER_PROFILE_ID;
             renderSelectedFragment();
         }

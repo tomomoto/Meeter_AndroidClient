@@ -79,8 +79,7 @@ public class ProfileFragment extends Fragment {
         logMethod(TAG, this);
 
         profileViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProfileViewModel.class);
-        String token = peekToken(accountManager);
-        profileViewModel.getProfile(Constants.getAuthHeader(token));
+        profileViewModel.getProfile(peekToken(accountManager));
         profileViewModel.getUserLiveData()
               .observe(getViewLifecycleOwner(), user -> {
                   if (user != null) {

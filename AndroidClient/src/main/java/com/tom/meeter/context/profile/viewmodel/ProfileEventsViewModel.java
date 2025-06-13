@@ -37,11 +37,11 @@ public class ProfileEventsViewModel extends ViewModel {
         userService.getProfileEvents(auth).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
-                if (response.body() != null) {
+                if (response.code() == 200 && response.body() != null) {
                     profileEventsLiveData.setValue(response.body());
-                } else {
-                    Log.d(TAG, "Response is null.");
+                    return;
                 }
+                Log.d(TAG, "/profile: " + response.code() + ":" + response.body());
             }
 
             @Override

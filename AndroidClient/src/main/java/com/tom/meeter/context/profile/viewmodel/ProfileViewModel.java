@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.infrastructure.common.Constants;
 
 import javax.inject.Inject;
 
@@ -31,16 +32,16 @@ public class ProfileViewModel extends ViewModel {
         this.userService = userService;
     }
 
-    public void getProfile(String auth) {
-        userService.getProfile(auth).enqueue(new Callback<>() {
+    public void getProfile(String token) {
+        userService.getProfile(Constants.getAuthHeader(token)).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                if (response.body() != null) {
+                if (response.code() == 200 && response.body() != null) {
                     userLiveData.setValue(response.body());
-                } else {
-                    //TODO token invalidation
-                    Log.d(TAG, "Response is null.");
+                    return;
                 }
+                //TODO token invalidation
+                Log.d(TAG, "/profile: " + response.code() + ":" + response.body());
             }
 
             @Override

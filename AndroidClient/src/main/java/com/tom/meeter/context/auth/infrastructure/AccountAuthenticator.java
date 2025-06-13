@@ -38,8 +38,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     private static final String LABEL = " label";
     //public static final String ACCOUNT_NAME = "Meeter";
 
-    private Context context;
-    private AccountManager accountManager;
+    private final Context context;
+    private final AccountManager accountManager;
 
     @Inject
     AuthService authService;
@@ -47,8 +47,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public AccountAuthenticator(Context context) {
         super(context);
         this.context = context;
-        ((App) context.getApplicationContext()).getComponent().inject(this);
         accountManager = AccountManager.get(context);
+        ((App) context.getApplicationContext()).getComponent().inject(this);
     }
 
     @Override
