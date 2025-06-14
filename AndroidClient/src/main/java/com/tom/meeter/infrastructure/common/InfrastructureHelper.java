@@ -3,6 +3,7 @@ package com.tom.meeter.infrastructure.common;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,7 +50,7 @@ public class InfrastructureHelper {
     }
 
     public static void recreateActivityFromFragment(Fragment me) {
-        new Handler().post(
+        new Handler(Looper.getMainLooper()).post(
               () -> {
                   FragmentActivity activity = me.getActivity();
                   activity.getSupportFragmentManager()
@@ -61,7 +62,7 @@ public class InfrastructureHelper {
     }
 
     public static void restartActivityFromFragment(Fragment me) {
-        new Handler().post(
+        new Handler(Looper.getMainLooper()).post(
               () -> {
                   FragmentActivity activity = me.getActivity();
                   Intent intent = activity.getIntent();

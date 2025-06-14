@@ -2,6 +2,7 @@ package com.tom.meeter.context.launcher;
 
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.AUTH_TYPE;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -23,20 +24,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.auth.service.TokenService;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
-import com.tom.meeter.context.profile.user.domain.User;
-import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.databinding.LauncherBinding;
-import com.tom.meeter.infrastructure.common.Constants;
-import com.tom.meeter.infrastructure.http.AuthInvalidatorOnAuthFail;
-import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Response;
 
 public class Launcher extends AppCompatActivity {
 
@@ -48,9 +42,8 @@ public class Launcher extends AppCompatActivity {
     private AccountManager accountManager;
 
     private LauncherBinding binding;
-
     @Inject
-    UserService profileService;
+    TokenService tokenService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,20 +84,24 @@ public class Launcher extends AppCompatActivity {
         } else if (accounts.length == 1) {
             //accountManager.setAuthToken(accounts[0], AUTH_TYPE, EXPIRED);
             showMessage(Launcher.this, getString(R.string.check_token));
-            checkExistingToken(accounts[0]);
+            checkToken((ign) -> dispatch(), this::finish, accountManager, this, tokenService);
         } else {
             removeAllAccounts();
             createAccountAndContinue();
         }
     }
 
+    private void dispatch() {
+        startActivity(new Intent(Launcher.this, ProfileActivity.class));
+    }
+
     private void createAccountAndContinue() {
         accountManager.addAccount(
               ACCOUNT_TYPE, AUTH_TYPE, null, null, this,
-              addAccountBundleF -> {
+              bundleF -> {
                   Bundle bnd;
                   try {
-                      bnd = addAccountBundleF.getResult();
+                      bnd = bundleF.getResult();
                   } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                       showMessage(this, e.getMessage());
                       finish();
@@ -112,7 +109,7 @@ public class Launcher extends AppCompatActivity {
                   }
                   showMessage(this, getString(R.string.account_created));
                   Log.d(TAG, "AddNewAccount Bundle is " + bnd);
-                  startActivity(new Intent(Launcher.this, ProfileActivity.class));
+                  dispatch();
               },
               null);
     }
@@ -122,42 +119,6 @@ public class Launcher extends AppCompatActivity {
             Log.d(TAG, "Account to remove: " + acc.toString());
             removeAccount(acc);
         }
-    }
-
-    private void checkExistingToken(Account account) {
-        String token = accountManager.peekAuthToken(account, AUTH_TYPE);
-        if (token == null) {
-            accountManager.getAuthToken(
-                  account, AUTH_TYPE, null, Launcher.this,
-                  future -> {
-                      Bundle result;
-                      try {
-                          result = future.getResult();
-                      } catch (AuthenticatorException e) {
-                          throw new RuntimeException(e);
-                      } catch (IOException e) {
-                          throw new RuntimeException(e);
-                      } catch (OperationCanceledException e) {
-                          finish();
-                          return;
-                      }
-                      startActivity(new Intent(Launcher.this, ProfileActivity.class));
-                  }, null);
-            return;
-        }
-        profileService.getProfile(Constants.getAuthHeader(token)).enqueue(
-              new AuthInvalidatorOnAuthFail<>(
-                    this, accountManager,
-                    (freshToken) -> startActivity(new Intent(this, ProfileActivity.class)),
-                    this::finish) {
-                  @Override
-                  public void onResponse(Call<User> call, Response<User> response) {
-                      super.onResponse(call, response);
-                      if (response.code() == HttpCodes.OK) {
-                          startActivity(new Intent(Launcher.this, ProfileActivity.class));
-                      }
-                  }
-              });
     }
 
     @Override

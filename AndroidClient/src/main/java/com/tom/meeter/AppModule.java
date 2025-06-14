@@ -7,13 +7,15 @@ import androidx.annotation.NonNull;
 import androidx.room.Room;
 
 import com.tom.meeter.context.auth.service.AuthService;
+import com.tom.meeter.context.auth.service.TokenService;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.database.EventDatabase;
 import com.tom.meeter.context.profile.event.service.EventService;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.database.UserDatabase;
-import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.context.profile.service.ProfileService;
+import com.tom.meeter.context.user.service.UserService;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
@@ -43,12 +45,34 @@ public class AppModule {
     @Singleton
     @NonNull
     @Provides
+    public ProfileService provideProfileService() {
+        return new Retrofit.Builder()
+              .baseUrl(SERVER_URL)
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(ProfileService.class);
+    }
+
+    @Singleton
+    @NonNull
+    @Provides
     public UserService provideUserService() {
         return new Retrofit.Builder()
               .baseUrl(SERVER_URL)
               .addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(UserService.class);
+    }
+
+    @Singleton
+    @NonNull
+    @Provides
+    public TokenService provideTokenService() {
+        return new Retrofit.Builder()
+              .baseUrl(SERVER_URL)
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(TokenService.class);
     }
 
     @Singleton

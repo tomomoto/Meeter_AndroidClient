@@ -1,16 +1,13 @@
 package com.tom.meeter.context.profile.user.repository;
 
-import static com.tom.meeter.infrastructure.common.Constants.getAuthHeader;
-
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.domain.User;
-import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.context.user.service.UserService;
 
-import java.io.IOException;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -56,19 +53,4 @@ public class UserRepository {
               .doOnError(e -> Log.e(TAG, e.getMessage(), e))
               .subscribe());
     }
-
-    private void refreshUserWithHeader(String token) {
-        executor.execute(
-              () -> {
-                  Response<User> response = null;
-                  try {
-                      response = userService.getProfile(getAuthHeader(token))
-                            .execute();
-                  } catch (IOException e) {
-                      throw new RuntimeException(e);
-                  }
-                  userDao.save(response.body());
-              });
-    }
-
 }

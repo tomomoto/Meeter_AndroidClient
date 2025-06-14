@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.profile.event.domain.Event;
-import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.infrastructure.common.Constants;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -28,16 +28,16 @@ public class ProfileEventsViewModel extends ViewModel {
 
     private final MutableLiveData<List<Event>> profileEventsLiveData = new MutableLiveData<>();
 
-    private final UserService userService;
+    private final ProfileService profileService;
 
     @Inject
-    public ProfileEventsViewModel(UserService userService) {
+    public ProfileEventsViewModel(ProfileService profileService) {
         logMethod(TAG, this);
-        this.userService = userService;
+        this.profileService = profileService;
     }
 
     public void getProfileEvents(String token, Fragment fragment) {
-        userService.getProfileEvents(Constants.getAuthHeader(token)).enqueue(
+        profileService.getProfileEvents(Constants.getAuthHeader(token)).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
                   public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {

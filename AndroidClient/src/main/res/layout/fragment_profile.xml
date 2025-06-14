@@ -42,7 +42,7 @@
         />
 
         <TextView
-            android:id="@+id/user_id"
+            android:id="@+id/profile_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/user_photo"
@@ -52,40 +52,40 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/user_name"
+            android:id="@+id/profile_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_id"
+            android:layout_below="@+id/profile_id"
             android:layout_marginTop="45dp"
             android:text="@string/profile_user_name"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/user_age"
+            android:id="@+id/profile_age"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_name"
+            android:layout_below="@+id/profile_name"
             android:layout_marginTop="45dp"
             android:text="@string/profile_age"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/user_gender"
+            android:id="@+id/profile_gender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_age"
+            android:layout_below="@+id/profile_age"
             android:layout_marginTop="45dp"
             android:text="@string/profile_gender"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/user_info"
+            android:id="@+id/profile_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_gender"
+            android:layout_below="@+id/profile_gender"
             android:layout_marginTop="45dp"
             android:text="@string/profile_info"
             android:textSize="20sp"

@@ -199,9 +199,8 @@ public class LoginActivity extends AppCompatActivity {
         String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
         String token = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
         String pass = intent.getStringExtra(AccountAuthenticator.USER_PASS_KEY);
-        boolean addNewAcc = getIntent().getBooleanExtra(AccountAuthenticator.IS_ADDING_NEW_ACCOUNT_KEY, false);
         Account account = new Account(login, accountType);
-        if (addNewAcc) {
+        if (getIntent().getBooleanExtra(AccountAuthenticator.IS_ADDING_NEW_ACCOUNT_KEY, false)) {
             // Creating the account on the device and setting the auth token we got
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             accountManager.addAccountExplicitly(account, pass, null);

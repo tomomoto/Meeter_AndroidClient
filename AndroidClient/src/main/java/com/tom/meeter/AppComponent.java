@@ -10,6 +10,7 @@ import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
+import com.tom.meeter.context.user.activity.UserActivity;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
 
 import javax.inject.Singleton;
@@ -48,4 +49,6 @@ public interface AppComponent {
     void inject(SettingsActivity settingsActivity);
 
     void inject(Launcher launcher);
+
+    void inject(UserActivity userActivity);
 }

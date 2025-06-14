@@ -1,7 +1,10 @@
 package com.tom.meeter.infrastructure.injection.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.ViewModel;
 
+import com.tom.meeter.AppModule;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.context.profile.viewmodel.UserEventsViewModel;
@@ -13,6 +16,12 @@ import dagger.multibindings.IntoMap;
 
 @Module
 public abstract class ViewModelModule {
+
+    private static final String TAG = AppModule.class.getCanonicalName();
+
+    public ViewModelModule() {
+        Log.d(TAG, "Configuring ViewModelModule...");
+    }
 
     @Binds
     @IntoMap

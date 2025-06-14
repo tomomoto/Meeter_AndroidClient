@@ -1,13 +1,12 @@
 package com.tom.meeter.context.profile.activity;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
-import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.AUTH_TYPE;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -50,23 +49,20 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.auth.service.TokenService;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
+import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
-import com.tom.meeter.context.profile.user.domain.User;
-import com.tom.meeter.context.profile.user.service.UserService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Constants;
-import com.tom.meeter.infrastructure.http.AuthInvalidatorOnAuthFail;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -135,8 +131,9 @@ public class ProfileActivity extends AppCompatActivity {
     @Inject
     SettingsService settingsService;
     @Inject
-    UserService profileService;
-
+    ProfileService profileService;
+    @Inject
+    TokenService tokenService;
     private ServiceConnection socketServiceConnection;
     private SocketIOService socketIOService;
 
@@ -168,48 +165,9 @@ public class ProfileActivity extends AppCompatActivity {
         };
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkExistingToken(savedInstanceState != null);
-    }
-
-    private void checkExistingToken(boolean isSavedInstanceStateExist) {
-        Account[] accounts = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
-        if (accounts.length != 1) {
-            throw AuthHelper.freshNotImplementedError();
-        }
-        Account account = accounts[0];
-        String token = accountManager.peekAuthToken(account, AUTH_TYPE);
-        if (token == null) {
-            accountManager.getAuthToken(
-                  account, AUTH_TYPE, null, ProfileActivity.this,
-                  future -> {
-                      Bundle result;
-                      try {
-                          result = future.getResult();
-                      } catch (AuthenticatorException e) {
-                          throw new RuntimeException(e);
-                      } catch (IOException e) {
-                          throw new RuntimeException(e);
-                      } catch (OperationCanceledException e) {
-                          finish();
-                          return;
-                      }
-                      onInit(result.getString(AccountManager.KEY_AUTHTOKEN), isSavedInstanceStateExist);
-                  }, null);
-            return;
-        }
-        profileService.getProfile(Constants.getAuthHeader(token)).enqueue(
-              new AuthInvalidatorOnAuthFail<>(
-                    this, accountManager,
-                    (freshToken) -> onInit(freshToken, isSavedInstanceStateExist),
-                    this::finish) {
-                  @Override
-                  public void onResponse(Call<User> call, Response<User> response) {
-                      super.onResponse(call, response);
-                      if (response.code() == HttpCodes.OK) {
-                          onInit(token, isSavedInstanceStateExist);
-                      }
-                  }
-              });
+        checkToken(
+              (token) -> onInit(token, savedInstanceState != null),
+              this::finish, accountManager, this, tokenService);
     }
 
     private void onInit(String token, boolean isSavedInstanceStateExist) {
@@ -242,12 +200,13 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupPreferences(String token) {
         Call<SettingsResponse> settings = settingsService.getSettings(Constants.getAuthHeader(token));
         settings.enqueue(
-              new AuthInvalidatorOnAuthFail<>(this, accountManager,
-                    this::setupPreferencesRetry,
-                    this::finish) {
+              new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      super.onResponse(call, res);
+                      if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
+                          invalidateToken(accountManager, ProfileActivity.this,
+                                fresh -> setupPreferencesRetry(fresh), () -> finish());
+                      }
                       if (res.code() == HttpCodes.NOT_FOUND) {
                           // As no settings on the server ...
                           return;
