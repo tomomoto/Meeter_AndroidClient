@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
+@Deprecated
 public interface EventService {
     /**
      * @GET declares an HTTP GET request

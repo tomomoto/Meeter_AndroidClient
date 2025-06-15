@@ -205,7 +205,7 @@ public class ProfileActivity extends AppCompatActivity {
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
                           invalidateToken(accountManager, ProfileActivity.this,
-                                fresh -> setupPreferencesRetry(fresh), () -> finish());
+                                fresh -> setupPreferencesRetry(fresh), () -> finishAndRemoveTask());
                       }
                       if (res.code() == HttpCodes.NOT_FOUND) {
                           // As no settings on the server ...
@@ -394,7 +394,7 @@ public class ProfileActivity extends AppCompatActivity {
                   accs[0], this, future -> {
                       Log.d(TAG, "Account '" + accs[0].name + "' removed.");
                       unbindSocketService();
-                      finish();
+                      finishAndRemoveTask();
                   }, null);
         }
     }

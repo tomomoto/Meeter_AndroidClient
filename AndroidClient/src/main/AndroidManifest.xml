@@ -56,7 +56,6 @@
         <activity
             android:name=".context.profile.activity.ProfileActivity"
             android:label="@string/profile_activity_label"
-            android:noHistory="true"
             android:parentActivityName=".context.auth.activity.LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -74,8 +73,15 @@
         <activity
             android:name=".context.profile.activity.SettingsActivity"
             android:label="Settings"
-            android:parentActivityName=".context.profile.activity.ProfileActivity">
-        </activity>
+            android:parentActivityName=".context.profile.activity.ProfileActivity" />
+
+        <activity
+            android:name=".context.user.activity.UserActivity"
+            android:label="UserActivity" />
+
+        <activity
+            android:name=".context.event.activity.EventActivity"
+            android:label="EventActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

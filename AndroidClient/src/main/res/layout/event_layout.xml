@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="50dp">
+
+    <TextView
+        android:id="@+id/event_information_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="50dp"
+        android:hint="@string/event_information"
+        android:inputType="none"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/event_photo"
+        android:layout_width="match_parent"
+        android:layout_height="170sp"
+        android:layout_below="@+id/event_information_label"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="29dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="content description..."
+        android:src="@drawable/event_512_512" />
+    <!--app:srcCompat="@drawable/ic_launcher"
+    tools:src="@tools:sample/backgrounds/scenic" -->
+    />
+
+    <Button
+        android:id="@+id/event_creator_id_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/event_photo"
+        android:text="@string/creator"
+        android:textAllCaps="false" />
+
+    <TextView
+        android:id="@+id/event_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_creator_id_btn"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/event_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_name"
+        android:layout_marginTop="30dp"
+        android:text="@string/description"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+</RelativeLayout>
+

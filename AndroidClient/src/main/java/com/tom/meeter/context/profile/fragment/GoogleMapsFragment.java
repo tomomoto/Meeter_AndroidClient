@@ -1,6 +1,8 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static com.tom.meeter.infrastructure.Image.ImagesHelper.getCircleBitmap;
+import static com.tom.meeter.infrastructure.Image.ImagesHelper.randomPicResource;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.ComponentName;
@@ -8,9 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -20,12 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -37,12 +39,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Sets;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.tom.meeter.R;
+import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.profile.domain.GMapEvent;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
@@ -63,7 +66,6 @@ public class GoogleMapsFragment extends Fragment
       implements OnMapReadyCallback, LocationTrackerListener {
 
     private static final String TAG = GoogleMapsFragment.class.getCanonicalName();
-    private static final FontAwesome FONT_AWESOME = new FontAwesome();
     private static final float ZOOM_VALUE = 17;
     private static final LatLng DEFAULT = new LatLng(0.0, 0.0);
 
@@ -80,6 +82,9 @@ public class GoogleMapsFragment extends Fragment
     private GoogleMap gmap = null;
     private CameraPosition camPosition = null;
     private final Map<String, GMapEvent> events = new HashMap<>();
+    private BitmapDescriptor userIcon;
+
+    private GMapEvent lastClickedEvent;
 
     public GoogleMapsFragment() {
         logMethod(TAG, this);
@@ -97,6 +102,14 @@ public class GoogleMapsFragment extends Fragment
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
         readPreferences();
+
+        MapsInitializer.initialize(getContext());
+        userIcon = BitmapDescriptorFactory.fromBitmap(
+              Bitmap.createScaledBitmap(
+                    BitmapFactory.decodeResource(
+                          getResources(), R.drawable.user_map_marker_256_256), 150, 150, true));
+
+
         EventBus.getDefault().register(this);
 
         Log.d(TAG, "GoogleMapsFragment registered event bus");
@@ -166,7 +179,7 @@ public class GoogleMapsFragment extends Fragment
         if (lastKnownUserLocation != null) {
             // Zoom out to zoom level 10, animating with a duration of 2 seconds.
             //gmap.animateCamera(CameraUpdateFactory.zoomTo(10), 5000, null);
-            userMarker = gmap.addMarker(getMarkerOptions(lastKnownUserLocation, getContext(), meString));
+            userMarker = gmap.addMarker(createUserMarkerOptions(lastKnownUserLocation));
             searchCircle = gmap.addCircle(getCircleOptions(lastKnownUserLocation, searchArea));
         } else if (camPosition != null) {
             searchCircle = gmap.addCircle(getCircleOptions(camPosition.target, searchArea));
@@ -176,6 +189,7 @@ public class GoogleMapsFragment extends Fragment
         gmap.setOnMapClickListener((latLng) -> Log.d(TAG, "onMapClickListener() " + latLng));
         gmap.setOnCameraIdleListener(this::idleListener);
         gmap.setOnMarkerClickListener(this::markerClickListener);
+        gmap.setOnInfoWindowClickListener(this::infoWindowClickListener);
         firstOpening = false;
     }
 
@@ -191,7 +205,7 @@ public class GoogleMapsFragment extends Fragment
                 }
             } else {
                 if (userMarker == null) {
-                    userMarker = gmap.addMarker(getMarkerOptions(mapToLatTng(location), getContext(), meString));
+                    userMarker = gmap.addMarker(createUserMarkerOptions(mapToLatTng(location)));
                 } else {
                     userMarker.setPosition(mapToLatTng(location));
                 }
@@ -220,26 +234,50 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private boolean markerClickListener(Marker marker) {
-        Log.d(TAG, "OnMarkerClickListener() " + marker.getId());
-        GMapEvent search = null;
-        for (GMapEvent event : events.values()) {
-            if (marker.getId().equals(event.getMarkerId())) {
-                search = event;
-                break;
+        GMapEvent target = searchForEvent(marker);
+        if (target == null) {
+            Log.d(TAG, "OnMarkerClickListener() didn't find the event...");
+            return false;
+        }
+        if (target.equals(lastClickedEvent)) {
+            Log.d(TAG, "Double Click on: " + target.getName());
+            startEventActivityFor(target.getId());
+            return false;
+        }
+        lastClickedEvent = target;
+        Log.d(TAG, "OnMarkerClickListener() find event: " + target.getName()
+              + ", isInfoWindowShown? " + target.isInfoWindowShown());
+        return false;
+    }
+
+    @Nullable
+    private GMapEvent searchForEvent(Marker marker) {
+        for (GMapEvent e : events.values()) {
+            if (marker.getId().equals(e.getMarkerId())) {
+                return e;
             }
         }
-        if (search != null) {
-            //start event description activity etc...
-            Log.d(TAG, "OnMarkerClickListener() find event " + search.getName());
+        return null;
+    }
+
+    private void infoWindowClickListener(Marker marker) {
+        Log.d(TAG, "infoWindowClickListener() " + marker.getId() + ", is info shown ? " + marker.isInfoWindowShown());
+        GMapEvent gMapEvent = searchForEvent(marker);
+        if (gMapEvent != null) {
+            startEventActivityFor(gMapEvent.getId());
         }
-        return false;
+    }
+
+    private void startEventActivityFor(String eventId) {
+        startActivity(new Intent(this.getContext(), EventActivity.class)
+              .putExtra(EventActivity.EVENT_ID_KEY, eventId));
     }
 
     private void putExistingMarkersOnMap() {
         for (GMapEvent e : events.values()) {
             e.replaceMarker(
                   gmap.addMarker(
-                        createFreshOpts(e.getName(), e.getLatitude(), e.getLongitude())));
+                        createEventMarkerOptions(e.getName(), e.getLatitude(), e.getLongitude())));
         }
     }
 
@@ -258,7 +296,7 @@ public class GoogleMapsFragment extends Fragment
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(IncomeEvents msg) {
         Map<String, EventDTO> incomeEvents = new HashMap<>();
-        for (EventDTO e : msg.getEvents()) {
+        for (EventDTO e : msg.events()) {
             incomeEvents.put(e.getId(), e);
         }
 
@@ -281,7 +319,7 @@ public class GoogleMapsFragment extends Fragment
                   eId,
                   new GMapEvent(
                         ev, gmap.addMarker(
-                        createFreshOpts(ev.getName(), ev.getLatitude(), ev.getLongitude()))));
+                        createEventMarkerOptions(ev.getName(), ev.getLatitude(), ev.getLongitude()))));
         }
 
         // Intersection - need to apply events update, if any
@@ -318,41 +356,25 @@ public class GoogleMapsFragment extends Fragment
         }
     }
 
-    private static MarkerOptions createFreshOpts(String name, double latitude, double longitude) {
+    private MarkerOptions createUserMarkerOptions(LatLng latLng) {
         return new MarkerOptions()
+              .icon(userIcon)
+              .title(meString)
+              .position(latLng);
+    }
+
+    private MarkerOptions createEventMarkerOptions(String name, double latitude, double longitude) {
+        //TODO Download event photo
+        Bitmap src = BitmapFactory.decodeResource(getContext().getResources(), randomPicResource());
+        return new MarkerOptions()
+              .position(new LatLng(latitude, longitude))
               .title(name)
-              .position(new LatLng(latitude, longitude));
+              .icon(BitmapDescriptorFactory.fromBitmap(
+                    getCircleBitmap(Bitmap.createScaledBitmap(src, 150, 150, true))));
     }
 
     private static LatLng mapToLatTng(Location location) {
         return new LatLng(location.getLatitude(), location.getLongitude());
-    }
-
-    private static BitmapDescriptor getUserIconBitmap(Context context) {
-        Bitmap myBitmap = Bitmap.createBitmap(125, 175, Bitmap.Config.ARGB_8888);
-        Canvas myCanvas = new Canvas(myBitmap);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setSubpixelText(true);
-        paint.setTypeface(FONT_AWESOME.getTypeface(context));
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.BLUE);
-        paint.setTextSize(120);
-        myCanvas.drawText(
-              String.valueOf(FontAwesome.Icon.faw_child.getCharacter()), 20, 90, paint);
-
-        //BitmapDescriptorFactory.fromResource(R.drawable.userlocation);
-        //BitmapDescriptorFactory.fromAsset(myBitmap);
-        //BitmapDescriptorFactory.fromFile(myBitmap);
-        //BitmapDescriptorFactory.fromPath(myBitmap);
-        return BitmapDescriptorFactory.fromBitmap(myBitmap);
-    }
-
-    private static MarkerOptions getMarkerOptions(LatLng latLng, Context context, String title) {
-        return new MarkerOptions()
-              .icon(getUserIconBitmap(context))
-              .title(title)
-              .position(latLng);
     }
 
     private static CircleOptions getCircleOptions(LatLng center, int searchArea) {
@@ -369,73 +391,6 @@ public class GoogleMapsFragment extends Fragment
         if (searchArea > 0) {
             EventBus.getDefault()
                   .post(new SearchForEvents((float) latitude, (float) longitude, searchArea));
-        }
-    }
-
-    static class GMapEvent {
-
-        private EventDTO event;
-        private Marker marker;
-
-        public GMapEvent(EventDTO event, Marker marker) {
-            validate(event, marker);
-            this.event = event;
-            this.marker = marker;
-        }
-
-        public void removeMarker() {
-            marker.remove();
-        }
-
-        public String getName() {
-            return event.getName();
-        }
-
-        public double getLatitude() {
-            return event.getLatitude();
-        }
-
-        public double getLongitude() {
-            return event.getLongitude();
-        }
-
-        public String getMarkerId() {
-            return marker.getId();
-        }
-
-        public void updateName(String name) {
-            event.setName(name);
-            marker.setTitle(name);
-        }
-
-        public void updatePosition(double latitude, double longitude) {
-            event.setLatitude(latitude);
-            event.setLongitude(longitude);
-            marker.setPosition(new LatLng(latitude, longitude));
-        }
-
-        public void replaceMarker(Marker marker) {
-            validate(event, marker);
-            this.marker = marker;
-        }
-
-        private static void validate(EventDTO event, Marker marker) {
-            String name = event.getName();
-            String title = marker.getTitle();
-            if (!name.equals(title)) {
-                throw new IllegalArgumentException("Names are not equals " + name + ":" + title);
-            }
-            LatLng position = marker.getPosition();
-            double latitude = event.getLatitude();
-            if (latitude != position.latitude) {
-                throw new IllegalArgumentException(
-                      "Latitudes are not equals " + latitude + ":" + position.latitude);
-            }
-            double longitude = event.getLongitude();
-            if (longitude != position.longitude) {
-                throw new IllegalArgumentException(
-                      "Longitude are not equals " + longitude + ":" + position.longitude);
-            }
         }
     }
 

@@ -6,6 +6,8 @@ import android.app.Application;
 
 import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.auth.DaggerAuthComponent;
+import com.tom.meeter.context.event.DaggerEventComponent;
+import com.tom.meeter.context.event.EventComponent;
 import com.tom.meeter.context.token.DaggerTokenComponent;
 import com.tom.meeter.context.token.TokenComponent;
 
@@ -15,6 +17,7 @@ public class App extends Application {
     private AppComponent component;
     private AuthComponent authComponent;
     private TokenComponent tokenComponent;
+    private EventComponent eventComponent;
 
     @Override
     public void onCreate() {
@@ -23,6 +26,7 @@ public class App extends Application {
 
         tokenComponent = buildTokenComponent();
         authComponent = buildAuthComponent();
+        eventComponent = buildEventComponent();
 
         component = buildComponent();
     }
@@ -37,6 +41,7 @@ public class App extends Application {
         return DaggerAppComponent.builder()
               .tokenComponent(tokenComponent)
               .authComponent(authComponent)
+              .eventComponent(eventComponent)
               .application(this)
               .build();
     }
@@ -53,6 +58,12 @@ public class App extends Application {
               .build();
     }
 
+    protected EventComponent buildEventComponent() {
+        return DaggerEventComponent.builder()
+              .application(this)
+              .build();
+    }
+
     public AppComponent getComponent() {
         return component;
     }
@@ -63,5 +74,9 @@ public class App extends Application {
 
     public TokenComponent getTokenComponent() {
         return tokenComponent;
+    }
+
+    public EventComponent getEventComponent() {
+        return eventComponent;
     }
 }

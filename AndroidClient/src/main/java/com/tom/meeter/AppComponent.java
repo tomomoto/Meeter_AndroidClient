@@ -3,6 +3,8 @@ package com.tom.meeter;
 import android.app.Application;
 
 import com.tom.meeter.context.auth.AuthComponent;
+import com.tom.meeter.context.event.EventComponent;
+import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
@@ -16,7 +18,7 @@ import dagger.Component;
 
 @Component(
       modules = {AppModule.class, ViewModelModule.class},
-      dependencies = {TokenComponent.class, AuthComponent.class})
+      dependencies = {TokenComponent.class, AuthComponent.class, EventComponent.class})
 @AppScope
 public interface AppComponent {
 
@@ -28,6 +30,7 @@ public interface AppComponent {
 
         Builder authComponent(AuthComponent authComponent);
         Builder tokenComponent(TokenComponent tokenComponent);
+        Builder eventComponent(EventComponent eventComponent);
 
         AppComponent build();
     }
@@ -41,4 +44,6 @@ public interface AppComponent {
     void inject(SettingsActivity settingsActivity);
 
     void inject(UserActivity userActivity);
+
+    void inject(EventActivity eventActivity);
 }

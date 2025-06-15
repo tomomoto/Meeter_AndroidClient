@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.UserLayoutBinding;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
@@ -29,10 +28,8 @@ import javax.inject.Inject;
 
 public class UserActivity extends AppCompatActivity {
     private static final String TAG = UserActivity.class.getCanonicalName();
-    private static final String USER_ID_KEY = "user_id";
+    public static final String USER_ID_KEY = "user_id";
     UserLayoutBinding binding;
-    @Inject
-    UserService userService;
     @Inject
     TokenService tokenService;
     @Inject

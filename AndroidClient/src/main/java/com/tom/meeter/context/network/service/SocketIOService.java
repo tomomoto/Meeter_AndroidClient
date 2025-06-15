@@ -259,7 +259,7 @@ public class SocketIOService extends Service {
     private static void eventsSearchHandler(Object... args) {
         JSONArray response = getSimpleResponse(JSONArray.class, args);
         Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
-        EventBus.getDefault().post(new IncomeEvents(response));
+        EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
     }
 
     private static <T> T getSimpleResponse(Class<T> aClass, Object[] args) {

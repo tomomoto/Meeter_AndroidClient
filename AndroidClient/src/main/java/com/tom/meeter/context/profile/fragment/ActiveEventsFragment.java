@@ -74,8 +74,8 @@ public class ActiveEventsFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(IncomeEvents eventsSearch) {
         recycleViewActiveEventsAdapter.cleanEvents();
-        if (!eventsSearch.getEvents().isEmpty()) {
-            recycleViewActiveEventsAdapter.addEvents(eventsSearch.getEvents());
+        if (!eventsSearch.events().isEmpty()) {
+            recycleViewActiveEventsAdapter.addEvents(eventsSearch.events());
         }
         binding.activeEventsFragmentRecyclerView.requestLayout();
     }

@@ -13,7 +13,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Path;
 
 public interface UserService {
-    //This will not even work, since server needs an auth for thi requests.
+    //This will not even work, since server needs an auth for this requests.
     @GET("/user/{id}")
     @Deprecated
     Call<User> getUser(@Path("id") String userId);
