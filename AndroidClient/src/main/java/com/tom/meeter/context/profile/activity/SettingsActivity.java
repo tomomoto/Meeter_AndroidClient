@@ -24,7 +24,7 @@ import com.tom.meeter.context.profile.settings.message.SettingsCreateOrUpdate;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.SettingsActivityBinding;
-import com.tom.meeter.infrastructure.common.GlobalConstants;
+import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -111,7 +111,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void sendSavePrefs(int searchArea, boolean trackUser) {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
-                    GlobalConstants.getAuthHeader(AuthHelper.peekToken(accountManager)))
+                    Globals.getAuthHeader(AuthHelper.peekToken(accountManager)))
               .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
@@ -134,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void sendSavePrefsRetry(String token, int searchArea, boolean trackUser) {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
-                    GlobalConstants.getAuthHeader(token))
+                    Globals.getAuthHeader(token))
               .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {

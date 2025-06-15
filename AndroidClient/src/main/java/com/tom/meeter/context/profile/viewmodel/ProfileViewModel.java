@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.service.ProfileService;
-import com.tom.meeter.infrastructure.common.GlobalConstants;
+import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -35,7 +35,7 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public void getProfile(String token, Fragment fragment) {
-        profileService.getProfile(GlobalConstants.getAuthHeader(token)).enqueue(
+        profileService.getProfile(Globals.getAuthHeader(token)).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {

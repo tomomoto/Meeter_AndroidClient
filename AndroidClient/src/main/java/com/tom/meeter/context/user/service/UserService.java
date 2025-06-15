@@ -1,6 +1,6 @@
 package com.tom.meeter.context.user.service;
 
-import static com.tom.meeter.infrastructure.common.GlobalConstants.AUTH_HEADER;
+import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
 import com.tom.meeter.context.profile.event.domain.Event;
 import com.tom.meeter.context.profile.user.domain.User;

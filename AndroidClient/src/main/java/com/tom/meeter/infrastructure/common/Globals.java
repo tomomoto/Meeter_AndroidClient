@@ -9,11 +9,11 @@ import java.util.Properties;
 /**
  * Some well knows application constants.
  */
-public class GlobalConstants {
+public class Globals {
 
-    private static final String TAG = GlobalConstants.class.getCanonicalName();
+    private static final String TAG = Globals.class.getCanonicalName();
 
-    private GlobalConstants() {
+    private Globals() {
         throw new UnsupportedOperationException("Prevent initialization");
     }
 

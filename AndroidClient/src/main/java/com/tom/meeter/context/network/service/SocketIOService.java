@@ -1,8 +1,8 @@
 package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
-import static com.tom.meeter.infrastructure.common.GlobalConstants.AUTH_HEADER;
-import static com.tom.meeter.infrastructure.common.GlobalConstants.getSocketIOPath;
+import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
+import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static io.socket.client.Socket.EVENT_CONNECT;
 import static io.socket.client.Socket.EVENT_CONNECT_ERROR;
@@ -17,7 +17,7 @@ import android.util.Log;
 
 import com.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.tom.meeter.context.network.domain.SearchForEvents;
-import com.tom.meeter.infrastructure.common.GlobalConstants;
+import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.JsonHelper;
 import com.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -248,7 +248,7 @@ public class SocketIOService extends Service {
 
     private static Map<String, List<String>> setupAuthenticationHeader(String authToken) {
         Map<String, List<String>> result = new HashMap<>();
-        result.put(AUTH_HEADER, Collections.singletonList(GlobalConstants.getAuthHeader(authToken)));
+        result.put(AUTH_HEADER, Collections.singletonList(Globals.getAuthHeader(authToken)));
         return result;
     }
 

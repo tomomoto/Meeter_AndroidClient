@@ -1,6 +1,6 @@
 package com.tom.meeter;
 
-import static com.tom.meeter.infrastructure.common.GlobalConstants.getServerPath;
+import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 
 import android.app.Application;
 import android.util.Log;
