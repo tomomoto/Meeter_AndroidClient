@@ -1,4 +1,4 @@
-package com.tom.meeter.context.auth;
+package com.tom.meeter.context.token;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -7,8 +7,7 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
-import com.tom.meeter.AppModule;
-import com.tom.meeter.context.auth.service.AuthService;
+import com.tom.meeter.context.token.service.TokenService;
 
 import javax.inject.Singleton;
 
@@ -18,22 +17,23 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
-public class AuthModule {
+public class TokenModule {
 
-    private static final String TAG = AppModule.class.getCanonicalName();
+    private static final String TAG = TokenModule.class.getCanonicalName();
 
-    public AuthModule() {
+    public TokenModule() {
         logMethod(TAG, this);
     }
 
     @Singleton
     @NonNull
     @Provides
-    public AuthService provideAuthService(Application app) {
+    public TokenService providesTokenService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
               .addConverterFactory(GsonConverterFactory.create())
               .build()
-              .create(AuthService.class);
+              .create(TokenService.class);
     }
+
 }

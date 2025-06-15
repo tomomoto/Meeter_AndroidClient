@@ -7,6 +7,7 @@ import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
+import com.tom.meeter.context.token.TokenComponent;
 import com.tom.meeter.context.user.activity.UserActivity;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
 
@@ -15,7 +16,7 @@ import dagger.Component;
 
 @Component(
       modules = {AppModule.class, ViewModelModule.class},
-      dependencies = {AuthComponent.class})
+      dependencies = {TokenComponent.class, AuthComponent.class})
 @AppScope
 public interface AppComponent {
 
@@ -26,6 +27,7 @@ public interface AppComponent {
         Builder application(Application application);
 
         Builder authComponent(AuthComponent authComponent);
+        Builder tokenComponent(TokenComponent tokenComponent);
 
         AppComponent build();
     }

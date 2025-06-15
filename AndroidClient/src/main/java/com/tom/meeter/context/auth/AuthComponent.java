@@ -5,17 +5,15 @@ import android.app.Application;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.activity.RegistrationActivity;
 import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.tom.meeter.context.auth.service.TokenService;
-import com.tom.meeter.context.launcher.Launcher;
+
+import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
 
-@AuthModuleScope
-
+@Singleton
 @Component(modules = {AuthModule.class})
 public interface AuthComponent {
-    TokenService providesTokenService();
 
     @Component.Builder
     interface Builder {
@@ -27,8 +25,6 @@ public interface AuthComponent {
 
 
     void inject(LoginActivity loginActivity);
-
-    void inject(Launcher launcher);
 
     void inject(RegistrationActivity registrationActivity);
 

@@ -24,7 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.service.TokenService;
+import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.databinding.LauncherBinding;
 
@@ -49,7 +49,7 @@ public class Launcher extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        ((App) getApplication()).getAuthComponent().inject(this);
+        ((App) getApplication()).getTokenComponent().inject(this);
         accountManager = AccountManager.get(this);
         binding = LauncherBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

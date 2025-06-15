@@ -13,7 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.service.TokenService;
+import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;

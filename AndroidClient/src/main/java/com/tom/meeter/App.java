@@ -6,18 +6,22 @@ import android.app.Application;
 
 import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.auth.DaggerAuthComponent;
+import com.tom.meeter.context.token.DaggerTokenComponent;
+import com.tom.meeter.context.token.TokenComponent;
 
 public class App extends Application {
 
     private static final String TAG = App.class.getCanonicalName();
     private AppComponent component;
     private AuthComponent authComponent;
+    private TokenComponent tokenComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
         logMethod(TAG, this);
 
+        tokenComponent = buildTokenComponent();
         authComponent = buildAuthComponent();
 
         component = buildComponent();
@@ -31,6 +35,7 @@ public class App extends Application {
 
     protected AppComponent buildComponent() {
         return DaggerAppComponent.builder()
+              .tokenComponent(tokenComponent)
               .authComponent(authComponent)
               .application(this)
               .build();
@@ -42,11 +47,21 @@ public class App extends Application {
               .build();
     }
 
+    protected TokenComponent buildTokenComponent() {
+        return DaggerTokenComponent.builder()
+              .application(this)
+              .build();
+    }
+
     public AppComponent getComponent() {
         return component;
     }
 
     public AuthComponent getAuthComponent() {
         return authComponent;
+    }
+
+    public TokenComponent getTokenComponent() {
+        return tokenComponent;
     }
 }

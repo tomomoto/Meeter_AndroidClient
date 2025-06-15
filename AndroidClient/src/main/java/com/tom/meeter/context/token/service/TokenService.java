@@ -1,4 +1,4 @@
-package com.tom.meeter.context.auth.service;
+package com.tom.meeter.context.token.service;
 
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
