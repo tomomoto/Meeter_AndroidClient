@@ -1,6 +1,6 @@
 package com.tom.meeter.context.auth.service;
 
-import static com.tom.meeter.infrastructure.common.Constants.AUTH_HEADER;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.AUTH_HEADER;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

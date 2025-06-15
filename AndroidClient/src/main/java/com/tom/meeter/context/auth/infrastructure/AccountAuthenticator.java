@@ -49,7 +49,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         super(context);
         this.context = context;
         accountManager = AccountManager.get(context);
-        ((App) context.getApplicationContext()).getComponent().inject(this);
+        ((App) context.getApplicationContext()).getAuthComponent().inject(this);
     }
 
     @Override

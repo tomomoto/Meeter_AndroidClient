@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel;
 import com.tom.meeter.context.profile.event.domain.Event;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.user.service.UserService;
-import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.common.GlobalConstants;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -39,7 +39,7 @@ public class UserViewModel extends ViewModel {
     }
 
     public void fetchUserInformation(String token, String userId, Activity activity) {
-        userService.getUser(Constants.getAuthHeader(token), userId).enqueue(
+        userService.getUser(GlobalConstants.getAuthHeader(token), userId).enqueue(
               new DisconnectLogger<>(activity) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
@@ -55,7 +55,7 @@ public class UserViewModel extends ViewModel {
               }
         );
 
-        userService.getUserEvents(Constants.getAuthHeader(token), userId).enqueue(
+        userService.getUserEvents(GlobalConstants.getAuthHeader(token), userId).enqueue(
               new DisconnectLogger<>(activity) {
                   @Override
                   public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {

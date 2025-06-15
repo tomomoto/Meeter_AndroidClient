@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getAuthComponent().inject(this);
 
         accountManager = AccountManager.get(this);
 

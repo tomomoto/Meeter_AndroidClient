@@ -49,7 +49,7 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getAuthComponent().inject(this);
         binding = RegisterActivityBinding.inflate(getLayoutInflater());
         binding.registerRegisterBtn.setOnClickListener(v -> submit());
         TextWatcher watcher = new TextWatcher() {

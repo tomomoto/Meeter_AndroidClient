@@ -59,7 +59,7 @@ import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
-import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.common.GlobalConstants;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -198,7 +198,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupPreferences(String token) {
-        Call<SettingsResponse> settings = settingsService.getSettings(Constants.getAuthHeader(token));
+        Call<SettingsResponse> settings = settingsService.getSettings(GlobalConstants.getAuthHeader(token));
         settings.enqueue(
               new DisconnectLogger<>(this) {
                   @Override
@@ -221,7 +221,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupPreferencesRetry(String freshToken) {
-        settingsService.getSettings(Constants.getAuthHeader(freshToken))
+        settingsService.getSettings(GlobalConstants.getAuthHeader(freshToken))
               .enqueue(new DisconnectLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {

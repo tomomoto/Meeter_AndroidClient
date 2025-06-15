@@ -1,6 +1,6 @@
 package com.tom.meeter.context.profile.settings.service;
 
-import static com.tom.meeter.infrastructure.common.Constants.AUTH_HEADER;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.AUTH_HEADER;
 
 import com.tom.meeter.context.profile.settings.message.SettingsCreateOrUpdate;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;

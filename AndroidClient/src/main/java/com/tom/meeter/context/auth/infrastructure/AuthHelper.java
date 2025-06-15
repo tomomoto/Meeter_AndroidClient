@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.service.TokenService;
-import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.common.GlobalConstants;
 import com.tom.meeter.infrastructure.http.DisconnectLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -75,7 +75,7 @@ public final class AuthHelper {
                   }, null);
             return;
         }
-        tokenService.checkToken(Constants.getAuthHeader(token)).enqueue(
+        tokenService.checkToken(GlobalConstants.getAuthHeader(token)).enqueue(
               new DisconnectLogger<>(activity) {
                   @Override
                   public void onResponse(Call<Void> call, Response<Void> response) {

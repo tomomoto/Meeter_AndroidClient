@@ -1,9 +1,9 @@
 package com.tom.meeter.infrastructure.common;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
-import static com.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
-import static com.tom.meeter.infrastructure.common.Constants.MAP_EVENTS_AREA_PROPERTY;
-import static com.tom.meeter.infrastructure.common.Constants.MAP_TRACK_USER_PROPERTY;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.APP_PROPERTIES;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.MAP_EVENTS_AREA_PROPERTY;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.MAP_TRACK_USER_PROPERTY;
 
 import android.content.Context;
 import android.content.SharedPreferences;

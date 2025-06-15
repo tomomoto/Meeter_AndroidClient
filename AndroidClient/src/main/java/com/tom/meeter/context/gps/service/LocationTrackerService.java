@@ -7,9 +7,9 @@ package com.tom.meeter.context.gps.service;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.tom.meeter.infrastructure.common.Constants.APP_PROPERTIES;
-import static com.tom.meeter.infrastructure.common.Constants.LOCATION_DISTANCE_PROPERTY;
-import static com.tom.meeter.infrastructure.common.Constants.LOCATION_TIME_PROPERTY;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.APP_PROPERTIES;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.LOCATION_DISTANCE_PROPERTY;
+import static com.tom.meeter.infrastructure.common.GlobalConstants.LOCATION_TIME_PROPERTY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.app.AlertDialog;
