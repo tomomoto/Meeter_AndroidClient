@@ -36,18 +36,15 @@ public class Globals {
 
     private static String serverPath;
     private static String socketIOPath;
+    private static Boolean needTrackUserDefault;
+    private static Integer searchAreaDefault;
 
 
     public static String getServerPath(Context ctx) {
         if (serverPath != null) {
             return serverPath;
         }
-        Properties p = new Properties();
-        try {
-            p.load(ctx.getAssets().open(APP_PROPERTIES));
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to init server path: " + e);
-        }
+        Properties p = tryGetProps(ctx);
         serverPath = p.getProperty(SERVER_PROTO_PROPERTY) + "://"
               + p.getProperty(SERVER_IP_PROPERTY)
               + ":"
@@ -60,12 +57,7 @@ public class Globals {
         if (socketIOPath != null) {
             return socketIOPath;
         }
-        Properties p = new Properties();
-        try {
-            p.load(ctx.getAssets().open(APP_PROPERTIES));
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to init socketIO path: " + e);
-        }
+        Properties p = tryGetProps(ctx);
         socketIOPath = p.getProperty(SERVER_IO_PROTO_PROPERTY) + "://"
               + p.getProperty(SERVER_IP_PROPERTY)
               + ":"
@@ -76,5 +68,34 @@ public class Globals {
 
     public static String getAuthHeader(String token) {
         return String.format(BEARER_FORMAT, token);
+    }
+
+    public static boolean getDefaultTrackUser(Context ctx) {
+        if (needTrackUserDefault != null) {
+            return needTrackUserDefault;
+        }
+        needTrackUserDefault = Boolean.parseBoolean(
+              tryGetProps(ctx).getProperty(MAP_TRACK_USER_PROPERTY));
+        return needTrackUserDefault;
+    }
+
+    public static int getDefaultSearchArea(Context ctx) {
+        if (searchAreaDefault != null) {
+            return searchAreaDefault;
+        }
+        searchAreaDefault = Integer.parseInt(
+              tryGetProps(ctx).getProperty(MAP_EVENTS_AREA_PROPERTY));
+        return searchAreaDefault;
+    }
+
+    private static Properties tryGetProps(Context ctx) {
+        Properties p = new Properties();
+        try {
+            p.load(ctx.getAssets().open(APP_PROPERTIES));
+        } catch (IOException e) {
+            Log.e(TAG, "tryGetProps failed with: ", e);
+            throw new RuntimeException("Unable to init get properties: " + e);
+        }
+        return p;
     }
 }
