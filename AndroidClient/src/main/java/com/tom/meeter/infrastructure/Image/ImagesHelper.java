@@ -2,6 +2,7 @@ package com.tom.meeter.infrastructure.Image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,9 +10,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.widget.ImageView;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.AdvancedMarkerOptions;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.tom.meeter.R;
 
@@ -89,5 +97,35 @@ public class ImagesHelper {
         //BitmapDescriptorFactory.fromFile(myBitmap);
         //BitmapDescriptorFactory.fromPath(myBitmap);
         return BitmapDescriptorFactory.fromBitmap(myBitmap);
+    }
+
+    private void bbb(Context ctx, int imageId) {
+        //PART 1
+        //Required:  imageId, for example R.drawable.your_image
+        Bitmap bitmap = BitmapFactory.decodeResource(ctx.getResources(), imageId);
+        RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(ctx.getResources(), bitmap);
+        drawable.setCircular(true); // Make it a circle
+        Bitmap circularBitmap = drawable.getBitmap();
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(circularBitmap);
+        /*---------------------------------------------------------------------------------------*/
+        //PART 2
+        //Required:
+        GoogleMap map = null;
+        LatLng latLng = null;
+        Bitmap yourBitmap = null;
+
+        ImageView imageView = new ImageView(ctx);
+        imageView.setImageBitmap(yourBitmap);
+        // Or, set a rounded background using a Drawable
+        RoundedBitmapDrawable roundedDrawable = RoundedBitmapDrawableFactory.create(
+              ctx.getResources(), yourBitmap);
+        roundedDrawable.setCircular(true);
+        imageView.setBackground(roundedDrawable);
+
+        AdvancedMarkerOptions markerOptions = new AdvancedMarkerOptions()
+              .position(latLng)
+              .iconView(imageView);
+        map.addMarker(markerOptions);
+        /*---------------------------------------------------------------------------------------*/
     }
 }

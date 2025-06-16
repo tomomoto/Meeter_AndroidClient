@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="50dp">
-
+    xmlns:tools="http://schemas.android.com/tools">
+<!--removed: android:padding="50dp"-->
     <TextView
         android:id="@+id/userInformationLabel"
         android:layout_width="match_parent"
@@ -50,16 +50,16 @@
 
     <GridView
         android:id="@+id/user_events_grid"
-        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
-        android:animateLayoutChanges="false"
         android:layout_height="match_parent"
         android:layout_below="@+id/user_info"
+        android:layout_marginTop="40dp"
+        android:animateLayoutChanges="false"
         android:background="#C0DEEF"
         android:gravity="center"
         android:horizontalSpacing="10dp"
-        android:numColumns="3"
+        android:numColumns="2"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp" />
+        android:verticalSpacing="10dp"
+        tools:listitem="@layout/card_item" />
 </RelativeLayout>
-

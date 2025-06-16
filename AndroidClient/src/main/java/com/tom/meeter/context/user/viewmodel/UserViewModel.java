@@ -9,7 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.profile.event.domain.Event;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.infrastructure.common.Globals;
@@ -28,7 +28,7 @@ public class UserViewModel extends ViewModel {
     private static final String TAG = UserViewModel.class.getCanonicalName();
 
     private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<Event>> userEventsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<EventDTO>> userEventsLiveData = new MutableLiveData<>();
 
     private final UserService userService;
 
@@ -58,7 +58,7 @@ public class UserViewModel extends ViewModel {
         userService.getUserEvents(Globals.getAuthHeader(token), userId).enqueue(
               new DisconnectLogger<>(activity) {
                   @Override
-                  public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                  public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {
                       if (response.code() == HttpCodes.OK && response.body() != null) {
                           userEventsLiveData.setValue(response.body());
                           return;
@@ -82,7 +82,7 @@ public class UserViewModel extends ViewModel {
         return userLiveData;
     }
 
-    public LiveData<List<Event>> getUserEventsLiveData() {
+    public LiveData<List<EventDTO>> getUserEventsLiveData() {
         return userEventsLiveData;
     }
 }

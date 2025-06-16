@@ -7,6 +7,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -19,7 +20,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.token.service.TokenService;
+import com.tom.meeter.context.user.GridViewAdapter;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.UserLayoutBinding;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
@@ -85,7 +88,14 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> {
                   if (events != null && !events.isEmpty()) {
-                      //binding.userEventsGrid.setAdapter(new ListAdapter<>());
+                      //GridAdapter adapter = new GridAdapter(this);
+                      //binding.userEventsGrid.setAdapter(adapter);
+
+                      GridViewAdapter adapter = new GridViewAdapter(this, events);
+                      binding.userEventsGrid.setAdapter(adapter);
+                      binding.userEventsGrid.setOnItemClickListener(
+                            (parent, view1, position, id) ->
+                                  startActivity(new Intent(UserActivity.this, EventActivity.class).putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));
                   }
               });
     }
