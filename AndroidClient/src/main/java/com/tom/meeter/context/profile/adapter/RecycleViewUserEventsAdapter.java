@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.context.event.activity.EventActivity;
-import com.tom.meeter.context.profile.event.domain.Event;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.EventViewBinding;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 
 public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
-    private final List<Event> events = new ArrayList<>();
+    private final List<EventDTO> events = new ArrayList<>();
 
     //TODO remove me when ...
     private Context ctx;
@@ -36,7 +36,7 @@ public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventView
     public RecycleViewUserEventsAdapter() {
     }
 
-    public void setData(List<Event> events) {
+    public void setData(List<EventDTO> events) {
         EventDiffCallback eventDiffCallback = new EventDiffCallback(this.events, events);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(eventDiffCallback);
         this.events.clear();
@@ -55,7 +55,7 @@ public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventView
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        Event event = events.get(position);
+        EventDTO event = events.get(position);
 
         Bitmap src = BitmapFactory.decodeResource(ctx.getResources(), randomPicResource());
         Bitmap scaled = Bitmap.createScaledBitmap(src, 150, 150, true);
@@ -84,9 +84,9 @@ public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventView
 
     private static class EventDiffCallback extends DiffUtil.Callback {
 
-        private final List<Event> oldPosts, newPosts;
+        private final List<EventDTO> oldPosts, newPosts;
 
-        EventDiffCallback(List<Event> oldPosts, List<Event> newPosts) {
+        EventDiffCallback(List<EventDTO> oldPosts, List<EventDTO> newPosts) {
             this.oldPosts = oldPosts;
             this.newPosts = newPosts;
         }

@@ -9,11 +9,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.service.ProfileService;
+import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -24,7 +27,8 @@ public class ProfileViewModel extends ViewModel {
 
     private static final String TAG = ProfileViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private final MutableLiveData<User> profileLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<EventDTO>> profileEventsLiveData = new MutableLiveData<>();
 
     private final ProfileService profileService;
 
@@ -41,10 +45,23 @@ public class ProfileViewModel extends ViewModel {
                   public void onResponse(Call<User> call, Response<User> response) {
                       super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK && response.body() != null) {
-                          userLiveData.setValue(response.body());
+                          profileLiveData.setValue(response.body());
                           return;
                       }
                       Log.i(TAG, "/profile: " + response.code() + " : " + response.body());
+                  }
+              }
+        );
+        profileService.getProfileEvents(Globals.getAuthHeader(token)).enqueue(
+              new ActivityRestarterOnAuthFailure<>(fragment) {
+                  @Override
+                  public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {
+                      super.onResponse(call, response);
+                      if (response.code() == HttpCodes.OK && response.body() != null) {
+                          profileEventsLiveData.setValue(response.body());
+                          return;
+                      }
+                      Log.i(TAG, "/profile/events: " + response.code() + " : " + response.body());
                   }
               }
         );
@@ -56,7 +73,11 @@ public class ProfileViewModel extends ViewModel {
         super.onCleared();
     }
 
-    public LiveData<User> getUserLiveData() {
-        return userLiveData;
+    public LiveData<User> getProfileLiveData() {
+        return profileLiveData;
+    }
+
+    public LiveData<List<EventDTO>> getProfileEventsLiveData() {
+        return profileEventsLiveData;
     }
 }

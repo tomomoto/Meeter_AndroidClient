@@ -9,7 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.profile.event.domain.Event;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
@@ -26,7 +26,7 @@ public class ProfileEventsViewModel extends ViewModel {
 
     private static final String TAG = ProfileEventsViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<List<Event>> profileEventsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<EventDTO>> profileEventsLiveData = new MutableLiveData<>();
 
     private final ProfileService profileService;
 
@@ -40,7 +40,7 @@ public class ProfileEventsViewModel extends ViewModel {
         profileService.getProfileEvents(Globals.getAuthHeader(token)).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
-                  public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                  public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {
                       super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK && response.body() != null) {
                           profileEventsLiveData.setValue(response.body());
@@ -58,7 +58,7 @@ public class ProfileEventsViewModel extends ViewModel {
         super.onCleared();
     }
 
-    public LiveData<List<Event>> getProfileEventsLiveData() {
+    public LiveData<List<EventDTO>> getProfileEventsLiveData() {
         return profileEventsLiveData;
     }
 }

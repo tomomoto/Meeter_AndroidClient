@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/c0deef"
     android:layout_height="match_parent">
     <!--
         android:layout_alignParentStart="true"
@@ -13,9 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="50dp"
         tools:context=".context.profile.fragment.ProfileFragment">
-
+<!--removed^: android:padding="50dp" -->
         <TextView
             android:id="@+id/userInformationLabel"
             android:layout_width="match_parent"
@@ -90,5 +90,19 @@
             android:text="@string/profile_info"
             android:textSize="20sp"
             android:textStyle="bold" />
+
+        <com.tom.meeter.components.ExpandableHeightGridView
+            android:id="@+id/profile_events_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_info"
+            android:layout_marginTop="40dp"
+            android:animateLayoutChanges="false"
+            android:background="@color/c0deef"
+            android:gravity="center"
+            android:numColumns="2"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp"
+            tools:listitem="@layout/card_item" />
     </RelativeLayout>
 </ScrollView>

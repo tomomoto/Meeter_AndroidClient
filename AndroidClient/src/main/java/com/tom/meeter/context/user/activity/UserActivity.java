@@ -93,6 +93,7 @@ public class UserActivity extends AppCompatActivity {
 
                       GridViewAdapter adapter = new GridViewAdapter(this, events);
                       binding.userEventsGrid.setAdapter(adapter);
+                      binding.userEventsGrid.setExpanded(true);
                       binding.userEventsGrid.setOnItemClickListener(
                             (parent, view1, position, id) ->
                                   startActivity(new Intent(UserActivity.this, EventActivity.class).putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));

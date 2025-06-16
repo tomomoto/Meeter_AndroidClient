@@ -2,7 +2,7 @@ package com.tom.meeter.context.profile.service;
 
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
-import com.tom.meeter.context.profile.event.domain.Event;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.user.domain.User;
 
 import java.util.List;
@@ -16,5 +16,5 @@ public interface ProfileService {
     Call<User> getProfile(@Header(AUTH_HEADER) String authHeader);
 
     @GET("/profile/events")
-    Call<List<Event>> getProfileEvents(@Header(AUTH_HEADER) String authHeader);
+    Call<List<EventDTO>> getProfileEvents(@Header(AUTH_HEADER) String authHeader);
 }

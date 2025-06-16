@@ -6,6 +6,7 @@ import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.context.user.GridViewAdapter;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -67,18 +70,28 @@ public class ProfileFragment extends Fragment {
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
         profileViewModel.getProfile(peekToken(accountManager), this);
-        profileViewModel.getUserLiveData()
-              .observe(
-                    getViewLifecycleOwner(),
-                    user -> {
-                        if (user != null) {
-                            binding.profileId.setText(getString(R.string.profile_user_id_format, user.getId()));
-                            binding.profileName.setText(getString(R.string.profile_user_name_format, user.getName(), user.getSurname()));
-                            binding.profileGender.setText(getString(R.string.profile_gender_format, genderResolver(getContext(), user.getGender())));
-                            binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
-                            binding.profileInfo.setText(getString(R.string.profile_info_format, user.getInfo()));
-                        }
-                    });
+        profileViewModel.getProfileLiveData().observe(
+              getViewLifecycleOwner(),
+              user -> {
+                  if (user != null) {
+                      binding.profileId.setText(getString(R.string.profile_user_id_format, user.getId()));
+                      binding.profileName.setText(getString(R.string.profile_user_name_format, user.getName(), user.getSurname()));
+                      binding.profileGender.setText(getString(R.string.profile_gender_format, genderResolver(getContext(), user.getGender())));
+                      binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
+                      binding.profileInfo.setText(getString(R.string.profile_info_format, user.getInfo()));
+                  }
+              });
+        profileViewModel.getProfileEventsLiveData().observe(
+              getViewLifecycleOwner(),
+              events -> {
+                  binding.profileEventsGrid.setAdapter(new GridViewAdapter(getContext(), events));
+                  binding.profileEventsGrid.setExpanded(true);
+                  binding.profileEventsGrid.setOnItemClickListener(
+                        (parent, view1, position, id) ->
+                              startActivity(new Intent(getActivity(), EventActivity.class)
+                                    .putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));
+              }
+        );
     }
 
     @Override
