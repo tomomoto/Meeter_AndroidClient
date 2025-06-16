@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/c0deef">
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!--removed: android:padding="50dp"-->
+        <TextView
+            android:id="@+id/userInformationLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_information"
+            android:inputType="none"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/user_photo"
+            android:layout_width="match_parent"
+            android:layout_height="170sp"
+            android:layout_marginTop="29dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="content description..."
+            android:src="@drawable/user_612x612" />
+        <!--app:srcCompat="@drawable/ic_launcher"
+        tools:src="@tools:sample/backgrounds/scenic" -->
+        />
+
+        <TextView
+            android:id="@+id/user_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/user_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/user_about"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <com.tom.meeter.components.ExpandableHeightGridView
+            android:id="@+id/user_events_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
+            android:animateLayoutChanges="false"
+            android:background="#C0DEEF"
+            android:gravity="center"
+            android:numColumns="2"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp"
+            tools:listitem="@layout/card_item" />
+    </LinearLayout>
+</ScrollView>

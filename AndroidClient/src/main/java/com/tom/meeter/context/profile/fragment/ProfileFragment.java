@@ -1,11 +1,13 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
+import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +19,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.context.user.GridViewAdapter;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -63,14 +63,6 @@ public class ProfileFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private String genderResolver(String gender) {
-        return switch (gender.toLowerCase()) {
-            case "female" -> getString(R.string.female_gender);
-            case "male" -> getString(R.string.male_gender);
-            default -> throw new IllegalArgumentException("#args " + gender);
-        };
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -78,16 +70,28 @@ public class ProfileFragment extends Fragment {
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
         profileViewModel.getProfile(peekToken(accountManager), this);
-        profileViewModel.getUserLiveData()
-              .observe(getViewLifecycleOwner(), user -> {
+        profileViewModel.getProfileLiveData().observe(
+              getViewLifecycleOwner(),
+              user -> {
                   if (user != null) {
-                      binding.userId.setText(getString(R.string.profile_user_id, user.getId()));
-                      binding.userName.setText(getString(R.string.profile_user_name, user.getName(), user.getSurname()));
-                      binding.userGender.setText(getString(R.string.profile_gender, genderResolver(user.getGender())));
-                      binding.userAge.setText(getString(R.string.profile_age, getAgeFromDate(user.getBirthday())));
-                      binding.userInfo.setText(getString(R.string.profile_info, user.getInfo()));
+                      binding.profileId.setText(getString(R.string.profile_user_id_format, user.getId()));
+                      binding.profileName.setText(getString(R.string.profile_user_name_format, user.getName(), user.getSurname()));
+                      binding.profileGender.setText(getString(R.string.profile_gender_format, genderResolver(getContext(), user.getGender())));
+                      binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
+                      binding.profileInfo.setText(getString(R.string.profile_info_format, user.getInfo()));
                   }
               });
+        profileViewModel.getProfileEventsLiveData().observe(
+              getViewLifecycleOwner(),
+              events -> {
+                  binding.profileEventsGrid.setAdapter(new GridViewAdapter(getContext(), events));
+                  binding.profileEventsGrid.setExpanded(true);
+                  binding.profileEventsGrid.setOnItemClickListener(
+                        (parent, view1, position, id) ->
+                              startActivity(new Intent(getActivity(), EventActivity.class)
+                                    .putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));
+              }
+        );
     }
 
     @Override
@@ -112,28 +116,5 @@ public class ProfileFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         logMethod(TAG, this);
-    }
-
-    private static String getAgeFromDate(String date) {
-        if (date == null) {
-            return "";
-        }
-
-        Calendar dob = Calendar.getInstance();
-        Calendar today = Calendar.getInstance();
-
-        try {
-            dob.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(date));
-        } catch (ParseException e) {
-            Log.e(TAG, e.getLocalizedMessage(), e);
-        }
-
-        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
-
-        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
-            age--;
-        }
-
-        return String.valueOf(age);
     }
 }

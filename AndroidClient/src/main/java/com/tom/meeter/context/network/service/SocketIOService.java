@@ -1,8 +1,8 @@
 package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
-import static com.tom.meeter.infrastructure.common.Constants.AUTH_HEADER;
-import static com.tom.meeter.infrastructure.common.Constants.initSocketIOPath;
+import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
+import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static io.socket.client.Socket.EVENT_CONNECT;
 import static io.socket.client.Socket.EVENT_CONNECT_ERROR;
@@ -17,7 +17,7 @@ import android.util.Log;
 
 import com.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.tom.meeter.context.network.domain.SearchForEvents;
-import com.tom.meeter.infrastructure.common.Constants;
+import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.JsonHelper;
 import com.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -26,7 +26,6 @@ import com.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -134,7 +133,7 @@ public class SocketIOService extends Service {
             Log.d(TAG, "SocketIOService is not going to initialize, since it is already initialized.");
             return;
         }
-        String uri = initSocketIOPath(getBaseContext());
+        String uri = getSocketIOPath(getBaseContext());
         Log.d(TAG, "Configuring SocketIOClient for server: " + uri);
         socketClient = IO.socket(uri, setupOptions(authToken));
 
@@ -212,21 +211,13 @@ public class SocketIOService extends Service {
     @Subscribe
     public void onMessageEvent(SearchForEvents event) {
         Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
-        try {
-            socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
+        socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
     }
 
     @Subscribe
     public void onMessageEvent(CreateNewEventAttempt event) {
         Log.d(TAG, "onMessageEvent:CreateNewEventAttempt: " + event.toString());
-        try {
-            socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
+        socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
     }
 
     private static String readFlags(int flags) {
@@ -248,7 +239,7 @@ public class SocketIOService extends Service {
 
     private static Map<String, List<String>> setupAuthenticationHeader(String authToken) {
         Map<String, List<String>> result = new HashMap<>();
-        result.put(AUTH_HEADER, Collections.singletonList(Constants.getAuthHeader(authToken)));
+        result.put(AUTH_HEADER, Collections.singletonList(Globals.getAuthHeader(authToken)));
         return result;
     }
 
@@ -259,7 +250,7 @@ public class SocketIOService extends Service {
     private static void eventsSearchHandler(Object... args) {
         JSONArray response = getSimpleResponse(JSONArray.class, args);
         Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
-        EventBus.getDefault().post(new IncomeEvents(response));
+        EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
     }
 
     private static <T> T getSimpleResponse(Class<T> aClass, Object[] args) {

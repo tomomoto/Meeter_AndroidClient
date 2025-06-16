@@ -1,7 +1,11 @@
 package com.tom.meeter.context.network.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 /**
  * created by Tom on 10.02.2017.
@@ -24,7 +28,8 @@ public class EventDTO {
     private String description;
     private double latitude;
     private double longitude;
-    private String creator_id;
+    @SerializedName(value = CREATOR_ID_KEY)
+    private String creatorId;
     private String created;
     private String starting;
     private String ending;
@@ -32,17 +37,21 @@ public class EventDTO {
     public EventDTO() {
     }
 
-    public static EventDTO encode(JSONObject json) throws JSONException {
+    public static EventDTO encode(JSONObject json) {
         EventDTO result = new EventDTO();
-        result.id = json.getString(EVENT_ID_KEY);
-        result.name = json.getString(NAME_KEY);
-        result.description = json.getString(DESCRIPTION_KEY);
-        result.creator_id = json.getString(CREATOR_ID_KEY);
-        result.latitude = json.getDouble(LATITUDE_KEY);
-        result.longitude = json.getDouble(LONGITUDE_KEY);
-        result.created = json.getString(CREATED_KEY);
-        result.starting = json.getString(STARTING_KEY);
-        result.ending = json.getString(ENDING_KEY);
+        try {
+            result.id = json.getString(EVENT_ID_KEY);
+            result.name = json.getString(NAME_KEY);
+            result.description = json.getString(DESCRIPTION_KEY);
+            result.creatorId = json.getString(CREATOR_ID_KEY);
+            result.latitude = json.getDouble(LATITUDE_KEY);
+            result.longitude = json.getDouble(LONGITUDE_KEY);
+            result.created = json.getString(CREATED_KEY);
+            result.starting = json.getString(STARTING_KEY);
+            result.ending = json.getString(ENDING_KEY);
+        } catch (JSONException e) {
+            throw new RuntimeException("Unable to encode EventDTO from jsonObject, ", e);
+        }
         return result;
     }
 
@@ -86,12 +95,12 @@ public class EventDTO {
         this.longitude = longitude;
     }
 
-    public String getCreator_id() {
-        return creator_id;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreator_id(String creator_id) {
-        this.creator_id = creator_id;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getCreated() {
@@ -116,5 +125,27 @@ public class EventDTO {
 
     public void setEnding(String ending) {
         this.ending = ending;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof EventDTO eventDTO)) {
+            return false;
+        }
+        return Double.compare(latitude, eventDTO.latitude) == 0
+              && Double.compare(longitude, eventDTO.longitude) == 0
+              && Objects.equals(id, eventDTO.id)
+              && Objects.equals(name, eventDTO.name)
+              && Objects.equals(description, eventDTO.description)
+              && Objects.equals(creatorId, eventDTO.creatorId)
+              && Objects.equals(created, eventDTO.created)
+              && Objects.equals(starting, eventDTO.starting)
+              && Objects.equals(ending, eventDTO.ending);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, latitude, longitude,
+              creatorId, created, starting, ending);
     }
 }

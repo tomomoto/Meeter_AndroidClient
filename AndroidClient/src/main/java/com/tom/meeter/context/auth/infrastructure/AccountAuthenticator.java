@@ -49,7 +49,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         super(context);
         this.context = context;
         accountManager = AccountManager.get(context);
-        ((App) context.getApplicationContext()).getComponent().inject(this);
+        ((App) context.getApplicationContext()).getAuthComponent().inject(this);
     }
 
     @Override
@@ -89,8 +89,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             if (password != null) {
                 Response<TokenResponse> resp;
                 try {
-                    resp = authService.login(new LoginBody(account.name, password))
-                          .execute();
+                    resp = authService.login(new LoginBody(account.name, password)).execute();
                 } catch (ConnectException e) {
                     Log.d(TAG, "AccountAuthenticator: "
                           + context.getResources().getString(R.string.server_is_unreachable));

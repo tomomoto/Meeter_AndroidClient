@@ -66,7 +66,7 @@ public class ActiveEventsFragment extends Fragment {
         binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
-        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter();
+        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(getContext());
         binding.activeEventsFragmentRecyclerView.setAdapter(recycleViewActiveEventsAdapter);
         binding.activeEventsFragmentRecyclerView.invalidate();
     }
@@ -74,8 +74,8 @@ public class ActiveEventsFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(IncomeEvents eventsSearch) {
         recycleViewActiveEventsAdapter.cleanEvents();
-        if (!eventsSearch.getEvents().isEmpty()) {
-            recycleViewActiveEventsAdapter.addEvents(eventsSearch.getEvents());
+        if (!eventsSearch.events().isEmpty()) {
+            recycleViewActiveEventsAdapter.addEvents(eventsSearch.events());
         }
         binding.activeEventsFragmentRecyclerView.requestLayout();
     }

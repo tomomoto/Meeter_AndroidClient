@@ -1,26 +1,26 @@
 package com.tom.meeter;
 
+import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
+
 import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 
-import com.tom.meeter.context.auth.service.AuthService;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.database.EventDatabase;
 import com.tom.meeter.context.profile.event.service.EventService;
+import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.database.UserDatabase;
-import com.tom.meeter.context.profile.user.service.UserService;
+import com.tom.meeter.context.user.service.UserService;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -31,27 +31,34 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
 
     private static final String TAG = AppModule.class.getCanonicalName();
-    private static final String IP = "192.168.61.59";
-    private static final int PORT = 8084;
-    private static final String SERVER_URL = "http://" + IP + ":" + PORT + "/";
-
 
     public AppModule() {
-        Log.d(TAG, "Configuring AppModule... Server URL is [" + SERVER_URL + "]");
+        Log.d(TAG, "Configuring AppModule...");
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
-    public UserService provideUserService() {
+    public ProfileService provideProfileService(Application app) {
         return new Retrofit.Builder()
-              .baseUrl(SERVER_URL)
+              .baseUrl(getServerPath(app))
+              .addConverterFactory(GsonConverterFactory.create())
+              .build()
+              .create(ProfileService.class);
+    }
+
+    @AppScope
+    @NonNull
+    @Provides
+    public UserService provideUserService(Application app) {
+        return new Retrofit.Builder()
+              .baseUrl(getServerPath(app))
               .addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(UserService.class);
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
     public UserDatabase provideUserDb(Application app) {
@@ -60,14 +67,14 @@ public class AppModule {
               .build();
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
     public UserDao provideUserDao(UserDatabase userDatabase) {
         return userDatabase.userDao();
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
     public Executor provideExecutor() {
@@ -75,18 +82,18 @@ public class AppModule {
               new ArrayBlockingQueue<>(15, false));
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
-    public EventService provideEventService() {
+    public EventService provideEventService(Application app) {
         return new Retrofit.Builder()
-              .baseUrl(SERVER_URL)
+              .baseUrl(getServerPath(app))
               .addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(EventService.class);
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
     public EventDatabase provideEventDb(Application app) {
@@ -95,30 +102,19 @@ public class AppModule {
               .build();
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
     public EventDao provideEventDao(EventDatabase eventDatabase) {
         return eventDatabase.eventDao();
     }
 
-    @Singleton
+    @AppScope
     @NonNull
     @Provides
-    public AuthService provideAuthService() {
+    public SettingsService provideSettingsService(Application app) {
         return new Retrofit.Builder()
-              .baseUrl(SERVER_URL)
-              .addConverterFactory(GsonConverterFactory.create())
-              .build()
-              .create(AuthService.class);
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public SettingsService provideSettingsService() {
-        return new Retrofit.Builder()
-              .baseUrl(SERVER_URL)
+              .baseUrl(getServerPath(app))
               .addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(SettingsService.class);

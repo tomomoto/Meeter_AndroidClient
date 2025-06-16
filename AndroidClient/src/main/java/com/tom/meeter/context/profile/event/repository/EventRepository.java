@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.tom.meeter.AppScope;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.domain.Event;
@@ -15,11 +16,10 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import retrofit2.Response;
 
-@Singleton
+@AppScope
 public class EventRepository {
 
     private static final String TAG = EventRepository.class.getCanonicalName();
@@ -42,29 +42,29 @@ public class EventRepository {
 
     private void refreshUserEvents(String userId) {
         executor.execute(
-            () -> {
-                Response<List<EventDTO>> execute = null;
-                try {
-                    execute = eventService.getEventsByCreatorId(userId).execute();
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage(), e);
-                }
-                if (execute == null) {
-                    return;
-                }
-                List<EventDTO> body = execute.body();
-                if (body == null) {
-                    return;
-                }
-                List<Event> result = new ArrayList<>();
-                body.stream()
-                    .forEach(i -> result.add(
-                        new Event(i.getId(), i.getName(), i.getDescription(), i.getLatitude(),
-                            i.getLongitude(), i.getCreator_id(), i.getCreated(), i.getStarting(),
-                            i.getEnding())
-                    ));
-                eventDao.deleteByUserId(userId);
-                eventDao.saveAll(result);
-            });
+              () -> {
+                  Response<List<EventDTO>> execute = null;
+                  try {
+                      execute = eventService.getEventsByCreatorId(userId).execute();
+                  } catch (IOException e) {
+                      Log.e(TAG, e.getMessage(), e);
+                  }
+                  if (execute == null) {
+                      return;
+                  }
+                  List<EventDTO> body = execute.body();
+                  if (body == null) {
+                      return;
+                  }
+                  List<Event> result = new ArrayList<>();
+                  body.stream()
+                        .forEach(i -> result.add(
+                              new Event(i.getId(), i.getName(), i.getDescription(), i.getLatitude(),
+                                    i.getLongitude(), i.getCreatorId(), i.getCreated(), i.getStarting(),
+                                    i.getEnding())
+                        ));
+                  eventDao.deleteByUserId(userId);
+                  eventDao.saveAll(result);
+              });
     }
 }

@@ -67,7 +67,7 @@ public class UserEventsFragment extends Fragment {
 
         profileEventsViewModel.getProfileEvents(peekToken(accountManager), this);
 
-        adapter = new RecycleViewUserEventsAdapter();
+        adapter = new RecycleViewUserEventsAdapter(getContext());
         profileEventsViewModel.getProfileEventsLiveData()
               .observe(getViewLifecycleOwner(), ev -> adapter.setData(ev));
 
