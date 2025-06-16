@@ -1,9 +1,7 @@
 package com.tom.meeter.context.network.domain;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public interface NetworkEvent {
-
-    JSONObject toJson() throws JSONException;
+    JSONObject toJson();
 }

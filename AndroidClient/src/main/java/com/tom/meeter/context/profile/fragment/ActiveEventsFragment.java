@@ -66,7 +66,7 @@ public class ActiveEventsFragment extends Fragment {
         binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
-        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter();
+        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(getContext());
         binding.activeEventsFragmentRecyclerView.setAdapter(recycleViewActiveEventsAdapter);
         binding.activeEventsFragmentRecyclerView.invalidate();
     }

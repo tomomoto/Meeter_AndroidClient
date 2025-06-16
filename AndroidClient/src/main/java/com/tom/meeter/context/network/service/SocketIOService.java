@@ -26,7 +26,6 @@ import com.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -212,21 +211,13 @@ public class SocketIOService extends Service {
     @Subscribe
     public void onMessageEvent(SearchForEvents event) {
         Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
-        try {
-            socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
+        socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
     }
 
     @Subscribe
     public void onMessageEvent(CreateNewEventAttempt event) {
         Log.d(TAG, "onMessageEvent:CreateNewEventAttempt: " + event.toString());
-        try {
-            socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
+        socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
     }
 
     private static String readFlags(int flags) {

@@ -60,4 +60,3 @@ public class ProfileViewModel extends ViewModel {
         return userLiveData;
     }
 }
-
