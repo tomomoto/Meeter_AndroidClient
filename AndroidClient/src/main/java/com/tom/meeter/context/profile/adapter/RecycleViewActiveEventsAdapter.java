@@ -1,6 +1,6 @@
 package com.tom.meeter.context.profile.adapter;
 
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.getCircleBitmap;
+import static com.tom.meeter.context.image.ImageHelper.circleImage;
 import static com.tom.meeter.infrastructure.Image.ImagesHelper.randomPicResource;
 
 import android.content.Context;
@@ -64,10 +64,8 @@ public class RecycleViewActiveEventsAdapter extends RecyclerView.Adapter<EventVi
         EventDTO event = events.get(position);
 
         Bitmap src = BitmapFactory.decodeResource(ctx.getResources(), randomPicResource());
-        Bitmap scaled = Bitmap.createScaledBitmap(src, 150, 150, true);
-        Bitmap circled = getCircleBitmap(scaled);
 
-        holder.bind(event.getName(), event.getDescription(), circled,
+        holder.bind(event.getName(), event.getDescription(), circleImage(src),
               v -> ctx.startActivity(
                     new Intent(ctx, EventActivity.class)
                           .putExtra(EventActivity.EVENT_ID_KEY, event.getId())));

@@ -133,7 +133,7 @@ public class SocketIOService extends Service {
             Log.d(TAG, "SocketIOService is not going to initialize, since it is already initialized.");
             return;
         }
-        String uri = getSocketIOPath(getBaseContext());
+        String uri = getSocketIOPath(getApplicationContext());
         Log.d(TAG, "Configuring SocketIOClient for server: " + uri);
         socketClient = IO.socket(uri, setupOptions(authToken));
 

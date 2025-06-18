@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.event.activity.EventActivity;
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.GridViewAdapter;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
@@ -37,6 +38,8 @@ public class UserActivity extends AppCompatActivity {
     TokenService tokenService;
     @Inject
     ViewModelFactory viewModelFactory;
+    @Inject
+    ImageDownloader imageDownloader;
     private UserViewModel userViewModel;
     private String userId;
     private AccountManager accountManager;
@@ -91,12 +94,16 @@ public class UserActivity extends AppCompatActivity {
                       //GridAdapter adapter = new GridAdapter(this);
                       //binding.userEventsGrid.setAdapter(adapter);
 
-                      GridViewAdapter adapter = new GridViewAdapter(this, events);
+                      GridViewAdapter adapter = new GridViewAdapter(
+                            this, events, imageDownloader);
                       binding.userEventsGrid.setAdapter(adapter);
                       binding.userEventsGrid.setExpanded(true);
                       binding.userEventsGrid.setOnItemClickListener(
                             (parent, view1, position, id) ->
-                                  startActivity(new Intent(UserActivity.this, EventActivity.class).putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));
+                                  startActivity(new Intent(UserActivity.this, EventActivity.class)
+                                        .putExtra(
+                                              EventActivity.EVENT_ID_KEY,
+                                              events.get(position).getId())));
                   }
               });
     }

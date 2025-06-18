@@ -68,8 +68,7 @@ public class UserViewModel extends ViewModel {
                       }
                       Log.i(TAG, "/user/{id}/events: " + response.code() + " : " + response.body());
                   }
-              }
-        );
+              });
     }
 
     @Override
@@ -86,4 +85,3 @@ public class UserViewModel extends ViewModel {
         return userEventsLiveData;
     }
 }
-

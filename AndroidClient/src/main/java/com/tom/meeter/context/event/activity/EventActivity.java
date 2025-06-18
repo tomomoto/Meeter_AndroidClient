@@ -1,14 +1,12 @@
 package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.getCircleBitmap;
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.randomPicResource;
+import static com.tom.meeter.context.image.ImageHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -78,16 +76,20 @@ public class EventActivity extends AppCompatActivity {
         eventViewModel.getEventLiveData()
               .observe(this, event -> {
                   if (event != null) {
-                      Bitmap src = BitmapFactory.decodeResource(getResources(), randomPicResource());
-                      Bitmap scaled = Bitmap.createScaledBitmap(src, 150, 150, true);
-                      Bitmap circled = getCircleBitmap(scaled);
-                      binding.eventPhoto.setImageBitmap(circled);
                       binding.eventName.setText(event.getName());
                       binding.eventDescription.setText(event.getDescription());
                       binding.eventCreatorIdBtn.setOnClickListener(v -> {
                           startActivity(new Intent(this, UserActivity.class)
                                 .putExtra(UserActivity.USER_ID_KEY, event.getCreatorId()));
                       });
+                  }
+              });
+
+        eventViewModel.getEventPhotoLiveData()
+              .observe(this, photoBody -> {
+                  if (photoBody != null) {
+                      binding.eventPhoto.setImageBitmap(
+                            circleImage(BitmapFactory.decodeStream(photoBody.byteStream())));
                   }
               });
     }

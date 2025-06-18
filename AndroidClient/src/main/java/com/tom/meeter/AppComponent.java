@@ -7,6 +7,7 @@ import com.tom.meeter.context.event.EventComponent;
 import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
+import com.tom.meeter.context.profile.fragment.GoogleMapsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.tom.meeter.context.token.TokenComponent;
@@ -38,6 +39,8 @@ public interface AppComponent {
     void inject(ProfileActivity profileActivity);
 
     void inject(ProfileFragment profileFragment);
+
+    void inject(GoogleMapsFragment googleMapsFragment);
 
     void inject(UserEventsFragment userEventsFragment);
 

@@ -1,5 +1,7 @@
 package com.tom.meeter.context.network.dto;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
@@ -10,7 +12,6 @@ import java.util.Objects;
 /**
  * created by Tom on 10.02.2017.
  */
-
 public class EventDTO {
 
     private static final String EVENT_ID_KEY = "id";
@@ -22,17 +23,22 @@ public class EventDTO {
     private static final String CREATED_KEY = "created";
     private static final String STARTING_KEY = "starting";
     private static final String ENDING_KEY = "ending";
+    private static final String PHOTO_PATH_KEY = "photo_path";
+    private static final String CITY_KEY = "city";
 
     private String id;
     private String name;
     private String description;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     @SerializedName(value = CREATOR_ID_KEY)
     private String creatorId;
     private String created;
     private String starting;
     private String ending;
+    private String city;
+    @SerializedName(value = PHOTO_PATH_KEY)
+    private String photoPath;
 
     public EventDTO() {
     }
@@ -40,112 +46,110 @@ public class EventDTO {
     public static EventDTO encode(JSONObject json) {
         EventDTO result = new EventDTO();
         try {
-            result.id = json.getString(EVENT_ID_KEY);
-            result.name = json.getString(NAME_KEY);
-            result.description = json.getString(DESCRIPTION_KEY);
-            result.creatorId = json.getString(CREATOR_ID_KEY);
-            result.latitude = json.getDouble(LATITUDE_KEY);
-            result.longitude = json.getDouble(LONGITUDE_KEY);
-            result.created = json.getString(CREATED_KEY);
-            result.starting = json.getString(STARTING_KEY);
-            result.ending = json.getString(ENDING_KEY);
+            result.id = getStringOrNull(EVENT_ID_KEY, json);
+            result.name = getStringOrNull(NAME_KEY, json);
+            result.description = getStringOrNull(DESCRIPTION_KEY, json);
+            result.creatorId = getStringOrNull(CREATOR_ID_KEY, json);
+            result.latitude = getDoubleOrNull(LATITUDE_KEY, json);
+            result.longitude = getDoubleOrNull(LONGITUDE_KEY, json);
+            result.created = getStringOrNull(CREATED_KEY, json);
+            result.starting = getStringOrNull(STARTING_KEY, json);
+            result.ending = getStringOrNull(ENDING_KEY, json);
+            result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
+            result.city = getStringOrNull(CITY_KEY, json);
         } catch (JSONException e) {
             throw new RuntimeException("Unable to encode EventDTO from jsonObject, ", e);
         }
         return result;
     }
 
-    public String getId() {
-        return id;
+    @Nullable
+    private static String getStringOrNull(String key, JSONObject json) throws JSONException {
+        return json.isNull(key) ? null : json.getString(key);
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
+    @Nullable
+    private static Double getDoubleOrNull(String key, JSONObject json) throws JSONException {
+        return json.isNull(key) ? null : json.getDouble(key);
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 
     public String getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
     public String getCreated() {
         return created;
-    }
-
-    public void setCreated(String created) {
-        this.created = created;
     }
 
     public String getStarting() {
         return starting;
     }
 
-    public void setStarting(String starting) {
-        this.starting = starting;
-    }
-
     public String getEnding() {
         return ending;
     }
 
-    public void setEnding(String ending) {
-        this.ending = ending;
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof EventDTO eventDTO)) {
-            return false;
-        }
-        return Double.compare(latitude, eventDTO.latitude) == 0
-              && Double.compare(longitude, eventDTO.longitude) == 0
-              && Objects.equals(id, eventDTO.id)
+        if (o == null || getClass() != o.getClass()) return false;
+        EventDTO eventDTO = (EventDTO) o;
+        return Objects.equals(id, eventDTO.id)
               && Objects.equals(name, eventDTO.name)
               && Objects.equals(description, eventDTO.description)
+              && Objects.equals(latitude, eventDTO.latitude)
+              && Objects.equals(longitude, eventDTO.longitude)
               && Objects.equals(creatorId, eventDTO.creatorId)
               && Objects.equals(created, eventDTO.created)
               && Objects.equals(starting, eventDTO.starting)
-              && Objects.equals(ending, eventDTO.ending);
+              && Objects.equals(ending, eventDTO.ending)
+              && Objects.equals(city, eventDTO.city)
+              && Objects.equals(photoPath, eventDTO.photoPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, latitude, longitude,
-              creatorId, created, starting, ending);
+        return Objects.hash(
+              id, name, description, latitude, longitude, creatorId,
+              created, starting, ending, city, photoPath);
     }
 }

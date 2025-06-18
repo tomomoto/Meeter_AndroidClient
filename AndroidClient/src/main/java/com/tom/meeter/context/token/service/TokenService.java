@@ -7,10 +7,10 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 
 /**
- * Purpose is to check the token and fail auth in case of failed authorization.
+ * Purpose is to check the token and fail-fast the request ASAP, starting auth process
+ * for requesting new token or even new credentials in case of failed authentication.
  */
 public interface TokenService {
-    //TODO change GET path to '/check-token' when backend will be done
-    @GET("/profile")
+    @GET("/api/token_check")
     Call<Void> checkToken(@Header(AUTH_HEADER) String authHeader);
 }

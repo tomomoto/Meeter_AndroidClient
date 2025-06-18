@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.event.activity.EventActivity;
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.context.user.GridViewAdapter;
 import com.tom.meeter.databinding.FragmentProfileBinding;
@@ -38,6 +39,8 @@ public class ProfileFragment extends Fragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+    @Inject
+    ImageDownloader imageDownloader;
 
     private ProfileViewModel profileViewModel;
 
@@ -84,14 +87,14 @@ public class ProfileFragment extends Fragment {
         profileViewModel.getProfileEventsLiveData().observe(
               getViewLifecycleOwner(),
               events -> {
-                  binding.profileEventsGrid.setAdapter(new GridViewAdapter(getContext(), events));
+                  binding.profileEventsGrid.setAdapter(
+                        new GridViewAdapter(getContext(), events, imageDownloader));
                   binding.profileEventsGrid.setExpanded(true);
                   binding.profileEventsGrid.setOnItemClickListener(
                         (parent, view1, position, id) ->
                               startActivity(new Intent(getActivity(), EventActivity.class)
                                     .putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));
-              }
-        );
+              });
     }
 
     @Override
