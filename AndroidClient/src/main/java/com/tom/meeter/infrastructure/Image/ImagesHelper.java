@@ -29,14 +29,14 @@ public class ImagesHelper {
 
     private static final FontAwesome FONT_AWESOME = new FontAwesome();
 
-    public static Bitmap getCircleBitmap(Bitmap bitmap) {
-        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-              bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+    public static Bitmap getCircleBitmap(Bitmap src) {
+        final Bitmap output = Bitmap.createBitmap(src.getWidth(),
+              src.getHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(output);
 
         final int color = 0xff424242;
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final Rect rect = new Rect(0, 0, src.getWidth(), src.getHeight());
         final RectF rectF = new RectF(rect);
 
         paint.setAntiAlias(true);
@@ -45,9 +45,9 @@ public class ImagesHelper {
         canvas.drawOval(rectF, paint);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
+        canvas.drawBitmap(src, rect, rect, paint);
 
-        bitmap.recycle();
+        src.recycle();
 
         return output;
     }

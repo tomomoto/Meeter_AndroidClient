@@ -1,13 +1,13 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.GridViewAdapter;
@@ -39,7 +38,7 @@ public class UserActivity extends AppCompatActivity {
     @Inject
     ViewModelFactory viewModelFactory;
     @Inject
-    ImageDownloader imageDownloader;
+    ImageDownloader imgDownloader;
     private UserViewModel userViewModel;
     private String userId;
     private AccountManager accountManager;
@@ -90,20 +89,18 @@ public class UserActivity extends AppCompatActivity {
               });
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> {
-                  if (events != null && !events.isEmpty()) {
+                  if (!events.isEmpty()) {
                       //GridAdapter adapter = new GridAdapter(this);
                       //binding.userEventsGrid.setAdapter(adapter);
 
                       GridViewAdapter adapter = new GridViewAdapter(
-                            this, events, imageDownloader);
+                            this, events, imgDownloader, this::recreate);
                       binding.userEventsGrid.setAdapter(adapter);
                       binding.userEventsGrid.setExpanded(true);
                       binding.userEventsGrid.setOnItemClickListener(
                             (parent, view1, position, id) ->
-                                  startActivity(new Intent(UserActivity.this, EventActivity.class)
-                                        .putExtra(
-                                              EventActivity.EVENT_ID_KEY,
-                                              events.get(position).getId())));
+                                  dispatchToEventActivity(
+                                        UserActivity.this, events.get(position).getId()));
                   }
               });
     }

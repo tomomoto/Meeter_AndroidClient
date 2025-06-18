@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tom.meeter.databinding.EventViewBinding;
 
 public class EventViewHolder extends RecyclerView.ViewHolder {
+
     private final EventViewBinding binding;
 
     public EventViewHolder(EventViewBinding binding) {
@@ -15,10 +16,16 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void bind(String name, String description, Bitmap photo, View.OnClickListener clickListener) {
+    public void init(
+          String name, String description, Bitmap photo,
+          View.OnClickListener clickListener) {
+        binding.eventCardView.setOnClickListener(clickListener);
         binding.eventNameCardView.setText(name);
         binding.eventDescriptionCardView.setText(description);
         binding.eventPhotoCardView.setImageBitmap(photo);
-        binding.eventCardView.setOnClickListener(clickListener);
+    }
+
+    public void updatePhoto(Bitmap photo) {
+        binding.eventPhotoCardView.setImageBitmap(photo);
     }
 }

@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.RecycleViewUserEventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
@@ -33,6 +34,8 @@ public class UserEventsFragment extends Fragment {
 
     @Inject
     ViewModelFactory viewModelFactory;
+    @Inject
+    ImageDownloader imageDownloader;
 
     private ProfileEventsViewModel profileEventsViewModel;
 
@@ -67,7 +70,7 @@ public class UserEventsFragment extends Fragment {
 
         profileEventsViewModel.getProfileEvents(peekToken(accountManager), this);
 
-        adapter = new RecycleViewUserEventsAdapter(getContext());
+        adapter = new RecycleViewUserEventsAdapter(this, imageDownloader);
         profileEventsViewModel.getProfileEventsLiveData()
               .observe(getViewLifecycleOwner(), ev -> adapter.setData(ev));
 

@@ -31,23 +31,21 @@ public class ImageDownloader {
     public void downloadEventImage(
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
-        if (photoPath == null) {
-            return;
-        }
         imageService.downloadEventImage(
                     Globals.getAuthHeader(peekToken(AccountManager.get(ctx))), photoPath)
               .enqueue(new DisconnectLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                      ResponseBody body = response.body();
-                      if (response.code() == HttpCodes.OK && body != null) {
-                          onDownloaded.accept(response.body());
-                          return;
+                      try (ResponseBody body = response.body()) {
+                          if (response.code() == HttpCodes.OK && body != null) {
+                              onDownloaded.accept(response.body());
+                              return;
+                          }
+                          if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                              onNotAuthenticated.run();
+                          }
+                          Log.i(TAG, "/images/event/: " + response.code() + " : " + body);
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          onNotAuthenticated.run();
-                      }
-                      Log.i(TAG, "/images/event/: " + response.code() + " : " + body);
                   }
               });
     }
@@ -55,23 +53,21 @@ public class ImageDownloader {
     public void downloadUserImage(
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
-        if (photoPath == null) {
-            return;
-        }
         imageService.downloadUserImage(
                     Globals.getAuthHeader(peekToken(AccountManager.get(ctx))), photoPath)
               .enqueue(new DisconnectLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                      ResponseBody body = response.body();
-                      if (response.code() == HttpCodes.OK && body != null) {
-                          onDownloaded.accept(response.body());
-                          return;
+                      try (ResponseBody body = response.body()) {
+                          if (response.code() == HttpCodes.OK && body != null) {
+                              onDownloaded.accept(response.body());
+                              return;
+                          }
+                          if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                              onNotAuthenticated.run();
+                          }
+                          Log.i(TAG, "/images/user/: " + response.code() + " : " + body);
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          onNotAuthenticated.run();
-                      }
-                      Log.i(TAG, "/images/user/: " + response.code() + " : " + body);
                   }
               });
     }

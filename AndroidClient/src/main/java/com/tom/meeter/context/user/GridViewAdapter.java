@@ -3,62 +3,71 @@ package com.tom.meeter.context.user;
 import static com.tom.meeter.context.image.ImageHelper.circleImage;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.databinding.CardItemBinding;
 
 import java.util.List;
 
 public class GridViewAdapter extends ArrayAdapter<EventDTO> {
 
+    private static final String TAG = GridViewAdapter.class.getCanonicalName();
+
     private final Context ctx;
     private final ImageDownloader imageDownloader;
+    private final Runnable onAuthFail;
 
     public GridViewAdapter(
-          Context context, List<EventDTO> events,
-          ImageDownloader imageDownloader) {
-        super(context, 0, events);
-        this.ctx = context;
-        this.imageDownloader = imageDownloader;
+          Context ctx, List<EventDTO> events,
+          ImageDownloader imgDownloader, Runnable onAuthFail) {
+        super(ctx, 0, events);
+        this.ctx = ctx;
+        this.imageDownloader = imgDownloader;
+        this.onAuthFail = onAuthFail;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        View itemView = convertView;
-        if (itemView == null) {
-            itemView = LayoutInflater.from(getContext())
-                  .inflate(R.layout.card_item, parent, false);
+        ViewHolder holder;
+        if (convertView == null) {
+            CardItemBinding iBinding = CardItemBinding.inflate(
+                  LayoutInflater.from(parent.getContext()), parent, false);
+            holder = new ViewHolder(iBinding);
+            holder.view = iBinding.getRoot();
+            holder.view.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
-
-
-        TextView textView = itemView.findViewById(R.id.text_view);
-        ImageView imageView = itemView.findViewById(R.id.image_view);
 
         EventDTO event = getItem(position);
         if (event != null) {
-            textView.setText(event.getName());
-
+            holder.binding.textView.setText(event.getName());
             String photoPath = event.getPhotoPath();
             if (photoPath != null) {
                 imageDownloader.downloadEventImage(
-                      photoPath, ctx.getApplicationContext(),
-                      (body) -> imageView.setImageBitmap(
-                            circleImage(BitmapFactory.decodeStream(body.byteStream()))),
-                      () -> {
-                          //TODO? On auth fail in case of image downloading?
-                      });
-
+                      photoPath, ctx,
+                      (photo) -> holder.binding.imageView.setImageBitmap(circleImage(photo)),
+                      onAuthFail);
             }
+        } else {
+            Log.w(TAG, "null event at [" + position + "].");
         }
-        return itemView;
+        return holder.view;
+    }
+
+    private static class ViewHolder {
+        private View view;
+        private final CardItemBinding binding;
+
+        ViewHolder(CardItemBinding binding) {
+            this.view = binding.getRoot();
+            this.binding = binding;
+        }
     }
 }

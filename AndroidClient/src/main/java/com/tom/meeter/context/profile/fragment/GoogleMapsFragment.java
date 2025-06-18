@@ -1,6 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.context.image.ImageHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -40,13 +41,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Sets;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.domain.GMapEvent;
+import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
@@ -249,7 +250,7 @@ public class GoogleMapsFragment extends Fragment
         }
         if (target.equals(lastClickedEvent)) {
             Log.d(TAG, "Double Click on: " + target.getName());
-            dispatchToEventActivity(target.getId());
+            dispatchToEventActivity(getContext(), target.getId());
             return false;
         }
         lastClickedEvent = target;
@@ -273,13 +274,8 @@ public class GoogleMapsFragment extends Fragment
               + ", is info shown ? " + marker.isInfoWindowShown());
         GMapEvent gMapEvent = searchForEvent(marker);
         if (gMapEvent != null) {
-            dispatchToEventActivity(gMapEvent.getId());
+            dispatchToEventActivity(getContext(), gMapEvent.getId());
         }
-    }
-
-    private void dispatchToEventActivity(String eventId) {
-        startActivity(new Intent(this.getContext(), EventActivity.class)
-              .putExtra(EventActivity.EVENT_ID_KEY, eventId));
     }
 
     private void putExistingMarkersOnMap() {
@@ -346,13 +342,10 @@ public class GoogleMapsFragment extends Fragment
               photoPath, getContext(),
               photo -> {
                   if (photo != null) {
-                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(circleImage(
-                            BitmapFactory.decodeStream(photo.byteStream()))));
+                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(circleImage(photo)));
                   }
               },
-              () -> {
-                  //TODO WHAT TO DO ?
-              });
+              () -> InfrastructureHelper.restartActivityFromFragment(this));
     }
 
     private void readPreferences() {

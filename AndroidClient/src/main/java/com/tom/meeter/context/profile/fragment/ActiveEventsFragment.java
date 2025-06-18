@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.tom.meeter.App;
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.RecycleViewActiveEventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -25,11 +27,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
+
 public class ActiveEventsFragment extends Fragment {
 
     private static final String TAG = ActiveEventsFragment.class.getCanonicalName();
 
     SubFragmentActiveEventsBinding binding;
+
+    @Inject
+    ImageDownloader imageDownloader;
 
     private RecycleViewActiveEventsAdapter recycleViewActiveEventsAdapter;
 
@@ -41,6 +48,7 @@ public class ActiveEventsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
+        ((App) getActivity().getApplication()).getComponent().inject(this);
         EventBus.getDefault().register(this);
         Log.d(TAG, "ActiveEventsFragment Registering eventBus");
     }
@@ -66,7 +74,7 @@ public class ActiveEventsFragment extends Fragment {
         binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
-        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(getContext());
+        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(this, imageDownloader);
         binding.activeEventsFragmentRecyclerView.setAdapter(recycleViewActiveEventsAdapter);
         binding.activeEventsFragmentRecyclerView.invalidate();
     }

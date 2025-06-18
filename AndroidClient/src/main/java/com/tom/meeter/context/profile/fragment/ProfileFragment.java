@@ -1,12 +1,12 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +19,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.context.user.GridViewAdapter;
 import com.tom.meeter.databinding.FragmentProfileBinding;
+import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -88,12 +88,13 @@ public class ProfileFragment extends Fragment {
               getViewLifecycleOwner(),
               events -> {
                   binding.profileEventsGrid.setAdapter(
-                        new GridViewAdapter(getContext(), events, imageDownloader));
+                        new GridViewAdapter(
+                              getContext(), events, imageDownloader,
+                              () -> InfrastructureHelper.restartActivityFromFragment(this)));
                   binding.profileEventsGrid.setExpanded(true);
                   binding.profileEventsGrid.setOnItemClickListener(
                         (parent, view1, position, id) ->
-                              startActivity(new Intent(getActivity(), EventActivity.class)
-                                    .putExtra(EventActivity.EVENT_ID_KEY, events.get(position).getId())));
+                              dispatchToEventActivity(getContext(), events.get(position).getId()));
               });
     }
 

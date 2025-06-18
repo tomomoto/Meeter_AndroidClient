@@ -7,7 +7,6 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -75,23 +74,17 @@ public class EventActivity extends AppCompatActivity {
         eventViewModel.fetchEventInformation(token, eventId, this);
         eventViewModel.getEventLiveData()
               .observe(this, event -> {
-                  if (event != null) {
-                      binding.eventName.setText(event.getName());
-                      binding.eventDescription.setText(event.getDescription());
-                      binding.eventCreatorIdBtn.setOnClickListener(v -> {
-                          startActivity(new Intent(this, UserActivity.class)
-                                .putExtra(UserActivity.USER_ID_KEY, event.getCreatorId()));
-                      });
-                  }
+                  binding.eventName.setText(event.getName());
+                  binding.eventDescription.setText(event.getDescription());
+                  binding.eventCreatorIdBtn.setOnClickListener(v -> {
+                      startActivity(new Intent(this, UserActivity.class)
+                            .putExtra(UserActivity.USER_ID_KEY, event.getCreatorId()));
+                  });
               });
 
         eventViewModel.getEventPhotoLiveData()
-              .observe(this, photoBody -> {
-                  if (photoBody != null) {
-                      binding.eventPhoto.setImageBitmap(
-                            circleImage(BitmapFactory.decodeStream(photoBody.byteStream())));
-                  }
-              });
+              .observe(
+                    this, photo -> binding.eventPhoto.setImageBitmap(circleImage(photo)));
     }
 
     @Nullable
@@ -100,5 +93,14 @@ public class EventActivity extends AppCompatActivity {
           @Nullable View parent, @NonNull String name, @NonNull Context ctx,
           @NonNull AttributeSet attrs) {
         return super.onCreateView(parent, name, ctx, attrs);
+    }
+
+    public static void dispatchToEventActivity(Context ctx, String eventId) {
+        ctx.startActivity(createEventActivityIntent(ctx, eventId));
+    }
+
+    private static Intent createEventActivityIntent(Context ctx, String eventId) {
+        return new Intent(ctx, EventActivity.class)
+              .putExtra(EventActivity.EVENT_ID_KEY, eventId);
     }
 }
