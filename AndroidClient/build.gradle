@@ -102,6 +102,8 @@ dependencies {
     // https://mvnrepository.com/artifact/androidx.preference/preference
     implementation 'androidx.preference:preference:1.2.1'
 
+    implementation libs.core
+
 
     /*TESTS*/
 

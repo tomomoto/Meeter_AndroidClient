@@ -44,13 +44,16 @@ public class EventDTO {
     public static EventDTO encode(JSONObject json) {
         EventDTO result = new EventDTO();
         try {
-            result.id = getStringOrNull(EVENT_ID_KEY, json);
-            result.name = getStringOrNull(NAME_KEY, json);
+            //Non nullable.
+            result.id = json.getString(EVENT_ID_KEY);
+            result.name = json.getString(NAME_KEY);
+            result.creatorId = json.getString(CREATOR_ID_KEY);
+            result.created = OffsetDateTime.parse(json.getString(CREATED_KEY));
+
+            //Nullable.
             result.description = getStringOrNull(DESCRIPTION_KEY, json);
-            result.creatorId = getStringOrNull(CREATOR_ID_KEY, json);
             result.latitude = getDoubleOrNull(LATITUDE_KEY, json);
             result.longitude = getDoubleOrNull(LONGITUDE_KEY, json);
-            result.created = OffsetDateTime.parse(json.getString(CREATED_KEY));
             result.starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
             result.ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
             result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);

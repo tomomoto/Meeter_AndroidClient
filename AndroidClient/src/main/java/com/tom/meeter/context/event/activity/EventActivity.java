@@ -409,7 +409,7 @@ public class EventActivity extends AppCompatActivity {
         ctx.startActivity(createEventActivityIntent(ctx, eventId));
     }
 
-    private static Intent createEventActivityIntent(Context ctx, String eventId) {
+    public static Intent createEventActivityIntent(Context ctx, String eventId) {
         return new Intent(ctx, EventActivity.class)
               .putExtra(EventActivity.EVENT_ID_KEY, eventId);
     }

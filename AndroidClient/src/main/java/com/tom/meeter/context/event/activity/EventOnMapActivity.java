@@ -97,8 +97,14 @@ public class EventOnMapActivity extends AppCompatActivity
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == HttpCodes.OK) {
                     EventDTO event = response.body();
+                    Double latitude = event.getLatitude();
+                    Double longitude = event.getLongitude();
+                    if (latitude == null || longitude == null) {
+                        showMessage(EventOnMapActivity.this, "Event location is not set yet.");
+                        return;
+                    }
+                    LatLng eventLatLng = new LatLng(latitude, longitude);
                     String photoPath = event.getPhotoPath();
-                    LatLng eventLatLng = new LatLng(event.getLatitude(), event.getLongitude());
                     if (photoPath == null) {
                         gmap.addMarker(
                               new MarkerOptions()

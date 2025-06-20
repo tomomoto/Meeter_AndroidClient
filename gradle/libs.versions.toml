@@ -3,6 +3,7 @@ agp = "8.10.1"
 
 #android
 appcompat = "1.7.1"
+core = "1.16.0"
 recyclerview = "1.4.0"
 cardview = "1.0.0"
 lifecycleextensions = "2.0.0"
@@ -45,6 +46,7 @@ junit = "4.13.2"
 [libraries]
 
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+core = { module = "androidx.core:core", version.ref = "core" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }

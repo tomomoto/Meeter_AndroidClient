@@ -1,5 +1,6 @@
 package com.tom.meeter;
 
+import static com.tom.meeter.context.notification.NotificationHelper.createNotificationChannel;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.app.Application;
@@ -40,6 +41,8 @@ public class App extends Application {
         userComponent = buildUserComponent();
 
         component = buildComponent();
+
+        createNotificationChannel(this);
     }
 
     @Override

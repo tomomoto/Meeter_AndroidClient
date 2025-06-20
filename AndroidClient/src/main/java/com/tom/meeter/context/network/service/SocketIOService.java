@@ -1,6 +1,8 @@
 package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.network.dto.SocketIOCodes.EVENT_CREATED_CODE;
+import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationEventCreated;
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -17,6 +19,7 @@ import android.util.Log;
 
 import com.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.tom.meeter.context.network.domain.SearchForEvents;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.JsonHelper;
 import com.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
@@ -26,6 +29,7 @@ import com.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -48,6 +52,7 @@ public class SocketIOService extends Service {
     private static final String GREETINGS_CHANNEL = "greetings";
     private static final String EVENTS_CREATE_CHANNEL = "events:create";
     private static final String EVENTS_SEARCH_CHANNEL = "events:search";
+    private static final String EVENTS_NOTIFICATIONS_CHANNEL = "events:notifications";
 
     private static final String CODE_KEY = "code";
     private static final String ID_KEY = "id";
@@ -154,7 +159,7 @@ public class SocketIOService extends Service {
 
                       if (cause instanceof IOException ioException) {
 
-                          if (cause instanceof SocketTimeoutException socketTimeoutException) {
+                          if (cause instanceof SocketTimeoutException ste) {
                               Log.i(TAG, "SocketIOService received SocketTimeoutException. Server is unavailable.");
                               return;
                           }
@@ -172,6 +177,7 @@ public class SocketIOService extends Service {
 
         socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+        socketClient.on(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
         socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         socketClient.connect();
         EventBus.getDefault().register(this);
@@ -204,6 +210,7 @@ public class SocketIOService extends Service {
         socketClient.disconnect();
         socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
+        socketClient.off(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
         socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         initialized = false;
     }
@@ -251,6 +258,19 @@ public class SocketIOService extends Service {
         JSONArray response = getSimpleResponse(JSONArray.class, args);
         Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
         EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
+    }
+
+    private void eventsNotificationsChannel(Object... args) {
+        JSONObject response = getSimpleResponse(JSONObject.class, args);
+        Log.d(TAG, EVENTS_NOTIFICATIONS_CHANNEL + " : " + response);
+        try {
+            if (response.getInt("code") == EVENT_CREATED_CODE) {
+                EventDTO event = EventDTO.encode(response.getJSONObject("message"));
+                sendNotificationEventCreated(this, event);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static <T> T getSimpleResponse(Class<T> aClass, Object[] args) {

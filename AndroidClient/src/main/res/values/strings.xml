@@ -160,6 +160,7 @@
     <string name="refreshing_the_token">Refreshing the token.</string>
     <string name="event_information">Event information.</string>
     <string name="creator">Creator</string>
+    <string name="notification_new_event">New event!</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>
