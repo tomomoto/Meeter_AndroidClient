@@ -37,7 +37,7 @@ import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.databinding.EventEditableLayoutBinding;
+import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.databinding.EventLayoutBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
@@ -57,6 +57,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -84,6 +85,7 @@ public class EventActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> mapResult;
     private EventDTO eventCache;
+    private ResponseBody photoCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,7 @@ public class EventActivity extends AppCompatActivity {
                   if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                       double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
                       double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
-                      if (binding instanceof EventEditableLayoutBinding eBinding) {
+                      if (binding instanceof ActivityEventEditableBinding eBinding) {
                           eBinding.eventLatitude.setText(String.valueOf(lat));
                           eBinding.eventLongitude.setText(String.valueOf(lng));
                       }
@@ -157,8 +159,8 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void initEditableLayout(String token) {
-        binding = EventEditableLayoutBinding.inflate(getLayoutInflater());
-        EventEditableLayoutBinding eBinding = (EventEditableLayoutBinding) binding;
+        binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
+        ActivityEventEditableBinding eBinding = (ActivityEventEditableBinding) binding;
         View view = eBinding.getRoot();
         setContentView(view);
 
@@ -202,7 +204,7 @@ public class EventActivity extends AppCompatActivity {
                           if (response.isSuccessful()) {
                               Log.d(TAG, code + " " + body);
                               eventCache = body;
-                              updateLayout();
+                              updateEditableLayout();
                               showMessage(EventActivity.this, "Saved.");
                           } else {
                               try {
@@ -222,7 +224,7 @@ public class EventActivity extends AppCompatActivity {
    TODO photoPath;
         * */
 
-        updateLayout();
+        updateEditableLayout();
 
         eBinding.selectStartingDateButton.setOnClickListener(
               v -> showDateTimePicker(eBinding.eventStarting));
@@ -232,22 +234,25 @@ public class EventActivity extends AppCompatActivity {
               v -> mapResult.launch(
                     createEventLocationMapActivityIntent(
                           this, eventCache.getLatitude(), eventCache.getLongitude())));
-/*        eBinding.eventName.setText(event.getName());
-        eBinding.editEventNameBtn.setOnClickListener(v -> eBinding.eventName.setEnabled(true));
-        eBinding.eventDescription.setText(event.getDescription());
-        eBinding.eventCreatorIdBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, UserActivity.class)
-                  .putExtra(UserActivity.USER_ID_KEY, event.getCreatorId()));
-        });
+        eBinding.selectPhotoButton.setOnClickListener(
+              v -> showMessage(EventActivity.this, "Кнопка пока не работает..."));
 
         eventViewModel.getEventPhotoLiveData()
               .observe(
-                    this, photo -> eBinding.eventPhoto.setImageBitmap(
-                          circleImage(photo, 600, 600)));*/
+                    this, photo -> {
+                        photoCache = photo;
+                        updateEditablePhoto();
+                    });
     }
 
-    private void updateLayout() {
-        EventEditableLayoutBinding eBinding = (EventEditableLayoutBinding) binding;
+    private void updateEditablePhoto() {
+        if (binding instanceof ActivityEventEditableBinding eBinding) {
+            eBinding.eventPhoto.setImageBitmap(circleImage(photoCache, 600, 600));
+        }
+    }
+
+    private void updateEditableLayout() {
+        ActivityEventEditableBinding eBinding = (ActivityEventEditableBinding) binding;
         eBinding.eventName.setText(eventCache.getName());
         eBinding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(eventCache.getCreated()));
 
@@ -353,7 +358,7 @@ public class EventActivity extends AppCompatActivity {
         datePicker.show(getSupportFragmentManager(), datePicker.toString());
     }
 
-    private void showDateTimePicker(EditText targetEditText) {
+    private void showDateTimePicker(EditText target) {
         final Calendar calendar = Calendar.getInstance();
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -372,7 +377,7 @@ public class EventActivity extends AppCompatActivity {
                             SimpleDateFormat sdf = new SimpleDateFormat(
                                   "yyyy-MM-dd HH:mm", Locale.getDefault());
                             String formatted = sdf.format(calendar.getTime());
-                            targetEditText.setText(formatted);
+                            target.setText(formatted);
                         },
                         calendar.get(Calendar.HOUR_OF_DAY),
                         calendar.get(Calendar.MINUTE),
