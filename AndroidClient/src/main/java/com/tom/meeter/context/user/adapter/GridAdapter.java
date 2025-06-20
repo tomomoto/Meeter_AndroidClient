@@ -1,4 +1,4 @@
-package com.tom.meeter.context.user;
+package com.tom.meeter.context.user.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+@Deprecated
 public class GridAdapter extends BaseAdapter {
     private Context mContext;
     private String[] mThumbIds = {

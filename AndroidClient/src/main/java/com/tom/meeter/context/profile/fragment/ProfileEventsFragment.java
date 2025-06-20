@@ -24,9 +24,9 @@ import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
-public class UserEventsFragment extends Fragment {
+public class ProfileEventsFragment extends Fragment {
 
-    private static final String TAG = UserEventsFragment.class.getCanonicalName();
+    private static final String TAG = ProfileEventsFragment.class.getCanonicalName();
 
     SubFragmentUserEventsBinding binding;
 
@@ -41,7 +41,7 @@ public class UserEventsFragment extends Fragment {
 
     private AccountManager accountManager;
 
-    public UserEventsFragment() {
+    public ProfileEventsFragment() {
         logMethod(TAG, this);
     }
 

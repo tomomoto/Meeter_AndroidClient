@@ -1,6 +1,6 @@
-package com.tom.meeter.context.user;
+package com.tom.meeter.context.user.adapter;
 
-import static com.tom.meeter.context.image.ImageHelper.circleImage;
+import static com.tom.meeter.infrastructure.Image.ImagesHelper.circleImage;
 
 import android.content.Context;
 import android.util.Log;

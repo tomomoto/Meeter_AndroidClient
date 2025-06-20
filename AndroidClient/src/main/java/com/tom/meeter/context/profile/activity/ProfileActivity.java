@@ -49,15 +49,15 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
+import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
-import com.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
+import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
@@ -431,7 +431,7 @@ public class ProfileActivity extends AppCompatActivity {
         } else if (navigationMenuIndex == DRAWER_NEW_EVENT_ID) {
             result = new CreateNewEventFragment();
         } else if (navigationMenuIndex == DRAWER_NOTIFICATION_ID) {
-            result = new UserEventsFragment();
+            result = new ProfileEventsFragment();
         } else {
             result = new ProfileFragment();
         }

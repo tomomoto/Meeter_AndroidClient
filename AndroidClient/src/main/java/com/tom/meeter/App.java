@@ -12,6 +12,8 @@ import com.tom.meeter.context.image.DaggerImageComponent;
 import com.tom.meeter.context.image.ImageComponent;
 import com.tom.meeter.context.token.DaggerTokenComponent;
 import com.tom.meeter.context.token.TokenComponent;
+import com.tom.meeter.context.user.DaggerUserComponent;
+import com.tom.meeter.context.user.UserComponent;
 
 public class App extends Application {
 
@@ -19,8 +21,9 @@ public class App extends Application {
     private AppComponent component;
     private AuthComponent authComponent;
     private TokenComponent tokenComponent;
-    private EventComponent eventComponent;
     private ImageComponent imageComponent;
+    private EventComponent eventComponent;
+    private UserComponent userComponent;
 
     @Override
     public void onCreate() {
@@ -34,6 +37,7 @@ public class App extends Application {
 
         /* Dependent */
         eventComponent = buildEventComponent();
+        userComponent = buildUserComponent();
 
         component = buildComponent();
     }
@@ -50,6 +54,7 @@ public class App extends Application {
               .imageComponent(imageComponent)
               .authComponent(authComponent)
               .eventComponent(eventComponent)
+              .userComponent(userComponent)
               .application(this)
               .build();
     }
@@ -80,6 +85,14 @@ public class App extends Application {
               .build();
     }
 
+    protected UserComponent buildUserComponent() {
+        return DaggerUserComponent.builder()
+              .application(this)
+              .tokenComponent(tokenComponent)
+              .imageComponent(imageComponent)
+              .build();
+    }
+
     public AppComponent getComponent() {
         return component;
     }
@@ -94,5 +107,13 @@ public class App extends Application {
 
     public EventComponent getEventComponent() {
         return eventComponent;
+    }
+
+    public ImageComponent getImageComponent() {
+        return imageComponent;
+    }
+
+    public UserComponent getUserComponent() {
+        return userComponent;
     }
 }

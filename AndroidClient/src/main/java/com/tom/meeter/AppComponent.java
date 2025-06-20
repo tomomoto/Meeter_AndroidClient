@@ -10,9 +10,9 @@ import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
 import com.tom.meeter.context.profile.fragment.GoogleMapsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
-import com.tom.meeter.context.profile.fragment.UserEventsFragment;
+import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.token.TokenComponent;
-import com.tom.meeter.context.user.activity.UserActivity;
+import com.tom.meeter.context.user.UserComponent;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
 
 import dagger.BindsInstance;
@@ -26,8 +26,10 @@ import dagger.Component;
       dependencies = {
             TokenComponent.class,
             AuthComponent.class,
+            ImageComponent.class,
+
             EventComponent.class,
-            ImageComponent.class
+            UserComponent.class
       })
 @AppScope
 public interface AppComponent {
@@ -46,20 +48,20 @@ public interface AppComponent {
 
         Builder imageComponent(ImageComponent imageComponent);
 
+        Builder userComponent(UserComponent userComponent);
+
         AppComponent build();
     }
 
     void inject(ProfileActivity profileActivity);
 
+    void inject(SettingsActivity settingsActivity);
+
     void inject(ProfileFragment profileFragment);
 
     void inject(GoogleMapsFragment googleMapsFragment);
 
-    void inject(SettingsActivity settingsActivity);
-
-    void inject(UserActivity userActivity);
-
     void inject(ActiveEventsFragment activeEventsFragment);
 
-    void inject(UserEventsFragment userEventsFragment);
+    void inject(ProfileEventsFragment profileEventsFragment);
 }

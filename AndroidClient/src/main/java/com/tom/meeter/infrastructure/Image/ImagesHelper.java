@@ -25,9 +25,32 @@ import com.tom.meeter.R;
 
 import java.util.Random;
 
+import okhttp3.ResponseBody;
+
 public class ImagesHelper {
 
     private static final FontAwesome FONT_AWESOME = new FontAwesome();
+
+    public static Bitmap circleImage(ResponseBody body) {
+        return circleImage(body, 150, 150);
+    }
+
+    public static Bitmap circleImage(ResponseBody body, int scaleWidth, int scaleHeight) {
+        Bitmap from = from(body);
+        if (from == null) {
+            return null;
+        }
+        return getCircleBitmap(Bitmap.createScaledBitmap(from, scaleWidth, scaleHeight, true));
+    }
+
+    public static Bitmap circleImage(Bitmap src) {
+        return getCircleBitmap(Bitmap.createScaledBitmap(src, 150, 150, true));
+    }
+
+    public static Bitmap from(ResponseBody body) {
+        return BitmapFactory.decodeStream(body.byteStream());
+    }
+
 
     public static Bitmap getCircleBitmap(Bitmap src) {
         final Bitmap output = Bitmap.createBitmap(src.getWidth(),

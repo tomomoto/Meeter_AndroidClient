@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.tom.meeter.AppScope;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.domain.Event;
@@ -15,11 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import javax.inject.Inject;
-
 import retrofit2.Response;
 
-@AppScope
+//@AppScope
+@Deprecated
 public class EventRepository {
 
     private static final String TAG = EventRepository.class.getCanonicalName();
@@ -28,7 +26,7 @@ public class EventRepository {
     private final EventDao eventDao;
     private final Executor executor;
 
-    @Inject
+    //@Inject
     public EventRepository(EventService eventService, EventDao eventDao, Executor executor) {
         this.eventService = eventService;
         this.eventDao = eventDao;

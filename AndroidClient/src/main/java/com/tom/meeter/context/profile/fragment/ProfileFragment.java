@@ -21,7 +21,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
-import com.tom.meeter.context.user.GridViewAdapter;
+import com.tom.meeter.context.user.adapter.GridViewAdapter;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;

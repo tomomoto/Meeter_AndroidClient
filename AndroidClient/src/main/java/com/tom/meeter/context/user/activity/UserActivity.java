@@ -23,7 +23,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.GridViewAdapter;
+import com.tom.meeter.context.user.adapter.GridViewAdapter;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserProfileBinding;
@@ -76,7 +76,7 @@ public class UserActivity extends AppCompatActivity {
             return;
         }
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);

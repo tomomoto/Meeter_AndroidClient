@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModel;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.user.repository.UserRepository;
 
-import javax.inject.Inject;
-
 @Deprecated
 public class UserProfileViewModel extends ViewModel {
 
@@ -20,7 +18,7 @@ public class UserProfileViewModel extends ViewModel {
 
     private final UserRepository userRepository;
 
-    @Inject
+    //@Inject
     public UserProfileViewModel(UserRepository userRepository) {
         logMethod(TAG, this);
         this.userRepository = userRepository;
