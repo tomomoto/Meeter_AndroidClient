@@ -1,6 +1,7 @@
 package com.tom.meeter.context.auth.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
+import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.USER_UUID_KEY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -131,12 +132,14 @@ public class RegistrationActivity extends AppCompatActivity {
         registerCall.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
+                TokenResponse authRes = response.body();
                 if (response.code() == HttpCodes.OK) {
                     Bundle bundle = new Bundle();
                     bundle.putString(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
-                    bundle.putString(AccountManager.KEY_AUTHTOKEN, response.body().getToken());
+                    bundle.putString(AccountManager.KEY_AUTHTOKEN, authRes.token());
                     bundle.putString(AccountAuthenticator.USER_PASS_KEY, userPass);
+                    bundle.putString(USER_UUID_KEY, authRes.uuid());
 
                     Intent res = new Intent();
                     res.putExtras(bundle);
@@ -147,12 +150,12 @@ public class RegistrationActivity extends AppCompatActivity {
                           .show();*/
                     new AlertDialog.Builder(RegistrationActivity.this)
                           .setTitle(getString(R.string.register_error))
-                          .setMessage(response.code() + ":" + response.body())
+                          .setMessage(response.code() + ":" + authRes)
                           .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())
                           .create()
                           .show();
                     Log.d(TAG, "Response failed with [" + response.code()
-                          + "] code and body {" + response.body() + "}");
+                          + "] code and body {" + authRes + "}");
                 }
             }
 

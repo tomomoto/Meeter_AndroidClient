@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Name field -->
+        <TextView
+            android:id="@+id/event_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="Event Name"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/event_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter event name"
+            android:textSize="16sp" />
+
+        <!-- Description field -->
+        <TextView
+            android:id="@+id/event_description_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Description"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/event_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:hint="Enter event description"
+            android:inputType="textMultiLine"
+            android:lines="4"
+            android:textSize="16sp" />
+
+        <!-- Latitude field -->
+        <TextView
+            android:id="@+id/event_position_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Position"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/event_latitude_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:text="Latitude"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/event_longitude_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:text="Longitude"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/event_latitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:inputType="number"
+                android:hint="Event latitude"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/event_longitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Event longitude"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_event_location_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Open map" />
+
+        <!-- Starting Date -->
+        <TextView
+            android:id="@+id/event_created_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Created Date"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/event_created"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textSize="16sp" />
+
+        <!-- Starting Date -->
+        <TextView
+            android:id="@+id/event_starting_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Starting Date"
+            android:textSize="16sp" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Starting date"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/event_starting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Select starting date"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/select_starting_date_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select" />
+
+        <!-- Ending Date -->
+        <TextView
+            android:id="@+id/event_ending_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Ending Date"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/event_ending"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="Select ending date"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/select_ending_date_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select" />
+
+        <!-- City field -->
+        <TextView
+            android:id="@+id/event_city_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="City"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/event_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter city"
+            android:textSize="16sp" />
+        <!-- Photo field -->
+        <TextView
+            android:id="@+id/event_photo_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:text="Photo"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/event_photo"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Event photo"
+            android:src="@drawable/event_512_512" />
+
+        <Button
+            android:id="@+id/select_photo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Photo" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/save_event_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Save Event" />
+
+    </LinearLayout>
+</ScrollView>

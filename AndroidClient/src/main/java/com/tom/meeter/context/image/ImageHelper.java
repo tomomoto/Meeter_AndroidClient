@@ -13,11 +13,15 @@ public class ImageHelper {
     }
 
     public static Bitmap circleImage(ResponseBody body) {
+        return circleImage(body, 150, 150);
+    }
+
+    public static Bitmap circleImage(ResponseBody body, int scaleWidth, int scaleHeight) {
         Bitmap from = from(body);
         if (from == null) {
             return null;
         }
-        return getCircleBitmap(Bitmap.createScaledBitmap(from, 150, 150, true));
+        return getCircleBitmap(Bitmap.createScaledBitmap(from, scaleWidth, scaleHeight, true));
     }
 
     public static Bitmap circleImage(Bitmap src) {

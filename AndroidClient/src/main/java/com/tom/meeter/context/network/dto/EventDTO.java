@@ -2,11 +2,12 @@ package com.tom.meeter.context.network.dto;
 
 import androidx.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -31,17 +32,14 @@ public class EventDTO {
     private String description;
     private Double latitude;
     private Double longitude;
-    @SerializedName(value = CREATOR_ID_KEY)
+    @JsonProperty(value = CREATOR_ID_KEY)
     private String creatorId;
-    private String created;
-    private String starting;
-    private String ending;
+    private OffsetDateTime created;
+    private OffsetDateTime starting;
+    private OffsetDateTime ending;
     private String city;
-    @SerializedName(value = PHOTO_PATH_KEY)
+    @JsonProperty(value = PHOTO_PATH_KEY)
     private String photoPath;
-
-    public EventDTO() {
-    }
 
     public static EventDTO encode(JSONObject json) {
         EventDTO result = new EventDTO();
@@ -52,25 +50,15 @@ public class EventDTO {
             result.creatorId = getStringOrNull(CREATOR_ID_KEY, json);
             result.latitude = getDoubleOrNull(LATITUDE_KEY, json);
             result.longitude = getDoubleOrNull(LONGITUDE_KEY, json);
-            result.created = getStringOrNull(CREATED_KEY, json);
-            result.starting = getStringOrNull(STARTING_KEY, json);
-            result.ending = getStringOrNull(ENDING_KEY, json);
+            result.created = OffsetDateTime.parse(json.getString(CREATED_KEY));
+            result.starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
+            result.ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
             result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
             result.city = getStringOrNull(CITY_KEY, json);
         } catch (JSONException e) {
             throw new RuntimeException("Unable to encode EventDTO from jsonObject, ", e);
         }
         return result;
-    }
-
-    @Nullable
-    private static String getStringOrNull(String key, JSONObject json) throws JSONException {
-        return json.isNull(key) ? null : json.getString(key);
-    }
-
-    @Nullable
-    private static Double getDoubleOrNull(String key, JSONObject json) throws JSONException {
-        return json.isNull(key) ? null : json.getDouble(key);
     }
 
     public void setName(String name) {
@@ -83,6 +71,38 @@ public class EventDTO {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
+    }
+
+    public void setStarting(OffsetDateTime starting) {
+        this.starting = starting;
+    }
+
+    public void setEnding(OffsetDateTime ending) {
+        this.ending = ending;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public String getId() {
@@ -109,15 +129,15 @@ public class EventDTO {
         return creatorId;
     }
 
-    public String getCreated() {
+    public OffsetDateTime getCreated() {
         return created;
     }
 
-    public String getStarting() {
+    public OffsetDateTime getStarting() {
         return starting;
     }
 
-    public String getEnding() {
+    public OffsetDateTime getEnding() {
         return ending;
     }
 
@@ -151,5 +171,21 @@ public class EventDTO {
         return Objects.hash(
               id, name, description, latitude, longitude, creatorId,
               created, starting, ending, city, photoPath);
+    }
+
+    @Nullable
+    private static String getStringOrNull(String key, JSONObject json) throws JSONException {
+        return json.isNull(key) ? null : json.getString(key);
+    }
+
+    @Nullable
+    private static OffsetDateTime getOffsetDateTimeOrNull(
+          String key, JSONObject json) throws JSONException {
+        return json.isNull(key) ? null : OffsetDateTime.parse(json.getString(key));
+    }
+
+    @Nullable
+    private static Double getDoubleOrNull(String key, JSONObject json) throws JSONException {
+        return json.isNull(key) ? null : json.getDouble(key);
     }
 }

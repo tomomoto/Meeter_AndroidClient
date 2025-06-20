@@ -8,6 +8,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tom.meeter.context.image.ImageService;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.database.EventDatabase;
@@ -17,7 +22,9 @@ import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.database.UserDatabase;
 import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.infrastructure.http.HttpClient;
 
+import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Module
 public class AppModule {
@@ -43,7 +50,14 @@ public class AppModule {
     public ProfileService provideProfileService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create(
+                    JsonMapper.builder()
+                          .addModule(new JavaTimeModule())
+                          .addModule(new Jdk8Module())
+                          .serializationInclusion(JsonInclude.Include.NON_NULL)
+                          .build()
+                          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                          .setTimeZone(TimeZone.getDefault())))
               .build()
               .create(ProfileService.class);
     }
@@ -54,7 +68,8 @@ public class AppModule {
     public UserService provideUserService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create())
+              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(UserService.class);
     }
@@ -89,7 +104,8 @@ public class AppModule {
     public EventService provideEventService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create())
+              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(EventService.class);
     }
@@ -116,7 +132,8 @@ public class AppModule {
     public SettingsService provideSettingsService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create())
+              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(SettingsService.class);
     }
@@ -129,5 +146,12 @@ public class AppModule {
               .baseUrl(getServerPath(app))
               .build()
               .create(ImageService.class);
+    }
+
+    @AppScope
+    @NonNull
+    @Provides
+    public HttpClient provideHttpClient(Application app) {
+        return new HttpClient(getServerPath(app));
     }
 }

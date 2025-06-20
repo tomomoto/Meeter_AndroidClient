@@ -32,7 +32,6 @@ public class Globals {
 
     public static final String AUTH_HEADER = "Authorization";
     public static final String BEARER_FORMAT = "Bearer %s";
-    public static final String TOKEN_KEY = "token";
 
     private static String serverPath;
     private static String socketIOPath;

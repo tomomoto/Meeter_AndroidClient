@@ -15,7 +15,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+//import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class AuthModule {
@@ -32,7 +33,8 @@ public class AuthModule {
     public AuthService provideAuthService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create())
+              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(AuthService.class);
     }

@@ -72,30 +72,30 @@ public class ProfileFragment extends Fragment {
         logMethod(TAG, this);
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
-        profileViewModel.getProfile(peekToken(accountManager), this);
-        profileViewModel.getProfileLiveData().observe(
-              getViewLifecycleOwner(),
-              user -> {
-                  if (user != null) {
-                      binding.profileId.setText(getString(R.string.profile_user_id_format, user.getId()));
-                      binding.profileName.setText(getString(R.string.profile_user_name_format, user.getName(), user.getSurname()));
-                      binding.profileGender.setText(getString(R.string.profile_gender_format, genderResolver(getContext(), user.getGender())));
-                      binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
-                      binding.profileInfo.setText(getString(R.string.profile_info_format, user.getInfo()));
-                  }
-              });
-        profileViewModel.getProfileEventsLiveData().observe(
-              getViewLifecycleOwner(),
-              events -> {
-                  binding.profileEventsGrid.setAdapter(
-                        new GridViewAdapter(
-                              getContext(), events, imageDownloader,
-                              () -> InfrastructureHelper.restartActivityFromFragment(this)));
-                  binding.profileEventsGrid.setExpanded(true);
-                  binding.profileEventsGrid.setOnItemClickListener(
-                        (parent, view1, position, id) ->
-                              dispatchToEventActivity(getContext(), events.get(position).getId()));
-              });
+        profileViewModel.fetchProfile(peekToken(accountManager), this);
+        profileViewModel.getProfileLiveData()
+              .observe(
+                    getViewLifecycleOwner(),
+                    user -> {
+                        binding.profileId.setText(getString(R.string.profile_user_id_format, user.getId()));
+                        binding.profileName.setText(getString(R.string.profile_user_name_format, user.getName(), user.getSurname()));
+                        binding.profileGender.setText(getString(R.string.profile_gender_format, genderResolver(getContext(), user.getGender())));
+                        binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
+                        binding.profileInfo.setText(getString(R.string.profile_info_format, user.getInfo()));
+                    });
+        profileViewModel.getProfileEventsLiveData()
+              .observe(
+                    getViewLifecycleOwner(),
+                    events -> {
+                        binding.profileEventsGrid.setAdapter(
+                              new GridViewAdapter(
+                                    getContext(), events, imageDownloader,
+                                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
+                        binding.profileEventsGrid.setExpanded(true);
+                        binding.profileEventsGrid.setOnItemClickListener(
+                              (parent, view_, position, id) ->
+                                    dispatchToEventActivity(getContext(), events.get(position).getId()));
+                    });
     }
 
     @Override

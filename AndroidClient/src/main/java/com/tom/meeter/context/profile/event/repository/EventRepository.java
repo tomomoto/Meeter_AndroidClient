@@ -60,8 +60,8 @@ public class EventRepository {
                   body.stream()
                         .forEach(i -> result.add(
                               new Event(i.getId(), i.getName(), i.getDescription(), i.getLatitude(),
-                                    i.getLongitude(), i.getCreatorId(), i.getCreated(), i.getStarting(),
-                                    i.getEnding())
+                                    i.getLongitude(), i.getCreatorId(), null/*i.getCreated()*/, null/*i.getStarting()*/,
+                                    null/*i.getEnding()*/)
                         ));
                   eventDao.deleteByUserId(userId);
                   eventDao.saveAll(result);

@@ -8,6 +8,8 @@ public final class CommonHelper {
     private CommonHelper() {
     }
 
+    public static final String EMPTY_STR = "";
+
     public static String genderResolver(Context ctx, String gender) {
         return switch (gender.toLowerCase()) {
             case "female" -> ctx.getString(R.string.female_gender);

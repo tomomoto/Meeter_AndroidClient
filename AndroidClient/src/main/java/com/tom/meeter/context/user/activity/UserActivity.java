@@ -8,6 +8,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,8 +31,10 @@ import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 import javax.inject.Inject;
 
 public class UserActivity extends AppCompatActivity {
+
     private static final String TAG = UserActivity.class.getCanonicalName();
     public static final String USER_ID_KEY = "user_id";
+
     UserLayoutBinding binding;
     @Inject
     TokenService tokenService;
@@ -111,5 +114,14 @@ public class UserActivity extends AppCompatActivity {
           @Nullable View parent, @NonNull String name, @NonNull Context ctx,
           @NonNull AttributeSet attrs) {
         return super.onCreateView(parent, name, ctx, attrs);
+    }
+
+    public static void dispatchToUserActivity(Context ctx, String userId) {
+        ctx.startActivity(createUserActivityIntent(ctx, userId));
+    }
+
+    private static Intent createUserActivityIntent(Context ctx, String userId) {
+        return new Intent(ctx, UserActivity.class)
+              .putExtra(USER_ID_KEY, userId);
     }
 }

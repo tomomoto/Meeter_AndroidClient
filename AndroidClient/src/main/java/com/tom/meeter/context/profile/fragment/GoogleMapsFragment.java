@@ -69,8 +69,8 @@ import javax.inject.Inject;
 public class GoogleMapsFragment extends Fragment
       implements OnMapReadyCallback, LocationTrackerListener {
 
+    public static final float ZOOM_VALUE = 17;
     private static final String TAG = GoogleMapsFragment.class.getCanonicalName();
-    private static final float ZOOM_VALUE = 17;
     private static final LatLng DEFAULT = new LatLng(0.0, 0.0);
 
     private ServiceConnection locationServiceConnection;
@@ -353,7 +353,7 @@ public class GoogleMapsFragment extends Fragment
         trackUser = PreferencesHelper.getNeedTrackUser(getContext());
     }
 
-    private static void moveCamera(
+    public static void moveCamera(
           LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening, CameraPosition camPosition) {
         if (firstOpening) {
             if (lastKnownUserLocation != null) {
@@ -391,7 +391,7 @@ public class GoogleMapsFragment extends Fragment
               .title(name);
     }
 
-    private static LatLng mapToLatTng(Location location) {
+    public static LatLng mapToLatTng(Location location) {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
 

@@ -40,7 +40,6 @@ android {
         baseline = file("lint-baseline.xml")
     }
 }
-
 dependencies {
 
     implementation libs.appcompat
@@ -76,7 +75,13 @@ dependencies {
 
     // Retrofit & OkHttp
     implementation libs.retrofit
-    implementation libs.retrofitconvertergson
+    implementation libs.retrofitconverterjackson
+    //implementation libs.retrofitconvertergson
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation(libs.jackson.datatype.jsr310)
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8
+    implementation(libs.jackson.datatype.jdk8)
+
     implementation libs.okhttp
 
     // Dagger 2
@@ -111,4 +116,5 @@ dependencies {
     testImplementation(libs.junit.junit)
     //testImplementation("org.powermock:powermock-module-junit4:2.0.9")
 }
+
 

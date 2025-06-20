@@ -1,46 +1,106 @@
 package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.image.ImageHelper.circleImage;
+import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
+import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.viewbinding.ViewBinding;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.tom.meeter.App;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.event.message.UpdateEventRequest;
+import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.activity.UserActivity;
+import com.tom.meeter.databinding.EventEditableLayoutBinding;
 import com.tom.meeter.databinding.EventLayoutBinding;
+import com.tom.meeter.infrastructure.common.Globals;
+import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.HttpClient;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
+import retrofit2.Call;
+import retrofit2.Response;
+
 public class EventActivity extends AppCompatActivity {
+
     public static final String EVENT_ID_KEY = "event_id";
+    public static final String EXTRA_LAT = "extra_lat";
+    public static final String EXTRA_LNG = "extra_lng";
+
     private static final String TAG = EventActivity.class.getCanonicalName();
-    EventLayoutBinding binding;
+
+    private static final DateTimeFormatter UI_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    ViewBinding binding;
     @Inject
     TokenService tokenService;
+    @Inject
+    EventService eventService;
+    @Inject
+    HttpClient httpClient;
     @Inject
     ViewModelFactory viewModelFactory;
     private EventViewModel eventViewModel;
     private String eventId;
     private AccountManager accountManager;
 
+    private ActivityResultLauncher<Intent> mapResult;
+    private EventDTO eventCache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mapResult = registerForActivityResult(
+              new ActivityResultContracts.StartActivityForResult(),
+              result -> {
+                  if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                      double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
+                      double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
+                      if (binding instanceof EventEditableLayoutBinding eBinding) {
+                          eBinding.eventLatitude.setText(String.valueOf(lat));
+                          eBinding.eventLongitude.setText(String.valueOf(lng));
+                      }
+                  }
+              });
 
         logMethod(TAG, this);
 
@@ -65,27 +125,177 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void onInit(String token) {
-        binding = EventLayoutBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-
         eventViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(EventViewModel.class);
         eventViewModel.fetchEventInformation(token, eventId, this);
         eventViewModel.getEventLiveData()
               .observe(this, event -> {
-                  binding.eventName.setText(event.getName());
-                  binding.eventDescription.setText(event.getDescription());
-                  binding.eventCreatorIdBtn.setOnClickListener(v -> {
-                      startActivity(new Intent(this, UserActivity.class)
-                            .putExtra(UserActivity.USER_ID_KEY, event.getCreatorId()));
-                  });
+                  eventCache = event;
+                  if (AuthHelper.getUserUuid(accountManager).equals(eventCache.getCreatorId())) {
+                      initEditableLayout(token);
+                  } else {
+                      initReadableLayout();
+                  }
               });
+    }
+
+    private void initReadableLayout() {
+        binding = EventLayoutBinding.inflate(getLayoutInflater());
+        EventLayoutBinding rBinding = (EventLayoutBinding) binding;
+        View view = rBinding.getRoot();
+        setContentView(view);
+
+        rBinding.eventName.setText(eventCache.getName());
+        rBinding.eventDescription.setText(eventCache.getDescription());
+        rBinding.eventCreatorIdBtn.setOnClickListener(
+              v -> dispatchToUserActivity(this, eventCache.getCreatorId()));
 
         eventViewModel.getEventPhotoLiveData()
               .observe(
-                    this, photo -> binding.eventPhoto.setImageBitmap(circleImage(photo)));
+                    this, photo -> rBinding.eventPhoto.setImageBitmap(
+                          circleImage(photo, 600, 600)));
     }
+
+    private void initEditableLayout(String token) {
+        binding = EventEditableLayoutBinding.inflate(getLayoutInflater());
+        EventEditableLayoutBinding eBinding = (EventEditableLayoutBinding) binding;
+        View view = eBinding.getRoot();
+        setContentView(view);
+
+        eBinding.saveEventButton.setOnClickListener(v -> {
+            UpdateEventRequest req = new UpdateEventRequest();
+            String eventNameChange = getStringOrNull(eBinding.eventName.getText());
+            if (!Objects.equals(eventCache.getName(), eventNameChange)) {
+                req.setName(eventNameChange);
+            }
+            String eventDescrChange = getStringOrNull(eBinding.eventDescription.getText());
+            if (!Objects.equals(eventCache.getDescription(), eventDescrChange)) {
+                req.setDescription(eventDescrChange);
+            }
+            OffsetDateTime eventStartingChange = getOffsetDateTime(eBinding.eventStarting.getText());
+            if (!Objects.equals(eventCache.getStarting(), eventStartingChange)) {
+                req.setStarting(eventStartingChange);
+            }
+            OffsetDateTime eventEndingChange = getOffsetDateTime(eBinding.eventEnding.getText());
+            if (!Objects.equals(eventCache.getEnding(), eventEndingChange)) {
+                req.setEnding(eventEndingChange);
+            }
+            String eventCityChange = getStringOrNull(eBinding.eventCity.getText());
+            if (!Objects.equals(eventCache.getCity(), eventCityChange)) {
+                req.setCity(eventCityChange);
+            }
+            Float eventLatitudeChange = getFloatOrNull(eBinding.eventLatitude.getText());
+            if (!Objects.equals(eventCache.getLatitude(), eventLatitudeChange)) {
+                req.setLatitude(eventLatitudeChange);
+            }
+            Float eventLongitudeChange = getFloatOrNull(eBinding.eventLongitude.getText());
+            if (!Objects.equals(eventCache.getLongitude(), eventLongitudeChange)) {
+                req.setLongitude(eventLongitudeChange);
+            }
+            //TODO: eventCache.getPhotoPath();
+            eventService.updateEvent(Globals.getAuthHeader(token), eventId, req).enqueue(
+                  new DisconnectLogger<>(this) {
+                      @Override
+                      public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                          int code = response.code();
+                          EventDTO body = response.body();
+                          if (response.isSuccessful()) {
+                              Log.d(TAG, code + " " + body);
+                              eventCache = body;
+                              updateLayout();
+                          } else {
+                              try {
+                                  Log.d(TAG, code + " " + response.errorBody().string());
+                              } catch (IOException e) {
+                                  Log.d(TAG, "Unable to get response error body...");
+                              }
+                          }
+                      }
+
+                      @Override
+                      public void onFailure(Call<EventDTO> call, Throwable t) {
+                          super.onFailure(call, t);
+
+                      }
+                  });
+        });
+
+
+        /*
+   TODO photoPath;
+        * */
+
+        updateLayout();
+
+        eBinding.selectStartingDateButton.setOnClickListener(
+              v -> showDateTimePicker(eBinding.eventStarting));
+        eBinding.selectEndingDateButton.setOnClickListener(
+              v -> showDateTimePicker(eBinding.eventEnding));
+        eBinding.btnEventLocationMap.setOnClickListener(
+              v -> mapResult.launch(
+                    createEventLocationMapActivityIntent(
+                          this, eventCache.getLatitude(), eventCache.getLongitude())));
+/*        eBinding.eventName.setText(event.getName());
+        eBinding.editEventNameBtn.setOnClickListener(v -> eBinding.eventName.setEnabled(true));
+        eBinding.eventDescription.setText(event.getDescription());
+        eBinding.eventCreatorIdBtn.setOnClickListener(v -> {
+            startActivity(new Intent(this, UserActivity.class)
+                  .putExtra(UserActivity.USER_ID_KEY, event.getCreatorId()));
+        });
+
+        eventViewModel.getEventPhotoLiveData()
+              .observe(
+                    this, photo -> eBinding.eventPhoto.setImageBitmap(
+                          circleImage(photo, 600, 600)));*/
+    }
+
+    private void updateLayout() {
+        EventEditableLayoutBinding eBinding = (EventEditableLayoutBinding) binding;
+        eBinding.eventName.setText(eventCache.getName());
+        eBinding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(eventCache.getCreated()));
+
+        eBinding.eventDescription.setText(eventCache.getDescription());
+        eBinding.eventLatitude.setText(textOrNull(eventCache.getLatitude()));
+        eBinding.eventLongitude.setText(textOrNull(eventCache.getLongitude()));
+        eBinding.eventStarting.setText(dateOrNull(eventCache.getStarting()));
+        eBinding.eventEnding.setText(dateOrNull(eventCache.getEnding()));
+        eBinding.eventCity.setText(eventCache.getCity());
+
+    }
+
+    @Nullable
+    private static CharSequence dateOrNull(OffsetDateTime date) {
+        return date == null ? null : UI_DATE_TIME_FORMAT.format(date);
+    }
+
+    @Nullable
+    private static CharSequence textOrNull(Double val) {
+        return val == null ? null : val.toString();
+    }
+
+    private static String getStringOrNull(CharSequence input) {
+        if (input == null || EMPTY_STR.contentEquals(input)) {
+            return null;
+        }
+        return input.toString();
+    }
+
+    private static Float getFloatOrNull(CharSequence input) {
+        if (input == null || EMPTY_STR.contentEquals(input)) {
+            return null;
+        }
+        return Float.valueOf(input.toString());
+    }
+
+    private static OffsetDateTime getOffsetDateTime(CharSequence input) {
+        if (input == null || EMPTY_STR.contentEquals(input)) {
+            return null;
+        }
+        LocalDateTime localDateTime = LocalDateTime.parse(input, UI_DATE_TIME_FORMAT);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+        return zonedDateTime.toOffsetDateTime();
+    }
+
 
     @Nullable
     @Override
@@ -93,6 +303,93 @@ public class EventActivity extends AppCompatActivity {
           @Nullable View parent, @NonNull String name, @NonNull Context ctx,
           @NonNull AttributeSet attrs) {
         return super.onCreateView(parent, name, ctx, attrs);
+    }
+
+    // Метод для отображения DatePickerDialog
+    private void showDatePickerDialog(final EditText targetEditText) {
+        // Получаем текущую дату
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Создаем и показываем DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+              (view, selectedYear, selectedMonth, selectedDay) -> {
+                  // Устанавливаем выбранную дату в EditText
+                  String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                  targetEditText.setText(selectedDate);
+              }, year, month, day);
+
+        // Показываем диалог
+        datePickerDialog.show();
+    }
+
+    // Метод для отображения Material DatePicker
+    private void showMaterialDatePicker(final EditText targetEditText) {
+        // Создаём constraints (ограничения для выбора даты)
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+        Calendar calendar = Calendar.getInstance();
+        constraintsBuilder.setValidator(DateValidatorPointForward.from(calendar.getTimeInMillis()));
+
+        // Создаем Material DatePicker
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setCalendarConstraints(constraintsBuilder.build());
+        builder.setTitleText("Select Date");
+
+        MaterialDatePicker<Long> datePicker = builder.build();
+
+        // Устанавливаем слушатель на выбор даты
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            // Форматируем выбранную дату
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.setTimeInMillis(selection);
+            String selectedDateString = selectedDate.get(Calendar.DAY_OF_MONTH) + "/" +
+                  (selectedDate.get(Calendar.MONTH) + 1) + "/" +
+                  selectedDate.get(Calendar.YEAR);
+
+            // Устанавливаем выбранную дату в поле
+            targetEditText.setText(selectedDateString);
+        });
+
+        // Показываем диалог
+        datePicker.show(getSupportFragmentManager(), datePicker.toString());
+    }
+
+    private void showDateTimePicker(EditText targetEditText) {
+        final Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+              this,
+              (view, year, month, dayOfMonth) -> {
+                  calendar.set(Calendar.YEAR, year);
+                  calendar.set(Calendar.MONTH, month);
+                  calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                  TimePickerDialog timePickerDialog = new TimePickerDialog(
+                        this,
+                        (timeView, hourOfDay, minute) -> {
+                            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                            calendar.set(Calendar.MINUTE, minute);
+
+                            SimpleDateFormat sdf = new SimpleDateFormat(
+                                  "yyyy-MM-dd HH:mm", Locale.getDefault());
+                            String formatted = sdf.format(calendar.getTime());
+                            targetEditText.setText(formatted);
+                        },
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        true
+                  );
+
+                  timePickerDialog.show();
+              },
+              calendar.get(Calendar.YEAR),
+              calendar.get(Calendar.MONTH),
+              calendar.get(Calendar.DAY_OF_MONTH)
+        );
+
+        datePickerDialog.show();
     }
 
     public static void dispatchToEventActivity(Context ctx, String eventId) {

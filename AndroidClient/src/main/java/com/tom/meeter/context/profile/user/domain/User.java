@@ -4,7 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
+//login?
 public class User {
 
     @PrimaryKey
@@ -15,6 +19,10 @@ public class User {
     private String surname;
     private String info;
     private String birthday;
+
+    public User() {
+        //Jackson.
+    }
 
     public User(
           @NonNull String id, String name, String gender, String surname,

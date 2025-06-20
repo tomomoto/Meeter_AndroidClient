@@ -38,7 +38,7 @@ public class ProfileViewModel extends ViewModel {
         this.profileService = profileService;
     }
 
-    public void getProfile(String token, Fragment fragment) {
+    public void fetchProfile(String token, Fragment fragment) {
         profileService.getProfile(Globals.getAuthHeader(token)).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
