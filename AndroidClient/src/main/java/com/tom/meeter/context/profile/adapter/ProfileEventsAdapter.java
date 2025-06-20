@@ -3,14 +3,13 @@ package com.tom.meeter.context.profile.adapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.EventViewBinding;
-import com.tom.meeter.infrastructure.adapter.OnEventClickListener;
+import com.tom.meeter.infrastructure.binder.EventBinder;
+import com.tom.meeter.infrastructure.binder.EventViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +17,14 @@ import java.util.List;
 /**
  * created by Tom on 10.02.2017.
  */
-public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
+public class ProfileEventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<EventDTO> events = new ArrayList<>();
 
-    private final DownloadAndCacheEventBinder downloadAndCacheEventBinder;
+    private final EventBinder eventBinder;
 
-    public RecycleViewUserEventsAdapter(
-          Fragment fragment, ImageDownloader imageDownloader,
-          OnEventClickListener onEventClickListener) {
-        this.downloadAndCacheEventBinder = new DownloadAndCacheEventBinder(
-              fragment, imageDownloader, onEventClickListener);
+    public ProfileEventsAdapter(EventBinder eventBinder) {
+        this.eventBinder = eventBinder;
     }
 
     public void setData(List<EventDTO> events) {
@@ -50,7 +46,7 @@ public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventView
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        downloadAndCacheEventBinder.bind(holder, events.get(position));
+        eventBinder.bind(holder, events.get(position));
         /*
         btnDelete.setOnClickListener(v -> {
             if (onDeleteButtonClickListener != null)
@@ -97,5 +93,4 @@ public class RecycleViewUserEventsAdapter extends RecyclerView.Adapter<EventView
             return oldPosts.get(oldItemPosition).equals(newPosts.get(newItemPosition));
         }
     }
-
 }

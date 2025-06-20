@@ -59,7 +59,7 @@ public class EventDTO {
             result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
             result.city = getStringOrNull(CITY_KEY, json);
         } catch (JSONException e) {
-            throw new RuntimeException("Unable to encode EventDTO from jsonObject, ", e);
+            throw new RuntimeException("Unable to encode EventDTO from jsonObject: ", e);
         }
         return result;
     }

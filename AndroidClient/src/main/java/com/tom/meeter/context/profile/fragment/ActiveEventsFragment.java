@@ -20,7 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.context.profile.adapter.RecycleViewActiveEventsAdapter;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.context.profile.adapter.ActiveEventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
@@ -39,7 +40,7 @@ public class ActiveEventsFragment extends Fragment {
     @Inject
     ImageDownloader imageDownloader;
 
-    private RecycleViewActiveEventsAdapter recycleViewActiveEventsAdapter;
+    private ActiveEventsAdapter activeEventsAdapter;
 
     public ActiveEventsFragment() {
         logMethod(TAG, this);
@@ -75,17 +76,19 @@ public class ActiveEventsFragment extends Fragment {
         binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
-        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(
-              this, imageDownloader, (e) -> dispatchToEventActivity(getContext(), e.getId()));
-        binding.activeEventsFragmentRecyclerView.setAdapter(recycleViewActiveEventsAdapter);
+        activeEventsAdapter = new ActiveEventsAdapter(
+              new PhotoDownloaderWithCacheEventBinder(
+                    this, imageDownloader,
+                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
+        binding.activeEventsFragmentRecyclerView.setAdapter(activeEventsAdapter);
         binding.activeEventsFragmentRecyclerView.invalidate();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(IncomeEvents eventsSearch) {
-        recycleViewActiveEventsAdapter.cleanEvents();
+        activeEventsAdapter.cleanEvents();
         if (!eventsSearch.events().isEmpty()) {
-            recycleViewActiveEventsAdapter.addEvents(eventsSearch.events());
+            activeEventsAdapter.addEvents(eventsSearch.events());
         }
         binding.activeEventsFragmentRecyclerView.requestLayout();
     }

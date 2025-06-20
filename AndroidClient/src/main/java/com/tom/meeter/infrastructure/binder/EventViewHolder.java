@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.adapter;
+package com.tom.meeter.infrastructure.binder;
 
 import android.graphics.Bitmap;
 import android.view.View;
@@ -16,13 +16,13 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.binding = binding;
     }
 
-    public void init(
+    public void bind(
           String name, String description, Bitmap photo,
           View.OnClickListener clickListener) {
-        binding.eventCardView.setOnClickListener(clickListener);
         binding.eventNameCardView.setText(name);
         binding.eventDescriptionCardView.setText(description);
         binding.eventPhotoCardView.setImageBitmap(photo);
+        binding.eventCardView.setOnClickListener(clickListener);
     }
 
     public void updatePhoto(Bitmap photo) {
