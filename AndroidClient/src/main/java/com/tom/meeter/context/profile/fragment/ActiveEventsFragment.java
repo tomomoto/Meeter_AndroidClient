@@ -4,6 +4,7 @@ package com.tom.meeter.context.profile.fragment;
  * Created by Tom on 09.12.2016.
  */
 
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.os.Bundle;
@@ -74,7 +75,8 @@ public class ActiveEventsFragment extends Fragment {
         binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // specify an adapter (see also next example)
-        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(this, imageDownloader);
+        recycleViewActiveEventsAdapter = new RecycleViewActiveEventsAdapter(
+              this, imageDownloader, (e) -> dispatchToEventActivity(getContext(), e.getId()));
         binding.activeEventsFragmentRecyclerView.setAdapter(recycleViewActiveEventsAdapter);
         binding.activeEventsFragmentRecyclerView.invalidate();
     }

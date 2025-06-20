@@ -28,7 +28,8 @@ public class EventsRecyclerViewAdapter extends RecyclerView.Adapter<EventsRecycl
 
     public EventsRecyclerViewAdapter(
           Context context, List<EventDTO> events,
-          ImageDownloader imageDownloader, Runnable onAuthFail, OnEventClickListener listener) {
+          ImageDownloader imageDownloader, Runnable onAuthFail,
+          OnEventClickListener listener) {
         this.context = context;
         this.events = events;
         this.imageDownloader = imageDownloader;
@@ -81,9 +82,5 @@ public class EventsRecyclerViewAdapter extends RecyclerView.Adapter<EventsRecycl
             super(binding.getRoot());
             this.binding = binding;
         }
-    }
-
-    public interface OnEventClickListener {
-        void onEventClick(EventDTO event);
     }
 }

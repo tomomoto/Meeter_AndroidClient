@@ -1,6 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -70,7 +71,8 @@ public class ProfileEventsFragment extends Fragment {
 
         profileEventsViewModel.getProfileEvents(peekToken(accountManager), this);
 
-        adapter = new RecycleViewUserEventsAdapter(this, imageDownloader);
+        adapter = new RecycleViewUserEventsAdapter(
+              this, imageDownloader, (e) -> dispatchToEventActivity(getContext(), e.getId()));
         profileEventsViewModel.getProfileEventsLiveData()
               .observe(getViewLifecycleOwner(), ev -> adapter.setData(ev));
 

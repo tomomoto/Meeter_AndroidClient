@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.EventViewBinding;
+import com.tom.meeter.infrastructure.adapter.OnEventClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,10 @@ public class RecycleViewActiveEventsAdapter extends RecyclerView.Adapter<EventVi
     private final DownloadAndCacheEventBinder downloadAndCacheEventBinder;
 
     public RecycleViewActiveEventsAdapter(
-          Fragment fragment, ImageDownloader imageDownloader) {
+          Fragment fragment, ImageDownloader imageDownloader,
+          OnEventClickListener eventClickListener) {
         this.downloadAndCacheEventBinder = new DownloadAndCacheEventBinder(
-              fragment, imageDownloader);
+              fragment, imageDownloader, eventClickListener);
     }
 
     public List<EventDTO> getEvents() {
