@@ -5,6 +5,8 @@ import android.app.Application;
 import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.event.EventComponent;
 import com.tom.meeter.context.event.activity.EventActivity;
+import com.tom.meeter.context.event.activity.EventLocationMapActivity;
+import com.tom.meeter.context.event.activity.EventOnMapActivity;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
@@ -52,4 +54,7 @@ public interface AppComponent {
     void inject(ActiveEventsFragment activeEventsFragment);
 
     void inject(UserEventsFragment userEventsFragment);
+
+    void inject(EventOnMapActivity eventOnMapActivity);
+    void inject(EventLocationMapActivity eventLocationMapActivity);
 }

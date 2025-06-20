@@ -10,7 +10,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-
         <!-- Photo field -->
         <TextView
             android:id="@+id/event_photo_label"
@@ -29,11 +28,13 @@
             android:contentDescription="Event photo"
             android:src="@drawable/event_512_512" />
 
+
         <Button
-            android:id="@+id/select_photo_button"
+            android:id="@+id/event_creator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Photo" />
+            android:text="@string/creator"
+            android:textAllCaps="false" />
 
         <!-- Name field -->
         <TextView
@@ -44,11 +45,11 @@
             android:text="Event Name"
             android:textSize="16sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/event_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter event name"
+            android:hint="..."
             android:textSize="16sp" />
 
         <!-- Description field -->
@@ -61,13 +62,12 @@
             android:text="Description"
             android:textSize="16sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/event_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"
-            android:hint="Enter event description"
-            android:inputType="textMultiLine"
+            android:hint="..."
             android:lines="4"
             android:textSize="16sp" />
 
@@ -121,8 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:inputType="number"
-                android:hint="Event latitude"
+                android:hint="..."
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
                 android:textSize="16sp" />
@@ -133,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:hint="Event longitude"
+                android:hint="..."
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
                 android:textSize="16sp" />
@@ -144,9 +143,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Open map" />
+            android:text="Show on map" />
 
-        <!-- Starting Date -->
+        <!-- Created Date -->
         <TextView
             android:id="@+id/event_created_label"
             android:layout_width="wrap_content"
@@ -156,11 +155,10 @@
             android:text="Created Date"
             android:textSize="16sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/event_created"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:textSize="16sp" />
 
         <!-- Starting Date -->
@@ -173,20 +171,12 @@
             android:text="Starting Date"
             android:textSize="16sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/event_starting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="false"
-            android:hint="Select starting date"
+            android:hint="..."
             android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/select_starting_date_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select" />
 
         <!-- Ending Date -->
         <TextView
@@ -198,20 +188,12 @@
             android:text="Ending Date"
             android:textSize="16sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/event_ending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="false"
-            android:hint="Select ending date"
+            android:hint="..."
             android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/select_ending_date_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select" />
 
         <!-- City field -->
         <TextView
@@ -223,20 +205,12 @@
             android:text="City"
             android:textSize="16sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/event_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter city"
+            android:hint="..."
             android:textSize="16sp" />
-
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/save_event_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Save Event" />
 
     </LinearLayout>
 </ScrollView>

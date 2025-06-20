@@ -2,6 +2,7 @@ package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
+import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
 import static com.tom.meeter.context.image.ImageHelper.circleImage;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
@@ -38,10 +39,9 @@ import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
-import com.tom.meeter.databinding.EventLayoutBinding;
+import com.tom.meeter.databinding.ActivityEventReadableBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
-import com.tom.meeter.infrastructure.http.HttpClient;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.io.IOException;
@@ -76,8 +76,6 @@ public class EventActivity extends AppCompatActivity {
     TokenService tokenService;
     @Inject
     EventService eventService;
-    @Inject
-    HttpClient httpClient;
     @Inject
     ViewModelFactory viewModelFactory;
     private EventViewModel eventViewModel;
@@ -142,15 +140,17 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void initReadableLayout() {
-        binding = EventLayoutBinding.inflate(getLayoutInflater());
-        EventLayoutBinding rBinding = (EventLayoutBinding) binding;
+        binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
+        ActivityEventReadableBinding rBinding = (ActivityEventReadableBinding) binding;
         View view = rBinding.getRoot();
         setContentView(view);
 
-        rBinding.eventName.setText(eventCache.getName());
-        rBinding.eventDescription.setText(eventCache.getDescription());
-        rBinding.eventCreatorIdBtn.setOnClickListener(
+        updateReadableLayout();
+        rBinding.eventCreator.setOnClickListener(
               v -> dispatchToUserActivity(this, eventCache.getCreatorId()));
+        rBinding.btnEventLocationMap.setOnClickListener(
+              v -> dispatchToEventOnMapActivity(this, eventCache.getId()));
+
 
         eventViewModel.getEventPhotoLiveData()
               .observe(
@@ -232,8 +232,7 @@ public class EventActivity extends AppCompatActivity {
               v -> showDateTimePicker(eBinding.eventEnding));
         eBinding.btnEventLocationMap.setOnClickListener(
               v -> mapResult.launch(
-                    createEventLocationMapActivityIntent(
-                          this, eventCache.getLatitude(), eventCache.getLongitude())));
+                    createEventLocationMapActivityIntent(this, eventCache.getId())));
         eBinding.selectPhotoButton.setOnClickListener(
               v -> showMessage(EventActivity.this, "Кнопка пока не работает..."));
 
@@ -263,6 +262,18 @@ public class EventActivity extends AppCompatActivity {
         eBinding.eventEnding.setText(dateOrNull(eventCache.getEnding()));
         eBinding.eventCity.setText(eventCache.getCity());
 
+    }
+
+    private void updateReadableLayout() {
+        ActivityEventReadableBinding rBinding = (ActivityEventReadableBinding) binding;
+        rBinding.eventName.setText(eventCache.getName());
+        rBinding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(eventCache.getCreated()));
+        rBinding.eventDescription.setText(eventCache.getDescription());
+        rBinding.eventLatitude.setText(textOrNull(eventCache.getLatitude()));
+        rBinding.eventLongitude.setText(textOrNull(eventCache.getLongitude()));
+        rBinding.eventStarting.setText(dateOrNull(eventCache.getStarting()));
+        rBinding.eventEnding.setText(dateOrNull(eventCache.getEnding()));
+        rBinding.eventCity.setText(eventCache.getCity());
     }
 
     @Nullable
