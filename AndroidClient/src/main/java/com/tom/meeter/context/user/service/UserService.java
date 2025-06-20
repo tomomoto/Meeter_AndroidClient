@@ -23,4 +23,13 @@ public interface UserService {
 
     @GET("/user/{id}/events")
     Call<List<EventDTO>> getUserEvents(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
+    @GET("/user/{id}/am_i_subscribed")
+    Call<Boolean> amISubscribed(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
+    @GET("/user/{id}/subscribe")
+    Call<Void> subscribe(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
+    @GET("/user/{id}/unsubscribe")
+    Call<Void> unsubscribe(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
 }

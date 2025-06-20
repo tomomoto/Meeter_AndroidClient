@@ -28,6 +28,7 @@ public class UserViewModel extends ViewModel {
     private static final String TAG = UserViewModel.class.getCanonicalName();
 
     private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> amISubscriber = new MutableLiveData<>();
     private final MutableLiveData<List<EventDTO>> userEventsLiveData = new MutableLiveData<>();
 
     private final UserService userService;
@@ -51,6 +52,22 @@ public class UserViewModel extends ViewModel {
                           activity.recreate();
                       }
                       Log.i(TAG, "/user/{id}: " + response.code() + " : " + response.body());
+                  }
+              }
+        );
+
+        userService.amISubscribed(Globals.getAuthHeader(token), userId).enqueue(
+              new ErrorLogger<>(activity) {
+                  @Override
+                  public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                      if (response.code() == HttpCodes.OK && response.body() != null) {
+                          amISubscriber.setValue(response.body());
+                          return;
+                      }
+                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                          activity.recreate();
+                      }
+                      Log.i(TAG, "/user/{id}/am_i_subscribed: " + response.code() + " : " + response.body());
                   }
               }
         );
@@ -83,5 +100,9 @@ public class UserViewModel extends ViewModel {
 
     public LiveData<List<EventDTO>> getUserEventsLiveData() {
         return userEventsLiveData;
+    }
+
+    public MutableLiveData<Boolean> getAmISubscriber() {
+        return amISubscriber;
     }
 }

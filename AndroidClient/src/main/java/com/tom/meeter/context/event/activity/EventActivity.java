@@ -80,7 +80,6 @@ public class EventActivity extends AppCompatActivity {
     @Inject
     ViewModelFactory viewModelFactory;
     private EventViewModel eventViewModel;
-    private String eventId;
     private AccountManager accountManager;
 
     private ActivityResultLauncher<Intent> mapResult;
@@ -111,7 +110,7 @@ public class EventActivity extends AppCompatActivity {
             finish();
             return;
         }
-        eventId = extras.getString(EVENT_ID_KEY);
+        String eventId = extras.getString(EVENT_ID_KEY);
         if (eventId == null) {
             Log.d(TAG, "Unable to create event activity without 'event_id' provided.");
             finish();
@@ -122,10 +121,10 @@ public class EventActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken(this::onInit, this::finish, accountManager, this, tokenService);
+        checkToken((token) -> onInit(token, eventId), this::finish, accountManager, this, tokenService);
     }
 
-    private void onInit(String token) {
+    private void onInit(String token, String eventId) {
         eventViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(EventViewModel.class);
         eventViewModel.fetchEventInformation(token, eventId, this);
@@ -194,7 +193,7 @@ public class EventActivity extends AppCompatActivity {
                 req.setLongitude(eventLongitudeChange);
             }
             //TODO: eventCache.getPhotoPath();
-            eventService.updateEvent(Globals.getAuthHeader(token), eventId, req).enqueue(
+            eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req).enqueue(
                   new ErrorLogger<>(this) {
                       @Override
                       public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
