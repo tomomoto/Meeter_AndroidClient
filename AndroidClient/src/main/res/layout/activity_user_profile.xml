@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/profile_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,6 +27,7 @@
             android:id="@+id/user_full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/user_photo"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="8dp"
             android:text="Имя Фамилия"
@@ -38,6 +39,7 @@
             android:id="@+id/user_gender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/user_full_name"
             android:paddingBottom="4dp"
             android:text="Пол" />
 
@@ -46,6 +48,7 @@
             android:id="@+id/user_birthday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/user_gender"
             android:paddingBottom="4dp"
             android:text="Дата рождения" />
 
@@ -54,6 +57,7 @@
             android:id="@+id/user_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/user_birthday"
             android:paddingBottom="12dp"
             android:text="Информация о пользователе" />
 
@@ -62,6 +66,7 @@
             android:id="@+id/subscribe_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/user_info"
             android:layout_marginBottom="16dp"
             android:text="Loading..." />
 
@@ -70,24 +75,28 @@
             android:id="@+id/events_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/subscribe_button"
             android:gravity="center"
             android:paddingBottom="8dp"
             android:text="События"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <com.tom.meeter.components.ExpandableHeightGridView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/events_grid"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/events_label"
             android:layout_marginTop="40dp"
             android:animateLayoutChanges="false"
             android:background="#C0DEEF"
             android:gravity="center"
+            android:nestedScrollingEnabled="false"
             android:numColumns="2"
+            android:overScrollMode="never"
             android:stretchMode="columnWidth"
             android:verticalSpacing="10dp"
             tools:listitem="@layout/card_item" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </ScrollView>

@@ -19,14 +19,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.adapter.GridViewAdapter;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserProfileBinding;
+import com.tom.meeter.infrastructure.adapter.EventsRecyclerViewAdapter;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -148,13 +149,12 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> {
                   if (!events.isEmpty()) {
+                      binding.eventsGrid.setLayoutManager(
+                            new GridLayoutManager(this, 2));
                       binding.eventsGrid.setAdapter(
-                            new GridViewAdapter(this, events, imgDownloader, this::recreate));
-                      binding.eventsGrid.setExpanded(true);
-                      binding.eventsGrid.setOnItemClickListener(
-                            (parent, view1, position, id) ->
-                                  dispatchToEventActivity(
-                                        UserActivity.this, events.get(position).getId()));
+                            new EventsRecyclerViewAdapter(
+                                  this, events, imgDownloader, this::recreate,
+                                  event -> dispatchToEventActivity(UserActivity.this, event.getId())));
                   }
               });
     }

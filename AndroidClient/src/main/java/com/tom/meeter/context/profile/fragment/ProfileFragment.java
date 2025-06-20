@@ -16,13 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
-import com.tom.meeter.context.user.adapter.GridViewAdapter;
 import com.tom.meeter.databinding.FragmentProfileBinding;
+import com.tom.meeter.infrastructure.adapter.EventsRecyclerViewAdapter;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -87,14 +88,13 @@ public class ProfileFragment extends Fragment {
               .observe(
                     getViewLifecycleOwner(),
                     events -> {
+                        binding.profileEventsGrid.setLayoutManager(
+                              new GridLayoutManager(getContext(), 2));
                         binding.profileEventsGrid.setAdapter(
-                              new GridViewAdapter(
+                              new EventsRecyclerViewAdapter(
                                     getContext(), events, imageDownloader,
-                                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
-                        binding.profileEventsGrid.setExpanded(true);
-                        binding.profileEventsGrid.setOnItemClickListener(
-                              (parent, view_, position, id) ->
-                                    dispatchToEventActivity(getContext(), events.get(position).getId()));
+                                    () -> InfrastructureHelper.restartActivityFromFragment(this),
+                                    event -> dispatchToEventActivity(getContext(), event.getId())));
                     });
     }
 

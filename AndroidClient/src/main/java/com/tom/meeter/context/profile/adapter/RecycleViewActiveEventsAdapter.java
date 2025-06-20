@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class RecycleViewActiveEventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
-    private static final String TAG = RecycleViewUserEventsAdapter.class.getCanonicalName();
+    private static final String TAG = RecycleViewActiveEventsAdapter.class.getCanonicalName();
 
     private final List<EventDTO> events = new ArrayList<>();
 

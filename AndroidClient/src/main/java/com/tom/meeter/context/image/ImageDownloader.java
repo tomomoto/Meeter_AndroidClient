@@ -39,6 +39,7 @@ public class ImageDownloader {
               .enqueue(new ErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                      //Log.d(TAG, "/images/event" + photoPath + " downloaded...");
                       try (ResponseBody body = response.body()) {
                           if (response.code() == HttpCodes.OK && body != null) {
                               onDownloaded.accept(response.body());
