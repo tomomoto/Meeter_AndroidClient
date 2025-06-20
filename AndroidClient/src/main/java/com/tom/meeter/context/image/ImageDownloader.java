@@ -7,7 +7,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.function.Consumer;
@@ -33,7 +33,7 @@ public class ImageDownloader {
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
         imageService.downloadEventImage(
                     Globals.getAuthHeader(peekToken(AccountManager.get(ctx))), photoPath)
-              .enqueue(new DisconnectLogger<>(ctx) {
+              .enqueue(new ErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       try (ResponseBody body = response.body()) {
@@ -55,7 +55,7 @@ public class ImageDownloader {
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
         imageService.downloadUserImage(
                     Globals.getAuthHeader(peekToken(AccountManager.get(ctx))), photoPath)
-              .enqueue(new DisconnectLogger<>(ctx) {
+              .enqueue(new ErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       try (ResponseBody body = response.body()) {

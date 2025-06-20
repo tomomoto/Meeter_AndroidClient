@@ -60,7 +60,7 @@ import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.HashMap;
@@ -200,7 +200,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupPreferences(String token) {
         Call<SettingsResponse> settings = settingsService.getSettings(Globals.getAuthHeader(token));
         settings.enqueue(
-              new DisconnectLogger<>(this) {
+              new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -222,7 +222,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupPreferencesRetry(String freshToken) {
         settingsService.getSettings(Globals.getAuthHeader(freshToken))
-              .enqueue(new DisconnectLogger<>(this) {
+              .enqueue(new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_FOUND) {

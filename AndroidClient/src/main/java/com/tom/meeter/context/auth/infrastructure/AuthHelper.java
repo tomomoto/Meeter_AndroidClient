@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.tom.meeter.R;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
@@ -81,7 +81,7 @@ public final class AuthHelper {
             return;
         }
         tokenService.checkToken(Globals.getAuthHeader(token)).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<Void> call, Response<Void> response) {
                       if (response.code() == HttpCodes.NOT_AUTHENTICATED) {

@@ -99,7 +99,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     throw new RuntimeException(e);
                 }
                 if (resp.code() == HttpCodes.OK) {
-                    authToken = resp.body().token();
+                    authToken = resp.body().getToken();
                 } else if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
                     Log.d(TAG, "AccountAuthenticator: "
                           + context.getResources().getString(R.string.wrong_credentials));

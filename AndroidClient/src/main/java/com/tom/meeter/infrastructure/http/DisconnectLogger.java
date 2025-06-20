@@ -23,15 +23,18 @@ public abstract class DisconnectLogger<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        if (t instanceof SocketTimeoutException ste) {
+        if (supportedErrorMapping(t)) {
             Toast.makeText(ctx, R.string.server_is_unreachable, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "DisconnectLogger for " + ctx.getClass().getSimpleName()
                   + " : " + ctx.getResources().getString(R.string.server_is_unreachable)
                   + ", error: " + t.getMessage());
-        } else {
-            Toast.makeText(ctx, "ERROR", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "DisconnectLogger for " + ctx.getClass().getSimpleName()
-                  + ", error: " + t.getMessage());
         }
+    }
+
+    protected boolean supportedErrorMapping(Throwable t) {
+        if (t instanceof SocketTimeoutException) {
+            return true;
+        }
+        return false;
     }
 }

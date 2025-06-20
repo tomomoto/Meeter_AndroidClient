@@ -172,9 +172,9 @@ public class LoginActivity extends AppCompatActivity {
                     intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
                     TokenResponse res = response.body();
-                    intent.putExtra(AccountManager.KEY_AUTHTOKEN, res.token());
+                    intent.putExtra(AccountManager.KEY_AUTHTOKEN, res.getToken());
                     intent.putExtra(USER_PASS_KEY, userPass);
-                    intent.putExtra(USER_UUID_KEY, res.uuid());
+                    intent.putExtra(USER_UUID_KEY, res.getUuid());
                     finishLogin(intent);
                 } else {
                     new AlertDialog.Builder(LoginActivity.this)

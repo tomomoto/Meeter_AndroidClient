@@ -47,8 +47,8 @@ dependencies {
     implementation libs.material
     implementation libs.cardview
 
-    implementation libs.lifecycleextensions
-    annotationProcessor libs.lifecyclecompiler
+    implementation libs.lifecycle.extensions
+    annotationProcessor libs.lifecycle.compiler
 
     implementation libs.socketioclient
     implementation libs.eventbus
@@ -75,7 +75,7 @@ dependencies {
 
     // Retrofit & OkHttp
     implementation libs.retrofit
-    implementation libs.retrofitconverterjackson
+    implementation libs.retrofit.converter.jackson
     //implementation libs.retrofitconvertergson
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
     implementation(libs.jackson.datatype.jsr310)
@@ -86,12 +86,12 @@ dependencies {
 
     // Dagger 2
     implementation libs.dagger
-    annotationProcessor libs.daggercompiler
+    annotationProcessor libs.dagger.compiler
 
     // Room
-    implementation libs.roomruntime
-    implementation libs.roomrxjava2
-    annotationProcessor libs.roomcompiler
+    implementation libs.room.runtime
+    implementation libs.room.rxjava2
+    annotationProcessor libs.room.compiler
 
 
     //LocalDateTime features

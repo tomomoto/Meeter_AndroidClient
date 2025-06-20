@@ -14,7 +14,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
@@ -42,7 +42,7 @@ public class EventViewModel extends ViewModel {
 
     public void fetchEventInformation(String token, String eventId, Activity activity) {
         eventService.getEvent(Globals.getAuthHeader(token), eventId).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                       EventDTO body = response.body();

@@ -7,7 +7,7 @@ import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class ActivityRestarterOnAuthFailure<T> extends DisconnectLogger<T> {
+public class ActivityRestarterOnAuthFailure<T> extends ErrorLogger<T> {
     private static final String TAG = ActivityRestarterOnAuthFailure.class.getCanonicalName();
     private final Fragment fragment;
 

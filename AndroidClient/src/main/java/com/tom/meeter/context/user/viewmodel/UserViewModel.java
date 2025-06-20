@@ -13,7 +13,7 @@ import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class UserViewModel extends ViewModel {
 
     public void fetchUserInformation(String token, String userId, Activity activity) {
         userService.getUser(Globals.getAuthHeader(token), userId).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
                       if (response.code() == HttpCodes.OK && response.body() != null) {
@@ -56,7 +56,7 @@ public class UserViewModel extends ViewModel {
         );
 
         userService.getUserEvents(Globals.getAuthHeader(token), userId).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {
                       if (response.code() == HttpCodes.OK && response.body() != null) {

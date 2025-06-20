@@ -68,7 +68,12 @@ public class AppModule {
     public UserService provideUserService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(JacksonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create(
+                    JsonMapper.builder()
+                          .addModule(new JavaTimeModule())
+                          .build()
+                          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                          .setTimeZone(TimeZone.getDefault())))
               //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(UserService.class);

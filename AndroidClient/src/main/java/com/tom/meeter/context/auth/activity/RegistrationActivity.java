@@ -137,9 +137,9 @@ public class RegistrationActivity extends AppCompatActivity {
                     Bundle bundle = new Bundle();
                     bundle.putString(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
-                    bundle.putString(AccountManager.KEY_AUTHTOKEN, authRes.token());
+                    bundle.putString(AccountManager.KEY_AUTHTOKEN, authRes.getToken());
                     bundle.putString(AccountAuthenticator.USER_PASS_KEY, userPass);
-                    bundle.putString(USER_UUID_KEY, authRes.uuid());
+                    bundle.putString(USER_UUID_KEY, authRes.getUuid());
 
                     Intent res = new Intent();
                     res.putExtras(bundle);

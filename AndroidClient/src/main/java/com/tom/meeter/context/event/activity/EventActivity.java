@@ -6,6 +6,7 @@ import static com.tom.meeter.context.image.ImageHelper.circleImage;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
 import android.app.DatePickerDialog;
@@ -39,7 +40,7 @@ import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.EventEditableLayoutBinding;
 import com.tom.meeter.databinding.EventLayoutBinding;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpClient;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -194,7 +195,7 @@ public class EventActivity extends AppCompatActivity {
             }
             //TODO: eventCache.getPhotoPath();
             eventService.updateEvent(Globals.getAuthHeader(token), eventId, req).enqueue(
-                  new DisconnectLogger<>(this) {
+                  new ErrorLogger<>(this) {
                       @Override
                       public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                           int code = response.code();
@@ -203,19 +204,16 @@ public class EventActivity extends AppCompatActivity {
                               Log.d(TAG, code + " " + body);
                               eventCache = body;
                               updateLayout();
+                              showMessage(EventActivity.this, "Saved.");
                           } else {
                               try {
-                                  Log.d(TAG, code + " " + response.errorBody().string());
+                                  String msg = code + "/" + response.errorBody().string();
+                                  showMessage(EventActivity.this, msg);
+                                  Log.d(TAG, msg);
                               } catch (IOException e) {
                                   Log.d(TAG, "Unable to get response error body...");
                               }
                           }
-                      }
-
-                      @Override
-                      public void onFailure(Call<EventDTO> call, Throwable t) {
-                          super.onFailure(call, t);
-
                       }
                   });
         });
