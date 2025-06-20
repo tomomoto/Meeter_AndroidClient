@@ -4,9 +4,7 @@ import android.app.Application;
 
 import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.event.EventComponent;
-import com.tom.meeter.context.event.activity.EventActivity;
-import com.tom.meeter.context.event.activity.EventLocationMapActivity;
-import com.tom.meeter.context.event.activity.EventOnMapActivity;
+import com.tom.meeter.context.image.ImageComponent;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
@@ -21,8 +19,16 @@ import dagger.BindsInstance;
 import dagger.Component;
 
 @Component(
-      modules = {AppModule.class, ViewModelModule.class},
-      dependencies = {TokenComponent.class, AuthComponent.class, EventComponent.class})
+      modules = {
+            AppModule.class,
+            ViewModelModule.class
+      },
+      dependencies = {
+            TokenComponent.class,
+            AuthComponent.class,
+            EventComponent.class,
+            ImageComponent.class
+      })
 @AppScope
 public interface AppComponent {
 
@@ -33,8 +39,12 @@ public interface AppComponent {
         Builder application(Application application);
 
         Builder authComponent(AuthComponent authComponent);
+
         Builder tokenComponent(TokenComponent tokenComponent);
+
         Builder eventComponent(EventComponent eventComponent);
+
+        Builder imageComponent(ImageComponent imageComponent);
 
         AppComponent build();
     }
@@ -49,12 +59,7 @@ public interface AppComponent {
 
     void inject(UserActivity userActivity);
 
-    void inject(EventActivity eventActivity);
-
     void inject(ActiveEventsFragment activeEventsFragment);
 
     void inject(UserEventsFragment userEventsFragment);
-
-    void inject(EventOnMapActivity eventOnMapActivity);
-    void inject(EventLocationMapActivity eventLocationMapActivity);
 }

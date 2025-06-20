@@ -16,8 +16,6 @@ import com.tom.meeter.context.event.service.EventService;
 
 import java.util.TimeZone;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -32,7 +30,7 @@ public class EventModule {
         logMethod(TAG, this);
     }
 
-    @Singleton
+    @EventScope
     @NonNull
     @Provides
     public EventService provideEventService(Application app) {
@@ -41,8 +39,8 @@ public class EventModule {
               .addConverterFactory(JacksonConverterFactory.create(
                     JsonMapper.builder()
                           .addModule(new JavaTimeModule())
-                          .addModule(new Jdk8Module())
                           //.addModule(new Jdk8Module().configureReadAbsentAsNull(false))
+                          .addModule(new Jdk8Module())
                           .serializationInclusion(JsonInclude.Include.NON_NULL)
                           .build()
                           .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)

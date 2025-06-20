@@ -117,7 +117,7 @@ public class EventActivity extends AppCompatActivity {
             return;
         }
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getEventComponent().inject(this);
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);

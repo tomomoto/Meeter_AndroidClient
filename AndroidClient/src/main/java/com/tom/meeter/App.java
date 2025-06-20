@@ -8,6 +8,8 @@ import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.auth.DaggerAuthComponent;
 import com.tom.meeter.context.event.DaggerEventComponent;
 import com.tom.meeter.context.event.EventComponent;
+import com.tom.meeter.context.image.DaggerImageComponent;
+import com.tom.meeter.context.image.ImageComponent;
 import com.tom.meeter.context.token.DaggerTokenComponent;
 import com.tom.meeter.context.token.TokenComponent;
 
@@ -18,14 +20,19 @@ public class App extends Application {
     private AuthComponent authComponent;
     private TokenComponent tokenComponent;
     private EventComponent eventComponent;
+    private ImageComponent imageComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
         logMethod(TAG, this);
 
+        /* Independent */
         tokenComponent = buildTokenComponent();
         authComponent = buildAuthComponent();
+        imageComponent = buildImageComponent();
+
+        /* Dependent */
         eventComponent = buildEventComponent();
 
         component = buildComponent();
@@ -40,6 +47,7 @@ public class App extends Application {
     protected AppComponent buildComponent() {
         return DaggerAppComponent.builder()
               .tokenComponent(tokenComponent)
+              .imageComponent(imageComponent)
               .authComponent(authComponent)
               .eventComponent(eventComponent)
               .application(this)
@@ -58,9 +66,17 @@ public class App extends Application {
               .build();
     }
 
+    protected ImageComponent buildImageComponent() {
+        return DaggerImageComponent.builder()
+              .application(this)
+              .build();
+    }
+
     protected EventComponent buildEventComponent() {
         return DaggerEventComponent.builder()
               .application(this)
+              .tokenComponent(tokenComponent)
+              .imageComponent(imageComponent)
               .build();
     }
 

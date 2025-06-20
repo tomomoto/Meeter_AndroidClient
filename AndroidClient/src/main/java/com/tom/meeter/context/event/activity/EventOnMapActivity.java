@@ -73,7 +73,7 @@ public class EventOnMapActivity extends AppCompatActivity
         FrameLayout view = binding.getRoot();
         setContentView(view);
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getEventComponent().inject(this);
         accountManager = AccountManager.get(this);
 
 

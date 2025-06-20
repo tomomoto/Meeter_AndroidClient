@@ -1,11 +1,13 @@
 package com.tom.meeter.context.image;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Log;
 
+import com.tom.meeter.context.image.service.ImageService;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -25,6 +27,7 @@ public class ImageDownloader {
 
     @Inject
     public ImageDownloader(ImageService imageService) {
+        logMethod(TAG, this);
         this.imageService = imageService;
     }
 

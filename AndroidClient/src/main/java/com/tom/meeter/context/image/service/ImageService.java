@@ -1,4 +1,4 @@
-package com.tom.meeter.context.image;
+package com.tom.meeter.context.image.service;
 
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 

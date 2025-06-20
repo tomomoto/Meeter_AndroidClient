@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.context.profile.viewmodel.UserEventsViewModel;
@@ -48,10 +47,5 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(UserViewModel.class)
     abstract ViewModel userViewModel(UserViewModel userViewModel);
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(EventViewModel.class)
-    abstract ViewModel eventViewModel(EventViewModel eventViewModel);
 
 }

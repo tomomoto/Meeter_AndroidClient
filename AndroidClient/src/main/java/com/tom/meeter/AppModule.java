@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tom.meeter.context.image.ImageService;
 import com.tom.meeter.context.profile.event.database.EventDao;
 import com.tom.meeter.context.profile.event.database.EventDatabase;
 import com.tom.meeter.context.profile.event.service.EventService;
@@ -141,16 +140,6 @@ public class AppModule {
               //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(SettingsService.class);
-    }
-
-    @AppScope
-    @NonNull
-    @Provides
-    public ImageService provideImageService(Application app) {
-        return new Retrofit.Builder()
-              .baseUrl(getServerPath(app))
-              .build()
-              .create(ImageService.class);
     }
 
     @AppScope
