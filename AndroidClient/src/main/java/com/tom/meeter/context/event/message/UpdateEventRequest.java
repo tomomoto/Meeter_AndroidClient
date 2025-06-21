@@ -85,6 +85,11 @@ public class UpdateEventRequest {
         this.photoPath = Optional.ofNullable(photoPath);
     }
 
+    public boolean isEmpty() {
+        return name == null && description == null && starting == null && ending == null
+              && city == null && latitude == null && longitude == null && photoPath == null;
+    }
+
 /*
 
 

@@ -1,7 +1,7 @@
 package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
-import static com.tom.meeter.context.network.dto.SocketIOCodes.EVENT_CREATED_CODE;
+import static com.tom.meeter.context.network.utils.SocketIOCodes.EVENT_CREATED_CODE;
 import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationEventCreated;
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;

@@ -14,7 +14,7 @@
 
 
         <ImageView
-            android:id="@+id/user_photo"
+            android:id="@+id/photo"
             android:layout_width="match_parent"
             android:layout_height="170sp"
             android:layout_marginTop="29dp"
@@ -27,7 +27,7 @@
             android:id="@+id/user_full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_photo"
+            android:layout_below="@+id/photo"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="8dp"
             android:text="Имя Фамилия"

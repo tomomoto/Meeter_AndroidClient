@@ -1,6 +1,7 @@
 package com.tom.meeter.infrastructure.common;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,6 +25,12 @@ public class InfrastructureHelper {
 
         activity.runOnUiThread(
               () -> Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_SHORT).show());
+    }
+
+    public static void showMessage(Context ctx, String msg) {
+        if (TextUtils.isEmpty(msg))
+            return;
+        Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
     }
 
     public static void logMethod(String tag, Object obj) {

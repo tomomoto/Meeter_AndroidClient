@@ -17,7 +17,7 @@
         tools:context=".context.profile.fragment.ProfileFragment">
         <!--removed^: android:padding="50dp" -->
         <TextView
-            android:id="@+id/userInformationLabel"
+            android:id="@+id/informationLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -28,10 +28,10 @@
             android:textSize="20sp" />
 
         <ImageView
-            android:id="@+id/user_photo"
+            android:id="@+id/photo"
             android:layout_width="match_parent"
             android:layout_height="170sp"
-            android:layout_below="@+id/userInformationLabel"
+            android:layout_below="@+id/informationLabel"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="29dp"
             android:adjustViewBounds="true"
@@ -45,14 +45,14 @@
             android:id="@+id/profile_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_photo"
+            android:layout_below="@+id/photo"
             android:layout_marginTop="30dp"
             android:text="@string/profile_user_id"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/profile_name"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profile_id"
@@ -62,40 +62,40 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/profile_age"
+            android:id="@+id/age"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_name"
+            android:layout_below="@+id/name"
             android:layout_marginTop="45dp"
             android:text="@string/profile_age"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/profile_gender"
+            android:id="@+id/gender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_age"
+            android:layout_below="@+id/age"
             android:layout_marginTop="45dp"
             android:text="@string/profile_gender"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/profile_info"
+            android:id="@+id/info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_gender"
+            android:layout_below="@+id/gender"
             android:layout_marginTop="45dp"
             android:text="@string/profile_info"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/profile_events_grid"
+            android:id="@+id/events"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_info"
+            android:layout_below="@+id/info"
             android:layout_marginTop="40dp"
             android:animateLayoutChanges="false"
             android:background="@color/c0deef"

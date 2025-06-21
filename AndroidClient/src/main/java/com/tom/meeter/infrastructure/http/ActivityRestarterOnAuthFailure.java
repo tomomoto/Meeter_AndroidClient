@@ -7,7 +7,8 @@ import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class ActivityRestarterOnAuthFailure<T> extends ErrorLogger<T> {
+public class ActivityRestarterOnAuthFailure<T> extends HttpErrorLogger<T> {
+
     private static final String TAG = ActivityRestarterOnAuthFailure.class.getCanonicalName();
     private final Fragment fragment;
 
@@ -18,6 +19,7 @@ public class ActivityRestarterOnAuthFailure<T> extends ErrorLogger<T> {
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
+        super.onResponse(call, response);
         if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
             InfrastructureHelper.restartActivityFromFragment(fragment);
             // TODO when restore from persisted state will be done, if necessary

@@ -1,10 +1,13 @@
 package com.tom.meeter.context.profile.fragment;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
 import android.content.Context;
@@ -22,14 +25,26 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.profile.message.UpdateProfileRequest;
+import com.tom.meeter.context.profile.service.ProfileService;
+import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.FragmentProfileEditableBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
+import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
 import javax.inject.Inject;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by Tom on 14.12.2016.
@@ -37,6 +52,7 @@ import javax.inject.Inject;
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = ProfileFragment.class.getCanonicalName();
+    private boolean isEditableModeEnabled = false;
 
     private FragmentProfileEditableBinding binding;
 
@@ -44,12 +60,14 @@ public class ProfileFragment extends Fragment {
     ViewModelFactory viewModelFactory;
     @Inject
     ImageDownloader imageDownloader;
-
+    @Inject
+    ProfileService profileService;
     private ProfileViewModel profileViewModel;
-
     private AccountManager accountManager;
-
     private EventsCardAdapter adapter;
+
+    private User userCache;
+    private ResponseBody photoCache;
 
     public ProfileFragment() {
         logMethod(TAG, this);
@@ -85,25 +103,91 @@ public class ProfileFragment extends Fragment {
         logMethod(TAG, this);
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
-        profileViewModel.fetchProfile(peekToken(accountManager), this);
+        String authHeader = getAuthHeader(accountManager);
+        profileViewModel.fetchProfile(authHeader, this);
         profileViewModel.getProfileLiveData()
               .observe(
                     getViewLifecycleOwner(),
                     user -> {
-                        binding.profileId.setText(user.getId());
-                        binding.profileName.setText(user.getName());
-                        binding.profileSurname.setText(user.getSurname());
-                        binding.profileGender.setText(genderResolver(getContext(), user.getGender()));
-                        binding.profileBirthday.setText(user.getBirthday());
-                        binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
-                        binding.profileInfo.setText(user.getInfo());
+                        userCache = user;
+                        updateLayoutValues();
                     });
 
         profileViewModel.getProfileEventsLiveData()
               .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
 
-        binding.profileEventsGrid.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        binding.profileEventsGrid.setAdapter(adapter);
+        binding.events.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.events.setAdapter(adapter);
+
+        binding.btnEdit.setOnClickListener(v -> {
+            if (isEditableModeEnabled) {
+                UpdateProfileRequest req = createUpdateProfileRequest();
+                if (req.isEmpty()) {
+                    showMessage(this.getActivity(), "Empty update request is not sent.");
+                    updateLayoutValues();
+                    switchEditMode();
+                    return;
+                }
+                profileService.updateProfile(authHeader, req)
+                      .enqueue(new ActivityRestarterOnAuthFailure<>(this) {
+                          @Override
+                          public void onResponse(Call<User> call, Response<User> response) {
+                              super.onResponse(call, response);
+                              if (response.code() == HttpCodes.OK && response.body() != null) {
+                                  userCache = response.body();
+                                  showMessage(ProfileFragment.this.getActivity(), "Saved");
+                              }
+                              updateLayoutValues();
+                          }
+                      });
+            }
+            switchEditMode();
+        });
+    }
+
+    private void updateLayoutValues() {
+        /*binding.profileId.setText(userCache.getId());*/
+        binding.name.setText(userCache.getName());
+        binding.surname.setText(userCache.getSurname());
+        binding.gender.setText(genderResolver(getContext(), userCache.getGender()));
+        binding.birthday.setText(userCache.getBirthday());
+        binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(userCache.getBirthday())));
+        binding.info.setText(userCache.getInfo());
+    }
+
+    private void switchEditMode() {
+        isEditableModeEnabled = !isEditableModeEnabled;
+        binding.name.setEnabled(isEditableModeEnabled);
+        binding.surname.setEnabled(isEditableModeEnabled);
+        binding.birthday.setEnabled(isEditableModeEnabled);
+        binding.info.setEnabled(isEditableModeEnabled);
+        binding.btnEdit.setText(isEditableModeEnabled ? "Save" : "Edit");
+    }
+
+    private UpdateProfileRequest createUpdateProfileRequest() {
+        UpdateProfileRequest req = new UpdateProfileRequest();
+
+        String nameChange = getStringOrNull(binding.name.getText());
+        if (!Objects.equals(userCache.getName(), nameChange)) {
+            req.setName(nameChange);
+        }
+        String surnameChange = getStringOrNull(binding.surname.getText());
+        if (!Objects.equals(userCache.getSurname(), surnameChange)) {
+            req.setSurname(surnameChange);
+        }
+        LocalDate birthdayChange = getLocalDateOrNull(binding.birthday.getText());
+        //todo userCache.getBirthday() [String -> LocalDate]
+        if (!Objects.equals(
+              userCache.getBirthday(),
+              birthdayChange == null ? null : birthdayChange.toString())) {
+            req.setBirthday(birthdayChange);
+        }
+        String infoChange = getStringOrNull(binding.info.getText());
+        if (!Objects.equals(userCache.getInfo(), infoChange)) {
+            req.setInfo(infoChange);
+        }
+        //TODO: userCache.getPhotoPath();
+        return req;
     }
 
     @Override

@@ -3,8 +3,11 @@ package com.tom.meeter.context.event.activity;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
+import static com.tom.meeter.context.event.utils.Utils.createUpdateEventRequest;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
-import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
+import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
+import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
 import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
@@ -41,19 +44,12 @@ import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.databinding.ActivityEventReadableBinding;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
+import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -69,8 +65,6 @@ public class EventActivity extends AppCompatActivity {
 
     private static final String TAG = EventActivity.class.getCanonicalName();
 
-    private static final DateTimeFormatter UI_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     ViewBinding binding;
     @Inject
     TokenService tokenService;
@@ -80,8 +74,8 @@ public class EventActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
     private EventViewModel eventViewModel;
     private AccountManager accountManager;
-
     private ActivityResultLauncher<Intent> mapResult;
+
     private EventDTO eventCache;
     private ResponseBody photoCache;
 
@@ -165,55 +159,19 @@ public class EventActivity extends AppCompatActivity {
         setContentView(view);
 
         eBinding.saveEventButton.setOnClickListener(v -> {
-            UpdateEventRequest req = new UpdateEventRequest();
-            String eventNameChange = getStringOrNull(eBinding.eventName.getText());
-            if (!Objects.equals(eventCache.getName(), eventNameChange)) {
-                req.setName(eventNameChange);
+            UpdateEventRequest req = createUpdateEventRequest(eventCache, eBinding);
+            if (req.isEmpty()) {
+                showMessage(this, "Empty update request is not sent.");
+                return;
             }
-            String eventDescrChange = getStringOrNull(eBinding.eventDescription.getText());
-            if (!Objects.equals(eventCache.getDescription(), eventDescrChange)) {
-                req.setDescription(eventDescrChange);
-            }
-            OffsetDateTime eventStartingChange = getOffsetDateTime(eBinding.eventStarting.getText());
-            if (!Objects.equals(eventCache.getStarting(), eventStartingChange)) {
-                req.setStarting(eventStartingChange);
-            }
-            OffsetDateTime eventEndingChange = getOffsetDateTime(eBinding.eventEnding.getText());
-            if (!Objects.equals(eventCache.getEnding(), eventEndingChange)) {
-                req.setEnding(eventEndingChange);
-            }
-            String eventCityChange = getStringOrNull(eBinding.eventCity.getText());
-            if (!Objects.equals(eventCache.getCity(), eventCityChange)) {
-                req.setCity(eventCityChange);
-            }
-            Float eventLatitudeChange = getFloatOrNull(eBinding.eventLatitude.getText());
-            if (!Objects.equals(eventCache.getLatitude(), eventLatitudeChange)) {
-                req.setLatitude(eventLatitudeChange);
-            }
-            Float eventLongitudeChange = getFloatOrNull(eBinding.eventLongitude.getText());
-            if (!Objects.equals(eventCache.getLongitude(), eventLongitudeChange)) {
-                req.setLongitude(eventLongitudeChange);
-            }
-            //TODO: eventCache.getPhotoPath();
             eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req).enqueue(
-                  new ErrorLogger<>(this) {
+                  new HttpErrorLogger<>(getApplicationContext()) {
                       @Override
                       public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                          int code = response.code();
-                          EventDTO body = response.body();
                           if (response.isSuccessful()) {
-                              Log.d(TAG, code + " " + body);
-                              eventCache = body;
+                              eventCache = response.body();
                               updateEditableLayout();
                               showMessage(EventActivity.this, "Saved.");
-                          } else {
-                              try {
-                                  String msg = code + "/" + response.errorBody().string();
-                                  showMessage(EventActivity.this, msg);
-                                  Log.d(TAG, msg);
-                              } catch (IOException e) {
-                                  Log.d(TAG, "Unable to get response error body...");
-                              }
                           }
                       }
                   });
@@ -274,39 +232,6 @@ public class EventActivity extends AppCompatActivity {
         rBinding.eventStarting.setText(dateOrNull(eventCache.getStarting()));
         rBinding.eventEnding.setText(dateOrNull(eventCache.getEnding()));
         rBinding.eventCity.setText(eventCache.getCity());
-    }
-
-    @Nullable
-    private static CharSequence dateOrNull(OffsetDateTime date) {
-        return date == null ? null : UI_DATE_TIME_FORMAT.format(date);
-    }
-
-    @Nullable
-    private static CharSequence textOrNull(Double val) {
-        return val == null ? null : val.toString();
-    }
-
-    private static String getStringOrNull(CharSequence input) {
-        if (input == null || EMPTY_STR.contentEquals(input)) {
-            return null;
-        }
-        return input.toString();
-    }
-
-    private static Float getFloatOrNull(CharSequence input) {
-        if (input == null || EMPTY_STR.contentEquals(input)) {
-            return null;
-        }
-        return Float.valueOf(input.toString());
-    }
-
-    private static OffsetDateTime getOffsetDateTime(CharSequence input) {
-        if (input == null || EMPTY_STR.contentEquals(input)) {
-            return null;
-        }
-        LocalDateTime localDateTime = LocalDateTime.parse(input, UI_DATE_TIME_FORMAT);
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
-        return zonedDateTime.toOffsetDateTime();
     }
 
 

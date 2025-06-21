@@ -1,4 +1,4 @@
-package com.tom.meeter.context.network.dto;
+package com.tom.meeter.context.network.utils;
 
 public final class SocketIOCodes {
 

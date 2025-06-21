@@ -17,7 +17,7 @@
         tools:context=".context.profile.fragment.ProfileFragment">
         <!--removed^: android:padding="50dp" -->
         <TextView
-            android:id="@+id/userInformationLabel"
+            android:id="@+id/informationLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -28,10 +28,10 @@
             android:textSize="20sp" />
 
         <ImageView
-            android:id="@+id/user_photo"
+            android:id="@+id/photo"
             android:layout_width="match_parent"
             android:layout_height="170sp"
-            android:layout_below="@+id/userInformationLabel"
+            android:layout_below="@+id/informationLabel"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="29dp"
             android:adjustViewBounds="true"
@@ -46,7 +46,7 @@
             android:id="@+id/btnPhoto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_photo"
+            android:layout_below="@+id/photo"
             android:layout_marginTop="24dp"
             android:gravity="center"
             android:text="Выбрать фото" />
@@ -57,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnPhoto"
+            android:layout_marginTop="24dp"
             android:orientation="horizontal">
 
             <TextView
@@ -68,7 +69,8 @@
                 android:background="@drawable/bg_button_selected"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Подписчики" />
+                android:text="Subscribers"
+                android:textSize="20sp" />
             <!--android:textColor="@color/white"-->
 
             <TextView
@@ -79,10 +81,11 @@
                 android:background="@drawable/bg_button_unselected"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Подписки" />
+                android:text="Following"
+                android:textSize="20sp" />
             <!--android:textColor="@color/gray"-->
         </LinearLayout>
-
+        <!--
         <TextView
             android:id="@+id/profile_id"
             android:layout_width="match_parent"
@@ -92,34 +95,36 @@
             android:text="@string/profile_user_id"
             android:textSize="20sp"
             android:textStyle="bold" />
-
+        -->
         <LinearLayout
-            android:id="@+id/profile_name_surname"
+            android:id="@+id/name_surname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_id"
+            android:layout_below="@+id/subs"
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/profile_name"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
                 android:enabled="false"
+                android:gravity="center"
                 android:hint="Name"
                 android:inputType="text"
-                android:text="@string/profile_user_name"
+                android:text="Name"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/profile_surname"
+                android:id="@+id/surname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
                 android:enabled="false"
+                android:gravity="center"
                 android:hint="Surname"
                 android:inputType="text"
                 android:text="Surname"
@@ -127,43 +132,58 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-
         <EditText
-            android:id="@+id/profile_birthday"
-            android:layout_width="wrap_content"
+            android:id="@+id/birthday"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_name_surname"
+            android:layout_below="@+id/name_surname"
             android:layout_marginTop="15sp"
+            android:enabled="false"
+            android:gravity="center"
+            android:hint="Birthday (yyyy-MM-dd)"
             android:text="Birthday"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/profile_age"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/age_and_gender"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_birthday"
-            android:layout_marginTop="15sp"
-            android:text="@string/profile_age"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_below="@+id/birthday"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/profile_gender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_age"
-            android:layout_marginTop="15dp"
-            android:text="@string/profile_gender"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15sp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/profile_gender"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15sp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/profile_age"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <EditText
-            android:id="@+id/profile_info"
-            android:layout_width="wrap_content"
+            android:id="@+id/info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_gender"
+            android:layout_below="@+id/age_and_gender"
             android:layout_marginTop="15dp"
+            android:enabled="false"
+            android:gravity="center"
+            android:hint="Information"
             android:text="@string/profile_info"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -173,16 +193,30 @@
             android:id="@+id/btnEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profile_info"
+            android:layout_below="@+id/info"
             android:layout_marginTop="24dp"
             android:gravity="center"
-            android:text="Редактировать" />
+            android:text="Edit"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/profile_events_grid"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/eventsLabel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnEdit"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:hint="Your events"
+            android:inputType="none"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/events"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/eventsLabel"
             android:layout_marginTop="40dp"
             android:animateLayoutChanges="false"
             android:background="@color/c0deef"
