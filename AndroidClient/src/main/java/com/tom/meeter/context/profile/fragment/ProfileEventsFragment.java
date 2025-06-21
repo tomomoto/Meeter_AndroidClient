@@ -1,9 +1,11 @@
 package com.tom.meeter.context.profile.fragment;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,29 +18,34 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.profile.adapter.RecycleViewUserEventsAdapter;
+import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
+import com.tom.meeter.infrastructure.common.InfrastructureHelper;
+import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventEventBinder;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
-public class UserEventsFragment extends Fragment {
+public class ProfileEventsFragment extends Fragment {
 
-    private static final String TAG = UserEventsFragment.class.getCanonicalName();
+    private static final String TAG = ProfileEventsFragment.class.getCanonicalName();
 
     SubFragmentUserEventsBinding binding;
 
-    private RecycleViewUserEventsAdapter adapter;
+    private EventsAdapter adapter;
 
     @Inject
     ViewModelFactory viewModelFactory;
+    @Inject
+    ImageDownloader imageDownloader;
 
     private ProfileEventsViewModel profileEventsViewModel;
 
     private AccountManager accountManager;
 
-    public UserEventsFragment() {
+    public ProfileEventsFragment() {
         logMethod(TAG, this);
     }
 
@@ -46,8 +53,22 @@ public class UserEventsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
+
         ((App) getActivity().getApplication()).getComponent().inject(this);
-        accountManager = AccountManager.get(this.getContext());
+
+        Context ctx = getContext();
+        accountManager = AccountManager.get(ctx);
+
+        adapter = new EventsAdapter(
+              new PhotoDownloaderWithCacheEventEventBinder(
+                    ctx, imageDownloader,
+                    (e) -> dispatchToEventActivity(ctx, e.getId()),
+                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
+        /*
+        btnDelete.setOnClickListener(v -> {
+            if (onDeleteButtonClickListener != null)
+                onDeleteButtonClickListener.onDeleteButtonClicked(post);
+        });*/
     }
 
     @Override
@@ -64,21 +85,34 @@ public class UserEventsFragment extends Fragment {
         logMethod(TAG, this);
         profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileEventsViewModel.class);
-
-        profileEventsViewModel.getProfileEvents(peekToken(accountManager), this);
-
-        adapter = new RecycleViewUserEventsAdapter(getContext());
+        profileEventsViewModel.fetchProfileEvents(getAuthHeader(accountManager), this);
         profileEventsViewModel.getProfileEventsLiveData()
-              .observe(getViewLifecycleOwner(), ev -> adapter.setData(ev));
-
+              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
         binding.userEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.userEventsFragmentRecyclerView.setAdapter(adapter);
-        binding.userEventsFragmentRecyclerView.invalidate();
+    }
 
-        /*
-        adapter = new RecycleViewUserEventsAdapter(events);
-        rView.swapAdapter(adapter, false);
-        */
+    @Override
+    public void onPause() {
+        super.onPause();
+        logMethod(TAG, this);
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        logMethod(TAG, this);
     }
 }

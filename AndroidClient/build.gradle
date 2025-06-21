@@ -40,7 +40,6 @@ android {
         baseline = file("lint-baseline.xml")
     }
 }
-
 dependencies {
 
     implementation libs.appcompat
@@ -48,8 +47,8 @@ dependencies {
     implementation libs.material
     implementation libs.cardview
 
-    implementation libs.lifecycleextensions
-    annotationProcessor libs.lifecyclecompiler
+    implementation libs.lifecycle.extensions
+    annotationProcessor libs.lifecycle.compiler
 
     implementation libs.socketioclient
     implementation libs.eventbus
@@ -76,17 +75,23 @@ dependencies {
 
     // Retrofit & OkHttp
     implementation libs.retrofit
-    implementation libs.retrofitconvertergson
+    implementation libs.retrofit.converter.jackson
+    //implementation libs.retrofitconvertergson
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation(libs.jackson.datatype.jsr310)
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8
+    implementation(libs.jackson.datatype.jdk8)
+
     implementation libs.okhttp
 
     // Dagger 2
     implementation libs.dagger
-    annotationProcessor libs.daggercompiler
+    annotationProcessor libs.dagger.compiler
 
     // Room
-    implementation libs.roomruntime
-    implementation libs.roomrxjava2
-    annotationProcessor libs.roomcompiler
+    implementation libs.room.runtime
+    implementation libs.room.rxjava2
+    annotationProcessor libs.room.compiler
 
 
     //LocalDateTime features
@@ -96,6 +101,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/androidx.preference/preference
     implementation 'androidx.preference:preference:1.2.1'
+
+    implementation libs.core
 
 
     /*TESTS*/
@@ -111,4 +118,5 @@ dependencies {
     testImplementation(libs.junit.junit)
     //testImplementation("org.powermock:powermock-module-junit4:2.0.9")
 }
+
 

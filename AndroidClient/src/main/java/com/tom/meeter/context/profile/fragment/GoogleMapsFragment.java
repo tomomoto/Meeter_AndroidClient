@@ -1,8 +1,8 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.getCircleBitmap;
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.randomPicResource;
+import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.ComponentName;
@@ -39,13 +39,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.common.collect.Sets;
+import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.domain.GMapEvent;
+import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
@@ -59,14 +61,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 /**
  * Created by Tom on 09.12.2016.
  */
 public class GoogleMapsFragment extends Fragment
       implements OnMapReadyCallback, LocationTrackerListener {
 
+    public static final float ZOOM_VALUE = 17;
     private static final String TAG = GoogleMapsFragment.class.getCanonicalName();
-    private static final float ZOOM_VALUE = 17;
     private static final LatLng DEFAULT = new LatLng(0.0, 0.0);
 
     private ServiceConnection locationServiceConnection;
@@ -86,6 +90,9 @@ public class GoogleMapsFragment extends Fragment
 
     private GMapEvent lastClickedEvent;
 
+    @Inject
+    ImageDownloader imageDownloader;
+
     public GoogleMapsFragment() {
         logMethod(TAG, this);
     }
@@ -102,6 +109,8 @@ public class GoogleMapsFragment extends Fragment
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
         readPreferences();
+
+        ((App) getActivity().getApplication()).getComponent().inject(this);
 
         MapsInitializer.initialize(getContext());
         userIcon = BitmapDescriptorFactory.fromBitmap(
@@ -241,7 +250,7 @@ public class GoogleMapsFragment extends Fragment
         }
         if (target.equals(lastClickedEvent)) {
             Log.d(TAG, "Double Click on: " + target.getName());
-            startEventActivityFor(target.getId());
+            dispatchToEventActivity(getContext(), target.getId());
             return false;
         }
         lastClickedEvent = target;
@@ -261,24 +270,25 @@ public class GoogleMapsFragment extends Fragment
     }
 
     private void infoWindowClickListener(Marker marker) {
-        Log.d(TAG, "infoWindowClickListener() " + marker.getId() + ", is info shown ? " + marker.isInfoWindowShown());
+        Log.d(TAG, "infoWindowClickListener() " + marker.getId()
+              + ", is info shown ? " + marker.isInfoWindowShown());
         GMapEvent gMapEvent = searchForEvent(marker);
         if (gMapEvent != null) {
-            startEventActivityFor(gMapEvent.getId());
+            dispatchToEventActivity(getContext(), gMapEvent.getId());
         }
-    }
-
-    private void startEventActivityFor(String eventId) {
-        startActivity(new Intent(this.getContext(), EventActivity.class)
-              .putExtra(EventActivity.EVENT_ID_KEY, eventId));
     }
 
     private void putExistingMarkersOnMap() {
         for (GMapEvent e : events.values()) {
-            e.replaceMarker(
-                  gmap.addMarker(
-                        createEventMarkerOptions(e.getName(), e.getLatitude(), e.getLongitude())));
+            e.replaceMarker(addMarkerWithPhoto(e.getEvent()));
         }
+    }
+
+    private Marker addMarkerWithPhoto(EventDTO event) {
+        Marker marker = gmap.addMarker(createEventMarkerOptions(
+              event.getName(), event.getLatitude(), event.getLongitude()));
+        downloadPhotoForMarker(event.getPhotoPath(), marker);
+        return marker;
     }
 
     @Override
@@ -315,11 +325,7 @@ public class GoogleMapsFragment extends Fragment
         // Events to add -
         for (String eId : toAdd) {
             EventDTO ev = incomeEvents.get(eId);
-            events.put(
-                  eId,
-                  new GMapEvent(
-                        ev, gmap.addMarker(
-                        createEventMarkerOptions(ev.getName(), ev.getLatitude(), ev.getLongitude()))));
+            events.put(eId, new GMapEvent(ev, addMarkerWithPhoto(ev)));
         }
 
         // Intersection - need to apply events update, if any
@@ -328,12 +334,26 @@ public class GoogleMapsFragment extends Fragment
         }
     }
 
+    private void downloadPhotoForMarker(String photoPath, Marker marker) {
+        if (photoPath == null) {
+            return;
+        }
+        imageDownloader.downloadEventImage(
+              photoPath, getContext(),
+              photo -> {
+                  if (photo != null) {
+                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(circleImage(photo)));
+                  }
+              },
+              () -> InfrastructureHelper.restartActivityFromFragment(this));
+    }
+
     private void readPreferences() {
         searchArea = PreferencesHelper.getSearchArea(getContext());
         trackUser = PreferencesHelper.getNeedTrackUser(getContext());
     }
 
-    private static void moveCamera(
+    public static void moveCamera(
           LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening, CameraPosition camPosition) {
         if (firstOpening) {
             if (lastKnownUserLocation != null) {
@@ -354,6 +374,7 @@ public class GoogleMapsFragment extends Fragment
                   + " " + update.getId() + " is changed. Moving the marker.");
             me.updatePosition(update.getLatitude(), update.getLongitude());
         }
+        //TODO Every field could changed...
     }
 
     private MarkerOptions createUserMarkerOptions(LatLng latLng) {
@@ -363,17 +384,14 @@ public class GoogleMapsFragment extends Fragment
               .position(latLng);
     }
 
-    private MarkerOptions createEventMarkerOptions(String name, double latitude, double longitude) {
-        //TODO Download event photo
-        Bitmap src = BitmapFactory.decodeResource(getContext().getResources(), randomPicResource());
+    private MarkerOptions createEventMarkerOptions(
+          String name, double latitude, double longitude) {
         return new MarkerOptions()
               .position(new LatLng(latitude, longitude))
-              .title(name)
-              .icon(BitmapDescriptorFactory.fromBitmap(
-                    getCircleBitmap(Bitmap.createScaledBitmap(src, 150, 150, true))));
+              .title(name);
     }
 
-    private static LatLng mapToLatTng(Location location) {
+    public static LatLng mapToLatTng(Location location) {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
@@ -443,5 +461,23 @@ public class GoogleMapsFragment extends Fragment
         public int hashCode() {
             return Objects.hash(id, latitude, longitude);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        logMethod(TAG, this);
     }
 }

@@ -13,7 +13,7 @@ import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.List;
@@ -28,6 +28,7 @@ public class UserViewModel extends ViewModel {
     private static final String TAG = UserViewModel.class.getCanonicalName();
 
     private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> amISubscriber = new MutableLiveData<>();
     private final MutableLiveData<List<EventDTO>> userEventsLiveData = new MutableLiveData<>();
 
     private final UserService userService;
@@ -40,7 +41,7 @@ public class UserViewModel extends ViewModel {
 
     public void fetchUserInformation(String token, String userId, Activity activity) {
         userService.getUser(Globals.getAuthHeader(token), userId).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
                       if (response.code() == HttpCodes.OK && response.body() != null) {
@@ -55,8 +56,24 @@ public class UserViewModel extends ViewModel {
               }
         );
 
+        userService.amISubscribed(Globals.getAuthHeader(token), userId).enqueue(
+              new ErrorLogger<>(activity) {
+                  @Override
+                  public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                      if (response.code() == HttpCodes.OK && response.body() != null) {
+                          amISubscriber.setValue(response.body());
+                          return;
+                      }
+                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                          activity.recreate();
+                      }
+                      Log.i(TAG, "/user/{id}/am_i_subscribed: " + response.code() + " : " + response.body());
+                  }
+              }
+        );
+
         userService.getUserEvents(Globals.getAuthHeader(token), userId).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {
                       if (response.code() == HttpCodes.OK && response.body() != null) {
@@ -68,8 +85,7 @@ public class UserViewModel extends ViewModel {
                       }
                       Log.i(TAG, "/user/{id}/events: " + response.code() + " : " + response.body());
                   }
-              }
-        );
+              });
     }
 
     @Override
@@ -85,5 +101,8 @@ public class UserViewModel extends ViewModel {
     public LiveData<List<EventDTO>> getUserEventsLiveData() {
         return userEventsLiveData;
     }
-}
 
+    public MutableLiveData<Boolean> getAmISubscriber() {
+        return amISubscriber;
+    }
+}

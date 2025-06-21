@@ -37,21 +37,40 @@
         android:text="@string/creator"
         android:textAllCaps="false" />
 
-    <TextView
-        android:id="@+id/event_name"
+    <LinearLayout
+        android:id="@+id/event_name_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/event_creator_id_btn"
-        android:layout_marginTop="30dp"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_below="@id/event_creator_id_btn"
+        android:orientation="horizontal">
 
-    <TextView
+        <EditText
+            android:id="@+id/event_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
+            android:layout_weight="2"
+            android:enabled="false"
+            android:textSize="22sp"
+            android:inputType="textMultiLine"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/edit_event_name_btn"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="4"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+    <EditText
         android:id="@+id/event_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/event_name"
+        android:layout_below="@+id/event_name_linear"
         android:layout_marginTop="30dp"
+        android:enabled="false"
         android:text="@string/description"
         android:textSize="20sp"
         android:textStyle="bold" />

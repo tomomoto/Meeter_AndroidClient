@@ -36,6 +36,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public static final String AUTH_TYPE = "jwt_auth";
     public static final String IS_ADDING_NEW_ACCOUNT_KEY = "is-adding-new-account";
     public static final String USER_PASS_KEY = "the-password";
+    public static final String USER_UUID_KEY = "the-uuid";
     private static final String LABEL = " label";
     //public static final String ACCOUNT_NAME = "Meeter";
 

@@ -14,7 +14,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+//import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class TokenModule {
@@ -31,7 +32,8 @@ public class TokenModule {
     public TokenService providesTokenService(Application app) {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(JacksonConverterFactory.create())
+              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(TokenService.class);
     }

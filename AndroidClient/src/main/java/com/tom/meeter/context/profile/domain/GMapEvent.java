@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class GMapEvent {
 
-    private EventDTO event;
+    private final EventDTO event;
     private Marker marker;
 
     public GMapEvent(EventDTO event, Marker marker) {
@@ -19,6 +19,10 @@ public class GMapEvent {
 
     public void removeMarker() {
         marker.remove();
+    }
+
+    public EventDTO getEvent() {
+        return event;
     }
 
     public String getName() {

@@ -2,17 +2,18 @@
 agp = "8.10.1"
 
 #android
-appcompat = "1.0.0"
-recyclerview = "1.0.0"
+appcompat = "1.7.1"
+core = "1.16.0"
+recyclerview = "1.4.0"
 cardview = "1.0.0"
 lifecycleextensions = "2.0.0"
 lifecyclecompiler = "2.0.0"
 
-material = "1.0.0"
+material = "1.12.0"
 
 #Core
 playServicesMaps = "19.2.0"
-retrofit = "2.5.0"
+retrofit = "3.0.0"
 room = "2.0.0"
 dagger = "2.56"
 eventbus = "3.3.1"
@@ -24,7 +25,7 @@ rxjava = "2.2.6"
 socketIoClient = "2.1.2"
 gson = "2.8.5"
 
-jacksonCore = "2.4.1"
+jackson = "2.19.0"
 
 desugar_jdk_libs = "2.0.3"
 
@@ -45,14 +46,15 @@ junit = "4.13.2"
 [libraries]
 
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+core = { module = "androidx.core:core", version.ref = "core" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
-lifecycleextensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleextensions" }
-lifecyclecompiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecyclecompiler" }
+lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleextensions" }
+lifecycle-compiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecyclecompiler" }
 
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-daggercompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 materialdrawer = { module = "com.mikepenz:materialdrawer", version.ref = "materialdrawer" }
 socketioclient = { module = "io.socket:socket.io-client", version.ref = "socketIoClient" }
@@ -61,19 +63,21 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
-retrofitconvertergson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit-converter-jackson = { module = "com.squareup.retrofit2:converter-jackson", version.ref = "retrofit" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 rxjava = { module = "io.reactivex.rxjava2:rxjava", version.ref = "rxjava" }
 rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxandroid" }
 
-roomruntime = { module = "androidx.room:room-runtime", version.ref = "room" }
-roomcompiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-roomrxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room" }
 
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jacksonCore" }
-jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jacksonCore" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonCore" }
+jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 

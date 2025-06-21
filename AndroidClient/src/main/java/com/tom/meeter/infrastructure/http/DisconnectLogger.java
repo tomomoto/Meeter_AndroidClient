@@ -6,6 +6,9 @@ import android.widget.Toast;
 
 import com.tom.meeter.R;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -21,9 +24,19 @@ public abstract class DisconnectLogger<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        Toast.makeText(ctx, R.string.server_is_unreachable, Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "DisconnectLogger for " + ctx.getPackageName()
-              + " : " + ctx.getResources().getString(R.string.server_is_unreachable)
-              + ", error: " + t.getMessage());
+        if (supportedErrorMapping(t)) {
+            Toast.makeText(ctx, R.string.server_is_unreachable, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "DisconnectLogger for " + ctx.getClass().getSimpleName()
+                  + " : " + ctx.getResources().getString(R.string.server_is_unreachable)
+                  + ", error: " + t.getMessage());
+        }
+    }
+
+    protected boolean supportedErrorMapping(Throwable t) {
+        if (t instanceof SocketTimeoutException
+              || t instanceof ConnectException) {
+            return true;
+        }
+        return false;
     }
 }

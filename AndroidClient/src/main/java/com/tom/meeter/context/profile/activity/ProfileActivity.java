@@ -2,6 +2,7 @@ package com.tom.meeter.context.profile.activity;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getSingleAccount;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -48,19 +49,18 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
-import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
+import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
-import com.tom.meeter.context.profile.fragment.UserEventsFragment;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.message.SettingsResponse;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
+import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ProfileActivityBinding;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.HashMap;
@@ -200,7 +200,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupPreferences(String token) {
         Call<SettingsResponse> settings = settingsService.getSettings(Globals.getAuthHeader(token));
         settings.enqueue(
-              new DisconnectLogger<>(this) {
+              new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -222,7 +222,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupPreferencesRetry(String freshToken) {
         settingsService.getSettings(Globals.getAuthHeader(freshToken))
-              .enqueue(new DisconnectLogger<>(this) {
+              .enqueue(new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_FOUND) {
@@ -388,11 +388,11 @@ public class ProfileActivity extends AppCompatActivity {
     private void handleLogout() {
         getDefaultSharedPreferences(ProfileActivity.this)
               .edit().clear().apply();
-        Account[] accs = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        Account acc = getSingleAccount(accountManager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             accountManager.removeAccount(
-                  accs[0], this, future -> {
-                      Log.d(TAG, "Account '" + accs[0].name + "' removed.");
+                  acc, this, future -> {
+                      Log.d(TAG, "Account '" + acc.name + "' removed.");
                       unbindSocketService();
                       finishAndRemoveTask();
                   }, null);
@@ -431,7 +431,7 @@ public class ProfileActivity extends AppCompatActivity {
         } else if (navigationMenuIndex == DRAWER_NEW_EVENT_ID) {
             result = new CreateNewEventFragment();
         } else if (navigationMenuIndex == DRAWER_NOTIFICATION_ID) {
-            result = new UserEventsFragment();
+            result = new ProfileEventsFragment();
         } else {
             result = new ProfileFragment();
         }

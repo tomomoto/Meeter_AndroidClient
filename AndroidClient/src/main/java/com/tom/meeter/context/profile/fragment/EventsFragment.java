@@ -65,7 +65,7 @@ public class EventsFragment extends Fragment {
         ViewPagerAdapter adapter = new ViewPagerAdapter(fMgr);
         adapter.addFragment(new GoogleMapsFragment(), mapTitle);
         adapter.addFragment(new ActiveEventsFragment(), eventsTitle);
-        adapter.addFragment(new UserEventsFragment(), yourEventsTitle);
+        adapter.addFragment(new ProfileEventsFragment(), yourEventsTitle);
         return adapter;
     }
 

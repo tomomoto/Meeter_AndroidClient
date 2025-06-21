@@ -161,6 +161,7 @@
     <string name="title_copyable_preference">title_copyable_preference</string>
     <string name="event_information">Информация о событии.</string>
     <string name="creator">Создатель</string>
+    <string name="notification_new_event">Новое событие!</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

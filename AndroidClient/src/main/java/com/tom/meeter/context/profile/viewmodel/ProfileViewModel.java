@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.user.domain.User;
-import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -38,8 +37,8 @@ public class ProfileViewModel extends ViewModel {
         this.profileService = profileService;
     }
 
-    public void getProfile(String token, Fragment fragment) {
-        profileService.getProfile(Globals.getAuthHeader(token)).enqueue(
+    public void fetchProfile(String auth, Fragment fragment) {
+        profileService.getProfile(auth).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
                   public void onResponse(Call<User> call, Response<User> response) {
@@ -52,7 +51,7 @@ public class ProfileViewModel extends ViewModel {
                   }
               }
         );
-        profileService.getProfileEvents(Globals.getAuthHeader(token)).enqueue(
+        profileService.getProfileEvents(auth).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
                   public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {

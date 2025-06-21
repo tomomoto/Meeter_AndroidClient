@@ -1,6 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.annotation.SuppressLint;
@@ -50,7 +51,6 @@ import java.util.Date;
 public class CreateNewEventFragment extends Fragment {
 
     private static final String TAG = CreateNewEventFragment.class.getCanonicalName();
-    private static final String EMPTY_STR = "";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 

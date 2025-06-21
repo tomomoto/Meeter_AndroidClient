@@ -8,8 +8,6 @@ import com.tom.meeter.context.profile.event.repository.EventRepository;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 @Deprecated
 public class UserEventsViewModel extends ViewModel {
 
@@ -18,7 +16,7 @@ public class UserEventsViewModel extends ViewModel {
 
     private final EventRepository eventRepository;
 
-    @Inject
+    //@Inject
     public UserEventsViewModel(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }

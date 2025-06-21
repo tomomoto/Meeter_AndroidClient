@@ -26,7 +26,7 @@ import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.SettingsActivityBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
@@ -112,7 +112,7 @@ public class SettingsActivity extends AppCompatActivity {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
                     Globals.getAuthHeader(AuthHelper.peekToken(accountManager)))
-              .enqueue(new DisconnectLogger<>(this) {
+              .enqueue(new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -135,7 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
                     Globals.getAuthHeader(token))
-              .enqueue(new DisconnectLogger<>(this) {
+              .enqueue(new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {

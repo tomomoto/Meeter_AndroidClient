@@ -2,6 +2,7 @@ package com.tom.meeter.context.auth.infrastructure;
 
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.AUTH_TYPE;
+import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.USER_UUID_KEY;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -15,7 +16,7 @@ import android.widget.Toast;
 import com.tom.meeter.R;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.DisconnectLogger;
+import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.io.IOException;
@@ -37,6 +38,14 @@ public final class AuthHelper {
 
     public static String peekToken(AccountManager am) {
         return am.peekAuthToken(getSingleAccount(am), AccountAuthenticator.AUTH_TYPE);
+    }
+
+    public static String getAuthHeader(AccountManager am) {
+        return Globals.getAuthHeader(peekToken(am));
+    }
+
+    public static String getUserUuid(AccountManager am) {
+        return am.getUserData(getSingleAccount(am), USER_UUID_KEY);
     }
 
     public static void setToken(AccountManager am, String token) {
@@ -76,7 +85,7 @@ public final class AuthHelper {
             return;
         }
         tokenService.checkToken(Globals.getAuthHeader(token)).enqueue(
-              new DisconnectLogger<>(activity) {
+              new ErrorLogger<>(activity) {
                   @Override
                   public void onResponse(Call<Void> call, Response<Void> response) {
                       if (response.code() == HttpCodes.NOT_AUTHENTICATED) {

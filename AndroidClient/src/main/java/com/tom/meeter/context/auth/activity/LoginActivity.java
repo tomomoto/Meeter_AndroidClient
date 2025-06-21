@@ -2,6 +2,7 @@ package com.tom.meeter.context.auth.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.ACCOUNT_TYPE;
 import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.USER_PASS_KEY;
+import static com.tom.meeter.context.auth.infrastructure.AccountAuthenticator.USER_UUID_KEY;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.Account;
@@ -170,8 +171,10 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, userLogin);
                     intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);
-                    intent.putExtra(AccountManager.KEY_AUTHTOKEN, response.body().getToken());
+                    TokenResponse res = response.body();
+                    intent.putExtra(AccountManager.KEY_AUTHTOKEN, res.getToken());
                     intent.putExtra(USER_PASS_KEY, userPass);
+                    intent.putExtra(USER_UUID_KEY, res.getUuid());
                     finishLogin(intent);
                 } else {
                     new AlertDialog.Builder(LoginActivity.this)
@@ -198,6 +201,7 @@ public class LoginActivity extends AppCompatActivity {
         String login = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         String accountType = intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE);
         String token = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+        String uuid = intent.getStringExtra(USER_UUID_KEY);
         String pass = intent.getStringExtra(AccountAuthenticator.USER_PASS_KEY);
         Account account = new Account(login, accountType);
         if (getIntent().getBooleanExtra(AccountAuthenticator.IS_ADDING_NEW_ACCOUNT_KEY, false)) {
@@ -205,6 +209,7 @@ public class LoginActivity extends AppCompatActivity {
             // (Not setting the auth token will cause another call to the server to authenticate the user)
             accountManager.addAccountExplicitly(account, pass, null);
             accountManager.setAuthToken(account, AccountAuthenticator.AUTH_TYPE, token);
+            accountManager.setUserData(account, USER_UUID_KEY, uuid);
         } else {
             accountManager.setPassword(account, pass);
         }
