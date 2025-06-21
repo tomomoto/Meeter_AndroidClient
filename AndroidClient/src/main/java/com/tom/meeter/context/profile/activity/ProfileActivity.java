@@ -2,6 +2,7 @@ package com.tom.meeter.context.profile.activity;
 
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getSingleAccount;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -48,7 +49,6 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AccountAuthenticator;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
@@ -388,11 +388,11 @@ public class ProfileActivity extends AppCompatActivity {
     private void handleLogout() {
         getDefaultSharedPreferences(ProfileActivity.this)
               .edit().clear().apply();
-        Account[] accs = accountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+        Account acc = getSingleAccount(accountManager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             accountManager.removeAccount(
-                  accs[0], this, future -> {
-                      Log.d(TAG, "Account '" + accs[0].name + "' removed.");
+                  acc, this, future -> {
+                      Log.d(TAG, "Account '" + acc.name + "' removed.");
                       unbindSocketService();
                       finishAndRemoveTask();
                   }, null);

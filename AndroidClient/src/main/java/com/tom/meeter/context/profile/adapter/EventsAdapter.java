@@ -25,19 +25,17 @@ public class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private final List<EventDTO> events = new ArrayList<>();
 
-    private final EventBinder eventBinder;
+    private final EventBinder binder;
 
-    public EventsAdapter(EventBinder eventBinder) {
+    public EventsAdapter(EventBinder binder) {
         logMethod(TAG, this);
-        this.eventBinder = eventBinder;
+        this.binder = binder;
     }
 
     public void setData(List<EventDTO> newEvents) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
               new EventsDiffCallback(events, newEvents));
-        if (!events.isEmpty()) {
-            events.clear();
-        }
+        events.clear();
         events.addAll(newEvents);
         diffResult.dispatchUpdatesTo(this);
     }
@@ -53,7 +51,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
         logMethod(TAG, this);
-        eventBinder.bind(holder, events.get(position));
+        binder.bind(holder, events.get(position));
     }
 
     @Override
@@ -65,5 +63,37 @@ public class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         logMethod(TAG, this);
+    }
+
+    static class EventsDiffCallback extends DiffUtil.Callback {
+
+        private final List<EventDTO> oldEvents, newEvents;
+
+        EventsDiffCallback(List<EventDTO> oldEvents, List<EventDTO> newEvents) {
+            this.oldEvents = oldEvents;
+            this.newEvents = newEvents;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldEvents.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newEvents.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldEvents.get(oldItemPosition).getId()
+                  .equals(newEvents.get(newItemPosition).getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldEvents.get(oldItemPosition)
+                  .equals(newEvents.get(newItemPosition));
+        }
     }
 }
