@@ -25,7 +25,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.FragmentProfileEditableBinding;
 import com.tom.meeter.infrastructure.adapter.EventsCardAdapter;
-import com.tom.meeter.infrastructure.binder.PhotoDownloaderBinder;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderEventBinder;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -66,7 +66,7 @@ public class ProfileFragment extends Fragment {
         accountManager = AccountManager.get(ctx);
 
         adapter = new EventsCardAdapter(
-              new PhotoDownloaderBinder(ctx, imageDownloader,
+              new PhotoDownloaderEventBinder(ctx, imageDownloader,
                     event -> dispatchToEventActivity(ctx, event.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));
     }

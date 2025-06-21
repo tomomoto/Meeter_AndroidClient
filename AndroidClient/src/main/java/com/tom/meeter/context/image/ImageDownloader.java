@@ -1,6 +1,6 @@
 package com.tom.meeter.context.image;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tom.meeter.context.image.service.ImageService;
-import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -34,8 +33,7 @@ public class ImageDownloader {
     public void downloadEventImage(
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
-        imageService.downloadEventImage(
-                    Globals.getAuthHeader(peekToken(AccountManager.get(ctx))), photoPath)
+        imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
               .enqueue(new ErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -57,8 +55,7 @@ public class ImageDownloader {
     public void downloadUserImage(
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
-        imageService.downloadUserImage(
-                    Globals.getAuthHeader(peekToken(AccountManager.get(ctx))), photoPath)
+        imageService.downloadUserImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
               .enqueue(new ErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

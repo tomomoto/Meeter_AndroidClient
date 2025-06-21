@@ -23,7 +23,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
-import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventEventBinder;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
@@ -52,12 +52,14 @@ public class ActiveEventsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
+
         ((App) getActivity().getApplication()).getComponent().inject(this);
+
         EventBus.getDefault().register(this);
 
         Context ctx = getContext();
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
+              new PhotoDownloaderWithCacheEventEventBinder(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));

@@ -22,7 +22,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
-import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventEventBinder;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -60,7 +60,7 @@ public class ProfileEventsFragment extends Fragment {
         accountManager = AccountManager.get(ctx);
 
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
+              new PhotoDownloaderWithCacheEventEventBinder(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));

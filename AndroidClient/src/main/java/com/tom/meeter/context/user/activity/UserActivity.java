@@ -28,7 +28,7 @@ import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserProfileBinding;
 import com.tom.meeter.infrastructure.adapter.EventsCardAdapter;
-import com.tom.meeter.infrastructure.binder.PhotoDownloaderBinder;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderEventBinder;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -82,7 +82,7 @@ public class UserActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         adapter = new EventsCardAdapter(
-              new PhotoDownloaderBinder(
+              new PhotoDownloaderEventBinder(
                     this, imgDownloader, event -> dispatchToEventActivity(this, event.getId()),
                     this::recreate));
 

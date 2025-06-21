@@ -15,9 +15,10 @@ import com.tom.meeter.infrastructure.viewholder.EventViewHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PhotoDownloaderWithCacheEventBinder implements EventBinder {
+public class PhotoDownloaderWithCacheEventEventBinder
+      implements ViewHolderEventBinder<EventViewHolder> {
 
-    private static final String TAG = PhotoDownloaderWithCacheEventBinder.class.getCanonicalName();
+    private static final String TAG = PhotoDownloaderWithCacheEventEventBinder.class.getCanonicalName();
 
     private final Context ctx;
     private final ImageDownloader imageDownloader;
@@ -25,7 +26,7 @@ public class PhotoDownloaderWithCacheEventBinder implements EventBinder {
     private final Runnable onAuthFail;
     private final Map<String, Bitmap> imagesCache = new ConcurrentHashMap<>();
 
-    public PhotoDownloaderWithCacheEventBinder(
+    public PhotoDownloaderWithCacheEventEventBinder(
           Context ctx, ImageDownloader imgDownloader,
           OnEventClickListener onEventClick, Runnable onAuthFail) {
         logMethod(TAG, this);
@@ -57,7 +58,7 @@ public class PhotoDownloaderWithCacheEventBinder implements EventBinder {
                   Bitmap circled = circleImage(photo);
                   holder.updatePhoto(circled);
                   imagesCache.put(photoPath, circled);
-                  Log.d(TAG, "PhotoDownloaderWithCacheEventBinder: event image " +
+                  Log.d(TAG, "PhotoDownloaderWithCacheEventEventBinder: event image " +
                         "downloaded for " + photoPath + ", cache updated.");
               },
               onAuthFail);

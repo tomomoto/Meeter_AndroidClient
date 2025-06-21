@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.tom.meeter.R;
 
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
 import retrofit2.Call;
@@ -32,7 +33,8 @@ public abstract class DisconnectLogger<T> implements Callback<T> {
     }
 
     protected boolean supportedErrorMapping(Throwable t) {
-        if (t instanceof SocketTimeoutException) {
+        if (t instanceof SocketTimeoutException
+              || t instanceof ConnectException) {
             return true;
         }
         return false;

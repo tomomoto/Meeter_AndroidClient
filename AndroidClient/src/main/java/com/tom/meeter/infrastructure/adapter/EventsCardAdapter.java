@@ -4,34 +4,17 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.CardItemBinding;
-import com.tom.meeter.infrastructure.binder.CardBinder;
+import com.tom.meeter.infrastructure.binder.ViewHolderEventBinder;
 import com.tom.meeter.infrastructure.viewholder.CardItemHolder;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class EventsCardAdapter extends RecyclerView.Adapter<CardItemHolder> {
+public class EventsCardAdapter extends BaseEventAdapter<CardItemHolder> {
 
     private static final String TAG = EventsCardAdapter.class.getCanonicalName();
 
-    private final CardBinder binder;
-    private final List<EventDTO> events = new ArrayList<>();
-
-    public EventsCardAdapter(CardBinder binder) {
-        this.binder = binder;
-    }
-
-    public void setData(List<EventDTO> newEvents) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
-              new EventsDiffCallback(events, newEvents));
-        events.clear();
-        events.addAll(newEvents);
-        diffResult.dispatchUpdatesTo(this);
+    public EventsCardAdapter(ViewHolderEventBinder<CardItemHolder> binder) {
+        super(binder);
     }
 
     @NonNull
@@ -40,15 +23,5 @@ public class EventsCardAdapter extends RecyclerView.Adapter<CardItemHolder> {
         return new CardItemHolder(
               CardItemBinding.inflate(
                     LayoutInflater.from(parent.getContext()), parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull CardItemHolder holder, int position) {
-        binder.bind(holder, events.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return events.size();
     }
 }
