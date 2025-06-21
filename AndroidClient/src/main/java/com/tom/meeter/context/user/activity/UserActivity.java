@@ -22,16 +22,17 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
+import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
-import com.tom.meeter.databinding.ActivityUserProfileBinding;
+import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -42,9 +43,8 @@ import retrofit2.Response;
 public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = UserActivity.class.getCanonicalName();
-    public static final String USER_ID_KEY = "user_id";
+    private static final String USER_ID_KEY = "user_id";
 
-    ActivityUserProfileBinding binding;
     @Inject
     TokenService tokenService;
     @Inject
@@ -53,6 +53,7 @@ public class UserActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
     @Inject
     ImageDownloader imgDownloader;
+    private ActivityUserBinding binding;
     private UserViewModel userViewModel;
     private String userId;
     private AccountManager accountManager;
@@ -83,55 +84,57 @@ public class UserActivity extends AppCompatActivity {
 
         adapter = new EventsCardAdapter(
               new PhotoDownloaderEventBinder(
-                    this, imgDownloader, event -> dispatchToEventActivity(this, event.getId()),
-                    this::recreate));
+                    this, imgDownloader,
+                    event -> dispatchToEventActivity(this, event.getId()), this::recreate));
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
     }
 
     private void onInit(String token) {
-        binding = ActivityUserProfileBinding.inflate(getLayoutInflater());
+        binding = ActivityUserBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.subscribeButton.setOnClickListener(v -> {
+        binding.subscribeBtn.setOnClickListener(v -> {
             if (amISubscriber == null) {
                 // As not initialized atm...
                 return;
             }
             if (amISubscriber) {
-                userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(new ErrorLogger<>(this) {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.code() == HttpCodes.OK) {
-                            amISubscriber = false;
-                            updateSubscribeButtonText();
-                            showMessage(UserActivity.this, "Successfully unsubscribed.");
-                            return;
-                        }
-                        if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                            UserActivity.this.recreate();
-                        }
-                        Log.i(TAG, "/user/{id}/unsubscribe: " + response.code() + " : " + response.body());
-                    }
-                });
+                userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
+                      new HttpErrorLogger<>(this) {
+                          @Override
+                          public void onResponse(Call<Void> call, Response<Void> resp) {
+                              super.onResponse(call, resp);
+                              if (resp.code() == HttpCodes.OK) {
+                                  amISubscriber = false;
+                                  updateSubscribeButtonText();
+                                  showMessage(UserActivity.this, "Successfully unsubscribed.");
+                                  return;
+                              }
+                              if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
+                                  UserActivity.this.recreate();
+                              }
+                          }
+                      });
             } else {
-                userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(new ErrorLogger<>(this) {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.code() == HttpCodes.OK) {
-                            amISubscriber = true;
-                            updateSubscribeButtonText();
-                            showMessage(UserActivity.this, "Successfully subscribed.");
-                            return;
-                        }
-                        if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                            UserActivity.this.recreate();
-                        }
-                        Log.i(TAG, "/user/{id}/subscribe: " + response.code() + " : " + response.body());
-                    }
-                });
+                userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(
+                      new HttpErrorLogger<>(this) {
+                          @Override
+                          public void onResponse(Call<Void> call, Response<Void> resp) {
+                              super.onResponse(call, resp);
+                              if (resp.code() == HttpCodes.OK) {
+                                  amISubscriber = true;
+                                  updateSubscribeButtonText();
+                                  showMessage(UserActivity.this, "Successfully subscribed.");
+                                  return;
+                              }
+                              if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
+                                  UserActivity.this.recreate();
+                              }
+                          }
+                      });
             }
         });
 
@@ -140,11 +143,12 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.fetchUserInformation(token, userId, this);
         userViewModel.getUserLiveData()
               .observe(this, user -> {
-                  binding.userFullName.setText(user.getName() + " " + user.getSurname());
-                  binding.userInfo.setText(user.getInfo());
-                  String birthday = user.getBirthday();
-                  binding.userBirthday.setText(birthday + " (" + getAgeFromDate(birthday) + ')');
-                  binding.userGender.setText(genderResolver(this, user.getGender()));
+                  binding.name.setText(user.getName());
+                  binding.surname.setText(user.getSurname());
+                  binding.gender.setText(genderResolver(getApplicationContext(), user.getGender()));
+                  binding.birthday.setText(user.getBirthday());
+                  binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
+                  binding.info.setText(user.getInfo());
                   //binding.userPhoto.setImageBitmap();
               });
         userViewModel.getAmISubscriber()
@@ -155,18 +159,18 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> adapter.setData(events));
 
-        binding.eventsGrid.setLayoutManager(new GridLayoutManager(this, 2));
-        binding.eventsGrid.setAdapter(adapter);
+        binding.events.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.events.setAdapter(adapter);
     }
 
     private void updateSubscribeButtonText() {
         if (amISubscriber == null) {
-            binding.subscribeButton.setText("...");
+            binding.subscribeBtn.setText("...");
         }
         if (amISubscriber) {
-            binding.subscribeButton.setText("Unsubscribe");
+            binding.subscribeBtn.setText("Unsubscribe");
         } else {
-            binding.subscribeButton.setText("Subscribe");
+            binding.subscribeBtn.setText("Subscribe");
         }
     }
 

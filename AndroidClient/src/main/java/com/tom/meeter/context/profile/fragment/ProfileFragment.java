@@ -29,7 +29,7 @@ import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
-import com.tom.meeter.databinding.FragmentProfileEditableBinding;
+import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
@@ -54,7 +54,7 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = ProfileFragment.class.getCanonicalName();
     private boolean isEditableModeEnabled = false;
 
-    private FragmentProfileEditableBinding binding;
+    private FragmentProfileBinding binding;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -93,7 +93,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(
           @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        binding = FragmentProfileEditableBinding.inflate(inflater, container, false);
+        binding = FragmentProfileBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -101,10 +101,13 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
+
         profileViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileViewModel.class);
         String authHeader = getAuthHeader(accountManager);
+
         profileViewModel.fetchProfile(authHeader, this);
+
         profileViewModel.getProfileLiveData()
               .observe(
                     getViewLifecycleOwner(),
