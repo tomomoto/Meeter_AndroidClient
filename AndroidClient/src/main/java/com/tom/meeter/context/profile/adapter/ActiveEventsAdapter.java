@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.databinding.EventViewBinding;
-import com.tom.meeter.infrastructure.adapter.BaseEventAdapter;
-import com.tom.meeter.infrastructure.binder.ViewHolderEventBinder;
-import com.tom.meeter.infrastructure.viewholder.EventViewHolder;
+import com.tom.meeter.infrastructure.components.adapter.BaseEventAdapter;
+import com.tom.meeter.infrastructure.components.binder.ViewHolderEventBinder;
+import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 
 /**
  * created by Tom on 10.02.2017.

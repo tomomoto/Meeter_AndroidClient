@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.binder;
+package com.tom.meeter.infrastructure.components.binder;
 
 import androidx.recyclerview.widget.RecyclerView;
 

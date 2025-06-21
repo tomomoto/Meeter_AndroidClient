@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.viewholder;
+package com.tom.meeter.infrastructure.components.viewholder;
 
 import android.graphics.Bitmap;
 import android.view.View;

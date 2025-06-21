@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.adapter;
+package com.tom.meeter.infrastructure.components.adapter;
 
 import com.tom.meeter.context.network.dto.EventDTO;
 

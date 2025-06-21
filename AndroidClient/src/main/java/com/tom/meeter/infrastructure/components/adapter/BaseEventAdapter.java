@@ -1,11 +1,11 @@
-package com.tom.meeter.infrastructure.adapter;
+package com.tom.meeter.infrastructure.components.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.infrastructure.binder.ViewHolderEventBinder;
+import com.tom.meeter.infrastructure.components.binder.ViewHolderEventBinder;
 
 import java.util.ArrayList;
 import java.util.List;

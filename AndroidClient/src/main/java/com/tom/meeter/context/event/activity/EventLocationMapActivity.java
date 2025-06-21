@@ -1,7 +1,7 @@
 package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.profile.fragment.GoogleMapsFragment.ZOOM_VALUE;
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.circleImage;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 

@@ -4,8 +4,8 @@ import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 

@@ -23,8 +23,8 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
-import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventEventBinder;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
+import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventEventBinder;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;

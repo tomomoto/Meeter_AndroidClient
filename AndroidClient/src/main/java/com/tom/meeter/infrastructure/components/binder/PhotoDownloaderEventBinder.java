@@ -1,13 +1,13 @@
-package com.tom.meeter.infrastructure.binder;
+package com.tom.meeter.infrastructure.components.binder;
 
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.circleImage;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 
 import android.content.Context;
 
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.infrastructure.adapter.OnEventClickListener;
-import com.tom.meeter.infrastructure.viewholder.CardItemHolder;
+import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
+import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
 public class PhotoDownloaderEventBinder
       implements ViewHolderEventBinder<CardItemHolder> {

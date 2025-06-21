@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.adapter;
+package com.tom.meeter.infrastructure.components.adapter;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.tom.meeter.databinding.CardItemBinding;
-import com.tom.meeter.infrastructure.binder.ViewHolderEventBinder;
-import com.tom.meeter.infrastructure.viewholder.CardItemHolder;
+import com.tom.meeter.infrastructure.components.binder.ViewHolderEventBinder;
+import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
 public class EventsCardAdapter extends BaseEventAdapter<CardItemHolder> {
 

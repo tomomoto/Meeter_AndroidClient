@@ -1,6 +1,6 @@
-package com.tom.meeter.infrastructure.binder;
+package com.tom.meeter.infrastructure.components.binder;
 
-import static com.tom.meeter.infrastructure.Image.ImagesHelper.circleImage;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.Context;
@@ -9,8 +9,8 @@ import android.util.Log;
 
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.infrastructure.adapter.OnEventClickListener;
-import com.tom.meeter.infrastructure.viewholder.EventViewHolder;
+import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
+import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
