@@ -5,6 +5,7 @@ import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEven
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -51,13 +53,17 @@ public class ProfileEventsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
+
         ((App) getActivity().getApplication()).getComponent().inject(this);
-        accountManager = AccountManager.get(this.getContext());
+
+        Context ctx = getContext();
+        accountManager = AccountManager.get(ctx);
 
         adapter = new EventsAdapter(
               new PhotoDownloaderWithCacheEventBinder(
-                    this, imageDownloader,
-                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
+                    ctx, imageDownloader,
+                    (e) -> dispatchToEventActivity(ctx, e.getId()),
+                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
         /*
         btnDelete.setOnClickListener(v -> {
             if (onDeleteButtonClickListener != null)

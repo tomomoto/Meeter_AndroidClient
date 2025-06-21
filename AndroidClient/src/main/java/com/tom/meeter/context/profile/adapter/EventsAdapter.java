@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.EventViewBinding;
+import com.tom.meeter.infrastructure.adapter.EventsDiffCallback;
 import com.tom.meeter.infrastructure.binder.EventBinder;
-import com.tom.meeter.infrastructure.binder.EventViewHolder;
+import com.tom.meeter.infrastructure.viewholder.EventViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,37 +64,5 @@ public class EventsAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         logMethod(TAG, this);
-    }
-
-    static class EventsDiffCallback extends DiffUtil.Callback {
-
-        private final List<EventDTO> oldEvents, newEvents;
-
-        EventsDiffCallback(List<EventDTO> oldEvents, List<EventDTO> newEvents) {
-            this.oldEvents = oldEvents;
-            this.newEvents = newEvents;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldEvents.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newEvents.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldEvents.get(oldItemPosition).getId()
-                  .equals(newEvents.get(newItemPosition).getId());
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldEvents.get(oldItemPosition)
-                  .equals(newEvents.get(newItemPosition));
-        }
     }
 }

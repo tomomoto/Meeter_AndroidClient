@@ -7,6 +7,7 @@ import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +23,9 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
-import com.tom.meeter.databinding.FragmentProfileBinding;
-import com.tom.meeter.infrastructure.adapter.EventsRecyclerViewAdapter;
+import com.tom.meeter.databinding.FragmentProfileEditableBinding;
+import com.tom.meeter.infrastructure.adapter.EventsCardAdapter;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderBinder;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
@@ -36,7 +38,7 @@ public class ProfileFragment extends Fragment {
 
     private static final String TAG = ProfileFragment.class.getCanonicalName();
 
-    private FragmentProfileBinding binding;
+    private FragmentProfileEditableBinding binding;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -47,6 +49,8 @@ public class ProfileFragment extends Fragment {
 
     private AccountManager accountManager;
 
+    private EventsCardAdapter adapter;
+
     public ProfileFragment() {
         logMethod(TAG, this);
     }
@@ -54,16 +58,24 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((App) getActivity().getApplication()).getComponent().inject(this);
-        accountManager = AccountManager.get(this.getContext());
         logMethod(TAG, this);
+
+        ((App) getActivity().getApplication()).getComponent().inject(this);
+
+        Context ctx = getContext();
+        accountManager = AccountManager.get(ctx);
+
+        adapter = new EventsCardAdapter(
+              new PhotoDownloaderBinder(ctx, imageDownloader,
+                    event -> dispatchToEventActivity(ctx, event.getId()),
+                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
     }
 
     @Override
     public View onCreateView(
           @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        binding = FragmentProfileBinding.inflate(inflater, container, false);
+        binding = FragmentProfileEditableBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -78,24 +90,20 @@ public class ProfileFragment extends Fragment {
               .observe(
                     getViewLifecycleOwner(),
                     user -> {
-                        binding.profileId.setText(getString(R.string.profile_user_id_format, user.getId()));
-                        binding.profileName.setText(getString(R.string.profile_user_name_format, user.getName(), user.getSurname()));
-                        binding.profileGender.setText(getString(R.string.profile_gender_format, genderResolver(getContext(), user.getGender())));
+                        binding.profileId.setText(user.getId());
+                        binding.profileName.setText(user.getName());
+                        binding.profileSurname.setText(user.getSurname());
+                        binding.profileGender.setText(genderResolver(getContext(), user.getGender()));
+                        binding.profileBirthday.setText(user.getBirthday());
                         binding.profileAge.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
-                        binding.profileInfo.setText(getString(R.string.profile_info_format, user.getInfo()));
+                        binding.profileInfo.setText(user.getInfo());
                     });
+
         profileViewModel.getProfileEventsLiveData()
-              .observe(
-                    getViewLifecycleOwner(),
-                    events -> {
-                        binding.profileEventsGrid.setLayoutManager(
-                              new GridLayoutManager(getContext(), 2));
-                        binding.profileEventsGrid.setAdapter(
-                              new EventsRecyclerViewAdapter(
-                                    getContext(), events, imageDownloader,
-                                    () -> InfrastructureHelper.restartActivityFromFragment(this),
-                                    event -> dispatchToEventActivity(getContext(), event.getId())));
-                    });
+              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
+
+        binding.profileEventsGrid.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.profileEventsGrid.setAdapter(adapter);
     }
 
     @Override

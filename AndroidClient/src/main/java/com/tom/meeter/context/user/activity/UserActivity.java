@@ -27,7 +27,8 @@ import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserProfileBinding;
-import com.tom.meeter.infrastructure.adapter.EventsRecyclerViewAdapter;
+import com.tom.meeter.infrastructure.adapter.EventsCardAdapter;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderBinder;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -55,7 +56,7 @@ public class UserActivity extends AppCompatActivity {
     private UserViewModel userViewModel;
     private String userId;
     private AccountManager accountManager;
-
+    private EventsCardAdapter adapter;
     private Boolean amISubscriber;
 
     @Override
@@ -79,6 +80,11 @@ public class UserActivity extends AppCompatActivity {
 
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
+
+        adapter = new EventsCardAdapter(
+              new PhotoDownloaderBinder(
+                    this, imgDownloader, event -> dispatchToEventActivity(this, event.getId()),
+                    this::recreate));
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
@@ -147,16 +153,10 @@ public class UserActivity extends AppCompatActivity {
                   updateSubscribeButtonText();
               });
         userViewModel.getUserEventsLiveData()
-              .observe(this, events -> {
-                  if (!events.isEmpty()) {
-                      binding.eventsGrid.setLayoutManager(
-                            new GridLayoutManager(this, 2));
-                      binding.eventsGrid.setAdapter(
-                            new EventsRecyclerViewAdapter(
-                                  this, events, imgDownloader, this::recreate,
-                                  event -> dispatchToEventActivity(UserActivity.this, event.getId())));
-                  }
-              });
+              .observe(this, events -> adapter.setData(events));
+
+        binding.eventsGrid.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.eventsGrid.setAdapter(adapter);
     }
 
     private void updateSubscribeButtonText() {

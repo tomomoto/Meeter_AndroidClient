@@ -7,6 +7,7 @@ package com.tom.meeter.context.profile.fragment;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -53,10 +55,12 @@ public class ActiveEventsFragment extends Fragment {
         ((App) getActivity().getApplication()).getComponent().inject(this);
         EventBus.getDefault().register(this);
 
+        Context ctx = getContext();
         adapter = new EventsAdapter(
               new PhotoDownloaderWithCacheEventBinder(
-                    this, imageDownloader,
-                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
+                    ctx, imageDownloader,
+                    (e) -> dispatchToEventActivity(ctx, e.getId()),
+                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
 
         Log.d(TAG, "ActiveEventsFragment Registering eventBus");
     }

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/c0deef">
+    <!--
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+    -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context=".context.profile.fragment.ProfileFragment">
+        <!--removed^: android:padding="50dp" -->
+        <TextView
+            android:id="@+id/userInformationLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="50dp"
+            android:hint="@string/user_information"
+            android:inputType="none"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/user_photo"
+            android:layout_width="match_parent"
+            android:layout_height="170sp"
+            android:layout_below="@+id/userInformationLabel"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="29dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="content description..."
+            android:src="@drawable/user_612x612" />
+        <!--app:srcCompat="@drawable/ic_launcher"
+        tools:src="@tools:sample/backgrounds/scenic" -->
+        />
+
+        <!-- Photo Button -->
+        <Button
+            android:id="@+id/btnPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_photo"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="Выбрать фото" />
+
+
+        <LinearLayout
+            android:id="@+id/subs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnPhoto"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/subscribers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_selected"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="Подписчики" />
+            <!--android:textColor="@color/white"-->
+
+            <TextView
+                android:id="@+id/following"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_unselected"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="Подписки" />
+            <!--android:textColor="@color/gray"-->
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/profile_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/subs"
+            android:layout_marginTop="15dp"
+            android:text="@string/profile_user_id"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/profile_name_surname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_id"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/profile_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:hint="Name"
+                android:inputType="text"
+                android:text="@string/profile_user_name"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/profile_surname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:hint="Surname"
+                android:inputType="text"
+                android:text="Surname"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/profile_birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_name_surname"
+            android:layout_marginTop="15sp"
+            android:text="Birthday"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/profile_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_birthday"
+            android:layout_marginTop="15sp"
+            android:text="@string/profile_age"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/profile_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_age"
+            android:layout_marginTop="15dp"
+            android:text="@string/profile_gender"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/profile_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_gender"
+            android:layout_marginTop="15dp"
+            android:text="@string/profile_info"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Edit Button -->
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_info"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="Редактировать" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profile_events_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnEdit"
+            android:layout_marginTop="40dp"
+            android:animateLayoutChanges="false"
+            android:background="@color/c0deef"
+            android:gravity="center"
+            android:nestedScrollingEnabled="false"
+            android:numColumns="2"
+            android:overScrollMode="never"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp"
+            tools:listitem="@layout/card_item" />
+    </RelativeLayout>
+</ScrollView>

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.EventViewBinding;
 import com.tom.meeter.infrastructure.binder.EventBinder;
-import com.tom.meeter.infrastructure.binder.EventViewHolder;
+import com.tom.meeter.infrastructure.viewholder.EventViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

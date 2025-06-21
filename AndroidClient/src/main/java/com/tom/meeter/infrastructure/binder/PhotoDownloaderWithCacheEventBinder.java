@@ -3,15 +3,14 @@ package com.tom.meeter.infrastructure.binder;
 import static com.tom.meeter.infrastructure.Image.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
-
-import androidx.fragment.app.Fragment;
 
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.infrastructure.adapter.OnEventClickListener;
-import com.tom.meeter.infrastructure.common.InfrastructureHelper;
+import com.tom.meeter.infrastructure.viewholder.EventViewHolder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,18 +19,20 @@ public class PhotoDownloaderWithCacheEventBinder implements EventBinder {
 
     private static final String TAG = PhotoDownloaderWithCacheEventBinder.class.getCanonicalName();
 
-    private final Fragment fragment;
+    private final Context ctx;
     private final ImageDownloader imageDownloader;
     private final OnEventClickListener onEventClick;
+    private final Runnable onAuthFail;
     private final Map<String, Bitmap> imagesCache = new ConcurrentHashMap<>();
 
     public PhotoDownloaderWithCacheEventBinder(
-          Fragment fragment, ImageDownloader imgDownloader,
-          OnEventClickListener onEventClick) {
+          Context ctx, ImageDownloader imgDownloader,
+          OnEventClickListener onEventClick, Runnable onAuthFail) {
         logMethod(TAG, this);
-        this.fragment = fragment;
+        this.ctx = ctx;
         this.imageDownloader = imgDownloader;
         this.onEventClick = onEventClick;
+        this.onAuthFail = onAuthFail;
     }
 
     @Override
@@ -51,7 +52,7 @@ public class PhotoDownloaderWithCacheEventBinder implements EventBinder {
             return;
         }
         imageDownloader.downloadEventImage(
-              photoPath, fragment.getContext(),
+              photoPath, ctx,
               photo -> {
                   Bitmap circled = circleImage(photo);
                   holder.updatePhoto(circled);
@@ -59,6 +60,6 @@ public class PhotoDownloaderWithCacheEventBinder implements EventBinder {
                   Log.d(TAG, "PhotoDownloaderWithCacheEventBinder: event image " +
                         "downloaded for " + photoPath + ", cache updated.");
               },
-              () -> InfrastructureHelper.restartActivityFromFragment(fragment));
+              onAuthFail);
     }
 }
