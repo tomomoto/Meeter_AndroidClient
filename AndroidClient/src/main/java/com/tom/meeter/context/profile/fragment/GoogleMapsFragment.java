@@ -462,4 +462,22 @@ public class GoogleMapsFragment extends Fragment
             return Objects.hash(id, latitude, longitude);
         }
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        logMethod(TAG, this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        logMethod(TAG, this);
+    }
 }

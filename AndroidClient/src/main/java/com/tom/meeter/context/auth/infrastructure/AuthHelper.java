@@ -40,6 +40,10 @@ public final class AuthHelper {
         return am.peekAuthToken(getSingleAccount(am), AccountAuthenticator.AUTH_TYPE);
     }
 
+    public static String getAuthHeader(AccountManager am) {
+        return Globals.getAuthHeader(peekToken(am));
+    }
+
     public static String getUserUuid(AccountManager am) {
         return am.getUserData(getSingleAccount(am), USER_UUID_KEY);
     }

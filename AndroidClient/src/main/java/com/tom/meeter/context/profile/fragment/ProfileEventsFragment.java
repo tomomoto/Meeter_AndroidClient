@@ -1,6 +1,6 @@
 package com.tom.meeter.context.profile.fragment;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.context.profile.adapter.ProfileEventsAdapter;
+import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
@@ -32,7 +32,7 @@ public class ProfileEventsFragment extends Fragment {
 
     SubFragmentUserEventsBinding binding;
 
-    private ProfileEventsAdapter adapter;
+    private EventsAdapter adapter;
 
     @Inject
     ViewModelFactory viewModelFactory;
@@ -53,6 +53,16 @@ public class ProfileEventsFragment extends Fragment {
         logMethod(TAG, this);
         ((App) getActivity().getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this.getContext());
+
+        adapter = new EventsAdapter(
+              new PhotoDownloaderWithCacheEventBinder(
+                    this, imageDownloader,
+                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
+        /*
+        btnDelete.setOnClickListener(v -> {
+            if (onDeleteButtonClickListener != null)
+                onDeleteButtonClickListener.onDeleteButtonClicked(post);
+        });*/
     }
 
     @Override
@@ -69,23 +79,11 @@ public class ProfileEventsFragment extends Fragment {
         logMethod(TAG, this);
         profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory)
               .get(ProfileEventsViewModel.class);
-
-        profileEventsViewModel.getProfileEvents(peekToken(accountManager), this);
-        adapter = new ProfileEventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
-                    this, imageDownloader,
-                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
+        profileEventsViewModel.fetchProfileEvents(getAuthHeader(accountManager), this);
         profileEventsViewModel.getProfileEventsLiveData()
-              .observe(getViewLifecycleOwner(), ev -> adapter.setData(ev));
-
+              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
         binding.userEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.userEventsFragmentRecyclerView.setAdapter(adapter);
-        binding.userEventsFragmentRecyclerView.invalidate();
-
-        /*
-        adapter = new ProfileEventsAdapter(events);
-        rView.swapAdapter(adapter, false);
-        */
     }
 
     @Override

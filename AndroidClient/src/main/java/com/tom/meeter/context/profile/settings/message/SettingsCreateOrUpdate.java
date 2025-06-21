@@ -1,12 +1,12 @@
 package com.tom.meeter.context.profile.settings.message;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SettingsCreateOrUpdate {
 
-    @SerializedName(value = "search_area")
+    @JsonProperty(value = "search_area")
     private Integer searchArea;
-    @SerializedName(value = "need_track_user")
+    @JsonProperty(value = "need_track_user")
     private Boolean needTrackUser;
 
     public SettingsCreateOrUpdate(Integer searchArea, Boolean needTrackUser) {

@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
-import com.tom.meeter.context.profile.adapter.ActiveEventsAdapter;
+import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
+import com.tom.meeter.infrastructure.binder.PhotoDownloaderWithCacheEventBinder;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,7 +40,7 @@ public class ActiveEventsFragment extends Fragment {
     @Inject
     ImageDownloader imageDownloader;
 
-    private ActiveEventsAdapter activeEventsAdapter;
+    private EventsAdapter adapter;
 
     public ActiveEventsFragment() {
         logMethod(TAG, this);
@@ -52,6 +52,12 @@ public class ActiveEventsFragment extends Fragment {
         logMethod(TAG, this);
         ((App) getActivity().getApplication()).getComponent().inject(this);
         EventBus.getDefault().register(this);
+
+        adapter = new EventsAdapter(
+              new PhotoDownloaderWithCacheEventBinder(
+                    this, imageDownloader,
+                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
+
         Log.d(TAG, "ActiveEventsFragment Registering eventBus");
     }
 
@@ -67,30 +73,13 @@ public class ActiveEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        //rView.setHasFixedSize(true);
-
-        // use a linear layout manager
         binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        // specify an adapter (see also next example)
-        activeEventsAdapter = new ActiveEventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
-                    this, imageDownloader,
-                    (e) -> dispatchToEventActivity(getContext(), e.getId())));
-        binding.activeEventsFragmentRecyclerView.setAdapter(activeEventsAdapter);
-        binding.activeEventsFragmentRecyclerView.invalidate();
+        binding.activeEventsFragmentRecyclerView.setAdapter(adapter);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(IncomeEvents eventsSearch) {
-        activeEventsAdapter.cleanEvents();
-        if (!eventsSearch.events().isEmpty()) {
-            activeEventsAdapter.addEvents(eventsSearch.events());
-        }
-        binding.activeEventsFragmentRecyclerView.requestLayout();
+        adapter.setData(eventsSearch.events());
     }
 
     @Override
