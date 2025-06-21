@@ -22,17 +22,17 @@ public class PhotoDownloaderWithCacheEventEventBinder
 
     private final Context ctx;
     private final ImageDownloader imageDownloader;
-    private final OnEventClickListener onEventClick;
+    private final OnEventClickListener listener;
     private final Runnable onAuthFail;
     private final Map<String, Bitmap> imagesCache = new ConcurrentHashMap<>();
 
     public PhotoDownloaderWithCacheEventEventBinder(
           Context ctx, ImageDownloader imgDownloader,
-          OnEventClickListener onEventClick, Runnable onAuthFail) {
+          OnEventClickListener listener, Runnable onAuthFail) {
         logMethod(TAG, this);
         this.ctx = ctx;
         this.imageDownloader = imgDownloader;
-        this.onEventClick = onEventClick;
+        this.listener = listener;
         this.onAuthFail = onAuthFail;
     }
 
@@ -42,13 +42,13 @@ public class PhotoDownloaderWithCacheEventEventBinder
         if (photoPath == null) {
             holder.bind(
                   event.getName(), event.getDescription(), null,
-                  (v) -> onEventClick.onEventClick(event));
+                  (v) -> listener.onEventClick(event));
             return;
         }
         Bitmap circledPhotoCache = imagesCache.get(photoPath);
         holder.bind(
               event.getName(), event.getDescription(), circledPhotoCache,
-              (v) -> onEventClick.onEventClick(event));
+              (v) -> listener.onEventClick(event));
         if (circledPhotoCache != null) {
             return;
         }
@@ -58,8 +58,8 @@ public class PhotoDownloaderWithCacheEventEventBinder
                   Bitmap circled = circleImage(photo);
                   holder.updatePhoto(circled);
                   imagesCache.put(photoPath, circled);
-                  Log.d(TAG, "PhotoDownloaderWithCacheEventEventBinder: event image " +
-                        "downloaded for " + photoPath + ", cache updated.");
+                  Log.d(TAG, "PhotoDownloaderWithCacheEventEventBinder: event " +
+                        "image downloaded for [" + photoPath + "], cache updated.");
               },
               onAuthFail);
     }

@@ -23,8 +23,8 @@ public abstract class BaseEventAdapter<T extends RecyclerView.ViewHolder>
     public void setData(List<EventDTO> newEvents) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
               new EventsDiffCallback(events, newEvents));
-        events.clear();
-        events.addAll(newEvents);
+        this.events.clear();
+        this.events.addAll(newEvents);
         diffResult.dispatchUpdatesTo(this);
     }
 
@@ -36,5 +36,37 @@ public abstract class BaseEventAdapter<T extends RecyclerView.ViewHolder>
     @Override
     public int getItemCount() {
         return events.size();
+    }
+
+    static class EventsDiffCallback extends DiffUtil.Callback {
+
+        private final List<EventDTO> oldEvents, newEvents;
+
+        public EventsDiffCallback(List<EventDTO> oldEvents, List<EventDTO> newEvents) {
+            this.oldEvents = oldEvents;
+            this.newEvents = newEvents;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldEvents.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newEvents.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldEvents.get(oldItemPosition).getId()
+                  .equals(newEvents.get(newItemPosition).getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldEvents.get(oldItemPosition)
+                  .equals(newEvents.get(newItemPosition));
+        }
     }
 }
