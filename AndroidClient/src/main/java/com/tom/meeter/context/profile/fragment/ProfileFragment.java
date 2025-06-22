@@ -7,6 +7,7 @@ import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -29,6 +31,7 @@ import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.activity.SubscribersActivity;
+import com.tom.meeter.context.profile.activity.SubscriptionsActivity;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
@@ -111,16 +114,22 @@ public class ProfileFragment extends Fragment {
 
         profileViewModel.fetchProfile(authHeader, this);
 
+        LifecycleOwner owner = getViewLifecycleOwner();
         profileViewModel.getProfileLiveData()
               .observe(
-                    getViewLifecycleOwner(),
+                    owner,
                     user -> {
                         userCache = user;
                         updateLayoutValues();
                     });
 
         profileViewModel.getProfileEventsLiveData()
-              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
+              .observe(owner, events -> adapter.setData(events));
+        profileViewModel.getProfilePhotoLiveData()
+              .observe(owner, photo -> {
+                  photoCache = photo;
+                  updateLayoutPhoto();
+              });
 
         binding.events.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.events.setAdapter(adapter);
@@ -153,6 +162,10 @@ public class ProfileFragment extends Fragment {
               v -> startActivity(
                     new Intent(
                           ProfileFragment.this.getContext(), SubscribersActivity.class)));
+        binding.subscriptions.setOnClickListener(
+              v -> startActivity(
+                    new Intent(
+                          ProfileFragment.this.getContext(), SubscriptionsActivity.class)));
     }
 
     private void updateLayoutValues() {
@@ -164,6 +177,10 @@ public class ProfileFragment extends Fragment {
         binding.birthday.setText(birthday == null ? EMPTY_STR : birthday.toString());
         binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(birthday)));
         binding.info.setText(userCache.getInfo());
+    }
+
+    private void updateLayoutPhoto() {
+        binding.photo.setImageBitmap(circleImage(photoCache, 600, 600));
     }
 
     private void switchEditMode() {

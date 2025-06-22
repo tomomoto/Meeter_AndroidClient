@@ -14,4 +14,14 @@ public abstract class UserViewModelModule {
     @IntoMap
     @ViewModelKey(UserViewModel.class)
     abstract ViewModel userViewModel(UserViewModel userViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserSubscribersViewModel.class)
+    abstract ViewModel userSubscribersViewModel(UserSubscribersViewModel usvm);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserSubscriptionsViewModel.class)
+    abstract ViewModel userSubscriptionsViewModel(UserSubscriptionsViewModel usvm);
 }

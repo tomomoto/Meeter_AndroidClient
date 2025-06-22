@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.databinding.ActivityProfileSubscriberItemBinding;
+import com.tom.meeter.databinding.ActivityUserSubscriberItemBinding;
 import com.tom.meeter.infrastructure.components.adapter.BaseUserAdapter;
 import com.tom.meeter.infrastructure.components.binder.UserBinder;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
@@ -25,7 +25,7 @@ public class UsersAdapter extends BaseUserAdapter<UserViewHolder> {
     public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         logMethod(TAG, this);
         return new UserViewHolder(
-              ActivityProfileSubscriberItemBinding.inflate(
+              ActivityUserSubscriberItemBinding.inflate(
                     LayoutInflater.from(parent.getContext()), parent, false));
     }
 

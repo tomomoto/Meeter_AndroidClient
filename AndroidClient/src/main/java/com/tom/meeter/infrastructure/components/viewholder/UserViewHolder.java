@@ -5,27 +5,24 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.databinding.ActivityProfileSubscriberItemBinding;
+import com.tom.meeter.databinding.ActivityUserSubscriberItemBinding;
 
 public class UserViewHolder extends RecyclerView.ViewHolder {
 
-    private final ActivityProfileSubscriberItemBinding binding;
+    private final ActivityUserSubscriberItemBinding binding;
 
-    public UserViewHolder(ActivityProfileSubscriberItemBinding binding) {
+    public UserViewHolder(ActivityUserSubscriberItemBinding binding) {
         super(binding.getRoot());
         this.binding = binding;
     }
 
     public void bind(
           String name, String surname, Bitmap photo,
-          View.OnClickListener cardClickListener,
-          View.OnClickListener buttonClickListener) {
+          View.OnClickListener cardClickListener) {
         binding.subscriberName.setText(name);
         binding.subscriberSurname.setText(surname);
         binding.photo.setImageBitmap(photo);
-
         binding.subCard.setOnClickListener(cardClickListener);
-        binding.buttonSubscribe.setOnClickListener(buttonClickListener);
     }
 
     public void updatePhoto(Bitmap photo) {

@@ -2,9 +2,12 @@ package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.user.activity.UserSubscribersActivity.dispatchToUserSubscribersActivity;
+import static com.tom.meeter.context.user.activity.UserSubscriptionsActivity.dispatchToUserSubscriptionsActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -24,7 +27,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
@@ -81,9 +86,14 @@ public class UserActivity extends AppCompatActivity {
             finish();
             return;
         }
+        accountManager = AccountManager.get(this);
+        if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            finish();
+            return;
+        }
 
         ((App) getApplication()).getUserComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         adapter = new EventsCardAdapter(
               new PhotoDownloaderEventBinder(
@@ -154,7 +164,6 @@ public class UserActivity extends AppCompatActivity {
                   binding.birthday.setText(birthday == null ? EMPTY_STR : birthday.toString());
                   binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(birthday)));
                   binding.info.setText(user.getInfo());
-                  //binding.userPhoto.setImageBitmap();
               });
         userViewModel.getAmISubscriber()
               .observe(this, val -> {
@@ -163,9 +172,18 @@ public class UserActivity extends AppCompatActivity {
               });
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> adapter.setData(events));
+        userViewModel.getUserPhotoLiveData()
+              .observe(
+                    this,
+                    photo -> binding.photo.setImageBitmap(circleImage(photo, 600, 600)));
 
         binding.events.setLayoutManager(new GridLayoutManager(this, 2));
         binding.events.setAdapter(adapter);
+
+        binding.subscribers.setOnClickListener(
+              v -> dispatchToUserSubscribersActivity(this, userId));
+        binding.subscriptions.setOnClickListener(
+              v -> dispatchToUserSubscriptionsActivity(this, userId));
     }
 
     private void updateSubscribeButtonText() {

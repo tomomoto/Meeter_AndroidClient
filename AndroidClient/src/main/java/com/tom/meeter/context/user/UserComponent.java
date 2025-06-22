@@ -5,6 +5,9 @@ import android.app.Application;
 import com.tom.meeter.context.image.ImageComponent;
 import com.tom.meeter.context.token.TokenComponent;
 import com.tom.meeter.context.user.activity.UserActivity;
+import com.tom.meeter.context.user.activity.UserSubscribersActivity;
+import com.tom.meeter.context.user.activity.UserSubscriptionsActivity;
+import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModelModule;
 
 import dagger.BindsInstance;
@@ -22,6 +25,8 @@ import dagger.Component;
       })
 public interface UserComponent {
 
+    UserService provideUserService();
+
     @Component.Builder
     interface Builder {
         @BindsInstance
@@ -35,4 +40,8 @@ public interface UserComponent {
     }
 
     void inject(UserActivity userActivity);
+
+    void inject(UserSubscribersActivity usa);
+
+    void inject(UserSubscriptionsActivity usa);
 }

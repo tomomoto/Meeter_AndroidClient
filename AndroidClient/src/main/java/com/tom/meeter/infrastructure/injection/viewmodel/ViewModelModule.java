@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileSubscribersViewModel;
+import com.tom.meeter.context.profile.viewmodel.ProfileSubscriptionsViewModel;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 
 import dagger.Binds;
@@ -35,4 +36,9 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ProfileSubscribersViewModel.class)
     abstract ViewModel profileSubscribersViewModel(ProfileSubscribersViewModel psvm);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileSubscriptionsViewModel.class)
+    abstract ViewModel profileSubscriptionsViewModel(ProfileSubscriptionsViewModel psvm);
 }

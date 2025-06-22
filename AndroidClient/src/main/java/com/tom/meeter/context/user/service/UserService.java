@@ -13,10 +13,6 @@ import retrofit2.http.Header;
 import retrofit2.http.Path;
 
 public interface UserService {
-    //This will not even work, since server needs an auth for this requests.
-    @GET("/user/{id}")
-    @Deprecated
-    Call<UserDTO> getUser(@Path("id") String userId);
 
     @GET("/user/{id}")
     Call<UserDTO> getUser(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
@@ -32,4 +28,12 @@ public interface UserService {
 
     @GET("/user/{id}/unsubscribe")
     Call<Void> unsubscribe(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
+    @GET("/user/{id}/subscribers")
+    Call<List<UserDTO>> getSubscribers(
+          @Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
+    @GET("/user/{id}/subscriptions")
+    Call<List<UserDTO>> getSubscriptions(
+          @Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
 }

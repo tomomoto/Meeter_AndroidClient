@@ -26,8 +26,8 @@ public interface ProfileService {
     Call<List<EventDTO>> getProfileEvents(@Header(AUTH_HEADER) String authHeader);
 
     @GET("/profile/subscribers")
-    Call<List<UserDTO>> getSubscribers(@Header(AUTH_HEADER) String authHeader);
+    Call<List<UserDTO>> getMySubscribers(@Header(AUTH_HEADER) String authHeader);
 
     @GET("/profile/subscriptions")
-    Call<List<UserDTO>> getSubscriptions(@Header(AUTH_HEADER) String authHeader);
+    Call<List<UserDTO>> getMySubscriptions(@Header(AUTH_HEADER) String authHeader);
 }

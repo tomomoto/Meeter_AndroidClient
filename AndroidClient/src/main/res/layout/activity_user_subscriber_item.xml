@@ -56,14 +56,5 @@
             <!-- <TextView ... /> -->
 
         </LinearLayout>
-
-        <!-- Кнопка подписки/отписки -->
-        <Button
-            android:id="@+id/subUnsubBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="100dp"
-            android:paddingHorizontal="12dp"
-            android:text="Кнопка" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

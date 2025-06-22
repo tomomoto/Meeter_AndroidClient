@@ -43,7 +43,9 @@ public class UserRepository {
         executor.execute(() -> userDao.load(id)
               .flatMap(user -> Maybe.empty(), Maybe::error, () -> Maybe.just(MARKER))
               .flatMapCompletable(ign -> Completable.fromAction(() -> {
-                  Response<UserDTO> response = userService.getUser(id).execute();
+                  //TODO null
+                  String header = null;
+                  Response<UserDTO> response = userService.getUser(header, id).execute();
                   if (response.isSuccessful()) {
                       UserDTO body = response.body();
                       LocalDate birthday = body.getBirthday();
