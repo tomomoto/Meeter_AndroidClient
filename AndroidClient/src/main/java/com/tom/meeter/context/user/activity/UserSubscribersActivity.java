@@ -32,8 +32,7 @@ import javax.inject.Inject;
 
 public class UserSubscribersActivity extends AppCompatActivity {
 
-    private static final String TAG = UserActivity.class.getCanonicalName();
-    private static final String USER_ID_KEY = "user_id";
+    private static final String TAG = UserSubscribersActivity.class.getCanonicalName();
 
     @Inject
     TokenService tokenService;
@@ -60,7 +59,7 @@ public class UserSubscribersActivity extends AppCompatActivity {
             finish();
             return;
         }
-        userId = extras.getString(USER_ID_KEY);
+        userId = extras.getString(UserActivity.USER_ID_KEY);
         if (userId == null) {
             Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
             finish();
@@ -146,6 +145,6 @@ public class UserSubscribersActivity extends AppCompatActivity {
 
     private static Intent createUserSubscribersActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserSubscribersActivity.class)
-              .putExtra(USER_ID_KEY, userId);
+              .putExtra(UserActivity.USER_ID_KEY, userId);
     }
 }

@@ -152,7 +152,6 @@ public class ProfileFragment extends Fragment {
                 UpdateProfileRequest req = createUpdateProfileRequest();
                 if (req.isEmpty()) {
                     showMessage(requireActivity(), R.string.empty_update_request_is_not_sent);
-                    updateLayoutValues();
                     switchEditMode();
                     return;
                 }

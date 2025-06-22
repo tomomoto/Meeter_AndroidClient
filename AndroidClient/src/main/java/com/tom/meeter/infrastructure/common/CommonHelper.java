@@ -47,6 +47,11 @@ public final class CommonHelper {
         return val == null ? null : val.toString();
     }
 
+    @Nullable
+    public static CharSequence textOrNull(Float val) {
+        return val == null ? null : val.toString();
+    }
+
     public static String getStringOrNull(CharSequence input) {
         if (input == null || EMPTY_STR.contentEquals(input)) {
             return null;

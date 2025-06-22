@@ -33,8 +33,6 @@ import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
-import okhttp3.ResponseBody;
-
 public class UserEventActivity extends AppCompatActivity {
 
     private static final String TAG = UserEventActivity.class.getCanonicalName();
@@ -48,9 +46,6 @@ public class UserEventActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
     private EventViewModel eventViewModel;
     private AccountManager accountManager;
-
-    private EventDTO eventCache;
-    private ResponseBody photoCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,47 +80,41 @@ public class UserEventActivity extends AppCompatActivity {
         eventViewModel.fetchEventInformation(token, eventId, this);
         eventViewModel.getEventLiveData()
               .observe(this, event -> {
-                  eventCache = event;
                   String userUuid = AuthHelper.getUserUuid(accountManager);
-                  String eventCreatorId = eventCache.getCreatorId();
-                  if (!userUuid.equals(eventCreatorId)) {
-                      initLayout();
-                      return;
+                  String eventCreatorId = event.getCreatorId();
+                  if (userUuid.equals(eventCreatorId)) {
+                      Log.e(TAG, "User event activity for" +
+                            " creator " + userUuid + "/" + eventId + " : " + eventCreatorId);
+                      finish();
                   }
-                  throw new IllegalStateException("User event activity for" +
-                        " creator " + userUuid + "/" + eventId + " : " + eventCreatorId);
+                  initLayout(event);
+                  eventViewModel.getEventPhotoLiveData()
+                        .observe(
+                              this, photo -> binding.eventPhoto.setImageBitmap(
+                                    circleImage(photo, 600, 600)));
               });
+
     }
 
-    private void initLayout() {
+    private void initLayout(EventDTO event) {
         binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-        updateReadableLayout();
         binding.eventCreator.setOnClickListener(
-              v -> dispatchToUserActivity(this, eventCache.getCreatorId()));
-        binding.btnEventLocationMap.setOnClickListener(
-              v -> dispatchToEventOnMapActivity(this, eventCache.getId()));
+              v -> dispatchToUserActivity(this, event.getCreatorId()));
+        binding.locationMapButton.setOnClickListener(
+              v -> dispatchToEventOnMapActivity(this, event.getId()));
 
-
-        eventViewModel.getEventPhotoLiveData()
-              .observe(
-                    this, photo -> binding.eventPhoto.setImageBitmap(
-                          circleImage(photo, 600, 600)));
+        binding.name.setText(event.getName());
+        binding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(event.getCreated()));
+        binding.description.setText(event.getDescription());
+        binding.latitude.setText(textOrNull(event.getLatitude()));
+        binding.longitude.setText(textOrNull(event.getLongitude()));
+        binding.starting.setText(dateOrNull(event.getStarting()));
+        binding.ending.setText(dateOrNull(event.getEnding()));
+        binding.city.setText(event.getCity());
     }
-
-    private void updateReadableLayout() {
-        binding.eventName.setText(eventCache.getName());
-        binding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(eventCache.getCreated()));
-        binding.eventDescription.setText(eventCache.getDescription());
-        binding.eventLatitude.setText(textOrNull(eventCache.getLatitude()));
-        binding.eventLongitude.setText(textOrNull(eventCache.getLongitude()));
-        binding.eventStarting.setText(dateOrNull(eventCache.getStarting()));
-        binding.eventEnding.setText(dateOrNull(eventCache.getEnding()));
-        binding.eventCity.setText(eventCache.getCity());
-    }
-
 
     @Nullable
     @Override

@@ -5,6 +5,7 @@ import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeade
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.EVENT_ID_KEY;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.event.utils.Utils.createUpdateEventRequest;
+import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
@@ -14,6 +15,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,13 +37,19 @@ import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.message.UpdateEventRequest;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
+import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.image.activity.UploadEventImageActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.infrastructure.common.Globals;
+import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
+
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -62,6 +70,8 @@ public class ProfileEventActivity extends AppCompatActivity {
     EventService eventService;
     @Inject
     ViewModelFactory viewModelFactory;
+    @Inject
+    ImageDownloader imgDownloader;
 
     private ActivityEventEditableBinding binding;
     private AccountManager accountManager;
@@ -70,6 +80,48 @@ public class ProfileEventActivity extends AppCompatActivity {
 
     private EventDTO eventCache;
     private ResponseBody photoCache;
+    private boolean isEditableModeEnabled = false;
+
+    private final ActivityResultLauncher<Intent> imageUploadLauncher =
+          registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String photoPath = result.getData().getStringExtra(PHOTO_PATH_RESULT);
+                    downloadAndUpdateLayoutPhoto(photoPath);
+                    binding.photoPath.setText(photoPath);
+                });
+
+    void downloadAndUpdateLayoutPhoto(String photoPath) {
+        imgDownloader.downloadEventImage(photoPath, this,
+              this::updateLayoutPhoto,
+              this::recreate);
+    }
+
+    private void updateLayoutPhoto(ResponseBody photo) {
+        photoCache = photo;
+        binding.photo.setImageBitmap(circleImage(photoCache, 600, 600));
+    }
+
+    private void switchEditMode() {
+        isEditableModeEnabled = !isEditableModeEnabled;
+
+        binding.selectPhotoButton.setEnabled(isEditableModeEnabled);
+        binding.locationMapButton.setEnabled(isEditableModeEnabled);
+        binding.selectStartingDateButton.setEnabled(isEditableModeEnabled);
+        binding.selectEndingDateButton.setEnabled(isEditableModeEnabled);
+
+        binding.name.setEnabled(isEditableModeEnabled);
+        binding.description.setEnabled(isEditableModeEnabled);
+        binding.latitude.setEnabled(isEditableModeEnabled);
+        binding.longitude.setEnabled(isEditableModeEnabled);
+        binding.starting.setEnabled(isEditableModeEnabled);
+        binding.ending.setEnabled(isEditableModeEnabled);
+        binding.city.setEnabled(isEditableModeEnabled);
+        binding.editSaveButton.setText(isEditableModeEnabled ? R.string.save : R.string.edit);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +130,13 @@ public class ProfileEventActivity extends AppCompatActivity {
         mapResult = registerForActivityResult(
               new ActivityResultContracts.StartActivityForResult(),
               result -> {
-                  if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                      double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
-                      double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
-                      if (binding instanceof ActivityEventEditableBinding eBinding) {
-                          eBinding.eventLatitude.setText(String.valueOf(lat));
-                          eBinding.eventLongitude.setText(String.valueOf(lng));
-                      }
+                  if (result.getResultCode() != RESULT_OK || result.getData() == null) {
+                      return;
                   }
+                  double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
+                  double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
+                  binding.latitude.setText(String.valueOf(lat));
+                  binding.longitude.setText(String.valueOf(lng));
               });
 
         logMethod(TAG, this);
@@ -118,16 +169,19 @@ public class ProfileEventActivity extends AppCompatActivity {
         eventViewModel.fetchEventInformation(token, eventId, this);
         eventViewModel.getEventLiveData()
               .observe(this, event -> {
-                  eventCache = event;
                   String userUuid = AuthHelper.getUserUuid(accountManager);
-                  String eventCreatorId = eventCache.getCreatorId();
-                  if (userUuid.equals(eventCreatorId)) {
-                      initLayout(token);
-                      return;
+                  String eventCreatorId = event.getCreatorId();
+                  if (!userUuid.equals(eventCreatorId)) {
+                      Log.e(TAG, "Profile event activity for non creator "
+                            + userUuid + "/" + eventId + " : " + eventCreatorId);
+                      finish();
                   }
-                  throw new IllegalStateException("Profile event activity for" +
-                        " non creator " + userUuid + "/" + eventId + " : " + eventCreatorId);
+                  eventCache = event;
+                  updateLayout();
               });
+        eventViewModel.getEventPhotoLiveData()
+              .observe(this, this::updateLayoutPhoto);
+        initLayout(token);
     }
 
     private void initLayout(String token) {
@@ -135,50 +189,45 @@ public class ProfileEventActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.saveEventButton.setOnClickListener(v -> {
-            UpdateEventRequest req = createUpdateEventRequest(eventCache, binding);
-            if (req.isEmpty()) {
-                showMessage(this, getString(R.string.empty_update_request_is_not_sent));
-                return;
-            }
-            eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req).enqueue(
-                  new HttpErrorLogger<>(getApplicationContext()) {
-                      @Override
-                      public void onResponse(Call<EventDTO> call, Response<EventDTO> res) {
-                          super.onResponse(call, res);
-                          if (res.isSuccessful()) {
-                              eventCache = res.body();
-                              updateLayout();
-                              showMessage(ProfileEventActivity.this, getString(R.string.saved));
-                          }
-                      }
-                  });
-        });
-        binding.deleteEventButton.setOnClickListener(v -> showAlertDialog());
-
-
-        /*
-   TODO photoPath;
-        * */
-
-        updateLayout();
-
         binding.selectStartingDateButton.setOnClickListener(
-              v -> showDateTimePicker(this, binding.eventStarting));
+              v -> showDateTimePicker(this, binding.starting));
         binding.selectEndingDateButton.setOnClickListener(
-              v -> showDateTimePicker(this, binding.eventEnding));
-        binding.btnEventLocationMap.setOnClickListener(
+              v -> showDateTimePicker(this, binding.ending));
+        binding.locationMapButton.setOnClickListener(
               v -> mapResult.launch(
                     createEventLocationMapActivityIntent(this, eventCache.getId())));
-        binding.selectPhotoButton.setOnClickListener(
-              v -> showMessage(ProfileEventActivity.this, "Кнопка пока не работает..."));
+        binding.deleteEventButton.setOnClickListener(v -> showAlertDialog());
 
-        eventViewModel.getEventPhotoLiveData()
-              .observe(
-                    this, photo -> {
-                        photoCache = photo;
-                        updatePhoto();
-                    });
+        binding.editSaveButton.setOnClickListener(v -> {
+            if (isEditableModeEnabled) {
+                UpdateEventRequest req = createUpdateEventRequest(eventCache, binding);
+                if (req.isEmpty()) {
+                    showMessage(this, R.string.empty_update_request_is_not_sent);
+                    switchEditMode();
+                    return;
+                }
+                eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req)
+                      .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+                          @Override
+                          public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
+                              super.onResponse(call, resp);
+                              if (resp.code() == HttpCodes.OK) {
+                                  String oldPhotoPath = eventCache.getPhotoPath();
+                                  eventCache = resp.body();
+                                  if (!Objects.equals(oldPhotoPath, eventCache.getPhotoPath())) {
+                                      downloadAndUpdateLayoutPhoto(eventCache.getPhotoPath());
+                                  }
+                                  showMessage(ProfileEventActivity.this, R.string.saved);
+                              }
+                              updateLayout();
+                          }
+                      });
+            }
+            switchEditMode();
+        });
+        binding.selectPhotoButton.setOnClickListener(
+              v -> imageUploadLauncher.launch(
+                    new Intent(this, UploadEventImageActivity.class)));
     }
 
     private void showAlertDialog() {
@@ -204,20 +253,17 @@ public class ProfileEventActivity extends AppCompatActivity {
               .show();
     }
 
-    private void updatePhoto() {
-        binding.eventPhoto.setImageBitmap(circleImage(photoCache, 600, 600));
-    }
-
     private void updateLayout() {
-        binding.eventName.setText(eventCache.getName());
+        binding.photoPath.setText(eventCache.getPhotoPath());
+        binding.name.setText(eventCache.getName());
         binding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(eventCache.getCreated()));
 
-        binding.eventDescription.setText(eventCache.getDescription());
-        binding.eventLatitude.setText(textOrNull(eventCache.getLatitude()));
-        binding.eventLongitude.setText(textOrNull(eventCache.getLongitude()));
-        binding.eventStarting.setText(dateOrNull(eventCache.getStarting()));
-        binding.eventEnding.setText(dateOrNull(eventCache.getEnding()));
-        binding.eventCity.setText(eventCache.getCity());
+        binding.description.setText(eventCache.getDescription());
+        binding.latitude.setText(textOrNull(eventCache.getLatitude()));
+        binding.longitude.setText(textOrNull(eventCache.getLongitude()));
+        binding.starting.setText(dateOrNull(eventCache.getStarting()));
+        binding.ending.setText(dateOrNull(eventCache.getEnding()));
+        binding.city.setText(eventCache.getCity());
     }
 
 

@@ -182,6 +182,26 @@
     <string name="new_subscriber">У Вас новый подписчик!</string>
     <string name="created_event">создал событие!</string>
     <string name="select_photo">Выбрать фото</string>
+    <string name="created">Создано</string>
+    <string name="starting">Начинается</string>
+    <string name="select_stating">Выберите начало</string>
+    <string name="ending">Окончание</string>
+    <string name="select_ending">Выберите окончание</string>
+    <string name="position">Местоположение</string>
+    <string name="surname">Фамилия</string>
+    <string name="birthday">Дата рождения</string>
+    <string name="information">Информация</string>
+    <string name="enter_city">Введите город</string>
+    <string name="ending_date_and_time">Дата и время окончания</string>
+    <string name="starting_date_and_time">Дата и время начала</string>
+    <string name="open_map">Открыть карту</string>
+    <string name="event_longitude">Долгота события</string>
+    <string name="event_latitude">Широта события</string>
+    <string name="enter_event_description">Введите описание события</string>
+    <string name="enter_event_name">Введите название события</string>
+    <string name="event_name">Название события</string>
+    <string name="event_photo">Фото события</string>
+    <string name="show_on_map">Показать на карте</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

@@ -1,6 +1,6 @@
 package com.tom.meeter.context.network.dto;
 
-import static com.tom.meeter.infrastructure.common.JsonHelper.getDoubleOrNull;
+import static com.tom.meeter.infrastructure.common.JsonHelper.getFloatOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getOffsetDateTimeOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getStringOrNull;
 
@@ -29,14 +29,19 @@ public class EventDTO {
     private static final String PHOTO_PATH_KEY = "photo_path";
     private static final String CITY_KEY = "city";
 
+    //Non nullable, cannot be changed
     private String id;
-    private String name;
-    private String description;
-    private Double latitude;
-    private Double longitude;
     @JsonProperty(value = CREATOR_ID_KEY)
     private String creatorId;
     private OffsetDateTime created;
+
+    //Non nullable, can be changed
+    private String name;
+
+    //Nullable
+    private String description;
+    private Float latitude;
+    private Float longitude;
     private OffsetDateTime starting;
     private OffsetDateTime ending;
     private String city;
@@ -54,8 +59,8 @@ public class EventDTO {
 
             //Nullable.
             result.description = getStringOrNull(DESCRIPTION_KEY, json);
-            result.latitude = getDoubleOrNull(LATITUDE_KEY, json);
-            result.longitude = getDoubleOrNull(LONGITUDE_KEY, json);
+            result.latitude = getFloatOrNull(LATITUDE_KEY, json);
+            result.longitude = getFloatOrNull(LONGITUDE_KEY, json);
             result.starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
             result.ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
             result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
@@ -70,11 +75,11 @@ public class EventDTO {
         this.name = name;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(Float latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(Float longitude) {
         this.longitude = longitude;
     }
 
@@ -122,11 +127,11 @@ public class EventDTO {
         return description;
     }
 
-    public Double getLatitude() {
+    public Float getLatitude() {
         return latitude;
     }
 
-    public Double getLongitude() {
+    public Float getLongitude() {
         return longitude;
     }
 

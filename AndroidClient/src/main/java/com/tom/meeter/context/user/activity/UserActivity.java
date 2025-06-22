@@ -51,7 +51,7 @@ import retrofit2.Response;
 public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = UserActivity.class.getCanonicalName();
-    private static final String USER_ID_KEY = "user_id";
+    public static final String USER_ID_KEY = "user_id";
 
     @Inject
     TokenService tokenService;
@@ -61,6 +61,7 @@ public class UserActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
     @Inject
     ImageDownloader imgDownloader;
+
     private ActivityUserBinding binding;
     private UserViewModel userViewModel;
     private String userId;
@@ -74,24 +75,7 @@ public class UserActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create user activity without extras.");
-            finish();
-            return;
-        }
-        userId = extras.getString(USER_ID_KEY);
-        if (userId == null) {
-            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
-            finish();
-            return;
-        }
-        accountManager = AccountManager.get(this);
-        if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
-            startActivity(new Intent(this, ProfileActivity.class));
-            finish();
-            return;
-        }
+        validate();
 
         ((App) getApplication()).getUserComponent().inject(this);
 
@@ -102,6 +86,24 @@ public class UserActivity extends AppCompatActivity {
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
+    }
+
+    private void validate() {
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            Log.d(TAG, "Unable to create user activity without extras.");
+            finish();
+        }
+        userId = extras.getString(USER_ID_KEY);
+        if (userId == null) {
+            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
+            finish();
+        }
+        accountManager = AccountManager.get(this);
+        if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            finish();
+        }
     }
 
     private void onInit(String token) {
@@ -121,8 +123,7 @@ public class UserActivity extends AppCompatActivity {
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
                               if (resp.code() == HttpCodes.OK) {
-                                  amISubscriber = false;
-                                  updateSubscribeButtonText();
+                                  updateAmISubscriber(false);
                                   showMessage(UserActivity.this, R.string.successfully_unsubscribed);
                                   return;
                               }
@@ -138,8 +139,7 @@ public class UserActivity extends AppCompatActivity {
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
                               if (resp.code() == HttpCodes.OK) {
-                                  amISubscriber = true;
-                                  updateSubscribeButtonText();
+                                  updateAmISubscriber(true);
                                   showMessage(UserActivity.this, R.string.successfully_subscribed);
                                   return;
                               }
@@ -166,10 +166,7 @@ public class UserActivity extends AppCompatActivity {
                   binding.info.setText(user.getInfo());
               });
         userViewModel.getAmISubscriber()
-              .observe(this, val -> {
-                  amISubscriber = val;
-                  updateSubscribeButtonText();
-              });
+              .observe(this, this::updateAmISubscriber);
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> adapter.setData(events));
         userViewModel.getUserPhotoLiveData()
@@ -186,15 +183,9 @@ public class UserActivity extends AppCompatActivity {
               v -> dispatchToUserSubscriptionsActivity(this, userId));
     }
 
-    private void updateSubscribeButtonText() {
-        if (amISubscriber == null) {
-            binding.subscribeBtn.setText("...");
-        }
-        if (amISubscriber) {
-            binding.subscribeBtn.setText(R.string.unsubscribe);
-        } else {
-            binding.subscribeBtn.setText(R.string.subscribe);
-        }
+    private void updateAmISubscriber(boolean value) {
+        amISubscriber = value;
+        binding.subscribeBtn.setText(amISubscriber ? R.string.unsubscribe : R.string.subscribe);
     }
 
     @Nullable

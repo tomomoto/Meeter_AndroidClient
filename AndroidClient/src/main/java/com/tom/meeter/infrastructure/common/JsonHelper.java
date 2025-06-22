@@ -53,4 +53,10 @@ public class JsonHelper {
           String key, JSONObject json) throws JSONException {
         return json.isNull(key) ? null : json.getDouble(key);
     }
+
+    @Nullable
+    public static Float getFloatOrNull(
+          String key, JSONObject json) throws JSONException {
+        return json.isNull(key) ? null : (float) json.getDouble(key);
+    }
 }
