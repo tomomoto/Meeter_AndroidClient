@@ -101,8 +101,8 @@ public class EventLocationMapActivity extends AppCompatActivity
             if (eventMarker != null) {
                 Intent resultIntent = new Intent();
                 LatLng position = eventMarker.getPosition();
-                resultIntent.putExtra(EventActivity.EXTRA_LAT, position.latitude);
-                resultIntent.putExtra(EventActivity.EXTRA_LNG, position.longitude);
+                resultIntent.putExtra(ProfileEventActivity.EXTRA_LAT, position.latitude);
+                resultIntent.putExtra(ProfileEventActivity.EXTRA_LNG, position.longitude);
                 setResult(RESULT_OK, resultIntent);
                 finish();
             } else {

@@ -80,9 +80,8 @@
             android:name=".context.user.activity.UserActivity"
             android:label="UserActivity" />
 
-        <activity
-            android:name=".context.event.activity.EventActivity"
-            android:label="EventActivity" />
+        <activity android:name=".context.event.activity.UserEventActivity" />
+        <activity android:name=".context.event.activity.ProfileEventActivity" />
 
         <activity android:name=".context.event.activity.EventLocationMapActivity" />
         <activity android:name=".context.event.activity.EventOnMapActivity" />

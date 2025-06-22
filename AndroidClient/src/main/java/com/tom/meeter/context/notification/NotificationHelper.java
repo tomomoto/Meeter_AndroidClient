@@ -1,5 +1,7 @@
 package com.tom.meeter.context.notification;
 
+import static com.tom.meeter.context.event.activity.UserEventActivity.createEventActivityIntent;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -16,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.tom.meeter.R;
-import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.user.activity.UserActivity;
@@ -128,7 +129,7 @@ public class NotificationHelper {
     }
 
     private static PendingIntent createEventPendingIntent(Context ctx, EventDTO event) {
-        Intent intent = EventActivity.createEventActivityIntent(ctx, event.getId());
+        Intent intent = createEventActivityIntent(ctx, event.getId());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         return PendingIntent.getActivity(

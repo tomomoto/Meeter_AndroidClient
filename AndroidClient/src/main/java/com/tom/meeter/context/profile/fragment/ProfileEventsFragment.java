@@ -1,7 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.UserEventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;

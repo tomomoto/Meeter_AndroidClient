@@ -1,7 +1,7 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.UserEventActivity.dispatchToEventActivity;
 import static com.tom.meeter.context.user.activity.UserSubscribersActivity.dispatchToUserSubscribersActivity;
 import static com.tom.meeter.context.user.activity.UserSubscriptionsActivity.dispatchToUserSubscriptionsActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;

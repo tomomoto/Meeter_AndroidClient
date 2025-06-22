@@ -1,7 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.UserEventActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
