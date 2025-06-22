@@ -1,6 +1,7 @@
 package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
 import static com.tom.meeter.context.event.utils.Utils.createUpdateEventRequest;
@@ -8,48 +9,42 @@ import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserAc
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
+import static com.tom.meeter.infrastructure.common.DateHelper.showDateTimePicker;
 import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewbinding.ViewBinding;
 
-import com.google.android.material.datepicker.CalendarConstraints;
-import com.google.android.material.datepicker.DateValidatorPointForward;
-import com.google.android.material.datepicker.MaterialDatePicker;
 import com.tom.meeter.App;
+import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.message.UpdateEventRequest;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.databinding.ActivityEventReadableBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -161,21 +156,23 @@ public class EventActivity extends AppCompatActivity {
         eBinding.saveEventButton.setOnClickListener(v -> {
             UpdateEventRequest req = createUpdateEventRequest(eventCache, eBinding);
             if (req.isEmpty()) {
-                showMessage(this, "Empty update request is not sent.");
+                showMessage(this, getString(R.string.empty_update_request_is_not_sent));
                 return;
             }
             eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req).enqueue(
                   new HttpErrorLogger<>(getApplicationContext()) {
                       @Override
-                      public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                          if (response.isSuccessful()) {
-                              eventCache = response.body();
+                      public void onResponse(Call<EventDTO> call, Response<EventDTO> res) {
+                          super.onResponse(call, res);
+                          if (res.isSuccessful()) {
+                              eventCache = res.body();
                               updateEditableLayout();
-                              showMessage(EventActivity.this, "Saved.");
+                              showMessage(EventActivity.this, getString(R.string.saved));
                           }
                       }
                   });
         });
+        eBinding.deleteEventButton.setOnClickListener(v -> showAlertDialog());
 
 
         /*
@@ -185,9 +182,9 @@ public class EventActivity extends AppCompatActivity {
         updateEditableLayout();
 
         eBinding.selectStartingDateButton.setOnClickListener(
-              v -> showDateTimePicker(eBinding.eventStarting));
+              v -> showDateTimePicker(this, eBinding.eventStarting));
         eBinding.selectEndingDateButton.setOnClickListener(
-              v -> showDateTimePicker(eBinding.eventEnding));
+              v -> showDateTimePicker(this, eBinding.eventEnding));
         eBinding.btnEventLocationMap.setOnClickListener(
               v -> mapResult.launch(
                     createEventLocationMapActivityIntent(this, eventCache.getId())));
@@ -200,6 +197,29 @@ public class EventActivity extends AppCompatActivity {
                         photoCache = photo;
                         updateEditablePhoto();
                     });
+    }
+
+    private void showAlertDialog() {
+        new AlertDialog.Builder(this)
+              .setTitle(R.string.delete_event)
+              .setMessage(R.string.are_you_sure_delete_event)
+              .setPositiveButton(R.string.delete, (dialog, which) -> {
+                  eventService.deleteEvent(getAuthHeader(accountManager), eventCache.getId())
+                        .enqueue(new HttpErrorLogger<>(getApplicationContext()) {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> resp) {
+                                super.onResponse(call, resp);
+                                if (resp.isSuccessful()) {
+                                    showMessage(EventActivity.this, getString(R.string.deleted));
+                                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                                    finish();
+                                }
+                            }
+                        });
+                  dialog.dismiss();
+              })
+              .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+              .show();
     }
 
     private void updateEditablePhoto() {
@@ -243,92 +263,6 @@ public class EventActivity extends AppCompatActivity {
         return super.onCreateView(parent, name, ctx, attrs);
     }
 
-    // Метод для отображения DatePickerDialog
-    private void showDatePickerDialog(final EditText targetEditText) {
-        // Получаем текущую дату
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        // Создаем и показываем DatePickerDialog
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-              (view, selectedYear, selectedMonth, selectedDay) -> {
-                  // Устанавливаем выбранную дату в EditText
-                  String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-                  targetEditText.setText(selectedDate);
-              }, year, month, day);
-
-        // Показываем диалог
-        datePickerDialog.show();
-    }
-
-    // Метод для отображения Material DatePicker
-    private void showMaterialDatePicker(final EditText targetEditText) {
-        // Создаём constraints (ограничения для выбора даты)
-        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-        Calendar calendar = Calendar.getInstance();
-        constraintsBuilder.setValidator(DateValidatorPointForward.from(calendar.getTimeInMillis()));
-
-        // Создаем Material DatePicker
-        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
-        builder.setCalendarConstraints(constraintsBuilder.build());
-        builder.setTitleText("Select Date");
-
-        MaterialDatePicker<Long> datePicker = builder.build();
-
-        // Устанавливаем слушатель на выбор даты
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            // Форматируем выбранную дату
-            Calendar selectedDate = Calendar.getInstance();
-            selectedDate.setTimeInMillis(selection);
-            String selectedDateString = selectedDate.get(Calendar.DAY_OF_MONTH) + "/" +
-                  (selectedDate.get(Calendar.MONTH) + 1) + "/" +
-                  selectedDate.get(Calendar.YEAR);
-
-            // Устанавливаем выбранную дату в поле
-            targetEditText.setText(selectedDateString);
-        });
-
-        // Показываем диалог
-        datePicker.show(getSupportFragmentManager(), datePicker.toString());
-    }
-
-    private void showDateTimePicker(EditText target) {
-        final Calendar calendar = Calendar.getInstance();
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-              this,
-              (view, year, month, dayOfMonth) -> {
-                  calendar.set(Calendar.YEAR, year);
-                  calendar.set(Calendar.MONTH, month);
-                  calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-                  TimePickerDialog timePickerDialog = new TimePickerDialog(
-                        this,
-                        (timeView, hourOfDay, minute) -> {
-                            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            calendar.set(Calendar.MINUTE, minute);
-
-                            SimpleDateFormat sdf = new SimpleDateFormat(
-                                  "yyyy-MM-dd HH:mm", Locale.getDefault());
-                            String formatted = sdf.format(calendar.getTime());
-                            target.setText(formatted);
-                        },
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true
-                  );
-
-                  timePickerDialog.show();
-              },
-              calendar.get(Calendar.YEAR),
-              calendar.get(Calendar.MONTH),
-              calendar.get(Calendar.DAY_OF_MONTH)
-        );
-
-        datePickerDialog.show();
-    }
 
     public static void dispatchToEventActivity(Context ctx, String eventId) {
         ctx.startActivity(createEventActivityIntent(ctx, eventId));

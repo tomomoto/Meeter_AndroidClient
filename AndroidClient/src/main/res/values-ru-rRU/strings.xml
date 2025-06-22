@@ -163,6 +163,14 @@
     <string name="creator">Создатель</string>
     <string name="notification_new_event">Новое событие!</string>
 
+    <string name="delete_event">Удалить событие</string>
+    <string name="are_you_sure_delete_event">Вы уверены, что хотите удалить это событие?</string>
+    <string name="delete">Удалить</string>
+    <string name="deleted">Удалено</string>
+    <string name="cancel">Отмена</string>
+    <string name="saved">Сохранено</string>
+    <string name="empty_update_request_is_not_sent">Пустой запрос на обновление не отправлен.</string>
+
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>
         <item>480p</item>

@@ -7,6 +7,7 @@ import com.tom.meeter.context.network.dto.EventDTO;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
@@ -21,4 +22,7 @@ public interface EventService {
     Call<EventDTO> updateEvent(
           @Header(AUTH_HEADER) String authHeader, @Path("id") String eventId,
           @Body UpdateEventRequest req);
+
+    @DELETE("/event/{id}")
+    Call<Void> deleteEvent(@Header(AUTH_HEADER) String authHeader, @Path("id") String eventId);
 }

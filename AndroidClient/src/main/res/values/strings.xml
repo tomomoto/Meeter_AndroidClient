@@ -162,6 +162,14 @@
     <string name="creator">Creator</string>
     <string name="notification_new_event">New event!</string>
 
+    <string name="delete_event">Delete event</string>
+    <string name="are_you_sure_delete_event">Are you sure you want to delete the event?</string>
+    <string name="delete">Delete</string>
+    <string name="deleted">Deleted</string>
+    <string name="cancel">Cancel</string>
+    <string name="saved">Saved</string>
+    <string name="empty_update_request_is_not_sent">Empty update request is not sent.</string>
+
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>
         <item>480p</item>

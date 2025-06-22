@@ -268,5 +268,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:text="Save Event" />
+
+        <!-- Delete Button -->
+        <Button
+            android:id="@+id/delete_event_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Delete Event" />
     </LinearLayout>
 </ScrollView>
