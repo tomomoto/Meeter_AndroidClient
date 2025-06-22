@@ -26,8 +26,8 @@ import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.databinding.SettingsActivityBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import javax.inject.Inject;
 
@@ -112,9 +112,10 @@ public class SettingsActivity extends AppCompatActivity {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
                     Globals.getAuthHeader(AuthHelper.peekToken(accountManager)))
-              .enqueue(new ErrorLogger<>(this) {
+              .enqueue(new HttpErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                      super.onResponse(call, res);
                       if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
                           invalidateToken(
                                 accountManager, SettingsActivity.this,
@@ -123,9 +124,11 @@ public class SettingsActivity extends AppCompatActivity {
                                     Log.d(TAG, "SettingsActivity: canceled auth.");
                                     startActivity(new Intent(SettingsActivity.this, Launcher.class));
                                 });
+                          return;
                       }
                       if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
                           Log.d(TAG, "SettingsActivity: created/updated server settings.");
+                          return;
                       }
                   }
               });
@@ -135,14 +138,14 @@ public class SettingsActivity extends AppCompatActivity {
         settingsService.createOrUpdateSettings(
                     new SettingsCreateOrUpdate(searchArea, trackUser),
                     Globals.getAuthHeader(token))
-              .enqueue(new ErrorLogger<>(this) {
+              .enqueue(new HttpErrorLogger<>(this) {
                   @Override
                   public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                      super.onResponse(call, res);
                       if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
                           Log.d(TAG, "SettingsActivity: created/updated server settings on retry.");
                           return;
                       }
-                      Log.d(TAG, "SettingsActivity: failed retry request. " + res.body());
                   }
               });
     }
