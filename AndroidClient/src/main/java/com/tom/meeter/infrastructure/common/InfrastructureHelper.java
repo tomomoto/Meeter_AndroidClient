@@ -27,6 +27,11 @@ public class InfrastructureHelper {
               () -> Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_SHORT).show());
     }
 
+    public static void showMessage(Activity activity, int resId) {
+        activity.runOnUiThread(
+              () -> Toast.makeText(activity.getApplicationContext(), resId, Toast.LENGTH_SHORT).show());
+    }
+
     public static void showMessage(Context ctx, String msg) {
         if (TextUtils.isEmpty(msg))
             return;

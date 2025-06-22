@@ -2,6 +2,7 @@ package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
@@ -25,9 +26,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
-import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
@@ -66,7 +67,7 @@ public class ProfileFragment extends Fragment {
     private AccountManager accountManager;
     private EventsCardAdapter adapter;
 
-    private User userCache;
+    private UserDTO userCache;
     private ResponseBody photoCache;
 
     public ProfileFragment() {
@@ -126,7 +127,7 @@ public class ProfileFragment extends Fragment {
             if (isEditableModeEnabled) {
                 UpdateProfileRequest req = createUpdateProfileRequest();
                 if (req.isEmpty()) {
-                    showMessage(this.getActivity(), "Empty update request is not sent.");
+                    showMessage(this.getActivity(), R.string.empty_update_request_is_not_sent);
                     updateLayoutValues();
                     switchEditMode();
                     return;
@@ -134,11 +135,11 @@ public class ProfileFragment extends Fragment {
                 profileService.updateProfile(authHeader, req)
                       .enqueue(new ActivityRestarterOnAuthFailure<>(this) {
                           @Override
-                          public void onResponse(Call<User> call, Response<User> response) {
+                          public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                               super.onResponse(call, response);
                               if (response.code() == HttpCodes.OK && response.body() != null) {
                                   userCache = response.body();
-                                  showMessage(ProfileFragment.this.getActivity(), "Saved");
+                                  showMessage(ProfileFragment.this.getActivity(), R.string.saved);
                               }
                               updateLayoutValues();
                           }
@@ -153,8 +154,9 @@ public class ProfileFragment extends Fragment {
         binding.name.setText(userCache.getName());
         binding.surname.setText(userCache.getSurname());
         binding.gender.setText(genderResolver(getContext(), userCache.getGender()));
-        binding.birthday.setText(userCache.getBirthday());
-        binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(userCache.getBirthday())));
+        LocalDate birthday = userCache.getBirthday();
+        binding.birthday.setText(birthday == null ? EMPTY_STR : birthday.toString());
+        binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(birthday)));
         binding.info.setText(userCache.getInfo());
     }
 
@@ -164,7 +166,8 @@ public class ProfileFragment extends Fragment {
         binding.surname.setEnabled(isEditableModeEnabled);
         binding.birthday.setEnabled(isEditableModeEnabled);
         binding.info.setEnabled(isEditableModeEnabled);
-        binding.btnEdit.setText(isEditableModeEnabled ? "Save" : "Edit");
+        binding.btnEdit.setText(
+              isEditableModeEnabled ? getString(R.string.save) : getString(R.string.edit));
     }
 
     private UpdateProfileRequest createUpdateProfileRequest() {
@@ -179,10 +182,7 @@ public class ProfileFragment extends Fragment {
             req.setSurname(surnameChange);
         }
         LocalDate birthdayChange = getLocalDateOrNull(binding.birthday.getText());
-        //todo userCache.getBirthday() [String -> LocalDate]
-        if (!Objects.equals(
-              userCache.getBirthday(),
-              birthdayChange == null ? null : birthdayChange.toString())) {
+        if (!Objects.equals(userCache.getBirthday(), birthdayChange)) {
             req.setBirthday(birthdayChange);
         }
         String infoChange = getStringOrNull(binding.info.getText());

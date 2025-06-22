@@ -73,7 +73,7 @@
                 android:background="@drawable/bg_button_selected"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Subscribers"
+                android:text="@string/subscribers"
                 android:textSize="20sp" />
             <!--android:textColor="@color/white"-->
 
@@ -85,7 +85,7 @@
                 android:background="@drawable/bg_button_unselected"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Following"
+                android:text="@string/subscriptions"
                 android:textSize="20sp" />
             <!--android:textColor="@color/gray"-->
         </LinearLayout>
@@ -214,7 +214,7 @@
             android:layout_below="@+id/btnEdit"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:hint="Your events"
+            android:hint="@string/your_events"
             android:inputType="none"
             android:textAlignment="center"
             android:textSize="20sp" />

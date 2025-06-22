@@ -169,6 +169,15 @@
     <string name="cancel">Cancel</string>
     <string name="saved">Saved</string>
     <string name="empty_update_request_is_not_sent">Empty update request is not sent.</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="successfully_subscribed">Successfully subscribed.</string>
+    <string name="successfully_unsubscribed">Successfully unsubscribed.</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="subscribers">Subscribers</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="user_events">User events</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

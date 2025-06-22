@@ -1,7 +1,6 @@
 package com.tom.meeter.infrastructure.common;
 
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
-import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 
 import android.app.DatePickerDialog;
@@ -59,17 +58,15 @@ public final class DateHelper {
     }
 
 
-    public static String getAgeFromDate(String date) {
-        if (date == null || date.isEmpty()) {
+    public static String getAgeFromDate(LocalDate birthDate) {
+        if (birthDate == null) {
             return EMPTY_STR;
         }
         try {
-            LocalDate birthDate = LocalDate.parse(date, UI_DATE_FORMAT);
-            LocalDate today = LocalDate.now();
-            int age = Period.between(birthDate, today).getYears();
+            int age = Period.between(birthDate, LocalDate.now()).getYears();
             return String.valueOf(age);
         } catch (DateTimeParseException e) {
-            Log.e(TAG, "Ошибка парсинга даты: " + e.getMessage(), e);
+            Log.e(TAG, "Error while parsing the date [" + birthDate + "] : " + e.getMessage(), e);
             return null;
         }
     }

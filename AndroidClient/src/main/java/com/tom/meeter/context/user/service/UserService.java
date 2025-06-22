@@ -3,7 +3,7 @@ package com.tom.meeter.context.user.service;
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.network.dto.UserDTO;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ public interface UserService {
     //This will not even work, since server needs an auth for this requests.
     @GET("/user/{id}")
     @Deprecated
-    Call<User> getUser(@Path("id") String userId);
+    Call<UserDTO> getUser(@Path("id") String userId);
 
     @GET("/user/{id}")
-    Call<User> getUser(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+    Call<UserDTO> getUser(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
 
     @GET("/user/{id}/events")
     Call<List<EventDTO>> getUserEvents(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);

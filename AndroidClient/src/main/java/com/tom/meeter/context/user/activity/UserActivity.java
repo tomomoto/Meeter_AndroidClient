@@ -2,6 +2,7 @@ package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -34,6 +35,8 @@ import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinde
 import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
+
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -110,7 +113,7 @@ public class UserActivity extends AppCompatActivity {
                               if (resp.code() == HttpCodes.OK) {
                                   amISubscriber = false;
                                   updateSubscribeButtonText();
-                                  showMessage(UserActivity.this, "Successfully unsubscribed.");
+                                  showMessage(UserActivity.this, R.string.successfully_unsubscribed);
                                   return;
                               }
                               if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -127,7 +130,7 @@ public class UserActivity extends AppCompatActivity {
                               if (resp.code() == HttpCodes.OK) {
                                   amISubscriber = true;
                                   updateSubscribeButtonText();
-                                  showMessage(UserActivity.this, "Successfully subscribed.");
+                                  showMessage(UserActivity.this, R.string.successfully_subscribed);
                                   return;
                               }
                               if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -144,10 +147,12 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUserLiveData()
               .observe(this, user -> {
                   binding.name.setText(user.getName());
-                  binding.surname.setText(user.getSurname());
                   binding.gender.setText(genderResolver(getApplicationContext(), user.getGender()));
-                  binding.birthday.setText(user.getBirthday());
-                  binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
+
+                  binding.surname.setText(user.getSurname());
+                  LocalDate birthday = user.getBirthday();
+                  binding.birthday.setText(birthday == null ? EMPTY_STR : birthday.toString());
+                  binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(birthday)));
                   binding.info.setText(user.getInfo());
                   //binding.userPhoto.setImageBitmap();
               });
@@ -168,9 +173,9 @@ public class UserActivity extends AppCompatActivity {
             binding.subscribeBtn.setText("...");
         }
         if (amISubscriber) {
-            binding.subscribeBtn.setText("Unsubscribe");
+            binding.subscribeBtn.setText(R.string.unsubscribe);
         } else {
-            binding.subscribeBtn.setText("Subscribe");
+            binding.subscribeBtn.setText(R.string.subscribe);
         }
     }
 

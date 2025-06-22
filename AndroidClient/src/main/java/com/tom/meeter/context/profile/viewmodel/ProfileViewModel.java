@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.service.ProfileService;
-import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -26,7 +26,7 @@ public class ProfileViewModel extends ViewModel {
 
     private static final String TAG = ProfileViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<User> profileLiveData = new MutableLiveData<>();
+    private final MutableLiveData<UserDTO> profileLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<EventDTO>> profileEventsLiveData = new MutableLiveData<>();
 
     private final ProfileService profileService;
@@ -41,13 +41,12 @@ public class ProfileViewModel extends ViewModel {
         profileService.getProfile(auth).enqueue(
               new ActivityRestarterOnAuthFailure<>(fragment) {
                   @Override
-                  public void onResponse(Call<User> call, Response<User> response) {
+                  public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                       super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK && response.body() != null) {
                           profileLiveData.setValue(response.body());
                           return;
                       }
-                      Log.i(TAG, "/profile: " + response.code() + " : " + response.body());
                   }
               }
         );
@@ -60,7 +59,6 @@ public class ProfileViewModel extends ViewModel {
                           profileEventsLiveData.setValue(response.body());
                           return;
                       }
-                      Log.i(TAG, "/profile/events: " + response.code() + " : " + response.body());
                   }
               }
         );
@@ -72,7 +70,7 @@ public class ProfileViewModel extends ViewModel {
         super.onCleared();
     }
 
-    public LiveData<User> getProfileLiveData() {
+    public LiveData<UserDTO> getProfileLiveData() {
         return profileLiveData;
     }
 

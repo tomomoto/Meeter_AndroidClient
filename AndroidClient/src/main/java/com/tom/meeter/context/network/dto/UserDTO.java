@@ -13,16 +13,16 @@ import java.time.LocalDate;
 public class UserDTO {
 
     private static final String USER_ID_KEY = "id";
-    private static final String GENDER_KEY = "gender";
     private static final String NAME_KEY = "name";
+    private static final String GENDER_KEY = "gender";
     private static final String SURNAME_KEY = "surname";
     private static final String INFO_KEY = "info";
     private static final String BIRTHDAY_KEY = "birthday";
     private static final String PHOTO_PATH_KEY = "photo_path";
 
     private String id;
-    private String gender;
     private String name;
+    private UserGender gender;
     private String surname;
     private String info;
     private LocalDate birthday;
@@ -37,8 +37,8 @@ public class UserDTO {
         try {
             //Non nullable.
             result.id = json.getString(USER_ID_KEY);
-            result.gender = json.getString(GENDER_KEY);
             result.name = json.getString(NAME_KEY);
+            result.gender = UserGender.fromString(json.getString(GENDER_KEY));
 
             //Nullable.
             result.surname = getStringOrNull(SURNAME_KEY, json);
@@ -55,12 +55,12 @@ public class UserDTO {
         return id;
     }
 
-    public String getGender() {
-        return gender;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public UserGender getGender() {
+        return gender;
     }
 
     public String getSurname() {
@@ -77,5 +77,35 @@ public class UserDTO {
 
     public String getPhotoPath() {
         return photoPath;
+    }
+
+    private static final String MALE_VALUE = "male";
+    private static final String FEMALE_VALUE = "female";
+
+    public enum UserGender {
+
+        @JsonProperty(MALE_VALUE)
+        MALE(MALE_VALUE),
+        @JsonProperty(FEMALE_VALUE)
+        FEMALE(FEMALE_VALUE);
+
+        private final String value;
+
+        UserGender(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static UserGender fromString(String text) {
+            for (UserGender val : UserGender.values()) {
+                if (val.value.equalsIgnoreCase(text)) {
+                    return val;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with string value " + text);
+        }
     }
 }
