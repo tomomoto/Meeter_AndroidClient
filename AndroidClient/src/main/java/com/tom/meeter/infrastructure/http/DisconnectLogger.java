@@ -26,9 +26,9 @@ public abstract class DisconnectLogger<T> implements Callback<T> {
     public void onFailure(Call<T> call, Throwable t) {
         if (supportedErrorMapping(t)) {
             Toast.makeText(ctx, R.string.server_is_unreachable, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "DisconnectLogger for " + ctx.getClass().getSimpleName()
-                  + " : " + ctx.getResources().getString(R.string.server_is_unreachable)
-                  + ", error: " + t.getMessage());
+            Log.e(TAG, "DisconnectLogger for [" + ctx.getClass().getCanonicalName()
+                  + "]: " + ctx.getResources().getString(R.string.server_is_unreachable)
+                  + " Error: " + t.getClass().getCanonicalName() + " - " + t.getMessage());
         }
     }
 

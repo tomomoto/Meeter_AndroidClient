@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.adapter;
+package com.tom.meeter.context.user.adapter;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 

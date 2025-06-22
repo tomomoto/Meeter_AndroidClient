@@ -2,7 +2,9 @@ package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
 import static com.tom.meeter.context.network.utils.SocketIOCodes.EVENT_CREATED_CODE;
+import static com.tom.meeter.context.network.utils.SocketIOCodes.NEW_SUBSCRIBER_CODE;
 import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationEventCreated;
+import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationNewSubscriber;
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -54,6 +56,7 @@ public class SocketIOService extends Service {
     private static final String EVENTS_CREATE_CHANNEL = "events:create";
     private static final String EVENTS_SEARCH_CHANNEL = "events:search";
     private static final String EVENTS_NOTIFICATIONS_CHANNEL = "events:notifications";
+    private static final String NEW_SUBSCRIBER_CHANNEL = "user:subscription:new";
 
     private static final String CODE_KEY = "code";
     private static final String ID_KEY = "id";
@@ -182,6 +185,7 @@ public class SocketIOService extends Service {
         socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.on(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
+        socketClient.on(NEW_SUBSCRIBER_CHANNEL, this::newSubscriberNotificationsChannel);
         socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         socketClient.connect();
         EventBus.getDefault().register(this);
@@ -215,6 +219,7 @@ public class SocketIOService extends Service {
         socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.off(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
+        socketClient.off(NEW_SUBSCRIBER_CHANNEL, this::newSubscriberNotificationsChannel);
         socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         initialized = false;
     }
@@ -274,6 +279,20 @@ public class SocketIOService extends Service {
                       this,
                       UserDTO.encode(message.getJSONObject(USER_KEY)),
                       EventDTO.encode(message.getJSONObject(EVENT_KEY)));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void newSubscriberNotificationsChannel(Object... args) {
+        JSONObject response = getSimpleResponse(JSONObject.class, args);
+        Log.d(TAG, NEW_SUBSCRIBER_CHANNEL + " : " + response);
+        try {
+            if (response.getInt(CODE_KEY) == NEW_SUBSCRIBER_CODE) {
+                sendNotificationNewSubscriber(
+                      this,
+                      UserDTO.encode(response.getJSONObject(MESSAGE_KEY)));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);

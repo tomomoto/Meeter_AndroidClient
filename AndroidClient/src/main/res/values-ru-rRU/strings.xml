@@ -99,8 +99,6 @@
     <string name="prefs_search_area">prefs_search_area</string>
     <string name="search_area_title">Радиус зоны поиска</string>
     <string name="search_area">Значение радиуса зоны поиска событий на карте.</string>
-    <string name="refreshing_the_token">Обновление токена.</string>
-
 
     <string name="remind_to_take_a_break">Remind me to take a break</string>
     <string name="key_upload_quality">key_upload_quality</string>
@@ -159,10 +157,11 @@
     <string name="title_toggle_summary_preference">title_toggle_summary_preference</string>
     <string name="summary_copyable_preference">summary_copyable_preference</string>
     <string name="title_copyable_preference">title_copyable_preference</string>
+
+    <string name="refreshing_the_token">Обновление токена.</string>
     <string name="event_information">Информация о событии.</string>
     <string name="creator">Создатель</string>
-    <string name="notification_new_event">опубликовал новое событие!</string>
-
+    <string name="notification_new_event">Новое событие</string>
     <string name="delete_event">Удалить событие</string>
     <string name="are_you_sure_delete_event">Вы уверены, что хотите удалить это событие?</string>
     <string name="delete">Удалить</string>
@@ -179,6 +178,9 @@
     <string name="subscribers">Подписчики</string>
     <string name="subscriptions">Подписки</string>
     <string name="user_events">Пользовательские события</string>
+    <string name="subscribed">подписался на вас!</string>
+    <string name="new_subscriber">У Вас новый подписчик!</string>
+    <string name="created_event">создал событие!</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

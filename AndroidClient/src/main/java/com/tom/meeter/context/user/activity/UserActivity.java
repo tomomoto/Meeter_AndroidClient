@@ -209,7 +209,7 @@ public class UserActivity extends AppCompatActivity {
         ctx.startActivity(createUserActivityIntent(ctx, userId));
     }
 
-    private static Intent createUserActivityIntent(Context ctx, String userId) {
+    public static Intent createUserActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserActivity.class)
               .putExtra(USER_ID_KEY, userId);
     }
