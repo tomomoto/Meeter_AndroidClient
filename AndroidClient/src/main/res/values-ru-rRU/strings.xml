@@ -161,7 +161,7 @@
     <string name="title_copyable_preference">title_copyable_preference</string>
     <string name="event_information">Информация о событии.</string>
     <string name="creator">Создатель</string>
-    <string name="notification_new_event">Новое событие!</string>
+    <string name="notification_new_event">опубликовал новое событие!</string>
 
     <string name="delete_event">Удалить событие</string>
     <string name="are_you_sure_delete_event">Вы уверены, что хотите удалить это событие?</string>

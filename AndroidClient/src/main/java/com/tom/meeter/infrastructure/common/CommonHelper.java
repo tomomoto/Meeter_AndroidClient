@@ -1,6 +1,7 @@
 package com.tom.meeter.infrastructure.common;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -12,6 +13,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public final class CommonHelper {
 
@@ -71,6 +73,11 @@ public final class CommonHelper {
         if (input == null || EMPTY_STR.contentEquals(input)) {
             return null;
         }
-        return LocalDate.parse(input, UI_DATE_FORMAT);
+        try {
+            return LocalDate.parse(input, UI_DATE_FORMAT);
+        } catch (DateTimeParseException e) {
+            Log.e("DateParser", "Ошибка парсинга даты: " + input, e);
+            return null;
+        }
     }
 }

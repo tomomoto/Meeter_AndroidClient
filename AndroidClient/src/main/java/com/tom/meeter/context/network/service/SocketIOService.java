@@ -20,6 +20,7 @@ import android.util.Log;
 import com.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.JsonHelper;
 import com.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
@@ -59,6 +60,9 @@ public class SocketIOService extends Service {
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
     private static final String UNAUTHORIZED = "401";
+    private static final String MESSAGE_KEY = "message";
+    private static final String USER_KEY = "user";
+    private static final String EVENT_KEY = "event";
     private AccountManager accountManager;
 
     public class ServiceBinder extends Binder {
@@ -264,9 +268,12 @@ public class SocketIOService extends Service {
         JSONObject response = getSimpleResponse(JSONObject.class, args);
         Log.d(TAG, EVENTS_NOTIFICATIONS_CHANNEL + " : " + response);
         try {
-            if (response.getInt("code") == EVENT_CREATED_CODE) {
-                EventDTO event = EventDTO.encode(response.getJSONObject("message"));
-                sendNotificationEventCreated(this, event);
+            if (response.getInt(CODE_KEY) == EVENT_CREATED_CODE) {
+                JSONObject message = response.getJSONObject(MESSAGE_KEY);
+                sendNotificationEventCreated(
+                      this,
+                      UserDTO.encode(message.getJSONObject(USER_KEY)),
+                      EventDTO.encode(message.getJSONObject(EVENT_KEY)));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);

@@ -1,6 +1,8 @@
 package com.tom.meeter.context.network.dto;
 
-import androidx.annotation.Nullable;
+import static com.tom.meeter.infrastructure.common.JsonHelper.getDoubleOrNull;
+import static com.tom.meeter.infrastructure.common.JsonHelper.getOffsetDateTimeOrNull;
+import static com.tom.meeter.infrastructure.common.JsonHelper.getStringOrNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -174,21 +176,5 @@ public class EventDTO {
         return Objects.hash(
               id, name, description, latitude, longitude, creatorId,
               created, starting, ending, city, photoPath);
-    }
-
-    @Nullable
-    private static String getStringOrNull(String key, JSONObject json) throws JSONException {
-        return json.isNull(key) ? null : json.getString(key);
-    }
-
-    @Nullable
-    private static OffsetDateTime getOffsetDateTimeOrNull(
-          String key, JSONObject json) throws JSONException {
-        return json.isNull(key) ? null : OffsetDateTime.parse(json.getString(key));
-    }
-
-    @Nullable
-    private static Double getDoubleOrNull(String key, JSONObject json) throws JSONException {
-        return json.isNull(key) ? null : json.getDouble(key);
     }
 }

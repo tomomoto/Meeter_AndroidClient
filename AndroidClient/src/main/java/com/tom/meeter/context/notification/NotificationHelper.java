@@ -17,6 +17,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.tom.meeter.R;
 import com.tom.meeter.context.event.activity.EventActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.network.dto.UserDTO;
 
 public class NotificationHelper {
 
@@ -38,7 +39,8 @@ public class NotificationHelper {
         }
     }
 
-    public static void sendNotificationEventCreated(Context ctx, EventDTO event) {
+    public static void sendNotificationEventCreated(
+          Context ctx, UserDTO user, EventDTO event) {
         if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -50,15 +52,16 @@ public class NotificationHelper {
             return;
         }
         NotificationManagerCompat mgr = NotificationManagerCompat.from(ctx);
-        mgr.notify(event.getId().hashCode(), getNotification(ctx, event));
+        mgr.notify(event.getId().hashCode(), getNotification(ctx, user, event));
         mgr.notify(SUMMARY_ID, getSummaryNotification(ctx));
     }
 
-    private static Notification getNotification(Context ctx, EventDTO event) {
+    private static Notification getNotification(Context ctx, UserDTO user, EventDTO event) {
         return new NotificationCompat.Builder(ctx, EVENTS_NOTIFY)
               .setSmallIcon(R.drawable.ic_meeter_lr)
-              .setContentTitle(ctx.getString(R.string.notification_new_event))
-              //.setContentTitle(event.getCreatorId() + " published new event!")
+              .setContentTitle(
+                    user.getName() + " " + user.getSurname() + " "
+                          + ctx.getString(R.string.notification_new_event))
               .setContentText(event.getName())
               .setStyle(getBigStyle(event.getDescription()))
               .setContentIntent(createPendingIntent(ctx, event))

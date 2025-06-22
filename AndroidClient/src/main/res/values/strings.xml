@@ -160,7 +160,7 @@
     <string name="refreshing_the_token">Refreshing the token.</string>
     <string name="event_information">Event information.</string>
     <string name="creator">Creator</string>
-    <string name="notification_new_event">New event!</string>
+    <string name="notification_new_event">published new event!</string>
 
     <string name="delete_event">Delete event</string>
     <string name="are_you_sure_delete_event">Are you sure you want to delete the event?</string>
