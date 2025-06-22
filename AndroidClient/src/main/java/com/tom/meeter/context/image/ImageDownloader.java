@@ -40,10 +40,8 @@ public class ImageDownloader {
                       //Log.d(TAG, "/images/event" + photoPath + " downloaded...");
                       if (response.code() == HttpCodes.OK) {
                           try (ResponseBody body = response.body()) {
-                              if (body != null) {
-                                  onDownloaded.accept(response.body());
-                                  return;
-                              }
+                              onDownloaded.accept(body);
+                              return;
                           }
                       }
                       if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -63,12 +61,9 @@ public class ImageDownloader {
                       super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK) {
                           try (ResponseBody body = response.body()) {
-                              if (body != null) {
-                                  onDownloaded.accept(response.body());
-                                  return;
-                              }
+                              onDownloaded.accept(body);
+                              return;
                           }
-                          return;
                       }
                       if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
                           onNotAuthenticated.run();

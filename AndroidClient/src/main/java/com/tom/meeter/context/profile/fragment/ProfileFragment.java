@@ -90,6 +90,7 @@ public class ProfileFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         String photoPath = result.getData().getStringExtra(PHOTO_PATH_RESULT);
+                        downloadAndUpdateLayoutPhoto(photoPath);
                         binding.photoPath.setText(photoPath);
                     }
                 });
@@ -141,10 +142,7 @@ public class ProfileFragment extends Fragment {
         profileViewModel.getProfileEventsLiveData()
               .observe(owner, events -> adapter.setData(events));
         profileViewModel.getProfilePhotoLiveData()
-              .observe(owner, photo -> {
-                  photoCache = photo;
-                  updateLayoutPhoto();
-              });
+              .observe(owner, this::updateLayoutPhoto);
 
         binding.events.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.events.setAdapter(adapter);
@@ -153,7 +151,7 @@ public class ProfileFragment extends Fragment {
             if (isEditableModeEnabled) {
                 UpdateProfileRequest req = createUpdateProfileRequest();
                 if (req.isEmpty()) {
-                    showMessage(this.getActivity(), R.string.empty_update_request_is_not_sent);
+                    showMessage(requireActivity(), R.string.empty_update_request_is_not_sent);
                     updateLayoutValues();
                     switchEditMode();
                     return;
@@ -163,9 +161,13 @@ public class ProfileFragment extends Fragment {
                           @Override
                           public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                               super.onResponse(call, response);
-                              if (response.code() == HttpCodes.OK && response.body() != null) {
+                              if (response.code() == HttpCodes.OK) {
+                                  String oldPhotoPath = userCache.getPhotoPath();
                                   userCache = response.body();
-                                  showMessage(ProfileFragment.this.getActivity(), R.string.saved);
+                                  if (!Objects.equals(oldPhotoPath, userCache.getPhotoPath())) {
+                                      downloadAndUpdateLayoutPhoto(userCache.getPhotoPath());
+                                  }
+                                  showMessage(ProfileFragment.this.requireActivity(), R.string.saved);
                               }
                               updateLayoutValues();
                           }
@@ -198,12 +200,20 @@ public class ProfileFragment extends Fragment {
         binding.info.setText(userCache.getInfo());
     }
 
-    private void updateLayoutPhoto() {
+    void downloadAndUpdateLayoutPhoto(String photoPath) {
+        imageDownloader.downloadUserImage(photoPath, requireContext(),
+              this::updateLayoutPhoto,
+              () -> InfrastructureHelper.restartActivityFromFragment(this));
+    }
+
+    private void updateLayoutPhoto(ResponseBody photo) {
+        photoCache = photo;
         binding.photo.setImageBitmap(circleImage(photoCache, 600, 600));
     }
 
     private void switchEditMode() {
         isEditableModeEnabled = !isEditableModeEnabled;
+        binding.btnPhoto.setEnabled(isEditableModeEnabled);
         binding.name.setEnabled(isEditableModeEnabled);
         binding.surname.setEnabled(isEditableModeEnabled);
         binding.birthday.setEnabled(isEditableModeEnabled);

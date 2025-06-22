@@ -181,6 +181,7 @@
     <string name="subscribed">subscribed!</string>
     <string name="new_subscriber">New subscriber!</string>
     <string name="created_event">created event!</string>
+    <string name="select_photo">Select photo</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>
