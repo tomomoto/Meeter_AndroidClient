@@ -4,7 +4,7 @@ package com.tom.meeter.context.profile.fragment;
  * Created by Tom on 09.12.2016.
  */
 
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.Context;

@@ -2,9 +2,11 @@ package com.tom.meeter.context.event;
 
 import android.app.Application;
 
-import com.tom.meeter.context.event.activity.EventActivity;
+import com.tom.meeter.context.event.activity.EventDispatcherActivity;
 import com.tom.meeter.context.event.activity.EventLocationMapActivity;
 import com.tom.meeter.context.event.activity.EventOnMapActivity;
+import com.tom.meeter.context.event.activity.ProfileEventActivity;
+import com.tom.meeter.context.event.activity.UserEventActivity;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModelModule;
 import com.tom.meeter.context.image.ImageComponent;
@@ -39,7 +41,11 @@ public interface EventComponent {
         EventComponent build();
     }
 
-    void inject(EventActivity eventActivity);
+    void inject(EventDispatcherActivity eventDispatcherActivity);
+
+    void inject(ProfileEventActivity profileEventActivity);
+
+    void inject(UserEventActivity userEventActivity);
 
     void inject(EventOnMapActivity eventOnMapActivity);
 
