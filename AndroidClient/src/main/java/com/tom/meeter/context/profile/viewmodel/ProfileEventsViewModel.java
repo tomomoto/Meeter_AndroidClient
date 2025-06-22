@@ -2,8 +2,6 @@ package com.tom.meeter.context.profile.viewmodel;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.util.Log;
-
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -45,7 +43,6 @@ public class ProfileEventsViewModel extends ViewModel {
                           profileEventsLiveData.setValue(response.body());
                           return;
                       }
-                      Log.i(TAG, "/profile/events: " + response.code() + " : " + response.body());
                   }
               }
         );

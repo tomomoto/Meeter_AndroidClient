@@ -86,6 +86,7 @@
 
         <activity android:name=".context.event.activity.EventLocationMapActivity" />
         <activity android:name=".context.event.activity.EventOnMapActivity" />
+        <activity android:name=".context.profile.activity.SubscribersActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

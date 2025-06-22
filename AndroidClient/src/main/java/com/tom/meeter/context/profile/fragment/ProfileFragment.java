@@ -12,6 +12,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMess
 
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.UserDTO;
+import com.tom.meeter.context.profile.activity.SubscribersActivity;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
@@ -147,6 +149,10 @@ public class ProfileFragment extends Fragment {
             }
             switchEditMode();
         });
+        binding.subscribers.setOnClickListener(
+              v -> startActivity(
+                    new Intent(
+                          ProfileFragment.this.getContext(), SubscribersActivity.class)));
     }
 
     private void updateLayoutValues() {

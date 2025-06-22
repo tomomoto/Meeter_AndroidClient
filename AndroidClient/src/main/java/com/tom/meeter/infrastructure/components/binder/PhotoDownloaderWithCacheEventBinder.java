@@ -15,10 +15,10 @@ import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PhotoDownloaderWithCacheEventEventBinder
-      implements ViewHolderEventBinder<EventViewHolder> {
+public class PhotoDownloaderWithCacheEventBinder
+      implements EventBinder<EventViewHolder> {
 
-    private static final String TAG = PhotoDownloaderWithCacheEventEventBinder.class.getCanonicalName();
+    private static final String TAG = PhotoDownloaderWithCacheEventBinder.class.getCanonicalName();
 
     private final Context ctx;
     private final ImageDownloader imageDownloader;
@@ -26,7 +26,7 @@ public class PhotoDownloaderWithCacheEventEventBinder
     private final Runnable onAuthFail;
     private final Map<String, Bitmap> imagesCache = new ConcurrentHashMap<>();
 
-    public PhotoDownloaderWithCacheEventEventBinder(
+    public PhotoDownloaderWithCacheEventBinder(
           Context ctx, ImageDownloader imgDownloader,
           OnEventClickListener listener, Runnable onAuthFail) {
         logMethod(TAG, this);
@@ -42,13 +42,13 @@ public class PhotoDownloaderWithCacheEventEventBinder
         if (photoPath == null) {
             holder.bind(
                   event.getName(), event.getDescription(), null,
-                  (v) -> listener.onEventClick(event));
+                  (v) -> listener.onClick(event));
             return;
         }
         Bitmap circledPhotoCache = imagesCache.get(photoPath);
         holder.bind(
               event.getName(), event.getDescription(), circledPhotoCache,
-              (v) -> listener.onEventClick(event));
+              (v) -> listener.onClick(event));
         if (circledPhotoCache != null) {
             return;
         }
@@ -58,7 +58,7 @@ public class PhotoDownloaderWithCacheEventEventBinder
                   Bitmap circled = circleImage(photo);
                   holder.updatePhoto(circled);
                   imagesCache.put(photoPath, circled);
-                  Log.d(TAG, "PhotoDownloaderWithCacheEventEventBinder: event " +
+                  Log.d(TAG, "PhotoDownloaderWithCacheEventBinder: event " +
                         "image downloaded for [" + photoPath + "], cache updated.");
               },
               onAuthFail);

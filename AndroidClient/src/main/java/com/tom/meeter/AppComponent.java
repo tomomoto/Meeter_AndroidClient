@@ -7,10 +7,11 @@ import com.tom.meeter.context.event.EventComponent;
 import com.tom.meeter.context.image.ImageComponent;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
+import com.tom.meeter.context.profile.activity.SubscribersActivity;
 import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
 import com.tom.meeter.context.profile.fragment.GoogleMapsFragment;
-import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
+import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.token.TokenComponent;
 import com.tom.meeter.context.user.UserComponent;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
@@ -64,4 +65,6 @@ public interface AppComponent {
     void inject(ActiveEventsFragment activeEventsFragment);
 
     void inject(ProfileEventsFragment profileEventsFragment);
+
+    void inject(SubscribersActivity subscribersActivity);
 }

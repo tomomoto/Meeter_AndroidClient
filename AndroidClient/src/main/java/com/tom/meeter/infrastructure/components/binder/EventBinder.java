@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.context.network.dto.EventDTO;
 
-public interface ViewHolderEventBinder<T extends RecyclerView.ViewHolder> {
-
+public interface EventBinder<T extends RecyclerView.ViewHolder>
+      extends BaseViewHolderBinder<T, EventDTO> {
     void bind(T holder, EventDTO event);
 }

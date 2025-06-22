@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.databinding.EventViewBinding;
 import com.tom.meeter.infrastructure.components.adapter.BaseEventAdapter;
-import com.tom.meeter.infrastructure.components.binder.ViewHolderEventBinder;
+import com.tom.meeter.infrastructure.components.binder.EventBinder;
 import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 
 /**
@@ -17,7 +17,7 @@ public class ActiveEventsAdapter extends BaseEventAdapter<EventViewHolder> {
 
     private static final String TAG = ActiveEventsAdapter.class.getCanonicalName();
 
-    public ActiveEventsAdapter(ViewHolderEventBinder<EventViewHolder> binder) {
+    public ActiveEventsAdapter(EventBinder<EventViewHolder> binder) {
         super(binder);
     }
 

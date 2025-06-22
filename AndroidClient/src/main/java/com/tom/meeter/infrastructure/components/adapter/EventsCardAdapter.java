@@ -6,14 +6,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.tom.meeter.databinding.CardItemBinding;
-import com.tom.meeter.infrastructure.components.binder.ViewHolderEventBinder;
+import com.tom.meeter.infrastructure.components.binder.EventBinder;
 import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
 public class EventsCardAdapter extends BaseEventAdapter<CardItemHolder> {
 
     private static final String TAG = EventsCardAdapter.class.getCanonicalName();
 
-    public EventsCardAdapter(ViewHolderEventBinder<CardItemHolder> binder) {
+    public EventsCardAdapter(EventBinder<CardItemHolder> binder) {
         super(binder);
     }
 
