@@ -21,9 +21,10 @@ public class SubscriberViewHolder extends RecyclerView.ViewHolder {
           boolean isAmSubscribedTo, String name, String surname, Bitmap photo,
           View.OnClickListener cardClickListener,
           View.OnClickListener subUnsubClickListener) {
-        binding.subscriberName.setText(name);
-        binding.subscriberSurname.setText(surname);
-        binding.photo.setImageBitmap(photo);
+        binding.subscriberName.setText(name + " " + surname);
+        if (photo != null) {
+            binding.photo.setImageBitmap(photo);
+        }
 
         binding.subUnsubBtn.setOnClickListener(subUnsubClickListener);
         binding.subCard.setOnClickListener(cardClickListener);

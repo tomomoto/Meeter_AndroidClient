@@ -90,6 +90,8 @@
         <activity android:name=".context.profile.activity.SubscriptionsActivity" />
         <activity android:name=".context.user.activity.UserSubscribersActivity" />
         <activity android:name=".context.user.activity.UserSubscriptionsActivity" />
+        <activity android:name=".context.image.activity.UploadUserImageActivity" />
+        <activity android:name=".context.image.activity.UploadEventImageActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -2,6 +2,7 @@ package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
@@ -12,6 +13,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -29,6 +33,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.image.activity.UploadUserImageActivity;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.activity.SubscribersActivity;
 import com.tom.meeter.context.profile.activity.SubscriptionsActivity;
@@ -78,6 +83,16 @@ public class ProfileFragment extends Fragment {
     public ProfileFragment() {
         logMethod(TAG, this);
     }
+
+    private final ActivityResultLauncher<Intent> imageUploadLauncher =
+          registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        String photoPath = result.getData().getStringExtra(PHOTO_PATH_RESULT);
+                        binding.photoPath.setText(photoPath);
+                    }
+                });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -166,10 +181,14 @@ public class ProfileFragment extends Fragment {
               v -> startActivity(
                     new Intent(
                           ProfileFragment.this.getContext(), SubscriptionsActivity.class)));
+        binding.btnPhoto.setOnClickListener(
+              v -> imageUploadLauncher.launch(
+                    new Intent(requireContext(), UploadUserImageActivity.class)));
     }
 
     private void updateLayoutValues() {
         /*binding.profileId.setText(userCache.getId());*/
+        binding.photoPath.setText(userCache.getPhotoPath());
         binding.name.setText(userCache.getName());
         binding.surname.setText(userCache.getSurname());
         binding.gender.setText(genderResolver(getContext(), userCache.getGender()));
@@ -212,7 +231,10 @@ public class ProfileFragment extends Fragment {
         if (!Objects.equals(userCache.getInfo(), infoChange)) {
             req.setInfo(infoChange);
         }
-        //TODO: userCache.getPhotoPath();
+        String photoPathChange = getStringOrNull(binding.photoPath.getText());
+        if (!Objects.equals(userCache.getPhotoPath(), photoPathChange)) {
+            req.setPhotoPath(photoPathChange);
+        }
         return req;
     }
 

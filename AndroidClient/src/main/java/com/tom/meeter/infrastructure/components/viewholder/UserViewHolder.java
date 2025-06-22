@@ -19,9 +19,10 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
     public void bind(
           String name, String surname, Bitmap photo,
           View.OnClickListener cardClickListener) {
-        binding.subscriberName.setText(name);
-        binding.subscriberSurname.setText(surname);
-        binding.photo.setImageBitmap(photo);
+        binding.subscriberName.setText(name + " " + surname);
+        if (photo != null) {
+            binding.photo.setImageBitmap(photo);
+        }
         binding.subCard.setOnClickListener(cardClickListener);
     }
 

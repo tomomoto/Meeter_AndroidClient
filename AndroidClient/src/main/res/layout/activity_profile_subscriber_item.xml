@@ -25,7 +25,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Аватар пользователя"
             android:scaleType="centerCrop"
-            android:src="@drawable/user_612x612" />
+            android:src="@drawable/user_500x500_removebg" />
 
         <!-- Имя и кнопка -->
         <LinearLayout
@@ -38,17 +38,7 @@
                 android:id="@+id/subscriberName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Имя"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/subscriberSurname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Фамилия"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

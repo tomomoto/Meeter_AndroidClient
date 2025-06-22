@@ -20,7 +20,7 @@
             android:layout_marginTop="29dp"
             android:adjustViewBounds="true"
             android:contentDescription="content description..."
-            android:src="@drawable/user_612x612" />
+            android:src="@drawable/user_500x500_removebg" />
 
         <!-- Имя и фамилия -->
         <TextView

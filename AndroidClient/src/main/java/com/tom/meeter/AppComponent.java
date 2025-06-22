@@ -70,4 +70,5 @@ public interface AppComponent {
     void inject(SubscribersActivity subscribersActivity);
 
     void inject(SubscriptionsActivity subscriptionsActivity);
+
 }
