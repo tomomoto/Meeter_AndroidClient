@@ -27,7 +27,6 @@
         android:src="@drawable/event_512_512" />
     <!--app:srcCompat="@drawable/ic_launcher"
     tools:src="@tools:sample/backgrounds/scenic" -->
-    />
 
     <Button
         android:id="@+id/event_creator_id_btn"

@@ -39,7 +39,6 @@
             android:src="@drawable/user_500x500_removebg" />
         <!--app:srcCompat="@drawable/ic_launcher"
         tools:src="@tools:sample/backgrounds/scenic" -->
-        />
 
         <TextView
             android:id="@+id/profile_id"
