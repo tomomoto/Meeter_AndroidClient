@@ -84,8 +84,6 @@
                 android:enabled="false"
                 android:hint="@string/enter_event_description"
                 android:inputType="textMultiLine"
-                android:lines="4"
-                android:textAlignment="center"
                 android:textSize="20sp" />
         </LinearLayout>
         <!-- Position section -->
