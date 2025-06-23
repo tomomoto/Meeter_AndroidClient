@@ -10,7 +10,7 @@ import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
 public class PhotoDownloaderEventBinder
-      implements ViewHolderEventBinder<CardItemHolder> {
+      implements EventBinder<CardItemHolder> {
 
     private static final String TAG = PhotoDownloaderEventBinder.class.getCanonicalName();
 
@@ -30,7 +30,7 @@ public class PhotoDownloaderEventBinder
 
     @Override
     public void bind(CardItemHolder holder, EventDTO event) {
-        holder.bind(event.getName(), null, (view) -> listener.onEventClick(event));
+        holder.bind(event.getName(), null, (view) -> listener.onClick(event));
         String photoPath = event.getPhotoPath();
         if (photoPath == null) {
             return;

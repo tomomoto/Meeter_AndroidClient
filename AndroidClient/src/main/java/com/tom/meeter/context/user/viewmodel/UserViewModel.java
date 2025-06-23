@@ -3,23 +3,24 @@ package com.tom.meeter.context.user.viewmodel;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.app.Activity;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
+import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -27,63 +28,67 @@ public class UserViewModel extends ViewModel {
 
     private static final String TAG = UserViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private final MutableLiveData<UserDTO> userLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> amISubscriber = new MutableLiveData<>();
     private final MutableLiveData<List<EventDTO>> userEventsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ResponseBody> userPhotoLiveData = new MutableLiveData<>();
 
     private final UserService userService;
+    private final ImageDownloader imgDownloader;
 
     @Inject
-    public UserViewModel(UserService userService) {
+    public UserViewModel(
+          UserService userService, ImageDownloader imgDownloader) {
         logMethod(TAG, this);
+        this.imgDownloader = imgDownloader;
         this.userService = userService;
     }
 
     public void fetchUserInformation(String token, String userId, Activity activity) {
         userService.getUser(Globals.getAuthHeader(token), userId).enqueue(
-              new ErrorLogger<>(activity) {
+              new ActivityRecreatorOnAuthFailure<>(activity) {
                   @Override
-                  public void onResponse(Call<User> call, Response<User> response) {
-                      if (response.code() == HttpCodes.OK && response.body() != null) {
-                          userLiveData.setValue(response.body());
+                  public void onResponse(Call<UserDTO> call, Response<UserDTO> resp) {
+                      super.onResponse(call, resp);
+                      if (resp.code() == HttpCodes.OK) {
+                          UserDTO user = resp.body();
+                          userLiveData.setValue(user);
+                          String photoPath = user.getPhotoPath();
+                          if (photoPath == null) {
+                              return;
+                          }
+                          imgDownloader.downloadUserImage(
+                                photoPath, activity.getApplicationContext(),
+                                userPhotoLiveData::setValue,
+                                activity::recreate);
                           return;
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          activity.recreate();
-                      }
-                      Log.i(TAG, "/user/{id}: " + response.code() + " : " + response.body());
                   }
               }
         );
 
         userService.amISubscribed(Globals.getAuthHeader(token), userId).enqueue(
-              new ErrorLogger<>(activity) {
+              new ActivityRecreatorOnAuthFailure<>(activity) {
                   @Override
-                  public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                      if (response.code() == HttpCodes.OK && response.body() != null) {
-                          amISubscriber.setValue(response.body());
+                  public void onResponse(Call<Boolean> call, Response<Boolean> resp) {
+                      super.onResponse(call, resp);
+                      if (resp.code() == HttpCodes.OK) {
+                          amISubscriber.setValue(resp.body());
                           return;
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          activity.recreate();
-                      }
-                      Log.i(TAG, "/user/{id}/am_i_subscribed: " + response.code() + " : " + response.body());
                   }
               }
         );
 
         userService.getUserEvents(Globals.getAuthHeader(token), userId).enqueue(
-              new ErrorLogger<>(activity) {
+              new ActivityRecreatorOnAuthFailure<>(activity) {
                   @Override
-                  public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> response) {
-                      if (response.code() == HttpCodes.OK && response.body() != null) {
-                          userEventsLiveData.setValue(response.body());
+                  public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> resp) {
+                      super.onResponse(call, resp);
+                      if (resp.code() == HttpCodes.OK) {
+                          userEventsLiveData.setValue(resp.body());
                           return;
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          activity.recreate();
-                      }
-                      Log.i(TAG, "/user/{id}/events: " + response.code() + " : " + response.body());
                   }
               });
     }
@@ -94,7 +99,7 @@ public class UserViewModel extends ViewModel {
         super.onCleared();
     }
 
-    public LiveData<User> getUserLiveData() {
+    public LiveData<UserDTO> getUserLiveData() {
         return userLiveData;
     }
 
@@ -102,7 +107,11 @@ public class UserViewModel extends ViewModel {
         return userEventsLiveData;
     }
 
-    public MutableLiveData<Boolean> getAmISubscriber() {
+    public LiveData<Boolean> getAmISubscriber() {
         return amISubscriber;
+    }
+
+    public LiveData<ResponseBody> getUserPhotoLiveData() {
+        return userPhotoLiveData;
     }
 }

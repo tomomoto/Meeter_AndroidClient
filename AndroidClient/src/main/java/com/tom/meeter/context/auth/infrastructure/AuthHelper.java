@@ -10,6 +10,8 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -60,6 +63,10 @@ public final class AuthHelper {
         return accounts[0];
     }
 
+    // 10 min of retry.
+    private static final int MAX_RETRIES = 60;
+    private static final int RETRY_DELAY_MS = 10_000;
+
     public static void checkToken(
           Consumer<String> onToken, Runnable onCancelledAuth,
           AccountManager am, Activity activity, TokenService tokenService) {
@@ -84,6 +91,16 @@ public final class AuthHelper {
                   }, null);
             return;
         }
+        checkTokenWithRetry(tokenService, token, am, activity, onToken, onCancelledAuth, 0);
+    }
+
+    private static void simpleCheckToken(
+          TokenService tokenService,
+          String token,
+          AccountManager am,
+          Activity activity,
+          Consumer<String> onToken,
+          Runnable onCancelledAuth) {
         tokenService.checkToken(Globals.getAuthHeader(token)).enqueue(
               new ErrorLogger<>(activity) {
                   @Override
@@ -93,6 +110,54 @@ public final class AuthHelper {
                       }
                       if (response.code() == HttpCodes.OK) {
                           onToken.accept(token);
+                      }
+                  }
+              });
+    }
+
+    private static void checkTokenWithRetry(
+          TokenService tokenService,
+          String token,
+          AccountManager am,
+          Activity activity,
+          Consumer<String> onToken,
+          Runnable onCancelledAuth,
+          int attempt) {
+        tokenService.checkToken(Globals.getAuthHeader(token))
+              .enqueue(new HttpErrorLogger<>(activity) {
+                  @Override
+                  public void onResponse(Call<Void> call, Response<Void> resp) {
+                      super.onResponse(call, resp);
+                      if (resp.code() == HttpCodes.OK) {
+                          onToken.accept(token);
+                          return;
+                      }
+                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
+                          invalidateToken(am, activity, onToken, onCancelledAuth);
+                          return;
+                      }
+                  }
+
+                  @Override
+                  public void onFailure(Call<Void> call, Throwable t) {
+                      super.onFailure(call, t);
+                      if (supportedErrorMapping(t)) {
+                          retryIfPossible();
+                          return;
+                      }
+                  }
+
+                  private void retryIfPossible() {
+                      if (attempt < MAX_RETRIES) {
+                          Log.w(TAG, "Повтор попытки " + (attempt + 1));
+                          new Handler(Looper.getMainLooper())
+                                .postDelayed(
+                                      () -> checkTokenWithRetry(
+                                            tokenService, token, am, activity, onToken,
+                                            onCancelledAuth, attempt + 1),
+                                      RETRY_DELAY_MS);
+                      } else {
+                          Log.e(TAG, "Превышено количество попыток");
                       }
                   }
               });

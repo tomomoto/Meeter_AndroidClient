@@ -1,7 +1,7 @@
 package com.tom.meeter.context.profile.fragment;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -23,7 +23,7 @@ import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventEventBinder;
+import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventBinder;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -60,7 +60,7 @@ public class ProfileEventsFragment extends Fragment {
         accountManager = AccountManager.get(ctx);
 
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventEventBinder(
+              new PhotoDownloaderWithCacheEventBinder(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));

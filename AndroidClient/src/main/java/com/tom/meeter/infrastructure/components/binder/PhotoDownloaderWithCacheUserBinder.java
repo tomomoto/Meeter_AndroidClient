@@ -8,57 +8,57 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
-import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
+import com.tom.meeter.context.network.dto.UserDTO;
+import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
+import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PhotoDownloaderWithCacheEventEventBinder
-      implements ViewHolderEventBinder<EventViewHolder> {
+public class PhotoDownloaderWithCacheUserBinder implements UserBinder<UserViewHolder> {
 
-    private static final String TAG = PhotoDownloaderWithCacheEventEventBinder.class.getCanonicalName();
+    private static final String TAG = PhotoDownloaderWithCacheEventBinder.class.getCanonicalName();
 
     private final Context ctx;
     private final ImageDownloader imageDownloader;
-    private final OnEventClickListener listener;
+    private final OnUserClickListener userClickListener;
     private final Runnable onAuthFail;
     private final Map<String, Bitmap> imagesCache = new ConcurrentHashMap<>();
 
-    public PhotoDownloaderWithCacheEventEventBinder(
+    public PhotoDownloaderWithCacheUserBinder(
           Context ctx, ImageDownloader imgDownloader,
-          OnEventClickListener listener, Runnable onAuthFail) {
+          OnUserClickListener listener,
+          Runnable onAuthFail) {
         logMethod(TAG, this);
         this.ctx = ctx;
         this.imageDownloader = imgDownloader;
-        this.listener = listener;
+        this.userClickListener = listener;
         this.onAuthFail = onAuthFail;
     }
 
     @Override
-    public void bind(EventViewHolder holder, EventDTO event) {
-        String photoPath = event.getPhotoPath();
+    public void bind(UserViewHolder holder, UserDTO user) {
+        String photoPath = user.getPhotoPath();
         if (photoPath == null) {
             holder.bind(
-                  event.getName(), event.getDescription(), null,
-                  (v) -> listener.onEventClick(event));
+                  user.getName(), user.getSurname(), null,
+                  (v) -> userClickListener.onClick(user));
             return;
         }
         Bitmap circledPhotoCache = imagesCache.get(photoPath);
         holder.bind(
-              event.getName(), event.getDescription(), circledPhotoCache,
-              (v) -> listener.onEventClick(event));
+              user.getName(), user.getSurname(), circledPhotoCache,
+              (v) -> userClickListener.onClick(user));
         if (circledPhotoCache != null) {
             return;
         }
-        imageDownloader.downloadEventImage(
+        imageDownloader.downloadUserImage(
               photoPath, ctx,
               photo -> {
                   Bitmap circled = circleImage(photo);
                   holder.updatePhoto(circled);
                   imagesCache.put(photoPath, circled);
-                  Log.d(TAG, "PhotoDownloaderWithCacheEventEventBinder: event " +
+                  Log.d(TAG, "PhotoDownloaderWithCacheUserBinder: user " +
                         "image downloaded for [" + photoPath + "], cache updated.");
               },
               onAuthFail);

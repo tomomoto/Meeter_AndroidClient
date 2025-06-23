@@ -97,8 +97,8 @@ public class EventOnMapActivity extends AppCompatActivity
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == HttpCodes.OK) {
                     EventDTO event = response.body();
-                    Double latitude = event.getLatitude();
-                    Double longitude = event.getLongitude();
+                    Float latitude = event.getLatitude();
+                    Float longitude = event.getLongitude();
                     if (latitude == null || longitude == null) {
                         showMessage(EventOnMapActivity.this, "Event location is not set yet.");
                         return;

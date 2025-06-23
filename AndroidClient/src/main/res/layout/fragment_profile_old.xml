@@ -36,10 +36,9 @@
             android:layout_marginTop="29dp"
             android:adjustViewBounds="true"
             android:contentDescription="content description..."
-            android:src="@drawable/user_612x612" />
+            android:src="@drawable/user_500x500_removebg" />
         <!--app:srcCompat="@drawable/ic_launcher"
         tools:src="@tools:sample/backgrounds/scenic" -->
-        />
 
         <TextView
             android:id="@+id/profile_id"

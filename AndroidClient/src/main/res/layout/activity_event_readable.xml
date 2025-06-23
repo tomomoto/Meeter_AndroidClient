@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginBottom="16dp"
-                android:contentDescription="Event photo"
+                android:contentDescription="@string/event_photo"
                 android:src="@drawable/event_512_512" />
 
             <Button
@@ -46,12 +46,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
-                android:text="Event Name"
+                android:text="@string/event_name"
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/event_name"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -63,11 +63,11 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Description"
+                android:text="@string/description"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/event_description"
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="4"
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Position"
+                android:text="@string/position"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -105,7 +105,7 @@
                     android:gravity="center"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
-                    android:text="Latitude"
+                    android:text="@string/latitude"
                     android:textSize="20sp" />
 
                 <TextView
@@ -116,7 +116,7 @@
                     android:gravity="center"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
-                    android:text="Longitude"
+                    android:text="@string/longitude"
                     android:textSize="20sp" />
             </LinearLayout>
 
@@ -126,7 +126,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/event_latitude"
+                    android:id="@+id/latitude"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -136,7 +136,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/event_longitude"
+                    android:id="@+id/longitude"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -147,10 +147,10 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_event_location_map"
+                android:id="@+id/location_map_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Show on map"
+                android:text="@string/show_on_map"
                 android:textAllCaps="false" />
         </LinearLayout>
         <!-- Dates section -->
@@ -168,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Created"
+                android:text="@string/created"
                 android:textSize="20sp" />
 
             <TextView
@@ -184,11 +184,11 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Starting"
+                android:text="@string/starting"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/event_starting"
+                android:id="@+id/starting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp" />
@@ -198,12 +198,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
-                android:text="Ending"
                 android:paddingBottom="8dp"
+                android:text="@string/ending"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/event_ending"
+                android:id="@+id/ending"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp" />
@@ -224,11 +224,11 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="City"
+                android:text="@string/city"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/event_city"
+                android:id="@+id/city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp" />

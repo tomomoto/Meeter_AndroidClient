@@ -2,6 +2,8 @@ package com.tom.meeter.context.image;
 
 import android.app.Application;
 
+import com.tom.meeter.context.image.activity.BaseUploadActivity;
+
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
@@ -20,4 +22,6 @@ public interface ImageComponent {
 
         ImageComponent build();
     }
+
+    void inject(BaseUploadActivity baseUploadActivity);
 }

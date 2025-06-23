@@ -27,7 +27,6 @@
         android:src="@drawable/event_512_512" />
     <!--app:srcCompat="@drawable/ic_launcher"
     tools:src="@tools:sample/backgrounds/scenic" -->
-    />
 
     <Button
         android:id="@+id/event_creator_id_btn"
@@ -45,7 +44,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/event_name"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
@@ -65,7 +64,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+id/event_description"
+        android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/event_name_linear"

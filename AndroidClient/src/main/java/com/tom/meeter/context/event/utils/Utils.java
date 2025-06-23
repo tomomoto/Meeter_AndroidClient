@@ -16,40 +16,41 @@ public class Utils {
     }
 
     public static UpdateEventRequest createUpdateEventRequest(
-          EventDTO event, ActivityEventEditableBinding eBinding) {
+          EventDTO event, ActivityEventEditableBinding binding) {
         UpdateEventRequest req = new UpdateEventRequest();
 
-        String eventNameChange = getStringOrNull(eBinding.eventName.getText());
+        String eventNameChange = getStringOrNull(binding.name.getText());
         if (!Objects.equals(event.getName(), eventNameChange)) {
             req.setName(eventNameChange);
         }
-        String eventDescrChange = getStringOrNull(eBinding.eventDescription.getText());
+        String eventDescrChange = getStringOrNull(binding.description.getText());
         if (!Objects.equals(event.getDescription(), eventDescrChange)) {
             req.setDescription(eventDescrChange);
         }
-        OffsetDateTime eventStartingChange = getOffsetDateTime(eBinding.eventStarting.getText());
+        OffsetDateTime eventStartingChange = getOffsetDateTime(binding.starting.getText());
         if (!Objects.equals(event.getStarting(), eventStartingChange)) {
             req.setStarting(eventStartingChange);
         }
-        OffsetDateTime eventEndingChange = getOffsetDateTime(eBinding.eventEnding.getText());
+        OffsetDateTime eventEndingChange = getOffsetDateTime(binding.ending.getText());
         if (!Objects.equals(event.getEnding(), eventEndingChange)) {
             req.setEnding(eventEndingChange);
         }
-        String eventCityChange = getStringOrNull(eBinding.eventCity.getText());
+        String eventCityChange = getStringOrNull(binding.city.getText());
         if (!Objects.equals(event.getCity(), eventCityChange)) {
             req.setCity(eventCityChange);
         }
-        //TODO FLOAT -> DOUBLE
-        Float eventLatitudeChange = getFloatOrNull(eBinding.eventLatitude.getText());
+        Float eventLatitudeChange = getFloatOrNull(binding.latitude.getText());
         if (!Objects.equals(event.getLatitude(), eventLatitudeChange)) {
             req.setLatitude(eventLatitudeChange);
         }
-        //TODO FLOAT -> DOUBLE
-        Float eventLongitudeChange = getFloatOrNull(eBinding.eventLongitude.getText());
+        Float eventLongitudeChange = getFloatOrNull(binding.longitude.getText());
         if (!Objects.equals(event.getLongitude(), eventLongitudeChange)) {
             req.setLongitude(eventLongitudeChange);
         }
-        //TODO: eventCache.getPhotoPath();
+        String photoPathChange = getStringOrNull(binding.photoPath.getText());
+        if (!Objects.equals(event.getPhotoPath(), photoPathChange)) {
+            req.setPhotoPath(photoPathChange);
+        }
         return req;
     }
 }

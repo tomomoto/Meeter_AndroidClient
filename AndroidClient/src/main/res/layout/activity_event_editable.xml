@@ -18,18 +18,27 @@
             android:padding="16dp">
 
             <ImageView
-                android:id="@+id/event_photo"
+                android:id="@+id/photo"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginBottom="16dp"
-                android:contentDescription="Event photo"
+                android:contentDescription="@string/event_photo"
                 android:src="@drawable/event_512_512" />
+
+            <TextView
+                android:id="@+id/photo_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:textAlignment="center"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/select_photo_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select Photo"
+                android:enabled="false"
+                android:text="@string/select_photo"
                 android:textAllCaps="false" />
         </LinearLayout>
         <!-- Name and description section -->
@@ -46,15 +55,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
-                android:text="Event Name"
+                android:text="@string/event_name"
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/event_name"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter event name"
+                android:enabled="false"
+                android:hint="@string/enter_event_name"
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
@@ -64,17 +74,16 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Description"
+                android:text="@string/description"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/event_description"
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter event description"
+                android:enabled="false"
+                android:hint="@string/enter_event_description"
                 android:inputType="textMultiLine"
-                android:lines="4"
-                android:textAlignment="center"
                 android:textSize="20sp" />
         </LinearLayout>
         <!-- Position section -->
@@ -92,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Position"
+                android:text="@string/position"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -108,7 +117,7 @@
                     android:gravity="center"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
-                    android:text="Latitude"
+                    android:text="@string/latitude"
                     android:textSize="20sp" />
 
                 <TextView
@@ -119,7 +128,7 @@
                     android:gravity="center"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
-                    android:text="Longitude"
+                    android:text="@string/longitude"
                     android:textSize="20sp" />
             </LinearLayout>
 
@@ -129,33 +138,34 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/event_latitude"
+                    android:id="@+id/latitude"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:hint="Event latitude"
+                    android:hint="@string/event_latitude"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/event_longitude"
+                    android:id="@+id/longitude"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:hint="Event longitude"
+                    android:hint="@string/event_longitude"
                     android:paddingTop="16dp"
                     android:paddingBottom="8dp"
                     android:textSize="20sp" />
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_event_location_map"
+                android:id="@+id/location_map_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Open map"
+                android:enabled="false"
+                android:text="@string/open_map"
                 android:textAllCaps="false" />
         </LinearLayout>
         <!-- Dates section -->
@@ -173,7 +183,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Created"
+                android:text="@string/created"
                 android:textSize="20sp" />
 
             <TextView
@@ -190,23 +200,25 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Starting"
+                android:text="@string/starting"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/event_starting"
+                android:id="@+id/starting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
+                android:enabled="false"
                 android:focusable="false"
-                android:hint="Starting date and time"
+                android:hint="@string/starting_date_and_time"
                 android:textSize="20sp" />
 
             <Button
                 android:id="@+id/select_starting_date_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select stating"
+                android:enabled="false"
+                android:text="@string/select_stating"
                 android:textAllCaps="false" />
 
             <TextView
@@ -215,23 +227,25 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="Ending"
+                android:text="@string/ending"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/event_ending"
+                android:id="@+id/ending"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
+                android:enabled="false"
                 android:focusable="false"
-                android:hint="Ending date and time"
+                android:hint="@string/ending_date_and_time"
                 android:textSize="20sp" />
 
             <Button
                 android:id="@+id/select_ending_date_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select ending"
+                android:enabled="false"
+                android:text="@string/select_ending"
                 android:textAllCaps="false" />
 
         </LinearLayout>
@@ -250,23 +264,32 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:text="City"
+                android:text="@string/city"
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/event_city"
+                android:id="@+id/city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter city"
+                android:enabled="false"
+                android:hint="@string/enter_city"
                 android:textSize="20sp" />
 
         </LinearLayout>
         <!-- Save Button -->
         <Button
-            android:id="@+id/save_event_button"
+            android:id="@+id/edit_save_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Save Event" />
+            android:text="@string/edit" />
+
+        <!-- Delete Button -->
+        <Button
+            android:id="@+id/delete_event_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/delete_event" />
     </LinearLayout>
 </ScrollView>

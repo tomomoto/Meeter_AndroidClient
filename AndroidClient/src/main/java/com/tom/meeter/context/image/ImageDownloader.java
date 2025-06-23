@@ -5,11 +5,10 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.util.Log;
 
 import com.tom.meeter.context.image.service.ImageService;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import java.util.function.Consumer;
 
@@ -34,19 +33,19 @@ public class ImageDownloader {
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
         imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new ErrorLogger<>(ctx) {
+              .enqueue(new HttpErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                      super.onResponse(call, response);
                       //Log.d(TAG, "/images/event" + photoPath + " downloaded...");
-                      try (ResponseBody body = response.body()) {
-                          if (response.code() == HttpCodes.OK && body != null) {
-                              onDownloaded.accept(response.body());
+                      if (response.code() == HttpCodes.OK) {
+                          try (ResponseBody body = response.body()) {
+                              onDownloaded.accept(body);
                               return;
                           }
-                          if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                              onNotAuthenticated.run();
-                          }
-                          Log.i(TAG, "/images/event/: " + response.code() + " : " + body);
+                      }
+                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                          onNotAuthenticated.run();
                       }
                   }
               });
@@ -56,18 +55,18 @@ public class ImageDownloader {
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
         imageService.downloadUserImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new ErrorLogger<>(ctx) {
+              .enqueue(new HttpErrorLogger<>(ctx) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                      try (ResponseBody body = response.body()) {
-                          if (response.code() == HttpCodes.OK && body != null) {
-                              onDownloaded.accept(response.body());
+                      super.onResponse(call, response);
+                      if (response.code() == HttpCodes.OK) {
+                          try (ResponseBody body = response.body()) {
+                              onDownloaded.accept(body);
                               return;
                           }
-                          if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                              onNotAuthenticated.run();
-                          }
-                          Log.i(TAG, "/images/user/: " + response.code() + " : " + body);
+                      }
+                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                          onNotAuthenticated.run();
                       }
                   }
               });

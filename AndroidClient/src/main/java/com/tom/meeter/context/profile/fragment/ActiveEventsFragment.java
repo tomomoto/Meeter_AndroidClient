@@ -4,7 +4,7 @@ package com.tom.meeter.context.profile.fragment;
  * Created by Tom on 09.12.2016.
  */
 
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.Context;
@@ -24,7 +24,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventEventBinder;
+import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventBinder;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,7 +59,7 @@ public class ActiveEventsFragment extends Fragment {
 
         Context ctx = getContext();
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventEventBinder(
+              new PhotoDownloaderWithCacheEventBinder(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));

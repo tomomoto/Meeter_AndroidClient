@@ -1,10 +1,12 @@
 package com.tom.meeter.infrastructure.common;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.tom.meeter.R;
+import com.tom.meeter.context.network.dto.UserDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public final class CommonHelper {
 
@@ -26,10 +29,10 @@ public final class CommonHelper {
 
     public static final String EMPTY_STR = "";
 
-    public static String genderResolver(Context ctx, String gender) {
-        return switch (gender.toLowerCase()) {
-            case "female" -> ctx.getString(R.string.female_gender);
-            case "male" -> ctx.getString(R.string.male_gender);
+    public static String genderResolver(Context ctx, UserDTO.UserGender gender) {
+        return switch (gender) {
+            case FEMALE -> ctx.getString(R.string.female_gender);
+            case MALE -> ctx.getString(R.string.male_gender);
             default -> throw new IllegalArgumentException("#args " + gender);
         };
     }
@@ -41,6 +44,11 @@ public final class CommonHelper {
 
     @Nullable
     public static CharSequence textOrNull(Double val) {
+        return val == null ? null : val.toString();
+    }
+
+    @Nullable
+    public static CharSequence textOrNull(Float val) {
         return val == null ? null : val.toString();
     }
 
@@ -71,6 +79,11 @@ public final class CommonHelper {
         if (input == null || EMPTY_STR.contentEquals(input)) {
             return null;
         }
-        return LocalDate.parse(input, UI_DATE_FORMAT);
+        try {
+            return LocalDate.parse(input, UI_DATE_FORMAT);
+        } catch (DateTimeParseException e) {
+            Log.e("DateParser", "Ошибка парсинга даты: " + input, e);
+            return null;
+        }
     }
 }

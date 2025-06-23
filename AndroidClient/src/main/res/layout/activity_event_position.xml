@@ -13,7 +13,7 @@
         android:id="@+id/btn_confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select"
+        android:text="@string/select_position"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="24dp"/>
 </FrameLayout>

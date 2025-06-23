@@ -58,7 +58,7 @@ public class GMapEvent {
         marker.setTitle(name);
     }
 
-    public void updatePosition(double latitude, double longitude) {
+    public void updatePosition(Float latitude, Float longitude) {
         event.setLatitude(latitude);
         event.setLongitude(longitude);
         marker.setPosition(new LatLng(latitude, longitude));

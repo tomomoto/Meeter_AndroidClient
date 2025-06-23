@@ -4,10 +4,12 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.user.database.UserDao;
 import com.tom.meeter.context.profile.user.domain.User;
 import com.tom.meeter.context.user.service.UserService;
 
+import java.time.LocalDate;
 import java.util.concurrent.Executor;
 
 import io.reactivex.Completable;
@@ -41,9 +43,16 @@ public class UserRepository {
         executor.execute(() -> userDao.load(id)
               .flatMap(user -> Maybe.empty(), Maybe::error, () -> Maybe.just(MARKER))
               .flatMapCompletable(ign -> Completable.fromAction(() -> {
-                  Response<User> response = userService.getUser(id).execute();
+                  //TODO null
+                  String header = null;
+                  Response<UserDTO> response = userService.getUser(header, id).execute();
                   if (response.isSuccessful()) {
-                      userDao.save(response.body());
+                      UserDTO body = response.body();
+                      LocalDate birthday = body.getBirthday();
+                      userDao.save(new User(
+                            body.getId(), body.getName(), body.getGender().getValue(),
+                            body.getSurname(), body.getInfo(),
+                            birthday != null ? birthday.toString() : null));
                   } else {
                       Log.d(TAG, "Response is not succeed.");
                   }

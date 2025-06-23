@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.infrastructure.components.binder.ViewHolderEventBinder;
+import com.tom.meeter.infrastructure.components.binder.EventBinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.List;
 public abstract class BaseEventAdapter<T extends RecyclerView.ViewHolder>
       extends RecyclerView.Adapter<T> {
 
-    private final ViewHolderEventBinder<T> binder;
+    private final EventBinder<T> binder;
     private final List<EventDTO> events = new ArrayList<>();
 
-    protected BaseEventAdapter(ViewHolderEventBinder<T> binder) {
+    protected BaseEventAdapter(EventBinder<T> binder) {
         this.binder = binder;
     }
 

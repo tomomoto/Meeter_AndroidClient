@@ -2,53 +2,6 @@
 <issues format="6" by="lint 8.10.1" type="baseline" client="gradle" dependencies="false" name="AGP (8.10.1)" variant="all" version="8.10.1">
 
     <issue
-        id="DuplicatePlatformClasses"
-        message="`json` defines classes that conflict with classes now provided by Android. Solutions include finding newer versions or alternative libraries that don&apos;t have the same problem (for example, for `httpclient` use `HttpUrlConnection` or `okhttp` instead), or repackaging the library using something like `jarjar`.">
-        <location
-            file="build.gradle"/>
-    </issue>
-
-    <issue
-        id="DuplicatePlatformClasses"
-        message="`json` defines classes that conflict with classes now provided by Android. Solutions include finding newer versions or alternative libraries that don&apos;t have the same problem (for example, for `httpclient` use `HttpUrlConnection` or `okhttp` instead), or repackaging the library using something like `jarjar`.">
-        <location
-            file="build.gradle"/>
-    </issue>
-
-    <issue
-        id="ScopedStorage"
-        message="WRITE_EXTERNAL_STORAGE is deprecated (and is not granted) when targeting Android 13+. If you need to write to shared storage, use the `MediaStore.createWriteRequest` intent."
-        errorLine1="    &lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; />"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="7"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="DefaultLocale"
-        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="        return switch (gender.toLowerCase()) {"
-        errorLine2="                              ~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="67"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="OldTargetApi"
-        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
-        errorLine1="        targetSdk 33"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="12"
-            column="9"/>
-    </issue>
-
-    <issue
         id="SimpleDateFormat"
         message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
         errorLine1="    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);"
@@ -62,12 +15,12 @@
     <issue
         id="SimpleDateFormat"
         message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
-        errorLine1="            dob.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).parse(date));"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    private static final SimpleDateFormat FORMAT = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/ProfileFragment.java"
-            line="126"
-            column="25"/>
+            file="src/main/java/com/tom/meeter/infrastructure/common/DateHelper.java"
+            line="31"
+            column="52"/>
     </issue>
 
     <issue
@@ -77,117 +30,40 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="34"
+            line="35"
             column="9"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of `compileSdkVersion` than 33 is available: 35"
-        errorLine1="    compileSdk 33"
-        errorLine2="    ~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="7"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.test.ext:junit than 1.1.1 is available: 1.2.1"
-        errorLine1="    androidTestImplementation &apos;androidx.test.ext:junit:1.1.1&apos;"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="106"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.appcompat:appcompat than 1.0.0 is available: 1.7.1"
-        errorLine1="appcompat = &quot;1.0.0&quot;"
-        errorLine2="            ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="5"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.recyclerview:recyclerview than 1.0.0 is available: 1.4.0"
-        errorLine1="recyclerview = &quot;1.0.0&quot;"
-        errorLine2="               ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="6"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-extensions than 2.0.0 is available: 2.2.0"
-        errorLine1="lifecycleextensions = &quot;2.0.0&quot;"
-        errorLine2="                      ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="8"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.lifecycle:lifecycle-compiler than 2.0.0 is available: 2.9.1"
-        errorLine1="lifecyclecompiler = &quot;2.0.0&quot;"
-        errorLine2="                    ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="9"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.google.android.material:material than 1.0.0 is available: 1.12.0"
-        errorLine1="material = &quot;1.0.0&quot;"
-        errorLine2="           ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="11"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-compiler than 2.0.0 is available: 2.7.1"
+        message="A newer version of androidx.room:room-compiler than 2.0.0 is available: 2.7.2"
         errorLine1="room = &quot;2.0.0&quot;"
         errorLine2="       ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="16"
+            line="18"
             column="8"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.room:room-runtime than 2.0.0 is available: 2.7.1"
+        message="A newer version of androidx.room:room-runtime than 2.0.0 is available: 2.7.2"
         errorLine1="room = &quot;2.0.0&quot;"
         errorLine2="       ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="16"
+            line="18"
             column="8"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.room:room-rxjava2 than 2.0.0 is available: 2.7.1"
+        message="A newer version of androidx.room:room-rxjava2 than 2.0.0 is available: 2.7.2"
         errorLine1="room = &quot;2.0.0&quot;"
         errorLine2="       ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="16"
+            line="18"
             column="8"/>
     </issue>
 
@@ -198,96 +74,19 @@
         errorLine2="                 ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
-            line="20"
+            line="22"
             column="18"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of com.google.code.gson:gson than 2.8.5 is available: 2.11.0"
-        errorLine1="gson = &quot;2.8.5&quot;"
-        errorLine2="       ~~~~~~~">
+        message="A newer version of io.reactivex.rxjava2:rxjava than 2.2.6 is available: 2.2.9"
+        errorLine1="rxjava = &quot;2.2.6&quot;"
+        errorLine2="         ~~~~~~~">
         <location
             file="../gradle/libs.versions.toml"
             line="25"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.fasterxml.jackson.core:jackson-annotations than 2.4.1 is available: 2.19.0"
-        errorLine1="jacksonCore = &quot;2.4.1&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="27"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.fasterxml.jackson.core:jackson-core than 2.4.1 is available: 2.19.0"
-        errorLine1="jacksonCore = &quot;2.4.1&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="27"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.fasterxml.jackson.core:jackson-databind than 2.4.1 is available: 2.19.0"
-        errorLine1="jacksonCore = &quot;2.4.1&quot;"
-        errorLine2="              ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="27"
-            column="15"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of com.android.tools:desugar_jdk_libs than 2.0.3 is available: 2.1.5"
-        errorLine1="desugar_jdk_libs = &quot;2.0.3&quot;"
-        errorLine2="                   ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="29"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="LockedOrientationActivity"
-        message="Expecting `android:screenOrientation=&quot;unspecified&quot;` or `&quot;fullSensor&quot;` for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices"
-        errorLine1="            android:screenOrientation=&quot;portrait&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="50"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="ExtraText"
-        message="Unexpected text found in layout file: &quot;/>&quot;"
-        errorLine1="        />"
-        errorLine2="        ~~">
-        <location
-            file="src/main/res/layout/fragment_profile.xml"
-            line="42"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="DiscouragedApi"
-        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
-        errorLine1="            android:screenOrientation=&quot;portrait&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="50"
-            column="13"/>
+            column="10"/>
     </issue>
 
     <issue
@@ -296,8 +95,8 @@
         errorLine1="    &lt;string name=&quot;restricted_mode&quot;>Restricted Mode can help to hide videos with potentially mature content.No filter is 100% accurate, but it should help you to avoid most of this type of content.&lt;/string>"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/values/strings.xml"
-            line="110"
+            file="src/main/res/values-ru-rRU/strings.xml"
+            line="118"
             column="5"/>
     </issue>
 
@@ -308,7 +107,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="110"
+            line="118"
             column="5"/>
     </issue>
 
@@ -319,7 +118,18 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="110"
+            line="118"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="StringFormatInvalid"
+        message="Incorrect formatting string `restricted_mode`; missing conversion character in &apos;`% a`&apos;?"
+        errorLine1="    &lt;string name=&quot;restricted_mode&quot;>Restricted Mode can help to hide videos with potentially mature content.No filter is 100% accurate, but it should help you to avoid most of this type of content.&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="118"
             column="5"/>
     </issue>
 
@@ -330,18 +140,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="111"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="StringFormatInvalid"
-        message="Incorrect formatting string `restricted_mode`; missing conversion character in &apos;`% a`&apos;?"
-        errorLine1="    &lt;string name=&quot;restricted_mode&quot;>Restricted Mode can help to hide videos with potentially mature content.No filter is 100% accurate, but it should help you to avoid most of this type of content.&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-ru-rRU/strings.xml"
-            line="112"
+            line="120"
             column="5"/>
     </issue>
 
@@ -390,25 +189,69 @@
     </issue>
 
     <issue
-        id="PermissionImpliesUnsupportedChromeOsHardware"
-        message="Permission exists without corresponding hardware `&lt;uses-feature android:name=&quot;android.hardware.camera&quot; required=&quot;false&quot;>` tag"
-        errorLine1="    &lt;uses-permission android:name=&quot;android.permission.CAMERA&quot; />"
-        errorLine2="     ~~~~~~~~~~~~~~~">
+        id="ObsoleteLayoutParam"
+        message="Invalid layout param in a `RelativeLayout`: `layout_weight`"
+        errorLine1="            android:layout_weight=&quot;1&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/AndroidManifest.xml"
-            line="8"
+            file="src/main/res/layout/fragment_profile.xml"
+            line="49"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
+        errorLine1="    &lt;LinearLayout"
+        errorLine2="     ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/card_item.xml"
+            line="12"
             column="6"/>
     </issue>
 
     <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `@color/c0deef` with a theme that also paints a background (inferred theme is `@style/MyMaterialTheme`)"
+        errorLine1="    android:background=&quot;@color/c0deef&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/tom/meeter/context/profile/adapter/RecycleViewUserEventsAdapter.java"
-            line="32"
-            column="9"/>
+            file="src/main/res/layout/activity_user.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `@color/c0deef` with a theme that also paints a background (inferred theme is `@style/MyMaterialTheme`)"
+        errorLine1="    android:background=&quot;@color/c0deef&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `@color/c0deef` with a theme that also paints a background (inferred theme is `@style/MyMaterialTheme`)"
+        errorLine1="    android:background=&quot;@color/c0deef&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile_old.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.activity_user_profile_old` appears to be unused"
+        errorLine1="&lt;ScrollView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="2"
+            column="1"/>
     </issue>
 
     <issue
@@ -523,9 +366,24 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.mipmap.ic_launcher` appears to be unused">
+        message="The resource `R.layout.event_layout_editable` appears to be unused"
+        errorLine1="&lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
         <location
-            file="src/main/res/mipmap-hdpi/ic_launcher.png"/>
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.fragment_profile_old` appears to be unused"
+        errorLine1="&lt;ScrollView xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/layout/fragment_profile_old.xml"
+            line="2"
+            column="1"/>
     </issue>
 
     <issue
@@ -571,7 +429,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="13"
+            line="14"
             column="13"/>
     </issue>
 
@@ -582,7 +440,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="14"
+            line="15"
             column="13"/>
     </issue>
 
@@ -593,18 +451,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="16"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        message="The resource `R.string.city` appears to be unused"
-        errorLine1="    &lt;string name=&quot;city&quot;>City&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="28"
+            line="17"
             column="13"/>
     </issue>
 
@@ -615,7 +462,7 @@
         errorLine2="            ~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="33"
+            line="34"
             column="13"/>
     </issue>
 
@@ -626,7 +473,106 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="41"
+            line="42"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.user_format` appears to be unused"
+        errorLine1="    &lt;string name=&quot;user_format&quot;>%1$s %2$s, %3$s, %4$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="44"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.user_about_format` appears to be unused"
+        errorLine1="    &lt;string name=&quot;user_about_format&quot;>About: %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="45"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.user_about` appears to be unused"
+        errorLine1="    &lt;string name=&quot;user_about&quot;>About:&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="46"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.profile_user_id` appears to be unused"
+        errorLine1="    &lt;string name=&quot;profile_user_id&quot;>ID:&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="47"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.profile_user_name` appears to be unused"
+        errorLine1="    &lt;string name=&quot;profile_user_name&quot;>User:&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="48"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.profile_user_id_format` appears to be unused"
+        errorLine1="    &lt;string name=&quot;profile_user_id_format&quot;>ID: %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="52"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.profile_user_name_format` appears to be unused"
+        errorLine1="    &lt;string name=&quot;profile_user_name_format&quot;>User: %1$s %2$s.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="53"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.profile_gender_format` appears to be unused"
+        errorLine1="    &lt;string name=&quot;profile_gender_format&quot;>Gender: %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="55"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.profile_info_format` appears to be unused"
+        errorLine1="    &lt;string name=&quot;profile_info_format&quot;>Information: %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="56"
             column="13"/>
     </issue>
 
@@ -637,7 +583,7 @@
         errorLine2="            ~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="49"
+            line="57"
             column="13"/>
     </issue>
 
@@ -648,7 +594,7 @@
         errorLine2="            ~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="50"
+            line="58"
             column="13"/>
     </issue>
 
@@ -659,7 +605,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="54"
+            line="62"
             column="13"/>
     </issue>
 
@@ -670,7 +616,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="55"
+            line="63"
             column="13"/>
     </issue>
 
@@ -681,7 +627,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="114"
+            line="122"
             column="13"/>
     </issue>
 
@@ -692,7 +638,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="115"
+            line="123"
             column="13"/>
     </issue>
 
@@ -703,7 +649,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="116"
+            line="124"
             column="13"/>
     </issue>
 
@@ -714,7 +660,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="117"
+            line="125"
             column="13"/>
     </issue>
 
@@ -725,7 +671,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="118"
+            line="126"
             column="13"/>
     </issue>
 
@@ -736,7 +682,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="119"
+            line="127"
             column="13"/>
     </issue>
 
@@ -747,7 +693,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="120"
+            line="128"
             column="13"/>
     </issue>
 
@@ -758,7 +704,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="121"
+            line="129"
             column="13"/>
     </issue>
 
@@ -769,7 +715,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="122"
+            line="130"
             column="13"/>
     </issue>
 
@@ -780,7 +726,7 @@
         errorLine2="            ~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="123"
+            line="131"
             column="13"/>
     </issue>
 
@@ -791,7 +737,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="124"
+            line="132"
             column="13"/>
     </issue>
 
@@ -802,7 +748,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="125"
+            line="133"
             column="13"/>
     </issue>
 
@@ -813,7 +759,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="126"
+            line="134"
             column="13"/>
     </issue>
 
@@ -824,7 +770,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="127"
+            line="135"
             column="13"/>
     </issue>
 
@@ -835,7 +781,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="128"
+            line="136"
             column="13"/>
     </issue>
 
@@ -846,7 +792,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="129"
+            line="137"
             column="13"/>
     </issue>
 
@@ -857,7 +803,7 @@
         errorLine2="            ~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="130"
+            line="138"
             column="13"/>
     </issue>
 
@@ -868,7 +814,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="131"
+            line="139"
             column="13"/>
     </issue>
 
@@ -879,7 +825,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="132"
+            line="140"
             column="13"/>
     </issue>
 
@@ -890,7 +836,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="133"
+            line="141"
             column="13"/>
     </issue>
 
@@ -901,7 +847,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="134"
+            line="142"
             column="13"/>
     </issue>
 
@@ -912,7 +858,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="135"
+            line="143"
             column="13"/>
     </issue>
 
@@ -923,7 +869,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="136"
+            line="144"
             column="13"/>
     </issue>
 
@@ -934,7 +880,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="137"
+            line="145"
             column="13"/>
     </issue>
 
@@ -945,7 +891,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="138"
+            line="146"
             column="13"/>
     </issue>
 
@@ -956,7 +902,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="139"
+            line="147"
             column="13"/>
     </issue>
 
@@ -967,7 +913,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="140"
+            line="148"
             column="13"/>
     </issue>
 
@@ -978,7 +924,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="141"
+            line="149"
             column="13"/>
     </issue>
 
@@ -989,7 +935,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="142"
+            line="150"
             column="13"/>
     </issue>
 
@@ -1000,7 +946,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="143"
+            line="151"
             column="13"/>
     </issue>
 
@@ -1011,7 +957,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="144"
+            line="152"
             column="13"/>
     </issue>
 
@@ -1022,7 +968,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="145"
+            line="153"
             column="13"/>
     </issue>
 
@@ -1033,7 +979,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="146"
+            line="154"
             column="13"/>
     </issue>
 
@@ -1044,7 +990,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="147"
+            line="155"
             column="13"/>
     </issue>
 
@@ -1055,7 +1001,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="148"
+            line="156"
             column="13"/>
     </issue>
 
@@ -1066,7 +1012,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="149"
+            line="157"
             column="13"/>
     </issue>
 
@@ -1077,7 +1023,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="150"
+            line="158"
             column="13"/>
     </issue>
 
@@ -1088,7 +1034,18 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="151"
+            line="159"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.event_information` appears to be unused"
+        errorLine1="    &lt;string name=&quot;event_information&quot;>Event information.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="162"
             column="13"/>
     </issue>
 
@@ -1099,52 +1056,22 @@
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="154"
+            line="207"
             column="19"/>
     </issue>
 
     <issue
-        id="RedundantNamespace"
-        message="This namespace declaration is redundant"
-        errorLine1="    &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="UnusedResources"
+        message="The resource `R.drawable.user_612x612` appears to be unused">
         <location
-            file="src/main/res/layout/login_activity.xml"
-            line="6"
-            column="21"/>
+            file="src/main/res/drawable/user_612x612.jpg"/>
     </issue>
 
     <issue
-        id="RedundantNamespace"
-        message="This namespace declaration is redundant"
-        errorLine1="    &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/event_512_512.png` in densityless folder">
         <location
-            file="src/main/res/layout/registration_activity.xml"
-            line="7"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="UnusedNamespace"
-        message="Unused namespace declaration xmlns:android; already declared on the root element"
-        errorLine1="    &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/login_activity.xml"
-            line="6"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="UnusedNamespace"
-        message="Unused namespace declaration xmlns:android; already declared on the root element"
-        errorLine1="    &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/registration_activity.xml"
-            line="7"
-            column="21"/>
+            file="src/main/res/drawable/event_512_512.png"/>
     </issue>
 
     <issue
@@ -1170,9 +1097,107 @@
 
     <issue
         id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_1.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_1.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_10.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_10.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_11.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_11.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_12.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_12.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_2.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_2.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_3.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_3.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_4.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_4.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_5.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_5.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_6.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_6.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_7.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_7.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_8.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_8.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/random_9.jpg` in densityless folder">
+        <location
+            file="src/main/res/drawable/random_9.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/user_500x500_removebg.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/user_500x500_removebg.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
         message="Found bitmap drawable `res/drawable/user_612x612.jpg` in densityless folder">
         <location
             file="src/main/res/drawable/user_612x612.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/user_map_marker_256_256.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/user_map_marker_256_256.png"/>
     </issue>
 
     <issue
@@ -1312,6 +1337,61 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="62"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="208"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="235"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="272"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="    &lt;EditText"
+        errorLine2="     ~~~~~~~~">
+        <location
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="66"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
             file="src/main/res/layout/fragment_new_event.xml"
             line="40"
             column="14"/>
@@ -1334,8 +1414,30 @@
         errorLine1="        &lt;EditText"
         errorLine2="         ~~~~~~~~">
         <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="154"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="197"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
             file="src/main/res/layout/login_activity.xml"
-            line="17"
+            line="16"
             column="10"/>
     </issue>
 
@@ -1348,6 +1450,83 @@
             file="src/main/res/layout/registration_activity.xml"
             line="52"
             column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="62"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="80"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="208"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="235"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="272"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="46"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="    &lt;EditText"
+        errorLine2="     ~~~~~~~~">
+        <location
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="66"
+            column="6"/>
     </issue>
 
     <issue
@@ -1441,11 +1620,44 @@
     <issue
         id="Autofill"
         message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="125"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="139"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
         errorLine1="        &lt;EditText"
         errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/res/layout/login_activity.xml"
-            line="17"
+            file="src/main/res/layout/fragment_profile.xml"
+            line="154"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="197"
             column="10"/>
     </issue>
 
@@ -1456,7 +1668,18 @@
         errorLine2="         ~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="30"
+            line="16"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/login_activity.xml"
+            line="29"
             column="10"/>
     </issue>
 
@@ -1577,7 +1800,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="22"
+            line="23"
             column="33"/>
     </issue>
 
@@ -1588,7 +1811,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="61"
+            line="65"
             column="20"/>
     </issue>
 
@@ -1599,30 +1822,41 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="64"
+            line="68"
             column="20"/>
     </issue>
 
     <issue
         id="UseTomlInstead"
         message="Use version catalog instead"
-        errorLine1="    implementation &apos;androidx.preference:preference:1.2.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle"
-            line="98"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    androidTestImplementation &apos;androidx.test.ext:junit:1.1.1&apos;"
+        errorLine1="    androidTestImplementation &apos;androidx.test.ext:junit:1.2.1&apos;"
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="106"
+            line="116"
             column="31"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_upload_image.xml"
+            line="8"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="        &lt;ImageView"
+        errorLine2="         ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/card_item.xml"
+            line="18"
+            column="10"/>
     </issue>
 
     <issue
@@ -1672,12 +1906,243 @@
     <issue
         id="KeyboardInaccessibleWidget"
         message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
+        errorLine1="                android:clickable=&quot;true&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="212"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
+        errorLine1="                android:clickable=&quot;true&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_event_editable.xml"
+            line="239"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
         errorLine1="            android:clickable=&quot;true&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="56"
+            line="55"
             column="13"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
+        errorLine1="        &lt;EditText"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="46"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="LabelFor"
+        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
+        errorLine1="    &lt;EditText"
+        errorLine2="     ~~~~~~~~">
+        <location
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="66"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="        binding.subscriberName.setText(name + &quot; &quot; + surname);"
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/infrastructure/components/viewholder/SubscriberViewHolder.java"
+            line="24"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="        binding.subscriberName.setText(name + &quot; &quot; + surname);"
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/tom/meeter/infrastructure/components/viewholder/UserViewHolder.java"
+            line="22"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Аватар пользователя&quot;, should use `@string` resource"
+        errorLine1="            android:contentDescription=&quot;Аватар пользователя&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_profile_subscriber_item.xml"
+            line="26"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Имя&quot;, should use `@string` resource"
+        errorLine1="                android:text=&quot;Имя&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_profile_subscriber_item.xml"
+            line="41"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Кнопка&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Кнопка&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_profile_subscriber_item.xml"
+            line="57"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Выбрать изображение&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Выбрать изображение&quot;/>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_upload_image.xml"
+            line="19"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Загрузить изображение&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Загрузить изображение&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_upload_image.xml"
+            line="25"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;content description...&quot;, should use `@string` resource"
+        errorLine1="            android:contentDescription=&quot;content description...&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user.xml"
+            line="39"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;content description...&quot;, should use `@string` resource"
+        errorLine1="            android:contentDescription=&quot;content description...&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="22"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Имя Фамилия&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Имя Фамилия&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="33"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Пол&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Пол&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="44"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Дата рождения&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Дата рождения&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="53"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Информация о пользователе&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Информация о пользователе&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="62"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Loading...&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Loading...&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="71"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;События&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;События&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_profile_old.xml"
+            line="81"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Аватар пользователя&quot;, should use `@string` resource"
+        errorLine1="            android:contentDescription=&quot;Аватар пользователя&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_subscriber_item.xml"
+            line="26"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Имя&quot;, should use `@string` resource"
+        errorLine1="                android:text=&quot;Имя&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_user_subscriber_item.xml"
+            line="41"
+            column="17"/>
     </issue>
 
     <issue
@@ -1726,6 +2191,17 @@
 
     <issue
         id="HardcodedText"
+        message="Hardcoded string &quot;content description...&quot;, should use `@string` resource"
+        errorLine1="        android:contentDescription=&quot;content description...&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/event_layout_editable.xml"
+            line="26"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
         message="Hardcoded string &quot;Date validity&quot;, should use `@string` resource"
         errorLine1="                android:hint=&quot;Date validity&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -1758,6 +2234,105 @@
     </issue>
 
     <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Photo path&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Photo path&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="52"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Name&quot;, should use `@string` resource"
+        errorLine1="                android:hint=&quot;Name&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="133"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Name&quot;, should use `@string` resource"
+        errorLine1="                android:text=&quot;Name&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="135"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Surname&quot;, should use `@string` resource"
+        errorLine1="                android:hint=&quot;Surname&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="147"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Surname&quot;, should use `@string` resource"
+        errorLine1="                android:text=&quot;Surname&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="149"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Birthday (yyyy-MM-dd)&quot;, should use `@string` resource"
+        errorLine1="            android:hint=&quot;Birthday (yyyy-MM-dd)&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="162"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Birthday&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Birthday&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="163"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Information&quot;, should use `@string` resource"
+        errorLine1="            android:hint=&quot;Information&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile.xml"
+            line="205"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;content description...&quot;, should use `@string` resource"
+        errorLine1="            android:contentDescription=&quot;content description...&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_profile_old.xml"
+            line="38"
+            column="13"/>
+    </issue>
+
+    <issue
         id="RtlHardcoded"
         message="Consider replacing `android:layout_alignParentLeft` with `android:layout_alignParentStart=&quot;true&quot;` to better support right-to-left layouts"
         errorLine1="                android:layout_alignParentLeft=&quot;true&quot;"
@@ -1781,8 +2356,8 @@
 
     <issue
         id="RtlHardcoded"
-        message="Consider replacing `android:layout_toRightOf` with `android:layout_toEndOf=&quot;@+id/person_photo&quot;` to better support right-to-left layouts"
-        errorLine1="                android:layout_toRightOf=&quot;@+id/person_photo&quot;"
+        message="Consider replacing `android:layout_toRightOf` with `android:layout_toEndOf=&quot;@+id/event_photo_card_view&quot;` to better support right-to-left layouts"
+        errorLine1="                android:layout_toRightOf=&quot;@+id/event_photo_card_view&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/event_view.xml"
@@ -1792,8 +2367,8 @@
 
     <issue
         id="RtlHardcoded"
-        message="Consider replacing `android:layout_toRightOf` with `android:layout_toEndOf=&quot;@+id/person_photo&quot;` to better support right-to-left layouts"
-        errorLine1="                android:layout_toRightOf=&quot;@+id/person_photo&quot; />"
+        message="Consider replacing `android:layout_toRightOf` with `android:layout_toEndOf=&quot;@+id/event_photo_card_view&quot;` to better support right-to-left layouts"
+        errorLine1="                android:layout_toRightOf=&quot;@+id/event_photo_card_view&quot; />"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/event_view.xml"
@@ -1803,12 +2378,12 @@
 
     <issue
         id="RtlHardcoded"
-        message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 33"
+        message="Redundant attribute `layout_alignParentLeft`; already defining `layout_alignParentStart` with `targetSdkVersion` 35"
         errorLine1="            android:layout_alignParentLeft=&quot;true&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/login_activity.xml"
-            line="36"
+            line="35"
             column="13"/>
     </issue>
 

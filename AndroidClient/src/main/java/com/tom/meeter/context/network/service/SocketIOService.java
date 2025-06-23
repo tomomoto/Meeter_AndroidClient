@@ -2,7 +2,9 @@ package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
 import static com.tom.meeter.context.network.utils.SocketIOCodes.EVENT_CREATED_CODE;
+import static com.tom.meeter.context.network.utils.SocketIOCodes.NEW_SUBSCRIBER_CODE;
 import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationEventCreated;
+import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationNewSubscriber;
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -20,6 +22,7 @@ import android.util.Log;
 import com.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.JsonHelper;
 import com.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
@@ -53,12 +56,16 @@ public class SocketIOService extends Service {
     private static final String EVENTS_CREATE_CHANNEL = "events:create";
     private static final String EVENTS_SEARCH_CHANNEL = "events:search";
     private static final String EVENTS_NOTIFICATIONS_CHANNEL = "events:notifications";
+    private static final String NEW_SUBSCRIBER_CHANNEL = "user:subscription:new";
 
     private static final String CODE_KEY = "code";
     private static final String ID_KEY = "id";
     private static final int CREATED_CODE = 201;
     private static final int BAD_REQUEST = 400;
     private static final String UNAUTHORIZED = "401";
+    private static final String MESSAGE_KEY = "message";
+    private static final String USER_KEY = "user";
+    private static final String EVENT_KEY = "event";
     private AccountManager accountManager;
 
     public class ServiceBinder extends Binder {
@@ -178,6 +185,7 @@ public class SocketIOService extends Service {
         socketClient.on(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.on(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
+        socketClient.on(NEW_SUBSCRIBER_CHANNEL, this::newSubscriberNotificationsChannel);
         socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         socketClient.connect();
         EventBus.getDefault().register(this);
@@ -211,6 +219,7 @@ public class SocketIOService extends Service {
         socketClient.off(GREETINGS_CHANNEL, SocketIOService::greetingsHandler);
         socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.off(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
+        socketClient.off(NEW_SUBSCRIBER_CHANNEL, this::newSubscriberNotificationsChannel);
         socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         initialized = false;
     }
@@ -264,9 +273,26 @@ public class SocketIOService extends Service {
         JSONObject response = getSimpleResponse(JSONObject.class, args);
         Log.d(TAG, EVENTS_NOTIFICATIONS_CHANNEL + " : " + response);
         try {
-            if (response.getInt("code") == EVENT_CREATED_CODE) {
-                EventDTO event = EventDTO.encode(response.getJSONObject("message"));
-                sendNotificationEventCreated(this, event);
+            if (response.getInt(CODE_KEY) == EVENT_CREATED_CODE) {
+                JSONObject message = response.getJSONObject(MESSAGE_KEY);
+                sendNotificationEventCreated(
+                      this,
+                      UserDTO.encode(message.getJSONObject(USER_KEY)),
+                      EventDTO.encode(message.getJSONObject(EVENT_KEY)));
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void newSubscriberNotificationsChannel(Object... args) {
+        JSONObject response = getSimpleResponse(JSONObject.class, args);
+        Log.d(TAG, NEW_SUBSCRIBER_CHANNEL + " : " + response);
+        try {
+            if (response.getInt(CODE_KEY) == NEW_SUBSCRIBER_CODE) {
+                sendNotificationNewSubscriber(
+                      this,
+                      UserDTO.encode(response.getJSONObject(MESSAGE_KEY)));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);

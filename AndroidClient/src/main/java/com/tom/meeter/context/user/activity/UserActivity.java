@@ -1,9 +1,13 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.event.activity.EventActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
+import static com.tom.meeter.context.user.activity.UserSubscribersActivity.dispatchToUserSubscribersActivity;
+import static com.tom.meeter.context.user.activity.UserSubscriptionsActivity.dispatchToUserSubscriptionsActivity;
+import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -23,7 +27,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
@@ -35,6 +41,8 @@ import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
 
 import retrofit2.Call;
@@ -43,7 +51,7 @@ import retrofit2.Response;
 public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = UserActivity.class.getCanonicalName();
-    private static final String USER_ID_KEY = "user_id";
+    public static final String USER_ID_KEY = "user_id";
 
     @Inject
     TokenService tokenService;
@@ -53,6 +61,7 @@ public class UserActivity extends AppCompatActivity {
     ViewModelFactory viewModelFactory;
     @Inject
     ImageDownloader imgDownloader;
+
     private ActivityUserBinding binding;
     private UserViewModel userViewModel;
     private String userId;
@@ -66,21 +75,9 @@ public class UserActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create user activity without extras.");
-            finish();
-            return;
-        }
-        userId = extras.getString(USER_ID_KEY);
-        if (userId == null) {
-            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
-            finish();
-            return;
-        }
+        validate();
 
         ((App) getApplication()).getUserComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         adapter = new EventsCardAdapter(
               new PhotoDownloaderEventBinder(
@@ -89,6 +86,24 @@ public class UserActivity extends AppCompatActivity {
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
+    }
+
+    private void validate() {
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            Log.d(TAG, "Unable to create user activity without extras.");
+            finish();
+        }
+        userId = extras.getString(USER_ID_KEY);
+        if (userId == null) {
+            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
+            finish();
+        }
+        accountManager = AccountManager.get(this);
+        if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            finish();
+        }
     }
 
     private void onInit(String token) {
@@ -108,9 +123,8 @@ public class UserActivity extends AppCompatActivity {
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
                               if (resp.code() == HttpCodes.OK) {
-                                  amISubscriber = false;
-                                  updateSubscribeButtonText();
-                                  showMessage(UserActivity.this, "Successfully unsubscribed.");
+                                  updateAmISubscriber(false);
+                                  showMessage(UserActivity.this, R.string.successfully_unsubscribed);
                                   return;
                               }
                               if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -125,9 +139,8 @@ public class UserActivity extends AppCompatActivity {
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
                               if (resp.code() == HttpCodes.OK) {
-                                  amISubscriber = true;
-                                  updateSubscribeButtonText();
-                                  showMessage(UserActivity.this, "Successfully subscribed.");
+                                  updateAmISubscriber(true);
+                                  showMessage(UserActivity.this, R.string.successfully_subscribed);
                                   return;
                               }
                               if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
@@ -144,34 +157,35 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUserLiveData()
               .observe(this, user -> {
                   binding.name.setText(user.getName());
-                  binding.surname.setText(user.getSurname());
                   binding.gender.setText(genderResolver(getApplicationContext(), user.getGender()));
-                  binding.birthday.setText(user.getBirthday());
-                  binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(user.getBirthday())));
+
+                  binding.surname.setText(user.getSurname());
+                  LocalDate birthday = user.getBirthday();
+                  binding.birthday.setText(birthday == null ? EMPTY_STR : birthday.toString());
+                  binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(birthday)));
                   binding.info.setText(user.getInfo());
-                  //binding.userPhoto.setImageBitmap();
               });
         userViewModel.getAmISubscriber()
-              .observe(this, val -> {
-                  amISubscriber = val;
-                  updateSubscribeButtonText();
-              });
+              .observe(this, this::updateAmISubscriber);
         userViewModel.getUserEventsLiveData()
               .observe(this, events -> adapter.setData(events));
+        userViewModel.getUserPhotoLiveData()
+              .observe(
+                    this,
+                    photo -> binding.photo.setImageBitmap(circleImage(photo, 600, 600)));
 
         binding.events.setLayoutManager(new GridLayoutManager(this, 2));
         binding.events.setAdapter(adapter);
+
+        binding.subscribers.setOnClickListener(
+              v -> dispatchToUserSubscribersActivity(this, userId));
+        binding.subscriptions.setOnClickListener(
+              v -> dispatchToUserSubscriptionsActivity(this, userId));
     }
 
-    private void updateSubscribeButtonText() {
-        if (amISubscriber == null) {
-            binding.subscribeBtn.setText("...");
-        }
-        if (amISubscriber) {
-            binding.subscribeBtn.setText("Unsubscribe");
-        } else {
-            binding.subscribeBtn.setText("Subscribe");
-        }
+    private void updateAmISubscriber(boolean value) {
+        amISubscriber = value;
+        binding.subscribeBtn.setText(amISubscriber ? R.string.unsubscribe : R.string.subscribe);
     }
 
     @Nullable
@@ -186,7 +200,7 @@ public class UserActivity extends AppCompatActivity {
         ctx.startActivity(createUserActivityIntent(ctx, userId));
     }
 
-    private static Intent createUserActivityIntent(Context ctx, String userId) {
+    public static Intent createUserActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserActivity.class)
               .putExtra(USER_ID_KEY, userId);
     }

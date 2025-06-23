@@ -3,7 +3,6 @@ package com.tom.meeter.context.event.viewmodel;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.app.Activity;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,8 +13,8 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import javax.inject.Inject;
 
@@ -42,11 +41,12 @@ public class EventViewModel extends ViewModel {
 
     public void fetchEventInformation(String token, String eventId, Activity activity) {
         eventService.getEvent(Globals.getAuthHeader(token), eventId).enqueue(
-              new ErrorLogger<>(activity) {
+              new HttpErrorLogger<>(activity) {
                   @Override
-                  public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                      EventDTO body = response.body();
-                      if (response.code() == HttpCodes.OK && body != null) {
+                  public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
+                      super.onResponse(call, resp);
+                      EventDTO body = resp.body();
+                      if (resp.code() == HttpCodes.OK && body != null) {
                           eventLiveData.setValue(body);
                           String photoPath = body.getPhotoPath();
                           if (photoPath != null) {
@@ -58,10 +58,9 @@ public class EventViewModel extends ViewModel {
                           }
                           return;
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
+                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
                           activity.recreate();
                       }
-                      Log.i(TAG, "/event/{id}: " + response.code() + " : " + body);
                   }
               }
         );

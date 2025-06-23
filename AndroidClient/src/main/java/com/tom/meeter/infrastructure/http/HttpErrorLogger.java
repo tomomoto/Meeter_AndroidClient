@@ -35,6 +35,7 @@ public class HttpErrorLogger<T> extends ErrorLogger<T> {
         }
         int code = response.code();
         showMessage(ctx, code + "/" + errorMessage);
-        Log.e(TAG, "HTTP request error: " + code + "/" + errorMessage);
+        Log.e(TAG, "HTTP request failed for [" + ctx.getClass().getCanonicalName()
+              + "] with http code [" + code + "] and body " + errorMessage);
     }
 }
