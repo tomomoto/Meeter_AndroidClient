@@ -50,7 +50,9 @@ dependencies {
     implementation libs.lifecycle.extensions
     annotationProcessor libs.lifecycle.compiler
 
-    implementation libs.socketioclient
+    implementation(libs.socketioclient) {
+        exclude group: 'org.json', module: 'json'
+    }
     implementation libs.eventbus
 
     implementation libs.play.services.maps
