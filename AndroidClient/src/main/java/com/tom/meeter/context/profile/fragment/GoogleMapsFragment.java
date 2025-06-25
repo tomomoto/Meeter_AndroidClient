@@ -368,8 +368,8 @@ public class GoogleMapsFragment extends Fragment
         if (!update.getName().equals(me.getName())) {
             me.updateName(update.getName());
         }
-        if (update.getLatitude() != me.getLatitude()
-              || update.getLongitude() != me.getLongitude()) {
+        if (!Objects.equals(update.getLatitude(), me.getLatitude())
+              || !Objects.equals(update.getLongitude(), me.getLongitude())) {
             Log.d(TAG, "Location for event " + update.getName()
                   + " " + update.getId() + " is changed. Moving the marker.");
             me.updatePosition(update.getLatitude(), update.getLongitude());

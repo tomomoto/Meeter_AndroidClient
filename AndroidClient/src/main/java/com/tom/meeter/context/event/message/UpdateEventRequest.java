@@ -13,8 +13,8 @@ public class UpdateEventRequest {
     private Optional<OffsetDateTime> starting;
     private Optional<OffsetDateTime> ending;
     private Optional<String> city;
-    private Optional<Float> latitude;
-    private Optional<Float> longitude;
+    private Optional<Double> latitude;
+    private Optional<Double> longitude;
     @JsonProperty(value = PHOTO_PATH_KEY)
     private Optional<String> photoPath;
 
@@ -41,11 +41,11 @@ public class UpdateEventRequest {
         return city;
     }
 
-    public Optional<Float> getLatitude() {
+    public Optional<Double> getLatitude() {
         return latitude;
     }
 
-    public Optional<Float> getLongitude() {
+    public Optional<Double> getLongitude() {
         return longitude;
     }
 
@@ -73,11 +73,11 @@ public class UpdateEventRequest {
         this.city = Optional.ofNullable(city);
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = Optional.ofNullable(latitude);
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = Optional.ofNullable(longitude);
     }
 

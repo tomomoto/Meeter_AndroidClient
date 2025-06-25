@@ -1,6 +1,6 @@
 package com.tom.meeter.context.event.utils;
 
-import static com.tom.meeter.infrastructure.common.CommonHelper.getFloatOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getDoubleOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getOffsetDateTime;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 
@@ -12,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class Utils {
+
     private Utils() {
     }
 
@@ -39,11 +40,11 @@ public class Utils {
         if (!Objects.equals(event.getCity(), eventCityChange)) {
             req.setCity(eventCityChange);
         }
-        Float eventLatitudeChange = getFloatOrNull(binding.latitude.getText());
+        Double eventLatitudeChange = getDoubleOrNull(binding.latitude.getText());
         if (!Objects.equals(event.getLatitude(), eventLatitudeChange)) {
             req.setLatitude(eventLatitudeChange);
         }
-        Float eventLongitudeChange = getFloatOrNull(binding.longitude.getText());
+        Double eventLongitudeChange = getDoubleOrNull(binding.longitude.getText());
         if (!Objects.equals(event.getLongitude(), eventLongitudeChange)) {
             req.setLongitude(eventLongitudeChange);
         }

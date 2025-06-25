@@ -75,7 +75,9 @@ public class UserActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        validate();
+        if (!validate()) {
+            return;
+        }
 
         ((App) getApplication()).getUserComponent().inject(this);
 
@@ -88,22 +90,26 @@ public class UserActivity extends AppCompatActivity {
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
     }
 
-    private void validate() {
+    private boolean validate() {
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             Log.d(TAG, "Unable to create user activity without extras.");
             finish();
+            return false;
         }
         userId = extras.getString(USER_ID_KEY);
         if (userId == null) {
             Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
             finish();
+            return false;
         }
         accountManager = AccountManager.get(this);
         if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
             startActivity(new Intent(this, ProfileActivity.class));
             finish();
+            return false;
         }
+        return true;
     }
 
     private void onInit(String token) {

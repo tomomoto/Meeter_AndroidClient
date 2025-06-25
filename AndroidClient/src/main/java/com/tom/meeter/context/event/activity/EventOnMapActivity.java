@@ -97,10 +97,10 @@ public class EventOnMapActivity extends AppCompatActivity
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == HttpCodes.OK) {
                     EventDTO event = response.body();
-                    Float latitude = event.getLatitude();
-                    Float longitude = event.getLongitude();
+                    Double latitude = event.getLatitude();
+                    Double longitude = event.getLongitude();
                     if (latitude == null || longitude == null) {
-                        showMessage(EventOnMapActivity.this, "Event location is not set yet.");
+                        showMessage(EventOnMapActivity.this, R.string.event_location_is_not_set_yet);
                         return;
                     }
                     LatLng eventLatLng = new LatLng(latitude, longitude);

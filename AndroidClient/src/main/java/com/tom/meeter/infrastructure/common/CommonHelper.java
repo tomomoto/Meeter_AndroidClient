@@ -66,6 +66,13 @@ public final class CommonHelper {
         return Float.valueOf(input.toString());
     }
 
+    public static Double getDoubleOrNull(CharSequence input) {
+        if (input == null || EMPTY_STR.contentEquals(input)) {
+            return null;
+        }
+        return Double.valueOf(input.toString());
+    }
+
     public static OffsetDateTime getOffsetDateTime(CharSequence input) {
         if (input == null || EMPTY_STR.contentEquals(input)) {
             return null;
