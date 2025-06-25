@@ -33,13 +33,13 @@ import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
+import com.tom.meeter.context.user.factory.UserViewModelFactory;
 import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.time.LocalDate;
 
@@ -58,7 +58,7 @@ public class UserActivity extends AppCompatActivity {
     @Inject
     UserService userService;
     @Inject
-    ViewModelFactory viewModelFactory;
+    UserViewModelFactory viewModelFactory;
     @Inject
     ImageDownloader imgDownloader;
 
@@ -201,6 +201,26 @@ public class UserActivity extends AppCompatActivity {
           @NonNull AttributeSet attrs) {
         return super.onCreateView(parent, name, ctx, attrs);
     }
+
+    @Override
+    protected void onDestroy() {
+        logMethod(TAG, this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        logMethod(TAG, this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        logMethod(TAG, this);
+        super.onPause();
+    }
+
+
 
     public static void dispatchToUserActivity(Context ctx, String userId) {
         ctx.startActivity(createUserActivityIntent(ctx, userId));

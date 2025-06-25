@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.injection.viewmodel;
+package com.tom.meeter.context.event.factory;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -7,33 +7,35 @@ import android.util.Log;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.tom.meeter.context.event.EventScope;
+import com.tom.meeter.context.user.viewmodel.UserViewModelModule;
+
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 
-@Singleton
-public class ViewModelFactory implements ViewModelProvider.Factory {
+@EventScope
+public class EventViewModelFactory implements ViewModelProvider.Factory {
 
-    private static final String TAG = ViewModelFactory.class.getCanonicalName();
+    private static final String TAG = EventViewModelFactory.class.getCanonicalName();
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> viewModels;
 
     @Inject
-    public ViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> viewModels) {
+    public EventViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> viewModels) {
         logMethod(TAG, this);
         this.viewModels = viewModels;
     }
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        Log.d(TAG, "ViewModelFactory creates " + modelClass);
+        Log.d(TAG, "EventViewModelFactory creates " + modelClass);
 
         Provider<ViewModel> viewModelProvider = viewModels.get(modelClass);
 
         if (viewModelProvider == null) {
             throw new IllegalArgumentException("ViewModel class " + modelClass
-                  + " not found. Check " + ViewModelModule.class.getCanonicalName()
+                  + " not found. Check " + UserViewModelModule.class.getCanonicalName()
                   + " file to be properly aligned.");
         }
         Log.d(TAG, "Before viewModelProvider.get() " + modelClass);

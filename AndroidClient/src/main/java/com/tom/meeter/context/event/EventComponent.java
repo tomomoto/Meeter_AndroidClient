@@ -15,10 +15,7 @@ import dagger.Component;
 
 @EventScope
 @Component(
-      modules = {
-            EventModule.class,
-            EventViewModelModule.class
-      },
+      modules = {EventViewModelModule.class},
       dependencies = {AppComponent.class})
 public interface EventComponent {
 

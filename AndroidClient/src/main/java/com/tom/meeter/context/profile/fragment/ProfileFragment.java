@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
@@ -124,7 +124,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
-        profileViewModel = ViewModelProviders.of(this, viewModelFactory)
+        profileViewModel = new ViewModelProvider(this, viewModelFactory)
               .get(ProfileViewModel.class);
         String authHeader = getAuthHeader(accountManager);
 

@@ -2,6 +2,7 @@ package com.tom.meeter;
 
 import android.app.Application;
 
+import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.image.activity.BaseUploadActivity;
 import com.tom.meeter.context.launcher.Launcher;
@@ -15,6 +16,7 @@ import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
 
 import javax.inject.Singleton;
@@ -28,7 +30,8 @@ import dagger.Component;
             TokenModule.class,
             ImageModule.class,
             ViewModelModule.class,
-            UserModule.class
+            UserModule.class,
+            EventModule.class
       })
 @Singleton
 public interface AppComponent {
@@ -38,6 +41,10 @@ public interface AppComponent {
     ImageDownloader provideImageDownloader();
 
     UserService provideUserService();
+
+    EventService provideEventService();
+
+    ViewModelFactory viewModelFactory();
 
 
     @Component.Builder

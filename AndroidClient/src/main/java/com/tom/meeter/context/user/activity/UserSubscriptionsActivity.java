@@ -24,9 +24,9 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.adapter.UsersAdapter;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
+import com.tom.meeter.context.user.factory.UserViewModelFactory;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheUserBinder;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -37,7 +37,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    ViewModelFactory viewModelFactory;
+    UserViewModelFactory viewModelFactory;
     @Inject
     ImageDownloader imgDownloader;
 
