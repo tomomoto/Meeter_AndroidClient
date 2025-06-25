@@ -1,4 +1,4 @@
-package com.tom.meeter.context.image;
+package com.tom.meeter;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -7,6 +7,7 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
+import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.image.service.ImageService;
 
 import javax.inject.Singleton;

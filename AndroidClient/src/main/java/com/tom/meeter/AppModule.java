@@ -27,6 +27,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -41,7 +43,7 @@ public class AppModule {
         Log.d(TAG, "Configuring AppModule...");
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public ProfileService provideProfileService(Application app) {
@@ -59,7 +61,7 @@ public class AppModule {
               .create(ProfileService.class);
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public UserDatabase provideUserDb(Application app) {
@@ -68,14 +70,14 @@ public class AppModule {
               .build();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public UserDao provideUserDao(UserDatabase userDatabase) {
         return userDatabase.userDao();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public Executor provideExecutor() {
@@ -83,7 +85,7 @@ public class AppModule {
               new ArrayBlockingQueue<>(15, false));
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public EventDatabase provideEventDb(Application app) {
@@ -92,14 +94,14 @@ public class AppModule {
               .build();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public EventDao provideEventDao(EventDatabase eventDatabase) {
         return eventDatabase.eventDao();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public SettingsService provideSettingsService(Application app) {
@@ -111,7 +113,7 @@ public class AppModule {
               .create(SettingsService.class);
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public HttpClient provideHttpClient(Application app) {

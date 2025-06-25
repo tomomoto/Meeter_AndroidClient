@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import com.tom.meeter.AppModule;
 import com.tom.meeter.context.auth.service.AuthService;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -27,7 +25,7 @@ public class AuthModule {
         logMethod(TAG, this);
     }
 
-    @Singleton
+    @AuthScope
     @NonNull
     @Provides
     public AuthService provideAuthService(Application app) {

@@ -49,7 +49,7 @@ public class Launcher extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
-        ((App) getApplication()).getTokenComponent().inject(this);
+        ((App) getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this);
         binding = LauncherBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

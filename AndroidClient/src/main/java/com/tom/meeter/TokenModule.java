@@ -1,4 +1,4 @@
-package com.tom.meeter.context.token;
+package com.tom.meeter;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;

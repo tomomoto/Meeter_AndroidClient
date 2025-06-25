@@ -2,9 +2,9 @@ package com.tom.meeter;
 
 import android.app.Application;
 
-import com.tom.meeter.context.auth.AuthComponent;
-import com.tom.meeter.context.event.EventComponent;
-import com.tom.meeter.context.image.ImageComponent;
+import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.image.activity.BaseUploadActivity;
+import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.activity.SubscribersActivity;
@@ -13,9 +13,11 @@ import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
 import com.tom.meeter.context.profile.fragment.GoogleMapsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
-import com.tom.meeter.context.token.TokenComponent;
-import com.tom.meeter.context.user.UserComponent;
+import com.tom.meeter.context.token.service.TokenService;
+import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
+
+import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -23,18 +25,20 @@ import dagger.Component;
 @Component(
       modules = {
             AppModule.class,
-            ViewModelModule.class
-      },
-      dependencies = {
-            TokenComponent.class,
-            AuthComponent.class,
-            ImageComponent.class,
-
-            EventComponent.class,
-            UserComponent.class
+            TokenModule.class,
+            ImageModule.class,
+            ViewModelModule.class,
+            UserModule.class
       })
-@AppScope
+@Singleton
 public interface AppComponent {
+
+    TokenService provideTokenService();
+
+    ImageDownloader provideImageDownloader();
+
+    UserService provideUserService();
+
 
     @Component.Builder
     interface Builder {
@@ -42,18 +46,10 @@ public interface AppComponent {
         @BindsInstance
         Builder application(Application application);
 
-        Builder authComponent(AuthComponent authComponent);
-
-        Builder tokenComponent(TokenComponent tokenComponent);
-
-        Builder eventComponent(EventComponent eventComponent);
-
-        Builder imageComponent(ImageComponent imageComponent);
-
-        Builder userComponent(UserComponent userComponent);
-
         AppComponent build();
     }
+
+    void inject(Launcher launcher);
 
     void inject(ProfileActivity profileActivity);
 
@@ -70,5 +66,7 @@ public interface AppComponent {
     void inject(SubscribersActivity subscribersActivity);
 
     void inject(SubscriptionsActivity subscriptionsActivity);
+
+    void inject(BaseUploadActivity baseUploadActivity);
 
 }
