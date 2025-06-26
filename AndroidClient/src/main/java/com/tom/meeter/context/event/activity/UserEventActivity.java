@@ -6,7 +6,6 @@ import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserAc
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -41,9 +40,9 @@ public class UserEventActivity extends AppCompatActivity {
     @Inject
     EventService eventService;
     @Inject
-    EventViewModel.EventViewModelAssistedFactory factory;
+    EventViewModel.AssistedFactory assistedFactory;
 
-    ActivityEventReadableBinding binding;
+    private ActivityEventReadableBinding binding;
     private EventViewModel viewModel;
     private AccountManager accountManager;
 
@@ -75,10 +74,12 @@ public class UserEventActivity extends AppCompatActivity {
     }
 
     private void onInit(String token, String eventId) {
-        ViewModelProvider.Factory factory = EventViewModel.providesFactory(
-              this.factory, eventId, token, this, this::recreate);
-        viewModel = new ViewModelProvider(this, factory)
+        viewModel = new ViewModelProvider(
+              this,
+              EventViewModel.factory(
+                    assistedFactory, eventId, token, this, this::recreate))
               .get(EventViewModel.class);
+
         viewModel.getEvent()
               .observe(this, event -> {
                   String userUuid = AuthHelper.getUserUuid(accountManager);

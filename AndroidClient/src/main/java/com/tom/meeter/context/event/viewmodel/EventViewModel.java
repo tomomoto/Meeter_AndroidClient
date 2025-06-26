@@ -20,7 +20,6 @@ import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import dagger.assisted.Assisted;
-import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -58,8 +57,8 @@ public class EventViewModel extends ViewModel {
         init();
     }
 
-    @AssistedFactory
-    public interface EventViewModelAssistedFactory {
+    @dagger.assisted.AssistedFactory
+    public interface AssistedFactory {
         EventViewModel create(
               @Assisted(ASSISTED_EVENT) String eventId,
               @Assisted(ASSISTED_TOKEN) String token,
@@ -67,8 +66,8 @@ public class EventViewModel extends ViewModel {
               @Assisted Runnable onNotAuthenticated);
     }
 
-    public static ViewModelProvider.Factory providesFactory(
-          EventViewModelAssistedFactory assistedFactory,
+    public static ViewModelProvider.Factory factory(
+          AssistedFactory assistedFactory,
           String eventId, String token, Context ctx,
           Runnable onNotAuthenticated) {
         return new ViewModelProvider.Factory() {

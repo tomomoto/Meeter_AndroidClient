@@ -10,7 +10,7 @@ public interface EventViewModelModule {
     ViewModel eventViewModel(EventViewModel eventViewModel);*/
 
 /*    @Binds
-    EventViewModel.EventViewModelAssistedFactory bindFactory(
-          EventViewModel.EventViewModelAssistedFactory impl
+    EventViewModel.AssistedFactory bindFactory(
+          EventViewModel.AssistedFactory impl
     );*/
 }

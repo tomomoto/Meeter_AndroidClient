@@ -68,7 +68,7 @@ public class ProfileEventActivity extends AppCompatActivity {
     @Inject
     EventService eventService;
     @Inject
-    EventViewModel.EventViewModelAssistedFactory factory;
+    EventViewModel.AssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
@@ -92,35 +92,6 @@ public class ProfileEventActivity extends AppCompatActivity {
                     downloadAndUpdateLayoutPhoto(photoPath);
                     binding.photoPath.setText(photoPath);
                 });
-
-    void downloadAndUpdateLayoutPhoto(String photoPath) {
-        imgDownloader.downloadEventImage(photoPath, this,
-              this::updateLayoutPhoto, ImagesHelper::bigCircleImage,
-        this::recreate);
-    }
-
-    private void updateLayoutPhoto(Bitmap photo) {
-        photoCache = photo;
-        binding.photo.setImageBitmap(photoCache);
-    }
-
-    private void switchEditMode() {
-        isEditableModeEnabled = !isEditableModeEnabled;
-
-        binding.selectPhotoButton.setEnabled(isEditableModeEnabled);
-        binding.locationMapButton.setEnabled(isEditableModeEnabled);
-        binding.selectStartingDateButton.setEnabled(isEditableModeEnabled);
-        binding.selectEndingDateButton.setEnabled(isEditableModeEnabled);
-
-        binding.name.setEnabled(isEditableModeEnabled);
-        binding.description.setEnabled(isEditableModeEnabled);
-        binding.latitude.setEnabled(isEditableModeEnabled);
-        binding.longitude.setEnabled(isEditableModeEnabled);
-        binding.starting.setEnabled(isEditableModeEnabled);
-        binding.ending.setEnabled(isEditableModeEnabled);
-        binding.city.setEnabled(isEditableModeEnabled);
-        binding.editSaveButton.setText(isEditableModeEnabled ? R.string.save : R.string.edit);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,10 +134,12 @@ public class ProfileEventActivity extends AppCompatActivity {
     }
 
     private void onInit(String token, String eventId) {
-        ViewModelProvider.Factory factory = EventViewModel.providesFactory(
-              this.factory, eventId, token, this, this::recreate);
-        viewModel = new ViewModelProvider(this, factory)
+        viewModel = new ViewModelProvider(
+              this,
+              EventViewModel.factory(
+                    assistedFactory, eventId, token, this, this::recreate))
               .get(EventViewModel.class);
+
         initLayout(token);
 
         viewModel.getEvent()
@@ -229,6 +202,35 @@ public class ProfileEventActivity extends AppCompatActivity {
         binding.selectPhotoButton.setOnClickListener(
               v -> imageUploadLauncher.launch(
                     new Intent(this, UploadEventImageActivity.class)));
+    }
+
+    void downloadAndUpdateLayoutPhoto(String photoPath) {
+        imgDownloader.downloadEventImage(photoPath, this,
+              this::updateLayoutPhoto, ImagesHelper::bigCircleImage,
+              this::recreate);
+    }
+
+    private void updateLayoutPhoto(Bitmap photo) {
+        photoCache = photo;
+        binding.photo.setImageBitmap(photoCache);
+    }
+
+    private void switchEditMode() {
+        isEditableModeEnabled = !isEditableModeEnabled;
+
+        binding.selectPhotoButton.setEnabled(isEditableModeEnabled);
+        binding.locationMapButton.setEnabled(isEditableModeEnabled);
+        binding.selectStartingDateButton.setEnabled(isEditableModeEnabled);
+        binding.selectEndingDateButton.setEnabled(isEditableModeEnabled);
+
+        binding.name.setEnabled(isEditableModeEnabled);
+        binding.description.setEnabled(isEditableModeEnabled);
+        binding.latitude.setEnabled(isEditableModeEnabled);
+        binding.longitude.setEnabled(isEditableModeEnabled);
+        binding.starting.setEnabled(isEditableModeEnabled);
+        binding.ending.setEnabled(isEditableModeEnabled);
+        binding.city.setEnabled(isEditableModeEnabled);
+        binding.editSaveButton.setText(isEditableModeEnabled ? R.string.save : R.string.edit);
     }
 
     private void showAlertDialog() {
