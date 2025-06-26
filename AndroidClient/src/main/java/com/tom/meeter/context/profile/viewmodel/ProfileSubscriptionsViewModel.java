@@ -2,7 +2,7 @@ package com.tom.meeter.context.profile.viewmodel;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -17,8 +17,8 @@ import com.tom.meeter.infrastructure.http.HttpCodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedInject;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -26,36 +26,48 @@ public class ProfileSubscriptionsViewModel extends ViewModel {
 
     private static final String TAG = ProfileSubscribersViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<List<Subscriber>> subscriptionsLiveData = new MutableLiveData<>();
+    private final ProfileService service;
+    private final String auth;
+    private final Context ctx;
+    private final Runnable onNotAuthenticated;
 
-    private final ProfileService profileService;
+    private final MutableLiveData<List<Subscriber>> subscriptions = new MutableLiveData<>();
 
-    @Inject
-    public ProfileSubscriptionsViewModel(ProfileService profileService) {
+    @AssistedInject
+    public ProfileSubscriptionsViewModel(
+          ProfileService service,
+          @Assisted String auth,
+          @Assisted Context ctx,
+          @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
-        this.profileService = profileService;
+        this.service = service;
+        this.auth = auth;
+        this.ctx = ctx.getApplicationContext();
+        this.onNotAuthenticated = onNotAuthenticated;
+        init();
     }
 
-    public void fetchProfileSubscriptions(String auth, Activity activity) {
-        profileService.getMySubscriptions(auth).enqueue(
-              new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
+    public void init() {
+        service.getMySubscriptions(auth).enqueue(
+              new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {
                       super.onResponse(call, resp);
-                      if (resp.code() == HttpCodes.OK) {
-                          List<Subscriber> subscribers = new ArrayList<>();
-                          for (UserDTO subscription : resp.body()) {
-                              subscribers.add(new Subscriber(subscription, true));
-                          }
-                          subscriptionsLiveData.setValue(subscribers);
+                      if (resp.code() != HttpCodes.OK || resp.body() == null) {
                           return;
                       }
+                      List<Subscriber> result = new ArrayList<>();
+                      for (UserDTO subscription : resp.body()) {
+                          result.add(new Subscriber(subscription, true));
+                      }
+                      subscriptions.setValue(result);
+                      return;
                   }
               }
         );
     }
 
-    public LiveData<List<Subscriber>> getSubscriptionsLiveData() {
-        return subscriptionsLiveData;
+    public LiveData<List<Subscriber>> getSubscriptions() {
+        return subscriptions;
     }
 }

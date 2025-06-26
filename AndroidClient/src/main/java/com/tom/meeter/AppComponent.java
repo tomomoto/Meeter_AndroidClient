@@ -16,8 +16,6 @@ import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelModule;
 
 import javax.inject.Singleton;
 
@@ -29,7 +27,6 @@ import dagger.Component;
             AppModule.class,
             TokenModule.class,
             ImageModule.class,
-            ViewModelModule.class,
             UserModule.class,
             EventModule.class
       })
@@ -43,8 +40,6 @@ public interface AppComponent {
     UserService provideUserService();
 
     EventService provideEventService();
-
-    ViewModelFactory viewModelFactory();
 
 
     @Component.Builder
