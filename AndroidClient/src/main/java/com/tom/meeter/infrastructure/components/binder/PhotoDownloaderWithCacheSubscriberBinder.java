@@ -87,9 +87,11 @@ public class PhotoDownloaderWithCacheSubscriberBinder
         }
     }
 
-    private void sendSubUnSubEvent(Subscriber sub, SubscriberViewHolder holder) {
+    private void sendSubUnSubEvent(
+          Subscriber sub, SubscriberViewHolder holder) {
         if (subUnSubClickListener != null) {
-            subUnSubClickListener.onSubUnSub(sub, holder.getBindingAdapterPosition());
+            subUnSubClickListener.onSubUnSub(
+                  sub, holder.getBindingAdapterPosition());
         }
     }
 }

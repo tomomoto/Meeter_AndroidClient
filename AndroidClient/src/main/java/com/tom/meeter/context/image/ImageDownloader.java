@@ -33,8 +33,8 @@ public class ImageDownloader {
 
     public void downloadEventImage(
           String photoPath, Context ctx,
-          Consumer<Bitmap> onDownloaded,
           Function<ResponseBody, Bitmap> bodyConverter,
+          Consumer<Bitmap> onDownloaded,
           Runnable onNotAuthenticated) {
         imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
               .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
@@ -48,26 +48,6 @@ public class ImageDownloader {
                       try (ResponseBody body = response.body()) {
                           onDownloaded.accept(bodyConverter.apply(body));
                           return;
-                      }
-                  }
-              });
-    }
-
-    @Deprecated
-    public void downloadEventImage(
-          String photoPath, Context ctx,
-          Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
-        imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
-                  @Override
-                  public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                      super.onResponse(call, response);
-                      //Log.d(TAG, "/images/event" + photoPath + " downloaded...");
-                      if (response.code() == HttpCodes.OK) {
-                          try (ResponseBody body = response.body()) {
-                              onDownloaded.accept(body);
-                              return;
-                          }
                       }
                   }
               });

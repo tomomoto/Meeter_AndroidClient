@@ -1,7 +1,7 @@
 package com.tom.meeter.context.event.activity;
 
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.profile.fragment.GoogleMapsFragment.ZOOM_VALUE;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -9,7 +9,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,18 +18,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.ActivityEventOnMapBinding;
-import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
@@ -42,14 +41,16 @@ public class EventOnMapActivity extends AppCompatActivity
       implements OnMapReadyCallback {
 
     private static final String TAG = EventOnMapActivity.class.getCanonicalName();
+
+    @Inject
+    EventService service;
+    @Inject
+    ImageDownloader imgDownloader;
+
+    //TODO remake onNotAuthenticated
+    private final Runnable onNotAuthenticated = this::finish;
     private GoogleMap gmap;
     private ActivityEventOnMapBinding binding;
-
-    @Inject
-    EventService eventService;
-    @Inject
-    ImageDownloader imageDownloader;
-
     private AccountManager accountManager;
     private String eventId;
 
@@ -61,11 +62,13 @@ public class EventOnMapActivity extends AppCompatActivity
         if (extras == null) {
             showMessage(this, "Unable to show map without extras provided.");
             finish();
+            return;
         }
         eventId = extras.getString(EventDispatcherActivity.EVENT_ID_KEY);
         if (eventId == null) {
             showMessage(this, "Unable to show map without event_id provided.");
             finish();
+            return;
         }
 
         binding = ActivityEventOnMapBinding.inflate(getLayoutInflater());
@@ -73,8 +76,8 @@ public class EventOnMapActivity extends AppCompatActivity
         setContentView(view);
 
         ((App) getApplication()).getEventComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
+        accountManager = AccountManager.get(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
               .findFragmentById(R.id.eventOnMap);
@@ -89,49 +92,52 @@ public class EventOnMapActivity extends AppCompatActivity
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
 
-        String token = AuthHelper.peekToken(accountManager);
-        String authHeader = Globals.getAuthHeader(token);
-        eventService.getEvent(authHeader, eventId).enqueue(new ErrorLogger<>(this) {
-            @Override
-            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                if (response.code() == HttpCodes.OK) {
-                    EventDTO event = response.body();
-                    Double latitude = event.getLatitude();
-                    Double longitude = event.getLongitude();
-                    if (latitude == null || longitude == null) {
-                        showMessage(EventOnMapActivity.this, R.string.event_location_is_not_set_yet);
-                        return;
-                    }
-                    LatLng eventLatLng = new LatLng(latitude, longitude);
-                    String photoPath = event.getPhotoPath();
-                    if (photoPath == null) {
-                        gmap.addMarker(
-                              new MarkerOptions()
-                                    .position(eventLatLng)
-                                    .title(event.getName()));
-                        gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLatLng, ZOOM_VALUE));
-                    } else {
-                        imageDownloader.downloadEventImage(
-                              photoPath,
-                              EventOnMapActivity.this.getApplicationContext(),
-                              (photo) -> {
-                                  gmap.addMarker(
-                                        new MarkerOptions()
-                                              .position(eventLatLng)
-                                              .icon(BitmapDescriptorFactory.fromBitmap(circleImage(photo)))
-                                              .title(event.getName()));
-                                  gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLatLng, ZOOM_VALUE));
-                              },
-                              EventOnMapActivity.this::recreate);
-                    }
-                    return;
-                }
-                if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                    EventOnMapActivity.this.recreate();
-                }
-                Log.i(TAG, "/event/{id}: " + response.code() + " : " + response.body());
-            }
-        });
+        service.getEvent(getAuthHeader(accountManager), eventId).enqueue(
+              //TODO:
+              // token is not checked at start,
+              // in case of invalid token infinity recreation
+              new BaseOnNotAuthenticatedCallback<>(this, onNotAuthenticated) {
+                  @Override
+                  public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
+                      super.onResponse(call, resp);
+                      if (resp.code() != HttpCodes.OK || resp.body() == null) {
+                          return;
+                      }
+                      EventDTO event = resp.body();
+                      Double latitude = event.getLatitude();
+                      Double longitude = event.getLongitude();
+                      if (latitude == null || longitude == null) {
+                          showMessage(EventOnMapActivity.this, R.string.event_location_is_not_set_yet);
+                          return;
+                      }
+                      LatLng latLng = new LatLng(latitude, longitude);
+                      String photoPath = event.getPhotoPath();
+                      if (photoPath == null) {
+                          addMarkerMoveCamera(latLng, event.getName(), null);
+                          return;
+                      }
+                      imgDownloader.downloadEventImage(
+                            photoPath, EventOnMapActivity.this,
+                            ImagesHelper::circleImage,
+                            (photo) -> addMarkerMoveCamera(
+                                  latLng,
+                                  event.getName(),
+                                  BitmapDescriptorFactory.fromBitmap(photo)),
+                            onNotAuthenticated);
+                      return;
+                  }
+              });
+    }
+
+    private void addMarkerMoveCamera(
+          LatLng latLng, String title, BitmapDescriptor bmd) {
+        gmap.addMarker(
+              new MarkerOptions()
+                    .position(latLng)
+                    .title(title)
+                    .icon(bmd)
+        );
+        gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_VALUE));
     }
 
     @Override

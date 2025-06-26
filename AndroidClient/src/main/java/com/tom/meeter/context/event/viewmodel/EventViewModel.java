@@ -96,8 +96,8 @@ public class EventViewModel extends ViewModel {
                           return;
                       }
                       imageDownloader.downloadEventImage(
-                            photoPath, ctx, eventPhoto::setValue,
-                            ImagesHelper::bigCircleImage, onNotAuthenticated);
+                            photoPath, ctx, ImagesHelper::bigCircleImage,
+                            eventPhoto::setValue, onNotAuthenticated);
                   }
               }
         );

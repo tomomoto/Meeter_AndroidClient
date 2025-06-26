@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriberItemBinding;
+import com.tom.meeter.infrastructure.components.adapter.BaseAdapter;
 import com.tom.meeter.infrastructure.components.binder.SubscriberBinder;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
@@ -22,7 +23,8 @@ import com.tom.meeter.infrastructure.http.HttpCodes;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class SubscribersAdapter extends BaseSubscriberAdapter<SubscriberViewHolder> {
+public class SubscribersAdapter
+      extends BaseAdapter<SubscriberViewHolder, Subscriber> {
 
     private static final String TAG = SubscribersAdapter.class.getCanonicalName();
 
@@ -34,9 +36,10 @@ public class SubscribersAdapter extends BaseSubscriberAdapter<SubscriberViewHold
           UserService service, Runnable onAuthFail, Context ctx,
           SubscriberBinder<SubscriberViewHolder> binder) {
         super(binder);
-        binder.setup(
-              this::onSubUnSubClick, user -> dispatchToUserActivity(ctx, user.getId()));
         logMethod(TAG, this);
+        binder.setup(
+              this::onSubUnSubClick,
+              user -> dispatchToUserActivity(ctx, user.getId()));
         this.service = service;
         this.onAuthFail = onAuthFail;
         this.ctx = ctx;

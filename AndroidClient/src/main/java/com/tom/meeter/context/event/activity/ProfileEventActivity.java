@@ -203,9 +203,9 @@ public class ProfileEventActivity extends AppCompatActivity {
     }
 
     void downloadAndUpdateLayoutPhoto(String photoPath) {
-        imgDownloader.downloadEventImage(photoPath, this,
-              this::updateLayoutPhoto, ImagesHelper::bigCircleImage,
-              this::recreate);
+        imgDownloader.downloadEventImage(
+              photoPath, this, ImagesHelper::bigCircleImage,
+              this::updateLayoutPhoto, this::recreate);
     }
 
     private void updateLayoutPhoto(Bitmap photo) {

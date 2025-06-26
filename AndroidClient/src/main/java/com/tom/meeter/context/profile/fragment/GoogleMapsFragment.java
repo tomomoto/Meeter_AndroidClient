@@ -47,6 +47,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.domain.GMapEvent;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -339,10 +340,11 @@ public class GoogleMapsFragment extends Fragment
             return;
         }
         imageDownloader.downloadEventImage(
-              photoPath, getContext(),
+              photoPath, requireContext(),
+              ImagesHelper::circleImage,
               photo -> {
                   if (photo != null) {
-                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(circleImage(photo)));
+                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(photo));
                   }
               },
               () -> InfrastructureHelper.restartActivityFromFragment(this));

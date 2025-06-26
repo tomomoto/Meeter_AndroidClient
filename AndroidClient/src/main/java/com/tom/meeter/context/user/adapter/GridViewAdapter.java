@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.CardItemBinding;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 
 import java.util.List;
 
@@ -51,8 +52,8 @@ public class GridViewAdapter extends ArrayAdapter<EventDTO> {
             String photoPath = event.getPhotoPath();
             if (photoPath != null) {
                 imageDownloader.downloadEventImage(
-                      photoPath, ctx,
-                      (photo) -> holder.binding.imageView.setImageBitmap(circleImage(photo)),
+                      photoPath, ctx, ImagesHelper::circleImage,
+                      holder.binding.imageView::setImageBitmap,
                       onAuthFail);
             }
         } else {

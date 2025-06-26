@@ -6,6 +6,7 @@ import android.content.Context;
 
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
@@ -36,6 +37,7 @@ public class PhotoDownloaderEventBinder
             return;
         }
         imageDownloader.downloadEventImage(
-              photoPath, ctx, (photo) -> holder.updatePhoto(circleImage(photo)), onAuthFail);
+              photoPath, ctx, ImagesHelper::circleImage,
+              holder::updatePhoto, onAuthFail);
     }
 }

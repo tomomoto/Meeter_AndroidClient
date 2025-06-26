@@ -1,5 +1,5 @@
 package com.tom.meeter.context.network.dto;
 
-public interface BaseNetworkEntity {
+public interface EntityBase {
     String getId();
 }

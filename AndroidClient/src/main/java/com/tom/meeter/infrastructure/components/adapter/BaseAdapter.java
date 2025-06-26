@@ -4,13 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.context.network.dto.BaseNetworkEntity;
+import com.tom.meeter.context.network.dto.EntityBase;
 import com.tom.meeter.infrastructure.components.binder.BaseViewHolderBinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends BaseNetworkEntity>
+public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends EntityBase>
       extends RecyclerView.Adapter<VH> {
 
     protected final BaseViewHolderBinder<VH, T> binder;
@@ -22,7 +22,7 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends 
 
     public void setData(List<T> newTargets) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
-              new NetworkEntityDiffCallback<>(targets, newTargets));
+              new EntityBaseDiffCallback<>(targets, newTargets));
         this.targets.clear();
         this.targets.addAll(newTargets);
         diffResult.dispatchUpdatesTo(this);
@@ -38,12 +38,12 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends 
         return targets.size();
     }
 
-    public static class NetworkEntityDiffCallback<T extends BaseNetworkEntity>
+    public static class EntityBaseDiffCallback<T extends EntityBase>
           extends DiffUtil.Callback {
 
         private final List<T> oldTargets, newTargets;
 
-        public NetworkEntityDiffCallback(List<T> oldTargets, List<T> newTargets) {
+        public EntityBaseDiffCallback(List<T> oldTargets, List<T> newTargets) {
             this.oldTargets = oldTargets;
             this.newTargets = newTargets;
         }
@@ -59,12 +59,15 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends 
         }
 
         @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldTargets.get(oldItemPosition).equals(newTargets.get(newItemPosition));
+        public boolean areContentsTheSame(
+              int oldItemPosition, int newItemPosition) {
+            return oldTargets.get(oldItemPosition)
+                  .equals(newTargets.get(newItemPosition));
         }
 
         @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+        public boolean areItemsTheSame(
+              int oldItemPosition, int newItemPosition) {
             return oldTargets.get(oldItemPosition).getId()
                   .equals(newTargets.get(newItemPosition).getId());
         }

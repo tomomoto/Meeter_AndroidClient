@@ -1,6 +1,5 @@
 package com.tom.meeter.infrastructure.components.binder;
 
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.Context;
@@ -9,6 +8,7 @@ import android.util.Log;
 
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 
@@ -54,10 +54,10 @@ public class PhotoDownloaderWithCacheEventBinder
         }
         imageDownloader.downloadEventImage(
               photoPath, ctx,
+              ImagesHelper::circleImage,
               photo -> {
-                  Bitmap circled = circleImage(photo);
-                  holder.updatePhoto(circled);
-                  imagesCache.put(photoPath, circled);
+                  holder.updatePhoto(photo);
+                  imagesCache.put(photoPath, photo);
                   Log.d(TAG, "PhotoDownloaderWithCacheEventBinder: event " +
                         "image downloaded for [" + photoPath + "], cache updated.");
               },
