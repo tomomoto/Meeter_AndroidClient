@@ -79,7 +79,6 @@ public class ProfileEventActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> mapResult;
 
     private EventDTO eventCache;
-    private Bitmap photoCache;
     private boolean isEditableModeEnabled = false;
 
     private final ActivityResultLauncher<Intent> imageUploadLauncher =
@@ -210,8 +209,7 @@ public class ProfileEventActivity extends AppCompatActivity {
     }
 
     private void updateLayoutPhoto(Bitmap photo) {
-        photoCache = photo;
-        binding.photo.setImageBitmap(photoCache);
+        binding.photo.setImageBitmap(photo);
     }
 
     private void switchEditMode() {

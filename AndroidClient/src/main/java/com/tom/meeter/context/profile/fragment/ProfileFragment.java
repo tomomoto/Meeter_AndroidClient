@@ -8,7 +8,6 @@ import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -16,6 +15,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,23 +37,23 @@ import com.tom.meeter.context.image.activity.UploadUserImageActivity;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.activity.SubscribersActivity;
 import com.tom.meeter.context.profile.activity.SubscriptionsActivity;
+import com.tom.meeter.context.profile.factory.ProfileViewModelAssistedFactory;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
 import com.tom.meeter.databinding.FragmentProfileBinding;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -63,22 +63,20 @@ import retrofit2.Response;
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = ProfileFragment.class.getCanonicalName();
-    private boolean isEditableModeEnabled = false;
-
-    private FragmentProfileBinding binding;
 
     @Inject
-    ViewModelFactory viewModelFactory;
+    ProfileViewModelAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imageDownloader;
     @Inject
     ProfileService profileService;
-    private ProfileViewModel profileViewModel;
+
     private AccountManager accountManager;
     private EventsCardAdapter adapter;
-
+    private FragmentProfileBinding binding;
+    private ProfileViewModel viewModel;
+    private boolean isEditableModeEnabled = false;
     private UserDTO userCache;
-    private ResponseBody photoCache;
 
     public ProfileFragment() {
         logMethod(TAG, this);
@@ -124,14 +122,16 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
-        profileViewModel = new ViewModelProvider(this, viewModelFactory)
+        String auth = getAuthHeader(accountManager);
+        viewModel = new ViewModelProvider(
+              this,
+              ProfileViewModel.factory(
+                    assistedFactory, auth, requireContext(),
+                    () -> InfrastructureHelper.restartActivityFromFragment(this)))
               .get(ProfileViewModel.class);
-        String authHeader = getAuthHeader(accountManager);
-
-        profileViewModel.fetchProfile(authHeader, this);
 
         LifecycleOwner owner = getViewLifecycleOwner();
-        profileViewModel.getProfileLiveData()
+        viewModel.getProfile()
               .observe(
                     owner,
                     user -> {
@@ -139,13 +139,13 @@ public class ProfileFragment extends Fragment {
                         updateLayoutValues();
                     });
 
-        profileViewModel.getProfileEventsLiveData()
-              .observe(owner, events -> adapter.setData(events));
-        profileViewModel.getProfilePhotoLiveData()
-              .observe(owner, this::updateLayoutPhoto);
-
         binding.events.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.events.setAdapter(adapter);
+
+        viewModel.getEvents()
+              .observe(owner, events -> adapter.setData(events));
+        viewModel.getPhoto()
+              .observe(owner, this::updateLayoutPhoto);
 
         binding.btnEdit.setOnClickListener(v -> {
             if (isEditableModeEnabled) {
@@ -155,7 +155,7 @@ public class ProfileFragment extends Fragment {
                     switchEditMode();
                     return;
                 }
-                profileService.updateProfile(authHeader, req)
+                profileService.updateProfile(auth, req)
                       .enqueue(new ActivityRestarterOnAuthFailure<>(this) {
                           @Override
                           public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
@@ -201,13 +201,12 @@ public class ProfileFragment extends Fragment {
 
     void downloadAndUpdateLayoutPhoto(String photoPath) {
         imageDownloader.downloadUserImage(photoPath, requireContext(),
-              this::updateLayoutPhoto,
+              ImagesHelper::bigCircleImage, this::updateLayoutPhoto,
               () -> InfrastructureHelper.restartActivityFromFragment(this));
     }
 
-    private void updateLayoutPhoto(ResponseBody photo) {
-        photoCache = photo;
-        binding.photo.setImageBitmap(circleImage(photoCache, 600, 600));
+    private void updateLayoutPhoto(Bitmap photo) {
+        binding.photo.setImageBitmap(photo);
     }
 
     private void switchEditMode() {

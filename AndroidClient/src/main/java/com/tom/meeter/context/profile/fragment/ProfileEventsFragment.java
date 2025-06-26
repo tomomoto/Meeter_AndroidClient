@@ -14,17 +14,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
+import com.tom.meeter.context.profile.factory.ProfileEventsViewModelAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventBinder;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -37,11 +37,11 @@ public class ProfileEventsFragment extends Fragment {
     private EventsAdapter adapter;
 
     @Inject
-    ViewModelFactory viewModelFactory;
+    ProfileEventsViewModelAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imageDownloader;
 
-    private ProfileEventsViewModel profileEventsViewModel;
+    private ProfileEventsViewModel viewModel;
 
     private AccountManager accountManager;
 
@@ -83,13 +83,20 @@ public class ProfileEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-        profileEventsViewModel = ViewModelProviders.of(this, viewModelFactory)
+
+        String auth = getAuthHeader(accountManager);
+        viewModel = new ViewModelProvider(
+              this,
+              ProfileEventsViewModel.factory(
+                    assistedFactory, auth, requireContext(),
+                    () -> InfrastructureHelper.restartActivityFromFragment(this)))
               .get(ProfileEventsViewModel.class);
-        profileEventsViewModel.fetchProfileEvents(getAuthHeader(accountManager), this);
-        profileEventsViewModel.getProfileEventsLiveData()
-              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
+
         binding.userEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.userEventsFragmentRecyclerView.setAdapter(adapter);
+
+        viewModel.getEvents()
+              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
     }
 
     @Override

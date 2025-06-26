@@ -153,7 +153,7 @@ public class UserActivity extends AppCompatActivity {
 
         userViewModel = new ViewModelProvider(this, viewModelFactory)
               .get(UserViewModel.class);
-        userViewModel.fetchUserInformation(token, userId, this);
+        userViewModel.fetchUserInformation(Globals.getAuthHeader(token), userId, this);
         userViewModel.getUserLiveData()
               .observe(this, user -> {
                   binding.name.setText(user.getName());

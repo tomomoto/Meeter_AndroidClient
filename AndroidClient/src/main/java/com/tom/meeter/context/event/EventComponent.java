@@ -13,9 +13,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 
 @EventScope
-@Component(
-/*      modules = {EventViewModelModule.class},*/
-      dependencies = {AppComponent.class})
+@Component(dependencies = {AppComponent.class})
 public interface EventComponent {
 
     @Component.Builder

@@ -33,7 +33,8 @@ public class ImageDownloader {
 
     public void downloadEventImage(
           String photoPath, Context ctx,
-          Consumer<Bitmap> onDownloaded, Function<ResponseBody, Bitmap> bodyConverter,
+          Consumer<Bitmap> onDownloaded,
+          Function<ResponseBody, Bitmap> bodyConverter,
           Runnable onNotAuthenticated) {
         imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
               .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
@@ -41,11 +42,12 @@ public class ImageDownloader {
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       super.onResponse(call, response);
                       //Log.d(TAG, "/images/event" + photoPath + " downloaded...");
-                      if (response.code() == HttpCodes.OK) {
-                          try (ResponseBody body = response.body()) {
-                              onDownloaded.accept(bodyConverter.apply(body));
-                              return;
-                          }
+                      if (response.code() != HttpCodes.OK) {
+                          return;
+                      }
+                      try (ResponseBody body = response.body()) {
+                          onDownloaded.accept(bodyConverter.apply(body));
+                          return;
                       }
                   }
               });
@@ -85,6 +87,27 @@ public class ImageDownloader {
                               onDownloaded.accept(body);
                               return;
                           }
+                      }
+                  }
+              });
+    }
+
+    public void downloadUserImage(
+          String photoPath, Context ctx,
+          Function<ResponseBody, Bitmap> converter,
+          Consumer<Bitmap> onDownloaded,
+          Runnable onNotAuthenticated) {
+        imageService.downloadUserImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
+                  @Override
+                  public void onResponse(Call<ResponseBody> call, Response<ResponseBody> resp) {
+                      super.onResponse(call, resp);
+                      if (resp.code() != HttpCodes.OK) {
+                          return;
+                      }
+                      try (ResponseBody body = resp.body()) {
+                          onDownloaded.accept(converter.apply(body));
+                          return;
                       }
                   }
               });

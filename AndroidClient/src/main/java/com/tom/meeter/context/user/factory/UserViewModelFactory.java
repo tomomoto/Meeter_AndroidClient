@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.context.user.UserScope;
-import com.tom.meeter.context.user.viewmodel.UserViewModelModule;
+import com.tom.meeter.context.user.UserViewModelModule;
 
 import java.util.Map;
 

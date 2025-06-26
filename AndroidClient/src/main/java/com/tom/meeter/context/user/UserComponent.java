@@ -6,7 +6,6 @@ import com.tom.meeter.AppComponent;
 import com.tom.meeter.context.user.activity.UserActivity;
 import com.tom.meeter.context.user.activity.UserSubscribersActivity;
 import com.tom.meeter.context.user.activity.UserSubscriptionsActivity;
-import com.tom.meeter.context.user.viewmodel.UserViewModelModule;
 
 import dagger.BindsInstance;
 import dagger.Component;

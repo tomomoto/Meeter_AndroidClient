@@ -22,15 +22,17 @@ public abstract class ViewModelModule {
         Log.d(TAG, "Configuring ViewModelModule...");
     }
 
-    @Binds
+/*    @Binds
     @IntoMap
     @ViewModelKey(ProfileViewModel.class)
-    abstract ViewModel profileViewModel(ProfileViewModel profileViewModel);
+    abstract ViewModel profileViewModel(ProfileViewModel profileViewModel);*/
 
+/*
     @Binds
     @IntoMap
     @ViewModelKey(ProfileEventsViewModel.class)
     abstract ViewModel profileEventsViewModel(ProfileEventsViewModel profileEventsViewModel);
+*/
 
     @Binds
     @IntoMap

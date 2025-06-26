@@ -12,7 +12,6 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.user.service.UserService;
-import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -44,8 +43,8 @@ public class UserViewModel extends ViewModel {
         this.userService = userService;
     }
 
-    public void fetchUserInformation(String token, String userId, Activity activity) {
-        userService.getUser(Globals.getAuthHeader(token), userId).enqueue(
+    public void fetchUserInformation(String auth, String userId, Activity activity) {
+        userService.getUser(auth, userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
                   @Override
                   public void onResponse(Call<UserDTO> call, Response<UserDTO> resp) {
@@ -67,7 +66,7 @@ public class UserViewModel extends ViewModel {
               }
         );
 
-        userService.amISubscribed(Globals.getAuthHeader(token), userId).enqueue(
+        userService.amISubscribed(auth, userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
                   @Override
                   public void onResponse(Call<Boolean> call, Response<Boolean> resp) {
@@ -80,7 +79,7 @@ public class UserViewModel extends ViewModel {
               }
         );
 
-        userService.getUserEvents(Globals.getAuthHeader(token), userId).enqueue(
+        userService.getUserEvents(auth, userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
                   @Override
                   public void onResponse(Call<List<EventDTO>> call, Response<List<EventDTO>> resp) {
