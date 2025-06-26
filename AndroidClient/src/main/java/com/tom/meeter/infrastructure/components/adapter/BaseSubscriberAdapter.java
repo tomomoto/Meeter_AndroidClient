@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class BaseSubscriberAdapter<T extends RecyclerView.ViewHolder>
       extends RecyclerView.Adapter<T> {
 
-    private final SubscriberBinder<T> binder;
+    protected final SubscriberBinder<T> binder;
     protected final List<Subscriber> subs = new ArrayList<>();
 
     protected BaseSubscriberAdapter(SubscriberBinder<T> binder) {

@@ -1,6 +1,5 @@
 package com.tom.meeter.infrastructure.components.binder;
 
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.Context;
@@ -18,28 +17,34 @@ import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PhotoDownloaderWithCacheSubscriberBinder implements SubscriberBinder<SubscriberViewHolder> {
+public class PhotoDownloaderWithCacheSubscriberBinder
+      implements SubscriberBinder<SubscriberViewHolder> {
 
     private static final String TAG = PhotoDownloaderWithCacheSubscriberBinder.class.getCanonicalName();
 
     private final Context ctx;
     private final ImageDownloader imageDownloader;
-    private final OnUserClickListener userClickListener;
-    private final OnSubscribeUnsubscribeClickListener subUnsubClickListener;
     private final Runnable onAuthFail;
     private final Map<String, Bitmap> imagesCache = new ConcurrentHashMap<>();
 
+    private OnUserClickListener userClickListener;
+    private OnSubscribeUnsubscribeClickListener subUnSubClickListener;
+
     public PhotoDownloaderWithCacheSubscriberBinder(
           Context ctx, ImageDownloader imgDownloader,
-          OnUserClickListener listener,
-          OnSubscribeUnsubscribeClickListener subUnsubClickListener,
           Runnable onAuthFail) {
         logMethod(TAG, this);
         this.ctx = ctx;
         this.imageDownloader = imgDownloader;
-        this.userClickListener = listener;
-        this.subUnsubClickListener = subUnsubClickListener;
         this.onAuthFail = onAuthFail;
+    }
+
+    @Override
+    public void setup(
+          OnSubscribeUnsubscribeClickListener subUnSubClickListener,
+          OnUserClickListener userClickListener) {
+        this.subUnSubClickListener = subUnSubClickListener;
+        this.userClickListener = userClickListener;
     }
 
     @Override
@@ -50,16 +55,18 @@ public class PhotoDownloaderWithCacheSubscriberBinder implements SubscriberBinde
             holder.bind(
                   target.isAmISubscribedTo(),
                   user.getName(), user.getSurname(), null,
-                  (v) -> userClickListener.onClick(user),
-                  (v) -> subUnsubClickListener.onSubUnsub(target, holder.getBindingAdapterPosition()));
+                  (v) -> sendUserClickEvent(user),
+                  (v) -> sendSubUnSubEvent(target, holder)
+            );
             return;
         }
         Bitmap circledPhotoCache = imagesCache.get(photoPath);
         holder.bind(
               target.isAmISubscribedTo(),
               user.getName(), user.getSurname(), circledPhotoCache,
-              (v) -> userClickListener.onClick(user),
-              (v) -> subUnsubClickListener.onSubUnsub(target, holder.getBindingAdapterPosition()));
+              (v) -> sendUserClickEvent(user),
+              (v) -> sendSubUnSubEvent(target, holder)
+        );
         if (circledPhotoCache != null) {
             return;
         }
@@ -72,5 +79,17 @@ public class PhotoDownloaderWithCacheSubscriberBinder implements SubscriberBinde
                         "image downloaded for [" + photoPath + "], cache updated.");
               },
               onAuthFail);
+    }
+
+    private void sendUserClickEvent(UserDTO user) {
+        if (userClickListener != null) {
+            userClickListener.onClick(user);
+        }
+    }
+
+    private void sendSubUnSubEvent(Subscriber sub, SubscriberViewHolder holder) {
+        if (subUnSubClickListener != null) {
+            subUnSubClickListener.onSubUnSub(sub, holder.getBindingAdapterPosition());
+        }
     }
 }

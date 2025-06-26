@@ -17,7 +17,6 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.SubscribersAdapter;
 import com.tom.meeter.context.profile.factory.ProfileSubscribersViewModelAssistedFactory;
-import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.viewmodel.ProfileSubscribersViewModel;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
@@ -31,16 +30,15 @@ public class SubscribersActivity extends AppCompatActivity {
     private static final String TAG = SubscribersActivity.class.getCanonicalName();
 
     @Inject
-    ProfileService profileService;
-    @Inject
     TokenService tokenService;
     @Inject
     ProfileSubscribersViewModelAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
     @Inject
-    UserService userService;
+    UserService service;
 
+    private final Runnable onAuthFail = this::recreate;
     private AccountManager accountManager;
     private ActivityProfileSubscribersBinding binding;
     private SubscribersAdapter adapter;
@@ -69,22 +67,16 @@ public class SubscribersActivity extends AppCompatActivity {
 
         String auth = getAuthHeader(accountManager);
         adapter = new SubscribersAdapter(
+              service, onAuthFail, this,
               new PhotoDownloaderWithCacheSubscriberBinder(
-                    this, imgDownloader,
-                    (user) -> dispatchToUserActivity(this, user.getId()),
-                    (sub, pos) -> adapter.onSubUnsubClick(
-                          userService, sub, pos, this::recreate, this, auth),
-                    this::recreate
-              ));
+                    this, imgDownloader, onAuthFail));
 
         binding.recyclerSubscribers.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscribers.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(
               this,
-              assistedFactory.factory(
-                    assistedFactory, auth, this,
-                    this::recreate))
+              assistedFactory.factory(assistedFactory, auth, this, onAuthFail))
               .get(ProfileSubscribersViewModel.class);
 
         viewModel.getSubscribers()

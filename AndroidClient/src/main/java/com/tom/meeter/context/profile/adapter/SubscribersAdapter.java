@@ -1,7 +1,10 @@
 package com.tom.meeter.context.profile.adapter;
 
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
+import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -24,9 +27,20 @@ public class SubscribersAdapter extends BaseSubscriberAdapter<SubscriberViewHold
 
     private static final String TAG = SubscribersAdapter.class.getCanonicalName();
 
-    public SubscribersAdapter(SubscriberBinder<SubscriberViewHolder> binder) {
+    private final UserService service;
+    private final Runnable onAuthFail;
+    private final Context ctx;
+
+    public SubscribersAdapter(
+          UserService service, Runnable onAuthFail, Context ctx,
+          SubscriberBinder<SubscriberViewHolder> binder) {
         super(binder);
+        binder.setup(
+              this::onSubUnSubClick, user -> dispatchToUserActivity(ctx, user.getId()));
         logMethod(TAG, this);
+        this.service = service;
+        this.onAuthFail = onAuthFail;
+        this.ctx = ctx;
     }
 
     @Override
@@ -43,31 +57,31 @@ public class SubscribersAdapter extends BaseSubscriberAdapter<SubscriberViewHold
         logMethod(TAG, this);
     }
 
-    public void onSubUnsubClick(
-          UserService service, Subscriber sub, int position,
-          Runnable onAuthFail, Context ctx, String auth) {
+    public void onSubUnSubClick(Subscriber sub, int position) {
         if (sub.isAmISubscribedTo()) {
-            service.unsubscribe(auth, sub.getUser().getId())
+            service.unsubscribe(getAuthHeader(AccountManager.get(ctx)), sub.getUser().getId())
                   .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onAuthFail) {
                       @Override
                       public void onResponse(Call<Void> call, Response<Void> resp) {
                           super.onResponse(call, resp);
-                          if (resp.code() == HttpCodes.OK) {
-                              sub.setAmISubscribedTo(false);
-                              SubscribersAdapter.this.notifyItemChanged(position);
+                          if (resp.code() != HttpCodes.OK) {
+                              return;
                           }
+                          sub.setAmISubscribedTo(false);
+                          SubscribersAdapter.this.notifyItemChanged(position);
                       }
                   });
         } else {
-            service.subscribe(auth, sub.getUser().getId())
+            service.subscribe(getAuthHeader(AccountManager.get(ctx)), sub.getUser().getId())
                   .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onAuthFail) {
                       @Override
                       public void onResponse(Call<Void> call, Response<Void> resp) {
                           super.onResponse(call, resp);
-                          if (resp.code() == HttpCodes.OK) {
-                              sub.setAmISubscribedTo(true);
-                              SubscribersAdapter.this.notifyItemChanged(position);
+                          if (resp.code() != HttpCodes.OK) {
+                              return;
                           }
+                          sub.setAmISubscribedTo(true);
+                          SubscribersAdapter.this.notifyItemChanged(position);
                       }
                   });
         }

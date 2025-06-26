@@ -38,6 +38,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
     @Inject
     UserService userService;
 
+    private final Runnable onAuthFail = this::recreate;
     private ActivityProfileSubscriptionsBinding binding;
     private AccountManager accountManager;
     private SubscribersAdapter adapter;
@@ -65,23 +66,18 @@ public class SubscriptionsActivity extends AppCompatActivity {
         setContentView(view);
 
         String auth = getAuthHeader(accountManager);
+
         adapter = new SubscribersAdapter(
+              userService, onAuthFail, this,
               new PhotoDownloaderWithCacheSubscriberBinder(
-                    this, imgDownloader,
-                    (e) -> dispatchToUserActivity(this, e.getId()),
-                    (sub, pos) -> adapter.onSubUnsubClick(
-                          userService, sub, pos, this::recreate, this, auth),
-                    this::recreate
-              ));
+                    this, imgDownloader, onAuthFail));
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscriptions.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(
               this,
-              assistedFactory.factory(
-                    assistedFactory, auth, this,
-                    this::recreate))
+              assistedFactory.factory(assistedFactory, auth, this, onAuthFail))
               .get(ProfileSubscriptionsViewModel.class);
 
         viewModel.getSubscriptions()
