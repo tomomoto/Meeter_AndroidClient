@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.event.service;
+package com.tom.meeter.context.profile.repository.event.service;
 
 import com.tom.meeter.context.network.dto.EventDTO;
 

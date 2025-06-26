@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.user.domain;
+package com.tom.meeter.context.profile.repository.user.domain;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

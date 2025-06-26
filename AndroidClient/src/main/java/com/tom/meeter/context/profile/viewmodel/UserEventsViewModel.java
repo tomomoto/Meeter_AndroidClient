@@ -3,8 +3,8 @@ package com.tom.meeter.context.profile.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.profile.event.domain.Event;
-import com.tom.meeter.context.profile.event.repository.EventRepository;
+import com.tom.meeter.context.profile.repository.event.domain.Event;
+import com.tom.meeter.context.profile.repository.event.repository.EventRepository;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
-package com.tom.meeter.context.profile.event.database;
+package com.tom.meeter.context.profile.repository.event.database;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import com.tom.meeter.context.profile.event.domain.Event;
+import com.tom.meeter.context.profile.repository.event.domain.Event;
 
 @Database(entities = {Event.class}, version = 1)
 public abstract class EventDatabase extends RoomDatabase {

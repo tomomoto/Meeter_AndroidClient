@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.event.database;
+package com.tom.meeter.context.profile.repository.event.database;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
@@ -7,7 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.tom.meeter.context.profile.event.domain.Event;
+import com.tom.meeter.context.profile.repository.event.domain.Event;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.user.database;
+package com.tom.meeter.context.profile.repository.user.database;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
@@ -7,7 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.profile.repository.user.domain.User;
 
 import io.reactivex.Maybe;
 

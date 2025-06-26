@@ -1,12 +1,12 @@
-package com.tom.meeter.context.profile.user.repository;
+package com.tom.meeter.context.profile.repository.user.repository;
 
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.context.profile.user.database.UserDao;
-import com.tom.meeter.context.profile.user.domain.User;
+import com.tom.meeter.context.profile.repository.user.database.UserDao;
+import com.tom.meeter.context.profile.repository.user.domain.User;
 import com.tom.meeter.context.user.service.UserService;
 
 import java.time.LocalDate;

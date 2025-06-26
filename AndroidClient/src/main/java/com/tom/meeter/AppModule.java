@@ -13,12 +13,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tom.meeter.context.profile.event.database.EventDao;
-import com.tom.meeter.context.profile.event.database.EventDatabase;
+import com.tom.meeter.context.profile.repository.event.database.EventDao;
+import com.tom.meeter.context.profile.repository.event.database.EventDatabase;
+import com.tom.meeter.context.profile.repository.user.database.UserDao;
+import com.tom.meeter.context.profile.repository.user.database.UserDatabase;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
-import com.tom.meeter.context.profile.user.database.UserDao;
-import com.tom.meeter.context.profile.user.database.UserDatabase;
 import com.tom.meeter.infrastructure.http.HttpClient;
 
 import java.util.TimeZone;
