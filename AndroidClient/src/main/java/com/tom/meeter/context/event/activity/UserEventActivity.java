@@ -2,6 +2,8 @@ package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
+import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
+import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
@@ -22,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
@@ -82,12 +83,10 @@ public class UserEventActivity extends AppCompatActivity {
 
         viewModel.getEvent()
               .observe(this, event -> {
-                  String userUuid = AuthHelper.getUserUuid(accountManager);
-                  String eventCreatorId = event.getCreatorId();
-                  if (userUuid.equals(eventCreatorId)) {
-                      Log.e(TAG, "User event activity for" +
-                            " creator " + userUuid + "/" + eventId + " : " + eventCreatorId);
+                  if (currentUserIsEventCreator(accountManager, event)) {
+                      dumpEventDispatcherError(TAG, accountManager, event);
                       finish();
+                      return;
                   }
                   initLayout(event);
                   viewModel.getEventPhoto()
