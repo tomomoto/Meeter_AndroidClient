@@ -1,9 +1,9 @@
 package com.tom.meeter.context.user.viewmodel;
 
-import static com.tom.meeter.context.user.factory.AssistedFactoryBase.ASSISTED_AUTH;
-import static com.tom.meeter.context.user.factory.AssistedFactoryBase.ASSISTED_USER_ID;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
@@ -27,7 +27,6 @@ public class UserSubscriptionsViewModel extends ViewModel {
     private static final String TAG = UserSubscriptionsViewModel.class.getCanonicalName();
 
     private final UserService service;
-    private final String auth;
     private final String userId;
     private final Context ctx;
     private final Runnable onNotAuthenticated;
@@ -37,13 +36,11 @@ public class UserSubscriptionsViewModel extends ViewModel {
     @AssistedInject
     public UserSubscriptionsViewModel(
           UserService service,
-          @Assisted(ASSISTED_AUTH) String auth,
-          @Assisted(ASSISTED_USER_ID) String userId,
+          @Assisted String userId,
           @Assisted Context ctx,
           @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
         this.service = service;
-        this.auth = auth;
         this.userId = userId;
         this.ctx = ctx.getApplicationContext();
         this.onNotAuthenticated = onNotAuthenticated;
@@ -51,7 +48,7 @@ public class UserSubscriptionsViewModel extends ViewModel {
     }
 
     public void init() {
-        service.getSubscriptions(auth, userId).enqueue(
+        service.getSubscriptions(getAuthHeader(AccountManager.get(ctx)), userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {

@@ -91,8 +91,7 @@ public class UserSubscribersActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, Globals.getAuthHeader(token),
-                    userId, this, this::recreate))
+                    assistedFactory, userId, this, this::recreate))
               .get(UserSubscribersViewModel.class);
 
         viewModel.getSubscribers()

@@ -22,10 +22,9 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.adapter.UsersAdapter;
-import com.tom.meeter.context.user.factory.UserViewModelAssistedFactory;
+import com.tom.meeter.context.user.factory.UserSubscriptionsViewModelAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheUserBinder;
 
 import javax.inject.Inject;
@@ -37,7 +36,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    UserViewModelAssistedFactory assistedFactory;
+    UserSubscriptionsViewModelAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
@@ -88,8 +87,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, Globals.getAuthHeader(token), userId,
-                    this, this::recreate))
+                    assistedFactory, userId, this, this::recreate))
               .get(UserSubscriptionsViewModel.class);
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));

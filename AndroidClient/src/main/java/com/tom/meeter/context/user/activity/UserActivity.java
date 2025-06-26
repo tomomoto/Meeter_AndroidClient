@@ -153,8 +153,7 @@ public class UserActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, Globals.getAuthHeader(token),
-                    userId, this, this::recreate))
+                    assistedFactory, userId, this, this::recreate))
               .get(UserViewModel.class);
 
         binding.events.setLayoutManager(new GridLayoutManager(this, 2));

@@ -1,9 +1,9 @@
 package com.tom.meeter.context.user.viewmodel;
 
-import static com.tom.meeter.context.user.factory.AssistedFactoryBase.ASSISTED_AUTH;
-import static com.tom.meeter.context.user.factory.AssistedFactoryBase.ASSISTED_USER_ID;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -32,7 +32,6 @@ public class UserViewModel extends ViewModel {
 
     private final UserService service;
     private final ImageDownloader imgDownloader;
-    private final String auth;
     private final String userId;
     private final Context ctx;
     private final Runnable onNotAuthenticated;
@@ -45,14 +44,12 @@ public class UserViewModel extends ViewModel {
     @AssistedInject
     public UserViewModel(
           UserService service, ImageDownloader imgDownloader,
-          @Assisted(ASSISTED_AUTH) String auth,
-          @Assisted(ASSISTED_USER_ID) String userId,
+          @Assisted String userId,
           @Assisted Context ctx,
           @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
         this.service = service;
         this.imgDownloader = imgDownloader;
-        this.auth = auth;
         this.userId = userId;
         this.ctx = ctx.getApplicationContext();
         this.onNotAuthenticated = onNotAuthenticated;
@@ -60,7 +57,7 @@ public class UserViewModel extends ViewModel {
     }
 
     public void init() {
-        service.getUser(auth, userId).enqueue(
+        service.getUser(getAuthHeader(AccountManager.get(ctx)), userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(
@@ -85,7 +82,7 @@ public class UserViewModel extends ViewModel {
               }
         );
 
-        service.amISubscribed(auth, userId).enqueue(
+        service.amISubscribed(getAuthHeader(AccountManager.get(ctx)), userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(
@@ -100,7 +97,7 @@ public class UserViewModel extends ViewModel {
               }
         );
 
-        service.getUserEvents(auth, userId).enqueue(
+        service.getUserEvents(getAuthHeader(AccountManager.get(ctx)), userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(
