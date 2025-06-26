@@ -100,7 +100,7 @@ public class ProfileFragment extends Fragment {
 
         ((App) getActivity().getApplication()).getComponent().inject(this);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         accountManager = AccountManager.get(ctx);
 
         adapter = new EventsCardAdapter(
@@ -125,7 +125,7 @@ public class ProfileFragment extends Fragment {
         String auth = getAuthHeader(accountManager);
         viewModel = new ViewModelProvider(
               this,
-              ProfileViewModel.factory(
+              assistedFactory.factory(
                     assistedFactory, auth, requireContext(),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)))
               .get(ProfileViewModel.class);

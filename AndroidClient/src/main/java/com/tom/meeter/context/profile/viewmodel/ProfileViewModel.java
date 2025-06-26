@@ -8,12 +8,10 @@ import android.graphics.Bitmap;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.context.profile.factory.ProfileViewModelAssistedFactory;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
@@ -54,18 +52,6 @@ public class ProfileViewModel extends ViewModel {
         this.ctx = ctx.getApplicationContext();
         this.onNotAuthenticated = onNotAuthenticated;
         init();
-    }
-
-    public static ViewModelProvider.Factory factory(
-          ProfileViewModelAssistedFactory assistedFactory,
-          String auth, Context ctx, Runnable onNotAuthenticated) {
-        return new ViewModelProvider.Factory() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T extends ViewModel> T create(Class<T> modelClass) {
-                return (T) assistedFactory.create(auth, ctx, onNotAuthenticated);
-            }
-        };
     }
 
     public void init() {

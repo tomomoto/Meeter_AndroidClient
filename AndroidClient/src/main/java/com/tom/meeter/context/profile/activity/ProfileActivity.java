@@ -191,7 +191,8 @@ public class ProfileActivity extends AppCompatActivity {
               getResources().getStringArray(R.array.nav_item_activity_titles));
         setupDrawer(toolbar, icons);
 
-        drawer.getAdapter().withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
+        drawer.getAdapter()
+              .withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
         if (!isSavedInstanceStateExist) {
             lastNavItemId = DRAWER_PROFILE_ID;
             renderSelectedFragment();
@@ -344,7 +345,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
-        if (getSupportFragmentManager().findFragmentByTag(tag) != null) {
+        FragmentManager supportFM = getSupportFragmentManager();
+        if (supportFM.findFragmentByTag(tag) != null) {
             drawer.closeDrawer();
             //toggleFab();
             return;
@@ -372,7 +374,7 @@ public class ProfileActivity extends AppCompatActivity {
         // If mPendingRunnable is not null, then add to the message queue
         replaceFragmentHandler.post(
               replaceFragment(
-                    getSupportFragmentManager(),
+                    supportFM,
                     () -> createFragment(lastNavItemId),
                     () -> tag)
         );
@@ -420,8 +422,8 @@ public class ProfileActivity extends AppCompatActivity {
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
             //for some reasons txn.commit leads to errors and txn.commitAllowingStateLoss doesn't
-            //txn.commit();
-            txn.commitAllowingStateLoss();
+            txn.commit();
+            //txn.commitAllowingStateLoss();
         };
     }
 

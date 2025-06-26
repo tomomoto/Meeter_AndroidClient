@@ -87,7 +87,7 @@ public class ProfileEventsFragment extends Fragment {
         String auth = getAuthHeader(accountManager);
         viewModel = new ViewModelProvider(
               this,
-              ProfileEventsViewModel.factory(
+              assistedFactory.factory(
                     assistedFactory, auth, requireContext(),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)))
               .get(ProfileEventsViewModel.class);
