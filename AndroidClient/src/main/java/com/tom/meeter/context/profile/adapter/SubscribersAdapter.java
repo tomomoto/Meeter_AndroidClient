@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriberItemBinding;
-import com.tom.meeter.infrastructure.components.adapter.BaseSubscriberAdapter;
 import com.tom.meeter.infrastructure.components.binder.SubscriberBinder;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;

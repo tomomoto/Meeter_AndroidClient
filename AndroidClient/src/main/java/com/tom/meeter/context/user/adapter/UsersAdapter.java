@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.databinding.ActivityUserSubscriberItemBinding;
-import com.tom.meeter.infrastructure.components.adapter.BaseUserAdapter;
 import com.tom.meeter.infrastructure.components.binder.UserBinder;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
