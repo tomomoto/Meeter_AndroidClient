@@ -10,6 +10,7 @@ import android.util.Log;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.components.adapter.OnSubscribeUnsubscribeClickListener;
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
@@ -63,11 +64,10 @@ public class PhotoDownloaderWithCacheSubscriberBinder implements SubscriberBinde
             return;
         }
         imageDownloader.downloadUserImage(
-              photoPath, ctx,
+              photoPath, ctx, ImagesHelper::circleImage,
               photo -> {
-                  Bitmap circled = circleImage(photo);
-                  holder.updatePhoto(circled);
-                  imagesCache.put(photoPath, circled);
+                  holder.updatePhoto(photo);
+                  imagesCache.put(photoPath, photo);
                   Log.d(TAG, "PhotoDownloaderWithCacheUserBinder: user " +
                         "image downloaded for [" + photoPath + "], cache updated.");
               },

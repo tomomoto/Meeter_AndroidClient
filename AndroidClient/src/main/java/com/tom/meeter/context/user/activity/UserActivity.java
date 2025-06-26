@@ -7,7 +7,6 @@ import static com.tom.meeter.context.user.activity.UserSubscriptionsActivity.dis
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.bigCircleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -31,7 +30,7 @@ import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.factory.UserViewModelFactory;
+import com.tom.meeter.context.user.factory.UserViewModelAssistedFactory;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserBinding;
@@ -58,12 +57,12 @@ public class UserActivity extends AppCompatActivity {
     @Inject
     UserService userService;
     @Inject
-    UserViewModelFactory viewModelFactory;
+    UserViewModelAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
     private ActivityUserBinding binding;
-    private UserViewModel userViewModel;
+    private UserViewModel viewModel;
     private String userId;
     private AccountManager accountManager;
     private EventsCardAdapter adapter;
@@ -151,10 +150,17 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
-        userViewModel = new ViewModelProvider(this, viewModelFactory)
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(
+                    assistedFactory, Globals.getAuthHeader(token),
+                    userId, this, this::recreate))
               .get(UserViewModel.class);
-        userViewModel.fetchUserInformation(Globals.getAuthHeader(token), userId, this);
-        userViewModel.getUserLiveData()
+
+        binding.events.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.events.setAdapter(adapter);
+
+        viewModel.getUser()
               .observe(this, user -> {
                   binding.name.setText(user.getName());
                   binding.gender.setText(genderResolver(getApplicationContext(), user.getGender()));
@@ -165,17 +171,14 @@ public class UserActivity extends AppCompatActivity {
                   binding.age.setText(getString(R.string.profile_age_format, getAgeFromDate(birthday)));
                   binding.info.setText(user.getInfo());
               });
-        userViewModel.getAmISubscriber()
+        viewModel.getAmISubscriber()
               .observe(this, this::updateAmISubscriber);
-        userViewModel.getUserEventsLiveData()
+        viewModel.getEvents()
               .observe(this, events -> adapter.setData(events));
-        userViewModel.getUserPhotoLiveData()
+        viewModel.getPhoto()
               .observe(
                     this,
-                    photo -> binding.photo.setImageBitmap(bigCircleImage(photo)));
-
-        binding.events.setLayoutManager(new GridLayoutManager(this, 2));
-        binding.events.setAdapter(adapter);
+                    photo -> binding.photo.setImageBitmap(photo));
 
         binding.subscribers.setOnClickListener(
               v -> dispatchToUserSubscribersActivity(this, userId));

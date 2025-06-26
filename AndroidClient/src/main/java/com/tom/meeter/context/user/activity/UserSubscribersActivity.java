@@ -1,7 +1,6 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -16,16 +15,17 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.adapter.UsersAdapter;
+import com.tom.meeter.context.user.factory.UserSubscribersViewModelAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscribersViewModel;
-import com.tom.meeter.context.user.factory.UserViewModelFactory;
 import com.tom.meeter.databinding.ActivityProfileSubscribersBinding;
+import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheUserBinder;
 
 import javax.inject.Inject;
@@ -37,13 +37,13 @@ public class UserSubscribersActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    UserViewModelFactory viewModelFactory;
+    UserSubscribersViewModelAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
     private AccountManager accountManager;
     private ActivityProfileSubscribersBinding binding;
-    private UserSubscribersViewModel userSubscribersViewModel;
+    private UserSubscribersViewModel viewModel;
     private UsersAdapter adapter;
     private String userId;
 
@@ -85,14 +85,18 @@ public class UserSubscribersActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        userSubscribersViewModel = ViewModelProviders.of(this, viewModelFactory)
-              .get(UserSubscribersViewModel.class);
-        userSubscribersViewModel.fetchUserSubscribers(getAuthHeader(accountManager), userId, this);
-
-        userSubscribersViewModel.getSubscribersLiveData()
-              .observe(this, subs -> adapter.setData(subs));
         binding.recyclerSubscribers.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscribers.setAdapter(adapter);
+
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(
+                    assistedFactory, Globals.getAuthHeader(token),
+                    userId, this, this::recreate))
+              .get(UserSubscribersViewModel.class);
+
+        viewModel.getSubscribers()
+              .observe(this, subs -> adapter.setData(subs));
     }
 
     @Nullable

@@ -1,8 +1,10 @@
 package com.tom.meeter.context.user.viewmodel;
 
+import static com.tom.meeter.context.user.factory.AssistedFactoryBase.ASSISTED_AUTH;
+import static com.tom.meeter.context.user.factory.AssistedFactoryBase.ASSISTED_USER_ID;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.app.Activity;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,8 +17,8 @@ import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedInject;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -24,32 +26,47 @@ public class UserSubscribersViewModel extends ViewModel {
 
     private static final String TAG = UserSubscribersViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<List<UserDTO>> subscribersLiveData = new MutableLiveData<>();
+    private final UserService service;
+    private final String auth;
+    private final String userId;
+    private final Context ctx;
+    private final Runnable onNotAuthenticated;
 
-    private final UserService userService;
+    private final MutableLiveData<List<UserDTO>> subscribers = new MutableLiveData<>();
 
-    @Inject
-    public UserSubscribersViewModel(UserService userService) {
+    @AssistedInject
+    public UserSubscribersViewModel(
+          UserService service,
+          @Assisted(ASSISTED_AUTH) String auth,
+          @Assisted(ASSISTED_USER_ID) String userId,
+          @Assisted Context ctx,
+          @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
-        this.userService = userService;
+        this.service = service;
+        this.auth = auth;
+        this.userId = userId;
+        this.ctx = ctx.getApplicationContext();
+        this.onNotAuthenticated = onNotAuthenticated;
+        init();
     }
 
-    public void fetchUserSubscribers(String auth, String userId, Activity activity) {
-        userService.getSubscribers(auth, userId).enqueue(
-              new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
+    public void init() {
+        service.getSubscribers(auth, userId).enqueue(
+              new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {
                       super.onResponse(call, resp);
-                      if (resp.code() == HttpCodes.OK) {
-                          subscribersLiveData.setValue(resp.body());
+                      if (resp.code() != HttpCodes.OK || resp.body() == null) {
                           return;
                       }
+                      subscribers.setValue(resp.body());
+                      return;
                   }
               }
         );
     }
 
-    public LiveData<List<UserDTO>> getSubscribersLiveData() {
-        return subscribersLiveData;
+    public LiveData<List<UserDTO>> getSubscribers() {
+        return subscribers;
     }
 }

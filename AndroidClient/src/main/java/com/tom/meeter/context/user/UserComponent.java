@@ -12,7 +12,6 @@ import dagger.Component;
 
 @UserScope
 @Component(
-      modules = {UserViewModelModule.class},
       dependencies = {AppComponent.class})
 public interface UserComponent {
 

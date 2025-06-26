@@ -73,25 +73,6 @@ public class ImageDownloader {
               });
     }
 
-    @Deprecated
-    public void downloadUserImage(
-          String photoPath, Context ctx,
-          Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
-        imageService.downloadUserImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
-                  @Override
-                  public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                      super.onResponse(call, response);
-                      if (response.code() == HttpCodes.OK) {
-                          try (ResponseBody body = response.body()) {
-                              onDownloaded.accept(body);
-                              return;
-                          }
-                      }
-                  }
-              });
-    }
-
     public void downloadUserImage(
           String photoPath, Context ctx,
           Function<ResponseBody, Bitmap> converter,
