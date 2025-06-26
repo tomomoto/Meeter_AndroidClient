@@ -6,11 +6,12 @@ import android.graphics.Bitmap;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
+import com.tom.meeter.infrastructure.components.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnSubscribeUnsubscribeClickListener;
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 
-public class SubscriberBinderImpl extends PhotoWithCacheDownloader
+public class SubscriberBinderImpl extends UserImageDownloader
       implements SubscriberBinder<SubscriberViewHolder> {
 
     private OnUserClickListener userClickListener;
@@ -44,7 +45,7 @@ public class SubscriberBinderImpl extends PhotoWithCacheDownloader
         );
 
         if (photoPath != null && cached == null) {
-            loadUserPhoto(photoPath, holder::updatePhoto);
+            loadPhoto(photoPath, holder::updatePhoto);
         }
     }
 

@@ -45,7 +45,7 @@ import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
+import com.tom.meeter.infrastructure.components.binder.SimpleEventBinderImpl;
 import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -104,7 +104,7 @@ public class ProfileFragment extends Fragment {
         accountManager = AccountManager.get(ctx);
 
         adapter = new EventsCardAdapter(
-              new PhotoDownloaderEventBinder(ctx, imageDownloader,
+              new SimpleEventBinderImpl(ctx, imageDownloader,
                     event -> dispatchToEventActivity(ctx, event.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));
     }

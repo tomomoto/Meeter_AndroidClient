@@ -8,17 +8,16 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
-public class PhotoDownloaderEventBinder
-      implements EventBinder<CardItemHolder> {
+public class SimpleEventBinderImpl implements EventBinder<CardItemHolder> {
 
-    private static final String TAG = PhotoDownloaderEventBinder.class.getCanonicalName();
+    private static final String TAG = SimpleEventBinderImpl.class.getCanonicalName();
 
     private final Context ctx;
     private final ImageDownloader imageDownloader;
     private final OnEventClickListener listener;
     private final Runnable onAuthFail;
 
-    public PhotoDownloaderEventBinder(
+    public SimpleEventBinderImpl(
           Context ctx, ImageDownloader imageDownloader,
           OnEventClickListener listener, Runnable onAuthFail) {
         this.ctx = ctx;

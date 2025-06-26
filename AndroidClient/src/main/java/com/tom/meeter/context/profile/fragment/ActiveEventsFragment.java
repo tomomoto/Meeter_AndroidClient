@@ -24,7 +24,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.components.binder.EventBinderImpl;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,9 +57,9 @@ public class ActiveEventsFragment extends Fragment {
 
         EventBus.getDefault().register(this);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
+              new EventBinderImpl(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));

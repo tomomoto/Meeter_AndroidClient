@@ -24,7 +24,7 @@ import com.tom.meeter.context.profile.factory.ProfileEventsViewModelAssistedFact
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.components.binder.EventBinderImpl;
 
 import javax.inject.Inject;
 
@@ -56,11 +56,11 @@ public class ProfileEventsFragment extends Fragment {
 
         ((App) getActivity().getApplication()).getComponent().inject(this);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         accountManager = AccountManager.get(ctx);
 
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
+              new EventBinderImpl(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));

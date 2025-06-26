@@ -1,11 +1,10 @@
-package com.tom.meeter.infrastructure.components.binder;
+package com.tom.meeter.infrastructure.components;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.infrastructure.common.ImagesHelper;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,22 +26,20 @@ public abstract class PhotoWithCacheDownloader {
         this.onAuthFail = onAuthFail;
     }
 
-    protected void loadUserPhoto(
-          String photoPath, Consumer<Bitmap> onImageReady) {
+    protected void loadPhoto(String photoPath, Consumer<Bitmap> onImageReady) {
         Bitmap cached = cache.get(photoPath);
         if (cached != null) {
             onImageReady.accept(cached);
             return;
         }
 
-        imgDownloader.downloadUserImage(
-              photoPath, ctx, ImagesHelper::circleImage,
-              photo -> {
-                  cache.put(photoPath, photo);
-                  onImageReady.accept(photo);
-                  Log.d(TAG, "PhotoWithCacheDownloader: user image downloaded for ["
-                        + photoPath + "], cache updated.");
-              }, onAuthFail
-        );
+        downloadImage(photoPath, photo -> {
+            cache.put(photoPath, photo);
+            onImageReady.accept(photo);
+            Log.d(TAG, getClass().getSimpleName() +
+                  ": image downloaded for [" + photoPath + "], cache updated.");
+        });
     }
+
+    protected abstract void downloadImage(String photoPath, Consumer<Bitmap> onDownloaded);
 }
