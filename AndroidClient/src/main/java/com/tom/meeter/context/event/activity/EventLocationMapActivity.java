@@ -51,7 +51,6 @@ public class EventLocationMapActivity extends AppCompatActivity
       implements OnMapReadyCallback {
 
     private static final String TAG = EventLocationMapActivity.class.getCanonicalName();
-    private static final String EVENT_ID_KEY = "event_id";
     private Marker eventMarker;
     private GoogleMap gmap;
     private ActivityEventPositionBinding binding;
@@ -79,7 +78,7 @@ public class EventLocationMapActivity extends AppCompatActivity
             showMessage(this, "Unable to show map without extras provided.");
             finish();
         }
-        eventId = extras.getString(EVENT_ID_KEY);
+        eventId = extras.getString(EventDispatcherActivity.EVENT_ID_KEY);
         if (eventId == null) {
             showMessage(this, "Unable to show map without event_id provided.");
             finish();
@@ -229,7 +228,7 @@ public class EventLocationMapActivity extends AppCompatActivity
 
     public static Intent createEventLocationMapActivityIntent(Context ctx, String eventId) {
         Intent result = new Intent(ctx, EventLocationMapActivity.class);
-        result.putExtra(EVENT_ID_KEY, eventId);
+        result.putExtra(EventDispatcherActivity.EVENT_ID_KEY, eventId);
         return result;
     }
 }

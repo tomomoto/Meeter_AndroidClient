@@ -10,7 +10,6 @@ import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FOR
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.showDateTimePicker;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -18,6 +17,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -29,7 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
@@ -44,16 +44,15 @@ import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.infrastructure.common.Globals;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -69,17 +68,17 @@ public class ProfileEventActivity extends AppCompatActivity {
     @Inject
     EventService eventService;
     @Inject
-    ViewModelFactory viewModelFactory;
+    EventViewModel.EventViewModelAssistedFactory factory;
     @Inject
     ImageDownloader imgDownloader;
 
     private ActivityEventEditableBinding binding;
     private AccountManager accountManager;
-    private EventViewModel eventViewModel;
+    private EventViewModel viewModel;
     private ActivityResultLauncher<Intent> mapResult;
 
     private EventDTO eventCache;
-    private ResponseBody photoCache;
+    private Bitmap photoCache;
     private boolean isEditableModeEnabled = false;
 
     private final ActivityResultLauncher<Intent> imageUploadLauncher =
@@ -96,13 +95,13 @@ public class ProfileEventActivity extends AppCompatActivity {
 
     void downloadAndUpdateLayoutPhoto(String photoPath) {
         imgDownloader.downloadEventImage(photoPath, this,
-              this::updateLayoutPhoto,
-              this::recreate);
+              this::updateLayoutPhoto, ImagesHelper::bigCircleImage,
+        this::recreate);
     }
 
-    private void updateLayoutPhoto(ResponseBody photo) {
+    private void updateLayoutPhoto(Bitmap photo) {
         photoCache = photo;
-        binding.photo.setImageBitmap(circleImage(photoCache, 600, 600));
+        binding.photo.setImageBitmap(photoCache);
     }
 
     private void switchEditMode() {
@@ -164,10 +163,14 @@ public class ProfileEventActivity extends AppCompatActivity {
     }
 
     private void onInit(String token, String eventId) {
-        eventViewModel = ViewModelProviders.of(this, viewModelFactory)
+        ViewModelProvider.Factory factory = EventViewModel.providesFactory(
+              this.factory, eventId, token, this,
+              this::recreate, this::recreate);
+        viewModel = new ViewModelProvider(this, factory)
               .get(EventViewModel.class);
-        eventViewModel.fetchEventInformation(token, eventId, this);
-        eventViewModel.getEventLiveData()
+        initLayout(token);
+
+        viewModel.getEvent()
               .observe(this, event -> {
                   String userUuid = AuthHelper.getUserUuid(accountManager);
                   String eventCreatorId = event.getCreatorId();
@@ -179,9 +182,8 @@ public class ProfileEventActivity extends AppCompatActivity {
                   eventCache = event;
                   updateLayout();
               });
-        eventViewModel.getEventPhotoLiveData()
+        viewModel.getEventPhoto()
               .observe(this, this::updateLayoutPhoto);
-        initLayout(token);
     }
 
     private void initLayout(String token) {
@@ -273,6 +275,24 @@ public class ProfileEventActivity extends AppCompatActivity {
           @Nullable View parent, @NonNull String name, @NonNull Context ctx,
           @NonNull AttributeSet attrs) {
         return super.onCreateView(parent, name, ctx, attrs);
+    }
+
+    @Override
+    protected void onDestroy() {
+        logMethod(TAG, this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        logMethod(TAG, this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        logMethod(TAG, this);
+        super.onPause();
     }
 
 

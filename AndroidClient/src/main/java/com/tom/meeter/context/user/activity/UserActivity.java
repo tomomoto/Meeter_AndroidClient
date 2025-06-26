@@ -7,7 +7,7 @@ import static com.tom.meeter.context.user.activity.UserSubscriptionsActivity.dis
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
+import static com.tom.meeter.infrastructure.common.ImagesHelper.bigCircleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -22,7 +22,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.tom.meeter.App;
@@ -31,9 +31,9 @@ import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
+import com.tom.meeter.context.user.factory.UserViewModelFactory;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
-import com.tom.meeter.context.user.factory.UserViewModelFactory;
 import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
@@ -157,7 +157,7 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
-        userViewModel = ViewModelProviders.of(this, viewModelFactory)
+        userViewModel = new ViewModelProvider(this, viewModelFactory)
               .get(UserViewModel.class);
         userViewModel.fetchUserInformation(token, userId, this);
         userViewModel.getUserLiveData()
@@ -178,7 +178,7 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUserPhotoLiveData()
               .observe(
                     this,
-                    photo -> binding.photo.setImageBitmap(circleImage(photo, 600, 600)));
+                    photo -> binding.photo.setImageBitmap(bigCircleImage(photo)));
 
         binding.events.setLayoutManager(new GridLayoutManager(this, 2));
         binding.events.setAdapter(adapter);
@@ -219,7 +219,6 @@ public class UserActivity extends AppCompatActivity {
         logMethod(TAG, this);
         super.onPause();
     }
-
 
 
     public static void dispatchToUserActivity(Context ctx, String userId) {

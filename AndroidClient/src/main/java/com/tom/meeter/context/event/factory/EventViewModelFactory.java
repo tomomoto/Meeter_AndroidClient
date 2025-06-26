@@ -19,6 +19,7 @@ import javax.inject.Provider;
 public class EventViewModelFactory implements ViewModelProvider.Factory {
 
     private static final String TAG = EventViewModelFactory.class.getCanonicalName();
+
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> viewModels;
 
     @Inject

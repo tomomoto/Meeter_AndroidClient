@@ -20,7 +20,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
@@ -29,7 +29,6 @@ import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventReadableBinding;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -37,14 +36,15 @@ public class UserEventActivity extends AppCompatActivity {
 
     private static final String TAG = UserEventActivity.class.getCanonicalName();
 
-    ActivityEventReadableBinding binding;
     @Inject
     TokenService tokenService;
     @Inject
     EventService eventService;
     @Inject
-    ViewModelFactory viewModelFactory;
-    private EventViewModel eventViewModel;
+    EventViewModel.EventViewModelAssistedFactory factory;
+
+    ActivityEventReadableBinding binding;
+    private EventViewModel viewModel;
     private AccountManager accountManager;
 
     @Override
@@ -75,10 +75,12 @@ public class UserEventActivity extends AppCompatActivity {
     }
 
     private void onInit(String token, String eventId) {
-        eventViewModel = ViewModelProviders.of(this, viewModelFactory)
+        ViewModelProvider.Factory factory = EventViewModel.providesFactory(
+              this.factory, eventId, token, this,
+              this::recreate, this::recreate);
+        viewModel = new ViewModelProvider(this, factory)
               .get(EventViewModel.class);
-        eventViewModel.fetchEventInformation(token, eventId, this);
-        eventViewModel.getEventLiveData()
+        viewModel.getEvent()
               .observe(this, event -> {
                   String userUuid = AuthHelper.getUserUuid(accountManager);
                   String eventCreatorId = event.getCreatorId();
@@ -88,10 +90,10 @@ public class UserEventActivity extends AppCompatActivity {
                       finish();
                   }
                   initLayout(event);
-                  eventViewModel.getEventPhotoLiveData()
+                  viewModel.getEventPhoto()
                         .observe(
-                              this, photo -> binding.eventPhoto.setImageBitmap(
-                                    circleImage(photo, 600, 600)));
+                              this,
+                              photo -> binding.eventPhoto.setImageBitmap(photo));
               });
 
     }
@@ -124,6 +126,23 @@ public class UserEventActivity extends AppCompatActivity {
         return super.onCreateView(parent, name, ctx, attrs);
     }
 
+    @Override
+    protected void onDestroy() {
+        logMethod(TAG, this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        logMethod(TAG, this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        logMethod(TAG, this);
+        super.onPause();
+    }
 
     public static void dispatchToUserEventActivity(Context ctx, String eventId) {
         ctx.startActivity(createUserEventActivityIntent(ctx, eventId));
