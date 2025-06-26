@@ -8,14 +8,13 @@ import com.tom.meeter.context.event.activity.EventLocationMapActivity;
 import com.tom.meeter.context.event.activity.EventOnMapActivity;
 import com.tom.meeter.context.event.activity.ProfileEventActivity;
 import com.tom.meeter.context.event.activity.UserEventActivity;
-import com.tom.meeter.context.event.viewmodel.EventViewModelModule;
 
 import dagger.BindsInstance;
 import dagger.Component;
 
 @EventScope
 @Component(
-      modules = {EventViewModelModule.class},
+/*      modules = {EventViewModelModule.class},*/
       dependencies = {AppComponent.class})
 public interface EventComponent {
 

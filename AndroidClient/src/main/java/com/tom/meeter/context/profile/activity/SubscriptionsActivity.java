@@ -23,7 +23,7 @@ import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheSubscriberBinder;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
@@ -94,7 +94,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
     private void onSubUnsubClick(Subscriber sub, int position) {
         if (sub.isAmISubscribedTo()) {
             userService.unsubscribe(AuthHelper.getAuthHeader(accountManager), sub.getUser().getId())
-                  .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+                  .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                       @Override
                       public void onResponse(Call<Void> call, Response<Void> response) {
                           super.onResponse(call, response);
@@ -104,7 +104,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
                   });
         } else {
             userService.subscribe(AuthHelper.getAuthHeader(accountManager), sub.getUser().getId())
-                  .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+                  .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                       @Override
                       public void onResponse(Call<Void> call, Response<Void> response) {
                           super.onResponse(call, response);

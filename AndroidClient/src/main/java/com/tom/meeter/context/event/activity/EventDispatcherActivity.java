@@ -17,7 +17,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
@@ -66,7 +66,7 @@ public class EventDispatcherActivity extends AppCompatActivity {
 
     private void onInit(String token, String eventId) {
         eventService.amICreator(Globals.getAuthHeader(token), eventId)
-              .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                   @Override
                   public void onResponse(Call<Boolean> call, Response<Boolean> resp) {
                       super.onResponse(call, resp);

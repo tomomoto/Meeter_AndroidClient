@@ -15,11 +15,8 @@ public class HttpErrorLogger<T> extends ErrorLogger<T> {
 
     private static final String TAG = HttpErrorLogger.class.getCanonicalName();
 
-    private final Context ctx;
-
     public HttpErrorLogger(Context ctx) {
         super(ctx);
-        this.ctx = ctx;
     }
 
     @Override

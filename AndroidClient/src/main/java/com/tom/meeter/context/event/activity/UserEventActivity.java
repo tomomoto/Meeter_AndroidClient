@@ -76,8 +76,7 @@ public class UserEventActivity extends AppCompatActivity {
 
     private void onInit(String token, String eventId) {
         ViewModelProvider.Factory factory = EventViewModel.providesFactory(
-              this.factory, eventId, token, this,
-              this::recreate, this::recreate);
+              this.factory, eventId, token, this, this::recreate);
         viewModel = new ViewModelProvider(this, factory)
               .get(EventViewModel.class);
         viewModel.getEvent()

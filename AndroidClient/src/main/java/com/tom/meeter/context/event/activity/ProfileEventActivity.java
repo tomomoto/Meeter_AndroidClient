@@ -45,7 +45,7 @@ import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
@@ -164,8 +164,7 @@ public class ProfileEventActivity extends AppCompatActivity {
 
     private void onInit(String token, String eventId) {
         ViewModelProvider.Factory factory = EventViewModel.providesFactory(
-              this.factory, eventId, token, this,
-              this::recreate, this::recreate);
+              this.factory, eventId, token, this, this::recreate);
         viewModel = new ViewModelProvider(this, factory)
               .get(EventViewModel.class);
         initLayout(token);
@@ -209,7 +208,7 @@ public class ProfileEventActivity extends AppCompatActivity {
                     return;
                 }
                 eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req)
-                      .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+                      .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                           @Override
                           public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
                               super.onResponse(call, resp);

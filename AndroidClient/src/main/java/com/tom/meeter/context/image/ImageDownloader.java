@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.tom.meeter.context.image.service.ImageService;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
-import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -36,7 +36,7 @@ public class ImageDownloader {
           Consumer<Bitmap> onDownloaded, Function<ResponseBody, Bitmap> bodyConverter,
           Runnable onNotAuthenticated) {
         imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new HttpErrorLogger<>(ctx) {
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       super.onResponse(call, response);
@@ -47,9 +47,6 @@ public class ImageDownloader {
                               return;
                           }
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          onNotAuthenticated.run();
-                      }
                   }
               });
     }
@@ -59,7 +56,7 @@ public class ImageDownloader {
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
         imageService.downloadEventImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new HttpErrorLogger<>(ctx) {
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       super.onResponse(call, response);
@@ -70,9 +67,6 @@ public class ImageDownloader {
                               return;
                           }
                       }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          onNotAuthenticated.run();
-                      }
                   }
               });
     }
@@ -82,7 +76,7 @@ public class ImageDownloader {
           String photoPath, Context ctx,
           Consumer<ResponseBody> onDownloaded, Runnable onNotAuthenticated) {
         imageService.downloadUserImage(getAuthHeader(AccountManager.get(ctx)), photoPath)
-              .enqueue(new HttpErrorLogger<>(ctx) {
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       super.onResponse(call, response);
@@ -91,9 +85,6 @@ public class ImageDownloader {
                               onDownloaded.accept(body);
                               return;
                           }
-                      }
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          onNotAuthenticated.run();
                       }
                   }
               });

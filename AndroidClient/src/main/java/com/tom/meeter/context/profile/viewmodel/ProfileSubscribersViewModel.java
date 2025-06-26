@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class ProfileSubscribersViewModel extends ViewModel {
 
     public void fetchProfileSubscribers(String auth, Activity activity) {
         profileService.getMySubscriptions(auth).enqueue(
-              new ActivityRecreatorOnAuthFailure<>(activity) {
+              new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
                   @Override
                   public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {
                       super.onResponse(call, resp);
@@ -62,7 +62,7 @@ public class ProfileSubscribersViewModel extends ViewModel {
     private void getSubscribers(
           String auth, Activity activity, Map<String, UserDTO> mySubscriptions) {
         profileService.getMySubscribers(auth).enqueue(
-              new ActivityRecreatorOnAuthFailure<>(activity) {
+              new BaseOnNotAuthenticatedCallback<>(activity, activity::recreate) {
                   @Override
                   public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {
                       super.onResponse(call, resp);

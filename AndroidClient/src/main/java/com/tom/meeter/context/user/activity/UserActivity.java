@@ -38,8 +38,8 @@ import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderEventBinder;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
-import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import java.time.LocalDate;
 
@@ -124,7 +124,7 @@ public class UserActivity extends AppCompatActivity {
             }
             if (amISubscriber) {
                 userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
-                      new HttpErrorLogger<>(this) {
+                      new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
@@ -133,14 +133,11 @@ public class UserActivity extends AppCompatActivity {
                                   showMessage(UserActivity.this, R.string.successfully_unsubscribed);
                                   return;
                               }
-                              if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
-                                  UserActivity.this.recreate();
-                              }
                           }
                       });
             } else {
                 userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(
-                      new HttpErrorLogger<>(this) {
+                      new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
@@ -148,9 +145,6 @@ public class UserActivity extends AppCompatActivity {
                                   updateAmISubscriber(true);
                                   showMessage(UserActivity.this, R.string.successfully_subscribed);
                                   return;
-                              }
-                              if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
-                                  UserActivity.this.recreate();
                               }
                           }
                       });
