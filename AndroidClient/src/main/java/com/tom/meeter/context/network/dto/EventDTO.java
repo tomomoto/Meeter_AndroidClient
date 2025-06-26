@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * created by Tom on 10.02.2017.
  */
-public class EventDTO {
+public class EventDTO implements BaseNetworkEntity {
 
     private static final String EVENT_ID_KEY = "id";
     private static final String NAME_KEY = "name";
@@ -115,6 +115,7 @@ public class EventDTO {
         this.photoPath = photoPath;
     }
 
+    @Override
     public String getId() {
         return id;
     }
