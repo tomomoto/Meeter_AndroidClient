@@ -1,7 +1,9 @@
 package com.tom.meeter.context.user.adapter;
 
+import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -17,9 +19,10 @@ public class UsersAdapter extends BaseAdapter<UserViewHolder, UserDTO> {
 
     private static final String TAG = UsersAdapter.class.getCanonicalName();
 
-    public UsersAdapter(UserBinder<UserViewHolder> binder) {
+    public UsersAdapter(Context ctx, UserBinder<UserViewHolder> binder) {
         super(binder);
         logMethod(TAG, this);
+        binder.setup(user -> dispatchToUserActivity(ctx, user.getId()));
     }
 
     @Override

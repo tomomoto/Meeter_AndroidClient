@@ -2,7 +2,6 @@ package com.tom.meeter.context.profile.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -21,7 +20,7 @@ import com.tom.meeter.context.profile.viewmodel.ProfileSubscriptionsViewModel;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheSubscriberBinder;
+import com.tom.meeter.infrastructure.components.binder.SubscriberBinderImpl;
 
 import javax.inject.Inject;
 
@@ -69,8 +68,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
 
         adapter = new SubscribersAdapter(
               userService, onAuthFail, this,
-              new PhotoDownloaderWithCacheSubscriberBinder(
-                    this, imgDownloader, onAuthFail));
+              new SubscriberBinderImpl(this, imgDownloader, onAuthFail));
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscriptions.setAdapter(adapter);

@@ -107,7 +107,8 @@ public class EventLocationMapActivity extends AppCompatActivity
                 setResult(RESULT_OK, resultIntent);
                 finish();
             } else {
-                Toast.makeText(this, "Выберите точку на карте", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.select_point_on_the_map, Toast.LENGTH_SHORT)
+                      .show();
             }
         });
     }

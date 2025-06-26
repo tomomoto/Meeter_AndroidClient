@@ -1,7 +1,6 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -25,7 +24,7 @@ import com.tom.meeter.context.user.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscriptionsViewModelAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheUserBinder;
+import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 
 import javax.inject.Inject;
 
@@ -69,10 +68,8 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         adapter = new UsersAdapter(
-              new PhotoDownloaderWithCacheUserBinder(
-                    this, imgDownloader,
-                    user -> dispatchToUserActivity(this, user.getId()),
-                    this::recreate));
+              this,
+              new UserBinderImpl(this, imgDownloader, this::recreate));
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);

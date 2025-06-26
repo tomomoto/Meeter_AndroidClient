@@ -1,7 +1,5 @@
 package com.tom.meeter.infrastructure.components.binder;
 
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
-
 import android.content.Context;
 
 import com.tom.meeter.context.image.ImageDownloader;
