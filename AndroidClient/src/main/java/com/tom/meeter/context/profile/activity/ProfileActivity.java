@@ -5,6 +5,7 @@ import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getSingleAccount;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.utils.Utils.requireNonNull;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -15,15 +16,14 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -50,6 +50,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.activity.LoginActivity;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
@@ -65,6 +66,7 @@ import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -79,32 +81,35 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = ProfileActivity.class.getCanonicalName();
 
     private static final long DRAWER_PROFILE_ID = 0;
+    private static final String PROFILE_FRAGMENT_TAG = "profile_fragment_tag";
+
     private static final long DRAWER_EVENTS_ID = 1;
+    private static final String EVENTS_FRAGMENT_TAG = "events_fragment_tag";
+
     private static final long DRAWER_NEW_EVENT_ID = 2;
+    private static final String NEW_EVENT_FRAGMENT_TAG = "new_event_fragment_tag";
+
     private static final long DRAWER_NOTIFICATION_ID = 3;
-    private static final long DRAWER_SETTINGS_ID = 10;
+    private static final String NOTIFICATIONS_FRAGMENT_TAG = "notifications_fragment_tag";
+
+    private static final long DRAWER_SETTINGS_ID = 10; // -> no need a tag.
+
     private static final long DRAWER_HELP_ID = 11;
     private static final long DRAWER_OPEN_SOURCE_ID = 12;
     private static final long DRAWER_CONTACT_ID = 13;
     private static final long DRAWER_LOGOUT_ID = 99;
 
-    private enum IconPackEnum {
-        FONT_AWESOME,
-        GOOGLE_MATERIALS
-    }
-
-    private IconPackEnum icons = IconPackEnum.FONT_AWESOME;
-
     private static final Map<Long, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
-    private final Map<Long, String> drawerFragmentNames = new HashMap<>();
+
 
     static {
-        DRAWER_FRAGMENT_TAGS.put(DRAWER_PROFILE_ID, "profile_fragment_tag");
-        DRAWER_FRAGMENT_TAGS.put(DRAWER_EVENTS_ID, "events_fragment_tag");
-        DRAWER_FRAGMENT_TAGS.put(DRAWER_NEW_EVENT_ID, "new_event_fragment_tag");
-        DRAWER_FRAGMENT_TAGS.put(DRAWER_NOTIFICATION_ID, "notifications_fragment_tag");
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_PROFILE_ID, PROFILE_FRAGMENT_TAG);
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_EVENTS_ID, EVENTS_FRAGMENT_TAG);
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_NEW_EVENT_ID, NEW_EVENT_FRAGMENT_TAG);
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_NOTIFICATION_ID, NOTIFICATIONS_FRAGMENT_TAG);
 
-        //DRAWER_SETTINGS_ID intentionally don't need to have a tag, because it produces an activity
+        //DRAWER_SETTINGS_ID intentionally don't need to have a tag,
+        // because it produces an activity
 
         /*
         DRAWER_ITEMS.put(DRAWER_HELP_ID, null);
@@ -113,15 +118,18 @@ public class ProfileActivity extends AppCompatActivity {
          */
     }
 
-    ProfileActivityBinding binding;
+    private enum IconPackEnum {
+        FONT_AWESOME,
+        GOOGLE_MATERIALS
+    }
 
-    private long lastNavItemId = 0;
+    private IconPackEnum icons = IconPackEnum.FONT_AWESOME;
+    private final Map<Long, String> drawerFragmentNames = new HashMap<>();
 
-    private Drawer drawer = null;
+    private ProfileActivityBinding binding;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
-    private Handler replaceFragmentHandler;
 
     // urls to load navigation header background image
     // and profile image
@@ -129,16 +137,21 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView txtName, txtWebsite;
 
     private FloatingActionButton fab;
+
     @Inject
     SettingsService settingsService;
     @Inject
     ProfileService profileService;
     @Inject
     TokenService tokenService;
+
     private ServiceConnection socketServiceConnection;
     private SocketIOService socketIOService;
-
     private AccountManager accountManager;
+
+    private long lastNavItemId = DRAWER_PROFILE_ID;
+
+    private Drawer drawer = null;
 
     public ProfileActivity() {
         logMethod(TAG, this);
@@ -149,6 +162,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         logMethod(TAG, this);
+
+        binding = ProfileActivityBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         ((App) getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this);
@@ -167,25 +184,23 @@ public class ProfileActivity extends AppCompatActivity {
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(
-              (token) -> onInit(token, savedInstanceState != null),
+              (token) -> onInit(savedInstanceState),
               this::finish, accountManager, this, tokenService);
     }
 
-    private void onInit(String token, boolean isSavedInstanceStateExist) {
+    private void onInit(Bundle savedInstanceState) {
         logMethod(TAG, this);
 
-        binding = ProfileActivityBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-
         Log.d(TAG, "ProfileActivity binding SocketIOService");
-        bindService(new Intent(this, SocketIOService.class), socketServiceConnection, BIND_AUTO_CREATE);
-        setupPreferences(token);
+        bindService(
+              new Intent(this, SocketIOService.class),
+              socketServiceConnection, BIND_AUTO_CREATE);
+        setupPreferences();
 
         Toolbar toolbar = binding.profileActivityToolbar;
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        replaceFragmentHandler = new Handler(Looper.getMainLooper());
+
         setupNameMapping(
               drawerFragmentNames,
               getResources().getStringArray(R.array.nav_item_activity_titles));
@@ -193,18 +208,21 @@ public class ProfileActivity extends AppCompatActivity {
 
         drawer.getAdapter()
               .withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
-        if (!isSavedInstanceStateExist) {
+
+        if (savedInstanceState == null) {
             lastNavItemId = DRAWER_PROFILE_ID;
             renderSelectedFragment();
+        } else {
+            restoreSettings();
         }
     }
 
-    private void setupPreferences(String token) {
-        Call<SettingsResponse> settings = settingsService.getSettings(Globals.getAuthHeader(token));
-        settings.enqueue(
+    private void setupPreferences() {
+        settingsService.getSettings(AuthHelper.getAuthHeader(accountManager)).enqueue(
               new ErrorLogger<>(this) {
                   @Override
-                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                  public void onResponse(
+                        Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
                           invalidateToken(accountManager, ProfileActivity.this,
                                 fresh -> setupPreferencesRetry(fresh), () -> finishAndRemoveTask());
@@ -226,7 +244,8 @@ public class ProfileActivity extends AppCompatActivity {
         settingsService.getSettings(Globals.getAuthHeader(freshToken))
               .enqueue(new ErrorLogger<>(this) {
                   @Override
-                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
+                  public void onResponse(
+                        Call<SettingsResponse> call, Response<SettingsResponse> res) {
                       if (res.code() == HttpCodes.NOT_FOUND) {
                           // no settings on the server etc...
                           return;
@@ -255,14 +274,15 @@ public class ProfileActivity extends AppCompatActivity {
 
         // This code loads home fragment when back key is pressed
         // when user is in other fragment than home
-        if (shouldLoadHomeFragOnBackPress) {
-            if (lastNavItemId != DRAWER_PROFILE_ID) {
-                lastNavItemId = DRAWER_PROFILE_ID;
-                renderSelectedFragment();
-                return;
-            }
+        if (!shouldLoadHomeFragOnBackPress) {
+            super.onBackPressed();
+            return;
         }
-
+        if (lastNavItemId != DRAWER_PROFILE_ID) {
+            lastNavItemId = DRAWER_PROFILE_ID;
+            renderSelectedFragment();
+            return;
+        }
         super.onBackPressed();
     }
 
@@ -301,13 +321,14 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void unbindSocketService() {
-        if (socketIOService != null && socketServiceConnection != null) {
-            Log.d(TAG, "ProfileActivity unbinds SocketIOService via connection "
-                  + socketServiceConnection);
-            unbindService(socketServiceConnection);
-            socketIOService = null;
-            socketServiceConnection = null;
+        if (socketIOService == null || socketServiceConnection == null) {
+            return;
         }
+        Log.d(TAG, "ProfileActivity unbinds SocketIOService via connection "
+              + socketServiceConnection);
+        unbindService(socketServiceConnection);
+        socketIOService = null;
+        socketServiceConnection = null;
     }
 
     private boolean onDrawerItemClickListener(
@@ -315,11 +336,14 @@ public class ProfileActivity extends AppCompatActivity {
         long identifier = drawerItem.getIdentifier();
         Log.d(TAG, "User selected drawer item: "
               + identifier + " previous was: " + lastNavItemId);
-        if (identifier == DRAWER_PROFILE_ID || identifier == DRAWER_EVENTS_ID
-              || identifier == DRAWER_NEW_EVENT_ID || identifier == DRAWER_NOTIFICATION_ID) {
+        if (identifier == DRAWER_PROFILE_ID
+              || identifier == DRAWER_EVENTS_ID
+              || identifier == DRAWER_NEW_EVENT_ID
+              || identifier == DRAWER_NOTIFICATION_ID) {
             lastNavItemId = identifier;
         } else if (identifier == DRAWER_LOGOUT_ID) {
             handleLogout();
+            return true;
         } else if (identifier == DRAWER_SETTINGS_ID) {
             startActivity(new Intent(this, SettingsActivity.class));
             drawer.setSelection(lastNavItemId, false);
@@ -338,46 +362,28 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void renderSelectedFragment() {
+        logMethod(TAG, this);
         drawer.setSelection(lastNavItemId, false);
-        String tag = DRAWER_FRAGMENT_TAGS.get(lastNavItemId);
-        if (tag == null) {
-            throw new IllegalStateException("Fragment tag must be present");
-        }
+        String tag = requireNonNull(
+              DRAWER_FRAGMENT_TAGS.get(lastNavItemId),
+              "Fragment tag must be present");
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
-        FragmentManager supportFM = getSupportFragmentManager();
-        if (supportFM.findFragmentByTag(tag) != null) {
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(tag) != null) {
             drawer.closeDrawer();
             //toggleFab();
             return;
         }
 
         // Since new navigation comes...
-        String title = drawerFragmentNames.get(lastNavItemId);
-        if (title == null) {
-            throw new IllegalStateException("Drawer toolbar title should be present");
-        }
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            throw new IllegalStateException("ActionBar should be present");
-        }
-        actionBar.setTitle(title);
+        setupActionBarTitle(lastNavItemId);
 
-        // Sometimes, when fragment has huge data, screen seems hanging
-        // when switching between navigation menus
-        // So using runnable, the fragment is loaded with cross fade effect
-        // This effect can be seen in GMail app
+        if (!fm.isStateSaved()) {
+            replaceFragment(fm, () -> createFragment(lastNavItemId), () -> tag)
+                  .run();
+        }
 
-/*        binding.profileActivityFrame.removeAllViews();
-        Fragment fragment = createFragment(lastNavItemId);
-        binding.profileActivityFrame.addView(fragment.getView());*/
-        // If mPendingRunnable is not null, then add to the message queue
-        replaceFragmentHandler.post(
-              replaceFragment(
-                    supportFM,
-                    () -> createFragment(lastNavItemId),
-                    () -> tag)
-        );
 
         // show or hide the fab button
         //toggleFab();
@@ -386,6 +392,49 @@ public class ProfileActivity extends AppCompatActivity {
         // refresh toolbar menu
         //seems this is not necessary.
         //invalidateOptionsMenu();
+    }
+
+    private void restoreSettings() {
+        logMethod(TAG, this);
+        Long fragmentId = getFragmentIdByTag(
+              getCurrentFragmentTag(getSupportFragmentManager()));
+        drawer.setSelection(fragmentId, false);
+        setupActionBarTitle(fragmentId);
+        drawer.closeDrawer();
+    }
+
+    private void setupActionBarTitle(Long fragmentId) {
+        String title = requireNonNull(
+              drawerFragmentNames.get(fragmentId),
+              "Drawer toolbar title should be present.");
+        ActionBar actionBar = requireNonNull(
+              getSupportActionBar(),
+              "ActionBar should be present.");
+        actionBar.setTitle(title);
+    }
+
+    @NonNull
+    private static Long getFragmentIdByTag(String tag) {
+        for (Long id : DRAWER_FRAGMENT_TAGS.keySet()) {
+            if (tag.equals(DRAWER_FRAGMENT_TAGS.get(id))) {
+                return id;
+            }
+        }
+        throw new IllegalStateException("Fragment tag {" + tag + "} is not initialized.");
+    }
+
+    @NonNull
+    private static String getCurrentFragmentTag(FragmentManager fm) {
+        List<Fragment> fragments = fm.getFragments();
+        int size = fragments.size();
+        if (size != 1) {
+            throw new IllegalStateException("Not exactly 1 fragments in manager, size {" + size + "}.");
+        }
+        String tag = fragments.get(0).getTag();
+        if (tag == null) {
+            throw new IllegalStateException("Fragment tag is null.");
+        }
+        return tag;
     }
 
     private void handleLogout() {
@@ -405,14 +454,14 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private static void setupNameMapping(Map<Long, String> mapping, String[] namesFromResources) {
+    private static void setupNameMapping(
+          Map<Long, String> mapping, String[] namesFromResources) {
         mapping.put(DRAWER_PROFILE_ID, namesFromResources[0]);
         mapping.put(DRAWER_EVENTS_ID, namesFromResources[1]);
         mapping.put(DRAWER_NEW_EVENT_ID, namesFromResources[2]);
         mapping.put(DRAWER_NOTIFICATION_ID, namesFromResources[3]);
         mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
     }
-
 
     private static Runnable replaceFragment(
           FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
@@ -421,7 +470,8 @@ public class ProfileActivity extends AppCompatActivity {
             FragmentTransaction txn = fm.beginTransaction();
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
-            //for some reasons txn.commit leads to errors and txn.commitAllowingStateLoss doesn't
+            // for some reasons txn.commit leads to errors
+            // and txn.commitAllowingStateLoss doesn't
             txn.commit();
             //txn.commitAllowingStateLoss();
         };
@@ -544,19 +594,13 @@ public class ProfileActivity extends AppCompatActivity {
         icons = iconPack;
     }
 
-    private static Function<Long, IIcon> getIconProvider(IconPackEnum iconPack) {
-        Function<Long, IIcon> iconProvider;
-        switch (iconPack) {
-            case FONT_AWESOME:
-                iconProvider = ProfileActivity::fontAwesomeIconPack;
-                break;
-            case GOOGLE_MATERIALS:
-                iconProvider = ProfileActivity::googleMaterialIconPack;
-                break;
-            default:
-                iconProvider = ProfileActivity::fontAwesomeIconPack;
-        }
-        return iconProvider;
+    private static Function<Long, IIcon> getIconProvider(
+          IconPackEnum iconPack) {
+        return switch (iconPack) {
+            case FONT_AWESOME -> ProfileActivity::fontAwesomeIconPack;
+            case GOOGLE_MATERIALS -> ProfileActivity::googleMaterialIconPack;
+            default -> ProfileActivity::fontAwesomeIconPack;
+        };
     }
 
     private static IIcon googleMaterialIconPack(Long id) {
@@ -626,7 +670,8 @@ public class ProfileActivity extends AppCompatActivity {
         return FontAwesome.Icon.faw_coffee;
     }
 
-    private static void updateIconFor(Drawer drawer, Function<Long, IIcon> iconProvider, long itemId) {
+    private static void updateIconFor(
+          Drawer drawer, Function<Long, IIcon> iconProvider, long itemId) {
         IDrawerItem<?, ?> iDrawerItem = drawer.getDrawerItem(itemId);
         if (iDrawerItem == null) {
             Log.d(TAG, "Drawer item is not exist " + itemId);

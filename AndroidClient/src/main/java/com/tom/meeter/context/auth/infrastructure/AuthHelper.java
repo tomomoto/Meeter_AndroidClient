@@ -71,26 +71,28 @@ public final class AuthHelper {
           AccountManager am, Activity activity, TokenService tokenService) {
         Account account = getSingleAccount(am);
         String token = am.peekAuthToken(account, AUTH_TYPE);
-        if (token == null) {
-            am.getAuthToken(
-                  account, AUTH_TYPE, null, activity,
-                  future -> {
-                      Bundle result;
-                      try {
-                          result = future.getResult();
-                      } catch (AuthenticatorException e) {
-                          throw new RuntimeException(e);
-                      } catch (IOException e) {
-                          throw new RuntimeException(e);
-                      } catch (OperationCanceledException e) {
-                          onCancelledAuth.run();
-                          return;
-                      }
-                      onToken.accept(result.getString(AccountManager.KEY_AUTHTOKEN));
-                  }, null);
+        if (token != null) {
+            checkTokenWithRetry(
+                  tokenService, token, am, activity,
+                  onToken, onCancelledAuth, 0);
             return;
         }
-        checkTokenWithRetry(tokenService, token, am, activity, onToken, onCancelledAuth, 0);
+        am.getAuthToken(
+              account, AUTH_TYPE, null, activity,
+              future -> {
+                  Bundle result;
+                  try {
+                      result = future.getResult();
+                  } catch (AuthenticatorException e) {
+                      throw new RuntimeException(e);
+                  } catch (IOException e) {
+                      throw new RuntimeException(e);
+                  } catch (OperationCanceledException e) {
+                      onCancelledAuth.run();
+                      return;
+                  }
+                  onToken.accept(result.getString(AccountManager.KEY_AUTHTOKEN));
+              }, null);
     }
 
     private static void simpleCheckToken(

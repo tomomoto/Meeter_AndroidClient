@@ -1,5 +1,5 @@
 [versions]
-agp = "8.10.1"
+agp = "8.11.0"
 
 #android
 appcompat = "1.7.1"
@@ -15,17 +15,17 @@ material = "1.12.0"
 #Core
 playServicesMaps = "19.2.0"
 retrofit = "3.0.0"
-room = "2.0.0"
-dagger = "2.56"
+room = "2.7.2"
+dagger = "2.56.2"
 eventbus = "3.3.1"
 guava = "33.4.8-android"
 materialdrawer = "6.1.2"
 okhttp = "4.12.0"
 rxandroid = "2.1.1"
-rxjava = "2.2.6"
+rxjava = "2.2.21"
 socketIoClient = "2.1.2"
 
-jackson = "2.19.0"
+jackson = "2.19.1"
 
 desugar_jdk_libs = "2.1.5"
 
@@ -35,8 +35,6 @@ junit = "4.13.2"
 
 #junitVersion = "1.2.1"
 #espressoCore = "3.6.1"
-#appcompat = "1.6.1"
-#material = "1.10.0"
 #constraintlayout = "2.1.4"
 #lifecycleLivedataKtx = "2.9.0"
 #lifecycleViewmodelKtx = "2.9.0"
@@ -87,7 +85,6 @@ junit-junit = { module = "junit:junit", version.ref = "junit" }
 
 #ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 #espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-#material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 #constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 #lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 #lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }

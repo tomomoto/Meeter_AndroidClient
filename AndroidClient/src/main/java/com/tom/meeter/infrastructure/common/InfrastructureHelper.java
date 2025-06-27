@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import java.util.Arrays;
+
 public class InfrastructureHelper {
 
     private static final String METHOD_ENDING = "()";
@@ -43,6 +45,16 @@ public class InfrastructureHelper {
             Log.d(tag, obj.getClass().getName() + " " + getCurrentMethodName());
         } else {
             Log.d(tag, obj.getClass().getSimpleName() + " " + getCurrentMethodName());
+        }
+    }
+
+    public static void logMethod(String tag, Object obj, Object... args) {
+        if (obj.getClass().isAnonymousClass()) {
+            Log.d(tag, obj.getClass().getName() + " " + getCurrentMethodName()
+                  + " with args: " + Arrays.toString(args));
+        } else {
+            Log.d(tag, obj.getClass().getSimpleName() + " " + getCurrentMethodName()
+                  + " with args: " + Arrays.toString(args));
         }
     }
 

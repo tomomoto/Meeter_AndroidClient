@@ -1,7 +1,5 @@
 package com.tom.meeter.context.profile.repository.event.domain;
 
-import static androidx.room.ForeignKey.CASCADE;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -9,7 +7,14 @@ import androidx.room.PrimaryKey;
 
 import com.tom.meeter.context.profile.repository.user.domain.User;
 
-@Entity
+@Entity(
+      foreignKeys = @ForeignKey(
+            entity = User.class,
+            parentColumns = "id",
+            childColumns = "creatorId",
+            onDelete = ForeignKey.CASCADE
+      )
+)
 public class Event {
 
     @PrimaryKey
@@ -19,17 +24,15 @@ public class Event {
     private String description;
     private double latitude;
     private double longitude;
-
-    @ForeignKey(entity = User.class, parentColumns = "id", childColumns = "creatorId",
-          onDelete = CASCADE)
     private String creatorId;
     private String created;
     private String starting;
     private String ending;
 
-    public Event(@NonNull String id, String name, String description, double latitude,
-                 double longitude, String creatorId, String created, String starting,
-                 String ending) {
+    public Event(
+          @NonNull String id, String name, String description,
+          double latitude, double longitude, String creatorId,
+          String created, String starting, String ending) {
         this.id = id;
         this.name = name;
         this.description = description;
