@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.SubscribersAdapter;
-import com.tom.meeter.context.profile.factory.ProfileSubscribersViewModelAssistedFactory;
+import com.tom.meeter.context.profile.factory.ProfileSubscribersAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileSubscribersViewModel;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
@@ -31,7 +31,7 @@ public class SubscribersActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    ProfileSubscribersViewModelAssistedFactory assistedFactory;
+    ProfileSubscribersAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
     @Inject
@@ -75,7 +75,7 @@ public class SubscribersActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(
               this,
-              assistedFactory.factory(assistedFactory, auth, this, onAuthFail))
+              assistedFactory.factory(assistedFactory, this, onAuthFail))
               .get(ProfileSubscribersViewModel.class);
 
         viewModel.getSubscribers()

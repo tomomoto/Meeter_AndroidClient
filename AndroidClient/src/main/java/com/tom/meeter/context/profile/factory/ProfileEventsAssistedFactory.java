@@ -5,6 +5,6 @@ import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import dagger.assisted.AssistedFactory;
 
 @AssistedFactory
-public interface ProfileEventsViewModelAssistedFactory
+public interface ProfileEventsAssistedFactory
       extends AssistedFactoryBase<ProfileEventsViewModel> {
 }

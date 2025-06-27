@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.event.factory.EventAssistedFactory;
 import com.tom.meeter.context.event.message.UpdateEventRequest;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
@@ -44,7 +45,6 @@ import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
-import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -67,12 +67,13 @@ public class ProfileEventActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    EventService eventService;
+    EventService service;
     @Inject
-    EventViewModel.AssistedFactory assistedFactory;
+    EventAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
+    private final Runnable onNotAuthenticated = this::recreate;
     private ActivityEventEditableBinding binding;
     private AccountManager accountManager;
     private EventViewModel viewModel;
@@ -129,18 +130,18 @@ public class ProfileEventActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(token, eventId), this::finish,
+        checkToken((token) -> onInit(eventId), this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String token, String eventId) {
+    private void onInit(String eventId) {
         viewModel = new ViewModelProvider(
               this,
-              EventViewModel.factory(
-                    assistedFactory, eventId, token, this, this::recreate))
+              assistedFactory.factory(
+                    assistedFactory, eventId, this, onNotAuthenticated))
               .get(EventViewModel.class);
 
-        initLayout(token);
+        initLayout();
 
         viewModel.getEvent()
               .observe(this, event -> {
@@ -156,7 +157,7 @@ public class ProfileEventActivity extends AppCompatActivity {
               });
     }
 
-    private void initLayout(String token) {
+    private void initLayout() {
         binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -178,8 +179,8 @@ public class ProfileEventActivity extends AppCompatActivity {
                     switchEditMode();
                     return;
                 }
-                eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req)
-                      .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
+                service.updateEvent(getAuthHeader(accountManager), eventCache.getId(), req)
+                      .enqueue(new BaseOnNotAuthenticatedCallback<>(this, onNotAuthenticated) {
                           @Override
                           public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
                               super.onResponse(call, resp);
@@ -205,7 +206,7 @@ public class ProfileEventActivity extends AppCompatActivity {
     void downloadAndUpdateLayoutPhoto(String photoPath) {
         imgDownloader.downloadEventImage(
               photoPath, this, ImagesHelper::bigCircleImage,
-              this::updateLayoutPhoto, this::recreate);
+              this::updateLayoutPhoto, onNotAuthenticated);
     }
 
     private void updateLayoutPhoto(Bitmap photo) {
@@ -235,7 +236,7 @@ public class ProfileEventActivity extends AppCompatActivity {
               .setTitle(R.string.delete_event)
               .setMessage(R.string.are_you_sure_delete_event)
               .setPositiveButton(R.string.delete, (dialog, which) -> {
-                  eventService.deleteEvent(getAuthHeader(accountManager), eventCache.getId())
+                  service.deleteEvent(getAuthHeader(accountManager), eventCache.getId())
                         .enqueue(new HttpErrorLogger<>(getApplicationContext()) {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> resp) {

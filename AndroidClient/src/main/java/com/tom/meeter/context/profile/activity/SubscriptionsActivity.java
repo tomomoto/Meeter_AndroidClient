@@ -1,7 +1,6 @@
 package com.tom.meeter.context.profile.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -15,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.SubscribersAdapter;
-import com.tom.meeter.context.profile.factory.ProfileSubscriptionsViewModelAssistedFactory;
+import com.tom.meeter.context.profile.factory.ProfileSubscriptionsAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileSubscriptionsViewModel;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
@@ -31,7 +30,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    ProfileSubscriptionsViewModelAssistedFactory assistedFactory;
+    ProfileSubscriptionsAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
     @Inject
@@ -53,18 +52,16 @@ public class SubscriptionsActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         checkToken(
-              this::onInit, this::finish,
+              (token) -> onInit(), this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String token) {
+    private void onInit() {
         logMethod(TAG, this);
 
         binding = ActivityProfileSubscriptionsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-
-        String auth = getAuthHeader(accountManager);
 
         adapter = new SubscribersAdapter(
               userService, onAuthFail, this,
@@ -75,7 +72,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(
               this,
-              assistedFactory.factory(assistedFactory, auth, this, onAuthFail))
+              assistedFactory.factory(assistedFactory, this, onAuthFail))
               .get(ProfileSubscriptionsViewModel.class);
 
         viewModel.getSubscriptions()

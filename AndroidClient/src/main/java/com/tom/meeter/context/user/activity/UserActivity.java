@@ -30,7 +30,7 @@ import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.factory.UserViewModelAssistedFactory;
+import com.tom.meeter.context.user.factory.UserAssistedFactory;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserBinding;
@@ -57,7 +57,7 @@ public class UserActivity extends AppCompatActivity {
     @Inject
     UserService userService;
     @Inject
-    UserViewModelAssistedFactory assistedFactory;
+    UserAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 

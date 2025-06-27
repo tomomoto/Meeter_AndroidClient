@@ -1,7 +1,9 @@
 package com.tom.meeter.context.profile.viewmodel;
 
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
@@ -24,29 +26,26 @@ public class ProfileEventsViewModel extends ViewModel {
 
     private static final String TAG = ProfileEventsViewModel.class.getCanonicalName();
 
-    private final String auth;
+    private final ProfileService service;
     private final Context ctx;
     private final Runnable onNotAuthenticated;
 
     private final MutableLiveData<List<EventDTO>> events = new MutableLiveData<>();
-    private final ProfileService service;
 
     @AssistedInject
     public ProfileEventsViewModel(
           ProfileService service,
-          @Assisted String auth,
           @Assisted Context ctx,
           @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
         this.service = service;
-        this.auth = auth;
         this.ctx = ctx.getApplicationContext();
         this.onNotAuthenticated = onNotAuthenticated;
         init();
     }
 
     public void init() {
-        service.getProfileEvents(auth).enqueue(
+        service.getProfileEvents(getAuthHeader(AccountManager.get(ctx))).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(

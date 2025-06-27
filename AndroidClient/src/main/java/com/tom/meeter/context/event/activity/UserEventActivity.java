@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
+import com.tom.meeter.context.event.factory.EventAssistedFactory;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
@@ -39,9 +40,9 @@ public class UserEventActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    EventService eventService;
+    EventService service;
     @Inject
-    EventViewModel.AssistedFactory assistedFactory;
+    EventAssistedFactory assistedFactory;
 
     private ActivityEventReadableBinding binding;
     private EventViewModel viewModel;
@@ -70,15 +71,15 @@ public class UserEventActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(token, eventId),
+        checkToken((token) -> onInit(eventId),
               this::finish, accountManager, this, tokenService);
     }
 
-    private void onInit(String token, String eventId) {
+    private void onInit(String eventId) {
         viewModel = new ViewModelProvider(
               this,
-              EventViewModel.factory(
-                    assistedFactory, eventId, token, this, this::recreate))
+              assistedFactory.factory(
+                    assistedFactory, eventId, this, this::recreate))
               .get(EventViewModel.class);
 
         viewModel.getEvent()

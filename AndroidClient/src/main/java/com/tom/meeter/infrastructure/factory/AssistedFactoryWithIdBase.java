@@ -1,25 +1,24 @@
-package com.tom.meeter.context.user.factory;
+package com.tom.meeter.infrastructure.factory;
 
 import android.content.Context;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-public interface AssistedFactoryBase<T extends ViewModel> {
+public interface AssistedFactoryWithIdBase<T extends ViewModel> {
 
-    T create(String userId, Context ctx, Runnable onNotAuthenticated);
+    T create(String id, Context ctx, Runnable onNotAuthenticated);
 
     default ViewModelProvider.Factory factory(
-          AssistedFactoryBase<T> assistedFactory,
-          String userId, Context ctx,
-          Runnable onNotAuthenticated) {
+          AssistedFactoryWithIdBase<T> assistedFactory,
+          String id, Context ctx, Runnable onNotAuthenticated) {
         return new ViewModelProvider.Factory() {
             @Override
             @SuppressWarnings("unchecked")
-            public <C extends ViewModel> C create(Class<C> modelClass) {
-                T result = assistedFactory.create(userId, ctx, onNotAuthenticated);
+            public <R extends ViewModel> R create(Class<R> modelClass) {
+                T result = assistedFactory.create(id, ctx, onNotAuthenticated);
                 if (modelClass.isInstance(result)) {
-                    return (C) result;
+                    return (R) result;
                 }
                 throw new IllegalArgumentException(
                       "Unknown ViewModel class: " + modelClass.getName());
@@ -27,3 +26,4 @@ public interface AssistedFactoryBase<T extends ViewModel> {
         };
     }
 }
+

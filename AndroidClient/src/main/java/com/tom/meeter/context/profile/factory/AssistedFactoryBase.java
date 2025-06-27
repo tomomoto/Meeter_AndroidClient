@@ -7,18 +7,21 @@ import androidx.lifecycle.ViewModelProvider;
 
 public interface AssistedFactoryBase<T extends ViewModel> {
 
-    T create(String auth, Context ctx, Runnable onNotAuthenticated);
+    T create(Context ctx, Runnable onNotAuthenticated);
 
-    default <F extends AssistedFactoryBase<T>> ViewModelProvider.Factory factory(
-          F assistedFactory,
-          String auth, Context ctx,
+    default ViewModelProvider.Factory factory(
+          AssistedFactoryBase<T> assistedFactory, Context ctx,
           Runnable onNotAuthenticated) {
         return new ViewModelProvider.Factory() {
             @Override
             @SuppressWarnings("unchecked")
-            //TODO associate T2 with T?
-            public <T2 extends ViewModel> T2 create(Class<T2> modelClass) {
-                return (T2) assistedFactory.create(auth, ctx, onNotAuthenticated);
+            public <R extends ViewModel> R create(Class<R> modelClass) {
+                T result = assistedFactory.create(ctx, onNotAuthenticated);
+                if (modelClass.isInstance(result)) {
+                    return (R) result;
+                }
+                throw new IllegalArgumentException(
+                      "Unknown ViewModel class: " + modelClass.getName());
             }
         };
     }

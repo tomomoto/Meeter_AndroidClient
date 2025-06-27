@@ -1,7 +1,6 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -22,7 +21,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.adapter.UsersAdapter;
-import com.tom.meeter.context.user.factory.UserSubscribersViewModelAssistedFactory;
+import com.tom.meeter.context.user.factory.UserSubscribersAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscribersViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscribersBinding;
 import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
@@ -36,7 +35,7 @@ public class UserSubscribersActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    UserSubscribersViewModelAssistedFactory assistedFactory;
+    UserSubscribersAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
@@ -69,7 +68,8 @@ public class UserSubscribersActivity extends AppCompatActivity {
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        adapter = new UsersAdapter(this,
+        adapter = new UsersAdapter(
+              this,
               new UserBinderImpl(this, imgDownloader, onAuthFail));
 
         //setToken(accountManager, Launcher.EXPIRED);

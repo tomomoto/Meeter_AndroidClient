@@ -37,7 +37,7 @@ import com.tom.meeter.context.image.activity.UploadUserImageActivity;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.activity.SubscribersActivity;
 import com.tom.meeter.context.profile.activity.SubscriptionsActivity;
-import com.tom.meeter.context.profile.factory.ProfileViewModelAssistedFactory;
+import com.tom.meeter.context.profile.factory.ProfileAssistedFactory;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
     private static final String TAG = ProfileFragment.class.getCanonicalName();
 
     @Inject
-    ProfileViewModelAssistedFactory assistedFactory;
+    ProfileAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imageDownloader;
     @Inject
@@ -122,11 +122,10 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
-        String auth = getAuthHeader(accountManager);
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, auth, requireContext(),
+                    assistedFactory, requireContext(),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)))
               .get(ProfileViewModel.class);
 
@@ -155,7 +154,7 @@ public class ProfileFragment extends Fragment {
                     switchEditMode();
                     return;
                 }
-                profileService.updateProfile(auth, req)
+                profileService.updateProfile(getAuthHeader(accountManager), req)
                       .enqueue(new ActivityRestarterOnAuthFailure<>(this) {
                           @Override
                           public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {

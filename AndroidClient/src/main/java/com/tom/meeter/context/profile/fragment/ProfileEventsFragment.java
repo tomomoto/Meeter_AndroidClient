@@ -1,10 +1,8 @@
 package com.tom.meeter.context.profile.fragment;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
-import com.tom.meeter.context.profile.factory.ProfileEventsViewModelAssistedFactory;
+import com.tom.meeter.context.profile.factory.ProfileEventsAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
@@ -37,13 +35,11 @@ public class ProfileEventsFragment extends Fragment {
     private EventsAdapter adapter;
 
     @Inject
-    ProfileEventsViewModelAssistedFactory assistedFactory;
+    ProfileEventsAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imageDownloader;
 
     private ProfileEventsViewModel viewModel;
-
-    private AccountManager accountManager;
 
     public ProfileEventsFragment() {
         logMethod(TAG, this);
@@ -57,7 +53,6 @@ public class ProfileEventsFragment extends Fragment {
         ((App) getActivity().getApplication()).getComponent().inject(this);
 
         Context ctx = requireContext();
-        accountManager = AccountManager.get(ctx);
 
         adapter = new EventsAdapter(
               new EventBinderImpl(
@@ -84,11 +79,10 @@ public class ProfileEventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
-        String auth = getAuthHeader(accountManager);
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, auth, requireContext(),
+                    assistedFactory, requireContext(),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)))
               .get(ProfileEventsViewModel.class);
 

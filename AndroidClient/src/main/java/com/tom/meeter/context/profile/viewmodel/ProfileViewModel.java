@@ -1,7 +1,9 @@
 package com.tom.meeter.context.profile.viewmodel;
 
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -28,34 +30,30 @@ public class ProfileViewModel extends ViewModel {
 
     private static final String TAG = ProfileViewModel.class.getCanonicalName();
 
+    private final ProfileService profileService;
+    private final ImageDownloader imageDownloader;
+    private final Context ctx;
+    private final Runnable onNotAuthenticated;
+
     private final MutableLiveData<UserDTO> profile = new MutableLiveData<>();
     private final MutableLiveData<Bitmap> photo = new MutableLiveData<>();
     private final MutableLiveData<List<EventDTO>> events = new MutableLiveData<>();
 
-    private final ProfileService profileService;
-    private final ImageDownloader imageDownloader;
-
-    private final String auth;
-    private final Context ctx;
-    private final Runnable onNotAuthenticated;
-
     @AssistedInject
     public ProfileViewModel(
           ProfileService profileService, ImageDownloader imageDownloader,
-          @Assisted String auth,
           @Assisted Context ctx,
           @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
         this.profileService = profileService;
         this.imageDownloader = imageDownloader;
-        this.auth = auth;
         this.ctx = ctx.getApplicationContext();
         this.onNotAuthenticated = onNotAuthenticated;
         init();
     }
 
     public void init() {
-        profileService.getProfile(auth).enqueue(
+        profileService.getProfile(getAuthHeader(AccountManager.get(ctx))).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<UserDTO> call, Response<UserDTO> resp) {
@@ -78,7 +76,7 @@ public class ProfileViewModel extends ViewModel {
                   }
               }
         );
-        profileService.getProfileEvents(auth).enqueue(
+        profileService.getProfileEvents(getAuthHeader(AccountManager.get(ctx))).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(
