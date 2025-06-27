@@ -3,10 +3,9 @@ package com.tom.meeter.context.profile.fragment;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
+import static com.tom.meeter.context.profile.utils.Utils.createUpdateProfileRequest;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
 import static com.tom.meeter.infrastructure.common.CommonHelper.genderResolver;
-import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
-import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
@@ -46,7 +45,7 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
 import com.tom.meeter.infrastructure.components.binder.SimpleEventBinderImpl;
-import com.tom.meeter.infrastructure.http.ActivityRestarterOnAuthFailure;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import java.time.LocalDate;
@@ -71,6 +70,8 @@ public class ProfileFragment extends Fragment {
     @Inject
     ProfileService profileService;
 
+    private final Runnable onAuthFail =
+          () -> InfrastructureHelper.restartActivityFromFragment(this);
     private AccountManager accountManager;
     private EventsCardAdapter adapter;
     private FragmentProfileBinding binding;
@@ -106,7 +107,7 @@ public class ProfileFragment extends Fragment {
         adapter = new EventsCardAdapter(
               new SimpleEventBinderImpl(ctx, imageDownloader,
                     event -> dispatchToEventActivity(ctx, event.getId()),
-                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
+                    onAuthFail));
     }
 
     @Override
@@ -122,11 +123,10 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
+        Context ctx = requireContext();
         viewModel = new ViewModelProvider(
               this,
-              assistedFactory.factory(
-                    assistedFactory, requireContext(),
-                    () -> InfrastructureHelper.restartActivityFromFragment(this)))
+              assistedFactory.factory(assistedFactory, ctx, onAuthFail))
               .get(ProfileViewModel.class);
 
         LifecycleOwner owner = getViewLifecycleOwner();
@@ -148,25 +148,28 @@ public class ProfileFragment extends Fragment {
 
         binding.btnEdit.setOnClickListener(v -> {
             if (isEditableModeEnabled) {
-                UpdateProfileRequest req = createUpdateProfileRequest();
+                UpdateProfileRequest req = createUpdateProfileRequest(binding, userCache);
                 if (req.isEmpty()) {
                     showMessage(requireActivity(), R.string.empty_update_request_is_not_sent);
                     switchEditMode();
                     return;
                 }
                 profileService.updateProfile(getAuthHeader(accountManager), req)
-                      .enqueue(new ActivityRestarterOnAuthFailure<>(this) {
+                      .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onAuthFail) {
                           @Override
-                          public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                          public void onResponse(
+                                Call<UserDTO> call, Response<UserDTO> response) {
                               super.onResponse(call, response);
-                              if (response.code() == HttpCodes.OK) {
-                                  String oldPhotoPath = userCache.getPhotoPath();
-                                  userCache = response.body();
-                                  if (!Objects.equals(oldPhotoPath, userCache.getPhotoPath())) {
-                                      downloadAndUpdateLayoutPhoto(userCache.getPhotoPath());
-                                  }
-                                  showMessage(ProfileFragment.this.requireActivity(), R.string.saved);
+                              if (response.code() != HttpCodes.OK) {
+                                  updateLayoutValues();
+                                  return;
                               }
+                              String oldPhotoPath = userCache.getPhotoPath();
+                              userCache = response.body();
+                              if (!Objects.equals(oldPhotoPath, userCache.getPhotoPath())) {
+                                  downloadAndUpdateLayoutPhoto(userCache.getPhotoPath());
+                              }
+                              showMessage(requireActivity(), R.string.saved);
                               updateLayoutValues();
                           }
                       });
@@ -174,16 +177,11 @@ public class ProfileFragment extends Fragment {
             switchEditMode();
         });
         binding.subscribers.setOnClickListener(
-              v -> startActivity(
-                    new Intent(
-                          ProfileFragment.this.getContext(), SubscribersActivity.class)));
+              v -> startActivity(new Intent(ctx, SubscribersActivity.class)));
         binding.subscriptions.setOnClickListener(
-              v -> startActivity(
-                    new Intent(
-                          ProfileFragment.this.getContext(), SubscriptionsActivity.class)));
+              v -> startActivity(new Intent(ctx, SubscriptionsActivity.class)));
         binding.btnPhoto.setOnClickListener(
-              v -> imageUploadLauncher.launch(
-                    new Intent(requireContext(), UploadUserImageActivity.class)));
+              v -> imageUploadLauncher.launch(new Intent(ctx, UploadUserImageActivity.class)));
     }
 
     private void updateLayoutValues() {
@@ -199,9 +197,9 @@ public class ProfileFragment extends Fragment {
     }
 
     void downloadAndUpdateLayoutPhoto(String photoPath) {
-        imageDownloader.downloadUserImage(photoPath, requireContext(),
-              ImagesHelper::bigCircleImage, this::updateLayoutPhoto,
-              () -> InfrastructureHelper.restartActivityFromFragment(this));
+        imageDownloader.downloadUserImage(
+              photoPath, requireContext(), ImagesHelper::bigCircleImage,
+              this::updateLayoutPhoto, onAuthFail);
     }
 
     private void updateLayoutPhoto(Bitmap photo) {
@@ -217,32 +215,6 @@ public class ProfileFragment extends Fragment {
         binding.info.setEnabled(isEditableModeEnabled);
         binding.btnEdit.setText(
               isEditableModeEnabled ? getString(R.string.save) : getString(R.string.edit));
-    }
-
-    private UpdateProfileRequest createUpdateProfileRequest() {
-        UpdateProfileRequest req = new UpdateProfileRequest();
-
-        String nameChange = getStringOrNull(binding.name.getText());
-        if (!Objects.equals(userCache.getName(), nameChange)) {
-            req.setName(nameChange);
-        }
-        String surnameChange = getStringOrNull(binding.surname.getText());
-        if (!Objects.equals(userCache.getSurname(), surnameChange)) {
-            req.setSurname(surnameChange);
-        }
-        LocalDate birthdayChange = getLocalDateOrNull(binding.birthday.getText());
-        if (!Objects.equals(userCache.getBirthday(), birthdayChange)) {
-            req.setBirthday(birthdayChange);
-        }
-        String infoChange = getStringOrNull(binding.info.getText());
-        if (!Objects.equals(userCache.getInfo(), infoChange)) {
-            req.setInfo(infoChange);
-        }
-        String photoPathChange = getStringOrNull(binding.photoPath.getText());
-        if (!Objects.equals(userCache.getPhotoPath(), photoPathChange)) {
-            req.setPhotoPath(photoPathChange);
-        }
-        return req;
     }
 
     @Override

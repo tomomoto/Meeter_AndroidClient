@@ -2,6 +2,7 @@ package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
+import static com.tom.meeter.infrastructure.common.DateHelper.DATE_FORMAT;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.annotation.SuppressLint;
@@ -36,7 +37,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -51,7 +51,6 @@ import java.util.Date;
 public class CreateNewEventFragment extends Fragment {
 
     private static final String TAG = CreateNewEventFragment.class.getCanonicalName();
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     FragmentNewEventBinding binding;
@@ -177,22 +176,22 @@ public class CreateNewEventFragment extends Fragment {
     public void startsDateChangedListener() {
         String s = binding.newEventStartsDateEditText.getText().toString();
         if (!isDateValid(s)) {
-            binding.newEventStartsDateTextView.setText(getString(R.string.wrong_date));
+            binding.newEventStartsDateTextView.setText(R.string.wrong_date);
             binding.newEventCreateBtn.setEnabled(false);
             return;
         }
-        binding.newEventStartsDateTextView.setText(getString(R.string.correct_date));
+        binding.newEventStartsDateTextView.setText(R.string.correct_date);
         validateWholeForm();
     }
 
     public void endsDateChangedListener() {
         String e = binding.newEventEndsDateEditText.getText().toString();
         if (!isDateValid(e)) {
-            binding.newEventEndsDateTextView.setText(getString(R.string.wrong_date));
+            binding.newEventEndsDateTextView.setText(R.string.wrong_date);
             binding.newEventCreateBtn.setEnabled(false);
             return;
         }
-        binding.newEventEndsDateTextView.setText(getString(R.string.correct_date));
+        binding.newEventEndsDateTextView.setText(R.string.correct_date);
         validateWholeForm();
     }
 
@@ -265,7 +264,7 @@ public class CreateNewEventFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         logMethod(TAG, this);
-        getContext().unbindService(locationServiceConnection);
+        requireContext().unbindService(locationServiceConnection);
     }
 
     @Override
@@ -306,8 +305,8 @@ public class CreateNewEventFragment extends Fragment {
                     binding.newEventNameEditText.getText().toString(),
                     binding.newEventDescriptionEditText.getText().toString(),
                     starts, ends,
-                    Float.valueOf(binding.newEventLatitudeEditText.getText().toString()),
-                    Float.valueOf(binding.newEventLongitudeEditText.getText().toString())));
+                    Double.valueOf(binding.newEventLatitudeEditText.getText().toString()),
+                    Double.valueOf(binding.newEventLongitudeEditText.getText().toString())));
     }
 
     private static boolean requiredFieldsNotProvided(
@@ -346,7 +345,7 @@ public class CreateNewEventFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SuccessfulEventCreation ev) {
         Log.d(TAG, ev.toString());
-        new AlertDialog.Builder(getContext())
+        new AlertDialog.Builder(requireContext())
               .setTitle("Event created, id: " + ev.getId())
               .setMessage("Created.")
               .setNegativeButton(getString(R.string.ok), (dialog, id) -> dialog.cancel())

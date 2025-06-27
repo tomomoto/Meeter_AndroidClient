@@ -28,7 +28,7 @@ import java.util.Locale;
 public final class DateHelper {
 
     private static final String TAG = DateHelper.class.getCanonicalName();
-    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private DateHelper() {
     }
@@ -42,7 +42,7 @@ public final class DateHelper {
         Calendar today = Calendar.getInstance();
 
         try {
-            dob.setTime(FORMAT.parse(date));
+            dob.setTime(DATE_FORMAT.parse(date));
         } catch (ParseException e) {
             Log.e(TAG, e.getLocalizedMessage(), e);
             return null;
