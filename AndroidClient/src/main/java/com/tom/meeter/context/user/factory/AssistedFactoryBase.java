@@ -9,15 +9,20 @@ public interface AssistedFactoryBase<T extends ViewModel> {
 
     T create(String userId, Context ctx, Runnable onNotAuthenticated);
 
-    default <F extends AssistedFactoryBase<T>> ViewModelProvider.Factory factory(
-          F assistedFactory, String userId, Context ctx,
+    default ViewModelProvider.Factory factory(
+          AssistedFactoryBase<T> assistedFactory,
+          String userId, Context ctx,
           Runnable onNotAuthenticated) {
         return new ViewModelProvider.Factory() {
             @Override
             @SuppressWarnings("unchecked")
-            //TODO associate T2 with T?
-            public <T2 extends ViewModel> T2 create(Class<T2> modelClass) {
-                return (T2) assistedFactory.create(userId, ctx, onNotAuthenticated);
+            public <C extends ViewModel> C create(Class<C> modelClass) {
+                T result = assistedFactory.create(userId, ctx, onNotAuthenticated);
+                if (modelClass.isInstance(result)) {
+                    return (C) result;
+                }
+                throw new IllegalArgumentException(
+                      "Unknown ViewModel class: " + modelClass.getName());
             }
         };
     }
