@@ -32,6 +32,38 @@ public class CreateEventRequest {
         this.photoPath = photoPath;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public OffsetDateTime getStarting() {
+        return starting;
+    }
+
+    public OffsetDateTime getEnding() {
+        return ending;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
     public boolean isEmpty() {
         return name == null && description == null
               && starting == null && ending == null

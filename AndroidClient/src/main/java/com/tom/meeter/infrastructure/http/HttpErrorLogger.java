@@ -5,6 +5,8 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMess
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 
 import okhttp3.ResponseBody;
@@ -30,9 +32,18 @@ public class HttpErrorLogger<T> extends ErrorLogger<T> {
         } catch (IOException e) {
             errorMessage = "Unable to extract error body.";
         }
-        int code = response.code();
-        showMessage(ctx, code + "/" + errorMessage);
-        Log.e(TAG, "HTTP request failed for [" + ctx.getClass().getCanonicalName()
-              + "] with http code [" + code + "] and body " + errorMessage);
+        try {
+            HttpErrorMessage em = HttpErrorMessage.fromString(errorMessage);
+            int code = response.code();
+            showMessage(ctx, "[" + code + "]:[" + em.getCode()
+                  + "]\n" + em.getLocalizableMessage().getMessage());
+            Log.e(TAG, "HTTP request failed for [" + ctx.getClass().getCanonicalName()
+                  + "] with http code [" + code + "] and body " + errorMessage);
+        } catch (JSONException e) {
+            int code = response.code();
+            showMessage(ctx, code + "/" + errorMessage);
+            Log.e(TAG, "HTTP request failed for [" + ctx.getClass().getCanonicalName()
+                  + "] with http code [" + code + "] and body " + errorMessage);
+        }
     }
 }

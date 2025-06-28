@@ -187,18 +187,10 @@ public class CreateEventFragment extends Fragment {
                   public void onResponse(
                         Call<EventDTO> call, Response<EventDTO> resp) {
                       super.onResponse(call, resp);
-                      if (resp.code() == HttpCodes.OK && resp.body() != null) {
-                          showEventDialog(resp.body());
+                      if (resp.code() != HttpCodes.OK || resp.body() == null) {
                           return;
                       }
-                      new AlertDialog.Builder(requireContext())
-                            .setIcon(R.drawable.ic_meeter_lr)
-                            .setTitle(R.string.failed)
-                            .setMessage(R.string.failed_to_create_event)
-                            .setPositiveButton(R.string.ok, (dialog, id) -> dialog.cancel())
-                            .create()
-                            .show();
-                      return;
+                      showEventDialog(resp.body());
                   }
               });
     }
