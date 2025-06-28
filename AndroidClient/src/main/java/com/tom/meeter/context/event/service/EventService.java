@@ -25,4 +25,8 @@ public interface EventService {
 
     @DELETE("/event/{id}")
     Call<Void> deleteEvent(@Header(AUTH_HEADER) String authHeader, @Path("id") String eventId);
+
+    @GET("/event/{id}/am_i_creator")
+    Call<Boolean> amICreator(@Header(AUTH_HEADER) String authHeader, @Path("id") String eventId);
+
 }

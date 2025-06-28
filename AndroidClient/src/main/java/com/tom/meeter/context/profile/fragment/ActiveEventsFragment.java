@@ -1,9 +1,5 @@
 package com.tom.meeter.context.profile.fragment;
 
-/**
- * Created by Tom on 09.12.2016.
- */
-
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -24,7 +20,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheEventBinder;
+import com.tom.meeter.infrastructure.components.binder.EventBinderImpl;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -33,15 +29,17 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
+/**
+ * Created by Tom on 09.12.2016.
+ */
 public class ActiveEventsFragment extends Fragment {
 
     private static final String TAG = ActiveEventsFragment.class.getCanonicalName();
 
-    SubFragmentActiveEventsBinding binding;
-
     @Inject
     ImageDownloader imageDownloader;
 
+    private SubFragmentActiveEventsBinding binding;
     private EventsAdapter adapter;
 
     public ActiveEventsFragment() {
@@ -57,9 +55,9 @@ public class ActiveEventsFragment extends Fragment {
 
         EventBus.getDefault().register(this);
 
-        Context ctx = getContext();
+        Context ctx = requireContext();
         adapter = new EventsAdapter(
-              new PhotoDownloaderWithCacheEventBinder(
+              new EventBinderImpl(
                     ctx, imageDownloader,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));
@@ -69,17 +67,21 @@ public class ActiveEventsFragment extends Fragment {
 
     @Override
     public View onCreateView(
-          @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater, ViewGroup container,
+          Bundle savedInstanceState) {
         logMethod(TAG, this);
-        binding = SubFragmentActiveEventsBinding.inflate(inflater, container, false);
+        binding = SubFragmentActiveEventsBinding.inflate(
+              inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+          @NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-        binding.activeEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.activeEventsFragmentRecyclerView.setLayoutManager(
+              new LinearLayoutManager(getActivity()));
         binding.activeEventsFragmentRecyclerView.setAdapter(adapter);
     }
 

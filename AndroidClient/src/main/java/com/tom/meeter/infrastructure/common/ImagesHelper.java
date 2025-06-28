@@ -43,6 +43,10 @@ public class ImagesHelper {
         return getCircleBitmap(Bitmap.createScaledBitmap(from, scaleWidth, scaleHeight, true));
     }
 
+    public static Bitmap bigCircleImage(ResponseBody body) {
+        return circleImage(body, 600, 600);
+    }
+
     public static Bitmap circleImage(Bitmap src) {
         return getCircleBitmap(Bitmap.createScaledBitmap(src, 150, 150, true));
     }

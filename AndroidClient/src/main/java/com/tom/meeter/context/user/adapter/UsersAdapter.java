@@ -1,24 +1,28 @@
 package com.tom.meeter.context.user.adapter;
 
+import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.databinding.ActivityUserSubscriberItemBinding;
-import com.tom.meeter.infrastructure.components.adapter.BaseUserAdapter;
+import com.tom.meeter.infrastructure.components.adapter.BaseAdapter;
 import com.tom.meeter.infrastructure.components.binder.UserBinder;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
-public class UsersAdapter extends BaseUserAdapter<UserViewHolder> {
+public class UsersAdapter extends BaseAdapter<UserViewHolder, UserDTO> {
 
     private static final String TAG = UsersAdapter.class.getCanonicalName();
 
-    public UsersAdapter(UserBinder<UserViewHolder> binder) {
+    public UsersAdapter(Context ctx, UserBinder<UserViewHolder> binder) {
         super(binder);
         logMethod(TAG, this);
+        binder.setup(user -> dispatchToUserActivity(ctx, user.getId()));
     }
 
     @Override

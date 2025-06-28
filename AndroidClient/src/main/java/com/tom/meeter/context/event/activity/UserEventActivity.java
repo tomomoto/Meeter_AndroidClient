@@ -2,11 +2,12 @@ package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
+import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
+import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -20,16 +21,15 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.event.factory.EventAssistedFactory;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventReadableBinding;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import javax.inject.Inject;
 
@@ -37,14 +37,15 @@ public class UserEventActivity extends AppCompatActivity {
 
     private static final String TAG = UserEventActivity.class.getCanonicalName();
 
-    ActivityEventReadableBinding binding;
     @Inject
     TokenService tokenService;
     @Inject
-    EventService eventService;
+    EventService service;
     @Inject
-    ViewModelFactory viewModelFactory;
-    private EventViewModel eventViewModel;
+    EventAssistedFactory assistedFactory;
+
+    private ActivityEventReadableBinding binding;
+    private EventViewModel viewModel;
     private AccountManager accountManager;
 
     @Override
@@ -70,28 +71,29 @@ public class UserEventActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(token, eventId),
+        checkToken((token) -> onInit(eventId),
               this::finish, accountManager, this, tokenService);
     }
 
-    private void onInit(String token, String eventId) {
-        eventViewModel = ViewModelProviders.of(this, viewModelFactory)
+    private void onInit(String eventId) {
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(
+                    assistedFactory, eventId, this, this::recreate))
               .get(EventViewModel.class);
-        eventViewModel.fetchEventInformation(token, eventId, this);
-        eventViewModel.getEventLiveData()
+
+        viewModel.getEvent()
               .observe(this, event -> {
-                  String userUuid = AuthHelper.getUserUuid(accountManager);
-                  String eventCreatorId = event.getCreatorId();
-                  if (userUuid.equals(eventCreatorId)) {
-                      Log.e(TAG, "User event activity for" +
-                            " creator " + userUuid + "/" + eventId + " : " + eventCreatorId);
+                  if (currentUserIsEventCreator(accountManager, event)) {
+                      dumpEventDispatcherError(TAG, accountManager, event);
                       finish();
+                      return;
                   }
                   initLayout(event);
-                  eventViewModel.getEventPhotoLiveData()
+                  viewModel.getEventPhoto()
                         .observe(
-                              this, photo -> binding.eventPhoto.setImageBitmap(
-                                    circleImage(photo, 600, 600)));
+                              this,
+                              photo -> binding.eventPhoto.setImageBitmap(photo));
               });
 
     }
@@ -124,6 +126,23 @@ public class UserEventActivity extends AppCompatActivity {
         return super.onCreateView(parent, name, ctx, attrs);
     }
 
+    @Override
+    protected void onDestroy() {
+        logMethod(TAG, this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        logMethod(TAG, this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        logMethod(TAG, this);
+        super.onPause();
+    }
 
     public static void dispatchToUserEventActivity(Context ctx, String eventId) {
         ctx.startActivity(createUserEventActivityIntent(ctx, eventId));

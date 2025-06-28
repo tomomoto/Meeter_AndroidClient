@@ -58,7 +58,7 @@ public class LocationTrackerService extends Service {
         binder = new ServiceBinder();
         locManager = (LocationManager) getBaseContext().getSystemService(LOCATION_SERVICE);
         readLocationParameters();
-        setupLocationUpdateListeners();
+        startListeningForUpdates();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class LocationTrackerService extends Service {
         logMethod(TAG, this);
     }
 
-    private void setupLocationUpdateListeners() {
+    private void startListeningForUpdates() {
         if (locManager == null) {
             Log.w(TAG, "Location manager is null.");
             return;
@@ -161,6 +161,7 @@ public class LocationTrackerService extends Service {
     }
 
     private void stopListeningForUpdates() {
+        logMethod(TAG, this);
         if (locManager != null) {
             if (networkListener != null) {
                 locManager.removeUpdates(networkListener);
@@ -188,11 +189,22 @@ public class LocationTrackerService extends Service {
     }
 
     public void addLocationTrackerListener(LocationTrackerListener me) {
+        logMethod(TAG, this);
         listeners.add(me);
+        dumpCurrentListeners();
     }
 
     public void removeLocationTrackerListener(LocationTrackerListener me) {
+        logMethod(TAG, this);
         listeners.remove(me);
+        dumpCurrentListeners();
+    }
+
+    private void dumpCurrentListeners() {
+        logMethod(TAG, this);
+        for (LocationTrackerListener l : listeners) {
+            Log.d(TAG, l.toString());
+        }
     }
 
     public void showSettingsAlert() {

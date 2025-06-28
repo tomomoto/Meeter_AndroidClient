@@ -16,7 +16,7 @@ public abstract class DisconnectLogger<T> implements Callback<T> {
 
     private static final String TAG = DisconnectLogger.class.getCanonicalName();
 
-    private final Context ctx;
+    protected final Context ctx;
 
     public DisconnectLogger(Context ctx) {
         this.ctx = ctx;

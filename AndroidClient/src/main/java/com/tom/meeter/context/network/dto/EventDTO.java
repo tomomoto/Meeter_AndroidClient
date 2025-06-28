@@ -1,6 +1,6 @@
 package com.tom.meeter.context.network.dto;
 
-import static com.tom.meeter.infrastructure.common.JsonHelper.getFloatOrNull;
+import static com.tom.meeter.infrastructure.common.JsonHelper.getDoubleOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getOffsetDateTimeOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getStringOrNull;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * created by Tom on 10.02.2017.
  */
-public class EventDTO {
+public class EventDTO implements EntityBase {
 
     private static final String EVENT_ID_KEY = "id";
     private static final String NAME_KEY = "name";
@@ -40,8 +40,8 @@ public class EventDTO {
 
     //Nullable
     private String description;
-    private Float latitude;
-    private Float longitude;
+    private Double latitude;
+    private Double longitude;
     private OffsetDateTime starting;
     private OffsetDateTime ending;
     private String city;
@@ -59,8 +59,8 @@ public class EventDTO {
 
             //Nullable.
             result.description = getStringOrNull(DESCRIPTION_KEY, json);
-            result.latitude = getFloatOrNull(LATITUDE_KEY, json);
-            result.longitude = getFloatOrNull(LONGITUDE_KEY, json);
+            result.latitude = getDoubleOrNull(LATITUDE_KEY, json);
+            result.longitude = getDoubleOrNull(LONGITUDE_KEY, json);
             result.starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
             result.ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
             result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
@@ -75,11 +75,11 @@ public class EventDTO {
         this.name = name;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -115,6 +115,7 @@ public class EventDTO {
         this.photoPath = photoPath;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -127,11 +128,11 @@ public class EventDTO {
         return description;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 

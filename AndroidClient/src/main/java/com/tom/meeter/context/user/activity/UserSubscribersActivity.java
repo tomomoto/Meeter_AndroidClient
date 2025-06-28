@@ -1,8 +1,6 @@
 package com.tom.meeter.context.user.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -16,17 +14,17 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.adapter.UsersAdapter;
+import com.tom.meeter.context.user.factory.UserSubscribersAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscribersViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscribersBinding;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheUserBinder;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
+import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 
 import javax.inject.Inject;
 
@@ -37,13 +35,14 @@ public class UserSubscribersActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    ViewModelFactory viewModelFactory;
+    UserSubscribersAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
+    private final Runnable onAuthFail = this::recreate;
     private AccountManager accountManager;
     private ActivityProfileSubscribersBinding binding;
-    private UserSubscribersViewModel userSubscribersViewModel;
+    private UserSubscribersViewModel viewModel;
     private UsersAdapter adapter;
     private String userId;
 
@@ -70,10 +69,8 @@ public class UserSubscribersActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         adapter = new UsersAdapter(
-              new PhotoDownloaderWithCacheUserBinder(
-                    this, imgDownloader,
-                    user -> dispatchToUserActivity(this, user.getId()),
-                    this::recreate));
+              this,
+              new UserBinderImpl(this, imgDownloader, onAuthFail));
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
@@ -85,14 +82,17 @@ public class UserSubscribersActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        userSubscribersViewModel = ViewModelProviders.of(this, viewModelFactory)
-              .get(UserSubscribersViewModel.class);
-        userSubscribersViewModel.fetchUserSubscribers(getAuthHeader(accountManager), userId, this);
-
-        userSubscribersViewModel.getSubscribersLiveData()
-              .observe(this, subs -> adapter.setData(subs));
         binding.recyclerSubscribers.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscribers.setAdapter(adapter);
+
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(
+                    assistedFactory, userId, this, onAuthFail))
+              .get(UserSubscribersViewModel.class);
+
+        viewModel.getSubscribers()
+              .observe(this, subs -> adapter.setData(subs));
     }
 
     @Nullable

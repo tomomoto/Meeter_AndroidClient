@@ -41,11 +41,11 @@ public class GMapEvent {
         return event.getId();
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return event.getLatitude();
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return event.getLongitude();
     }
 
@@ -58,10 +58,14 @@ public class GMapEvent {
         marker.setTitle(name);
     }
 
-    public void updatePosition(Float latitude, Float longitude) {
+    public void updatePosition(Double latitude, Double longitude) {
         event.setLatitude(latitude);
         event.setLongitude(longitude);
-        marker.setPosition(new LatLng(latitude, longitude));
+        if (latitude == null || longitude == null) {
+            marker.remove();
+        } else {
+            marker.setPosition(new LatLng(latitude, longitude));
+        }
     }
 
     public void replaceMarker(Marker marker) {

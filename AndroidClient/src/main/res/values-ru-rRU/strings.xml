@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Meeter</string>
     <string name="action_settings">Настройки</string>
-    <string name="profile_activity_label">Профиль</string>
+    <string name="profile_activity_label">Meeter</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
     <string name="repeat_password">Повторите пароль</string>
@@ -203,6 +203,21 @@
     <string name="event_photo">Фото события</string>
     <string name="show_on_map">Показать на карте</string>
     <string name="select_position">Выбор местоположения</string>
+    <string name="event_location_is_not_set_yet">Местоположение события ещё не установлено.</string>
+    <string name="select_point_on_the_map">Выберите точку на карте</string>
+    <string name="event_created">Событие создано!</string>
+    <string name="event_is_created">\'%1$s\' создано.</string>
+    <string name="to_event">К событию</string>
+    <string name="back">Назад</string>
+    <string name="empty_create_request_is_not_sent">Пустой запрос на создание не отправлен.</string>
+    <string name="unable_to_get_the_location">Не удалось получить текущее местоположение.</string>
+    <string name="failed">Ошибка</string>
+    <string name="failed_to_create_event">Создать событие не получилось.</string>
+    <string name="mandatory_star">*</string>
+    <string name="network_channel">Сетевой канал</string>
+    <string name="new_events_channel">Канал новых событий</string>
+    <string name="information_about_newly_created_events">Информация о только что созданных событиях</string>
+    <string name="press_to_open_the_application">Нажмите, чтобы открыть приложение</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

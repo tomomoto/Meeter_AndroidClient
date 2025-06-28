@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import java.time.LocalDate;
 
-public class UserDTO {
+public class UserDTO implements EntityBase {
 
     private static final String USER_ID_KEY = "id";
     private static final String NAME_KEY = "name";
@@ -51,6 +51,7 @@ public class UserDTO {
         return result;
     }
 
+    @Override
     public String getId() {
         return id;
     }

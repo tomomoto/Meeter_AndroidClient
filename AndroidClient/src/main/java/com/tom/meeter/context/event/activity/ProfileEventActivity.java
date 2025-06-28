@@ -3,14 +3,17 @@ package com.tom.meeter.context.event.activity;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.EVENT_ID_KEY;
+import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LAT;
+import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.event.utils.Utils.createUpdateEventRequest;
+import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
+import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
 import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.showDateTimePicker;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
@@ -18,6 +21,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -29,11 +33,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.event.factory.EventAssistedFactory;
 import com.tom.meeter.context.event.message.UpdateEventRequest;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
@@ -43,43 +47,38 @@ import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
-import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
 
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class ProfileEventActivity extends AppCompatActivity {
-
-    public static final String EXTRA_LAT = "extra_lat";
-    public static final String EXTRA_LNG = "extra_lng";
 
     private static final String TAG = ProfileEventActivity.class.getCanonicalName();
 
     @Inject
     TokenService tokenService;
     @Inject
-    EventService eventService;
+    EventService service;
     @Inject
-    ViewModelFactory viewModelFactory;
+    EventAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
 
+    private final Runnable onNotAuthenticated = this::recreate;
     private ActivityEventEditableBinding binding;
     private AccountManager accountManager;
-    private EventViewModel eventViewModel;
+    private EventViewModel viewModel;
     private ActivityResultLauncher<Intent> mapResult;
 
     private EventDTO eventCache;
-    private ResponseBody photoCache;
     private boolean isEditableModeEnabled = false;
 
     private final ActivityResultLauncher<Intent> imageUploadLauncher =
@@ -93,35 +92,6 @@ public class ProfileEventActivity extends AppCompatActivity {
                     downloadAndUpdateLayoutPhoto(photoPath);
                     binding.photoPath.setText(photoPath);
                 });
-
-    void downloadAndUpdateLayoutPhoto(String photoPath) {
-        imgDownloader.downloadEventImage(photoPath, this,
-              this::updateLayoutPhoto,
-              this::recreate);
-    }
-
-    private void updateLayoutPhoto(ResponseBody photo) {
-        photoCache = photo;
-        binding.photo.setImageBitmap(circleImage(photoCache, 600, 600));
-    }
-
-    private void switchEditMode() {
-        isEditableModeEnabled = !isEditableModeEnabled;
-
-        binding.selectPhotoButton.setEnabled(isEditableModeEnabled);
-        binding.locationMapButton.setEnabled(isEditableModeEnabled);
-        binding.selectStartingDateButton.setEnabled(isEditableModeEnabled);
-        binding.selectEndingDateButton.setEnabled(isEditableModeEnabled);
-
-        binding.name.setEnabled(isEditableModeEnabled);
-        binding.description.setEnabled(isEditableModeEnabled);
-        binding.latitude.setEnabled(isEditableModeEnabled);
-        binding.longitude.setEnabled(isEditableModeEnabled);
-        binding.starting.setEnabled(isEditableModeEnabled);
-        binding.ending.setEnabled(isEditableModeEnabled);
-        binding.city.setEnabled(isEditableModeEnabled);
-        binding.editSaveButton.setText(isEditableModeEnabled ? R.string.save : R.string.edit);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,32 +129,34 @@ public class ProfileEventActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(token, eventId), this::finish,
+        checkToken((token) -> onInit(eventId), this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String token, String eventId) {
-        eventViewModel = ViewModelProviders.of(this, viewModelFactory)
+    private void onInit(String eventId) {
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(
+                    assistedFactory, eventId, this, onNotAuthenticated))
               .get(EventViewModel.class);
-        eventViewModel.fetchEventInformation(token, eventId, this);
-        eventViewModel.getEventLiveData()
+
+        initLayout();
+
+        viewModel.getEvent()
               .observe(this, event -> {
-                  String userUuid = AuthHelper.getUserUuid(accountManager);
-                  String eventCreatorId = event.getCreatorId();
-                  if (!userUuid.equals(eventCreatorId)) {
-                      Log.e(TAG, "Profile event activity for non creator "
-                            + userUuid + "/" + eventId + " : " + eventCreatorId);
+                  if (!currentUserIsEventCreator(accountManager, event)) {
+                      dumpEventDispatcherError(TAG, accountManager, event);
                       finish();
+                      return;
                   }
                   eventCache = event;
                   updateLayout();
+                  viewModel.getEventPhoto()
+                        .observe(this, this::updateLayoutPhoto);
               });
-        eventViewModel.getEventPhotoLiveData()
-              .observe(this, this::updateLayoutPhoto);
-        initLayout(token);
     }
 
-    private void initLayout(String token) {
+    private void initLayout() {
         binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -206,19 +178,22 @@ public class ProfileEventActivity extends AppCompatActivity {
                     switchEditMode();
                     return;
                 }
-                eventService.updateEvent(Globals.getAuthHeader(token), eventCache.getId(), req)
-                      .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+                service.updateEvent(getAuthHeader(accountManager), eventCache.getId(), req)
+                      .enqueue(new BaseOnNotAuthenticatedCallback<>(this, onNotAuthenticated) {
                           @Override
-                          public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
+                          public void onResponse(
+                                Call<EventDTO> call, Response<EventDTO> resp) {
                               super.onResponse(call, resp);
-                              if (resp.code() == HttpCodes.OK) {
-                                  String oldPhotoPath = eventCache.getPhotoPath();
-                                  eventCache = resp.body();
-                                  if (!Objects.equals(oldPhotoPath, eventCache.getPhotoPath())) {
-                                      downloadAndUpdateLayoutPhoto(eventCache.getPhotoPath());
-                                  }
-                                  showMessage(ProfileEventActivity.this, R.string.saved);
+                              if (resp.code() != HttpCodes.OK) {
+                                  updateLayout();
+                                  return;
                               }
+                              String oldPhotoPath = eventCache.getPhotoPath();
+                              eventCache = resp.body();
+                              if (!Objects.equals(oldPhotoPath, eventCache.getPhotoPath())) {
+                                  downloadAndUpdateLayoutPhoto(eventCache.getPhotoPath());
+                              }
+                              showMessage(ProfileEventActivity.this, R.string.saved);
                               updateLayout();
                           }
                       });
@@ -230,12 +205,40 @@ public class ProfileEventActivity extends AppCompatActivity {
                     new Intent(this, UploadEventImageActivity.class)));
     }
 
+    void downloadAndUpdateLayoutPhoto(String photoPath) {
+        imgDownloader.downloadEventImage(
+              photoPath, this, ImagesHelper::bigCircleImage,
+              this::updateLayoutPhoto, onNotAuthenticated);
+    }
+
+    private void updateLayoutPhoto(Bitmap photo) {
+        binding.photo.setImageBitmap(photo);
+    }
+
+    private void switchEditMode() {
+        isEditableModeEnabled = !isEditableModeEnabled;
+
+        binding.selectPhotoButton.setEnabled(isEditableModeEnabled);
+        binding.locationMapButton.setEnabled(isEditableModeEnabled);
+        binding.selectStartingDateButton.setEnabled(isEditableModeEnabled);
+        binding.selectEndingDateButton.setEnabled(isEditableModeEnabled);
+
+        binding.name.setEnabled(isEditableModeEnabled);
+        binding.description.setEnabled(isEditableModeEnabled);
+        binding.latitude.setEnabled(isEditableModeEnabled);
+        binding.longitude.setEnabled(isEditableModeEnabled);
+        binding.starting.setEnabled(isEditableModeEnabled);
+        binding.ending.setEnabled(isEditableModeEnabled);
+        binding.city.setEnabled(isEditableModeEnabled);
+        binding.editSaveButton.setText(isEditableModeEnabled ? R.string.save : R.string.edit);
+    }
+
     private void showAlertDialog() {
         new AlertDialog.Builder(this)
               .setTitle(R.string.delete_event)
               .setMessage(R.string.are_you_sure_delete_event)
               .setPositiveButton(R.string.delete, (dialog, which) -> {
-                  eventService.deleteEvent(getAuthHeader(accountManager), eventCache.getId())
+                  service.deleteEvent(getAuthHeader(accountManager), eventCache.getId())
                         .enqueue(new HttpErrorLogger<>(getApplicationContext()) {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> resp) {
@@ -273,6 +276,24 @@ public class ProfileEventActivity extends AppCompatActivity {
           @Nullable View parent, @NonNull String name, @NonNull Context ctx,
           @NonNull AttributeSet attrs) {
         return super.onCreateView(parent, name, ctx, attrs);
+    }
+
+    @Override
+    protected void onDestroy() {
+        logMethod(TAG, this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        logMethod(TAG, this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        logMethod(TAG, this);
+        super.onPause();
     }
 
 

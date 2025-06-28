@@ -1,7 +1,9 @@
 package com.tom.meeter.infrastructure.common;
 
 import static com.tom.meeter.infrastructure.common.CommonHelper.EMPTY_STR;
+import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
+import static com.tom.meeter.infrastructure.common.CommonHelper.UI_TIME_FORMAT;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -15,7 +17,6 @@ import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,33 +29,8 @@ import java.util.Locale;
 public final class DateHelper {
 
     private static final String TAG = DateHelper.class.getCanonicalName();
-    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private DateHelper() {
-    }
-
-    public static String getAgeFromDateOld(String date) {
-        if (date == null) {
-            return "";
-        }
-
-        Calendar dob = Calendar.getInstance();
-        Calendar today = Calendar.getInstance();
-
-        try {
-            dob.setTime(FORMAT.parse(date));
-        } catch (ParseException e) {
-            Log.e(TAG, e.getLocalizedMessage(), e);
-            return null;
-        }
-
-        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
-
-        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
-            age--;
-        }
-
-        return String.valueOf(age);
     }
 
 
@@ -192,4 +168,70 @@ public final class DateHelper {
 
         datePickerDialog.show();
     }
+
+    public static void showDatePicker(Context ctx, EditText target) {
+        LocalDate nowDate = LocalDate.now();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+              ctx,
+              (view, year, month, dayOfMonth) -> {
+                  LocalDate selectedDate = LocalDate.of(year, month + 1, dayOfMonth);
+                  String formatted = selectedDate.format(UI_DATE_FORMAT);
+                  target.setText(formatted);
+              },
+              nowDate.getYear(),
+              nowDate.getMonthValue() - 1,
+              nowDate.getDayOfMonth()
+        );
+
+        datePickerDialog.show();
+    }
+
+    public static void showTimePicker(Context ctx, EditText target) {
+        LocalTime nowTime = LocalTime.now();
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+              ctx,
+              (timeView, hourOfDay, minute) -> {
+                  LocalTime selectedTime = LocalTime.of(hourOfDay, minute);
+                  String formatted = selectedTime.format(UI_TIME_FORMAT);
+                  target.setText(formatted);
+              },
+              nowTime.getHour(),
+              nowTime.getMinute(),
+              true
+        );
+
+        timePickerDialog.show();
+    }
+
+    public static boolean isDateValid(CharSequence date) {
+        return isDateValid(date.toString());
+    }
+
+    public static boolean isDateValid(String date) {
+        try {
+            LocalDate.parse(date, UI_DATE_FORMAT);
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static String getCurrentTime() {
+        return UI_TIME_FORMAT.format(LocalTime.now());
+    }
+
+    public static String getCurrentDate() {
+        return LocalDate.now().format(UI_DATE_FORMAT);
+    }
+
+    public static void setCurrentTime(EditText target) {
+        target.setText(getCurrentTime());
+    }
+
+    public static void setCurrentDate(EditText target) {
+        target.setText(getCurrentDate());
+    }
+
 }

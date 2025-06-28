@@ -13,12 +13,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tom.meeter.context.profile.event.database.EventDao;
-import com.tom.meeter.context.profile.event.database.EventDatabase;
+import com.tom.meeter.context.profile.repository.event.database.EventDao;
+import com.tom.meeter.context.profile.repository.event.database.EventDatabase;
+import com.tom.meeter.context.profile.repository.user.database.UserDao;
+import com.tom.meeter.context.profile.repository.user.database.UserDatabase;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
-import com.tom.meeter.context.profile.user.database.UserDao;
-import com.tom.meeter.context.profile.user.database.UserDatabase;
 import com.tom.meeter.infrastructure.http.HttpClient;
 
 import java.util.TimeZone;
@@ -26,6 +26,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -41,7 +43,7 @@ public class AppModule {
         Log.d(TAG, "Configuring AppModule...");
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public ProfileService provideProfileService(Application app) {
@@ -59,7 +61,7 @@ public class AppModule {
               .create(ProfileService.class);
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public UserDatabase provideUserDb(Application app) {
@@ -68,14 +70,14 @@ public class AppModule {
               .build();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public UserDao provideUserDao(UserDatabase userDatabase) {
         return userDatabase.userDao();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public Executor provideExecutor() {
@@ -83,7 +85,7 @@ public class AppModule {
               new ArrayBlockingQueue<>(15, false));
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public EventDatabase provideEventDb(Application app) {
@@ -92,14 +94,14 @@ public class AppModule {
               .build();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public EventDao provideEventDao(EventDatabase eventDatabase) {
         return eventDatabase.eventDao();
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public SettingsService provideSettingsService(Application app) {
@@ -111,7 +113,7 @@ public class AppModule {
               .create(SettingsService.class);
     }
 
-    @AppScope
+    @Singleton
     @NonNull
     @Provides
     public HttpClient provideHttpClient(Application app) {

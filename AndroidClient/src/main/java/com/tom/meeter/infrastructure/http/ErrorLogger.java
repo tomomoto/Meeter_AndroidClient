@@ -10,11 +10,8 @@ public abstract class ErrorLogger<T> extends DisconnectLogger<T> {
 
     private static final String TAG = ErrorLogger.class.getCanonicalName();
 
-    private final Context ctx;
-
     public ErrorLogger(Context ctx) {
         super(ctx);
-        this.ctx = ctx;
     }
 
     @Override

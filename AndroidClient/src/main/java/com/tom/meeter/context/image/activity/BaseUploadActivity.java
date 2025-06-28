@@ -58,7 +58,7 @@ public abstract class BaseUploadActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        ((App) getApplication()).getImageComponent().inject(this);
+        ((App) getApplication()).getComponent().inject(this);
 
         accountManager = AccountManager.get(this);
 

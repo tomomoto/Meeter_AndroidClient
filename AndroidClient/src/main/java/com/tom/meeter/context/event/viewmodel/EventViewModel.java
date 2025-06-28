@@ -1,8 +1,11 @@
 package com.tom.meeter.context.event.viewmodel;
 
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.app.Activity;
+import android.accounts.AccountManager;
+import android.content.Context;
+import android.graphics.Bitmap;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,13 +15,12 @@ import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
-import com.tom.meeter.infrastructure.common.Globals;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
-import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
-import javax.inject.Inject;
-
-import okhttp3.ResponseBody;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedInject;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -26,41 +28,49 @@ public class EventViewModel extends ViewModel {
 
     private static final String TAG = UserViewModel.class.getCanonicalName();
 
-    private final MutableLiveData<EventDTO> eventLiveData = new MutableLiveData<>();
-    private final MutableLiveData<ResponseBody> eventPhotoLiveData = new MutableLiveData<>();
-
     private final EventService eventService;
     private final ImageDownloader imageDownloader;
+    private final String eventId;
+    private final Context ctx;
+    private final Runnable onNotAuthenticated;
 
-    @Inject
-    public EventViewModel(EventService eventService, ImageDownloader imageDownloader) {
+    private final MutableLiveData<EventDTO> event = new MutableLiveData<>();
+    private final MutableLiveData<Bitmap> eventPhoto = new MutableLiveData<>();
+
+    @AssistedInject
+    public EventViewModel(
+          EventService eventService, ImageDownloader imageDownloader,
+          @Assisted String eventId,
+          @Assisted Context ctx,
+          @Assisted Runnable onNotAuthenticated) {
         logMethod(TAG, this);
         this.eventService = eventService;
         this.imageDownloader = imageDownloader;
+        this.eventId = eventId;
+        this.ctx = ctx.getApplicationContext();
+        this.onNotAuthenticated = onNotAuthenticated;
+        init();
     }
 
-    public void fetchEventInformation(String token, String eventId, Activity activity) {
-        eventService.getEvent(Globals.getAuthHeader(token), eventId).enqueue(
-              new HttpErrorLogger<>(activity) {
+    public void init() {
+        eventService.getEvent(getAuthHeader(AccountManager.get(ctx)), eventId).enqueue(
+              //TODO check toast...
+              new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
                       super.onResponse(call, resp);
-                      EventDTO body = resp.body();
-                      if (resp.code() == HttpCodes.OK && body != null) {
-                          eventLiveData.setValue(body);
-                          String photoPath = body.getPhotoPath();
-                          if (photoPath != null) {
-                              imageDownloader.downloadEventImage(
-                                    photoPath,
-                                    activity.getApplicationContext(),
-                                    eventPhotoLiveData::setValue,
-                                    activity::recreate);
-                          }
+                      EventDTO eventResp = resp.body();
+                      if (resp.code() != HttpCodes.OK || eventResp == null) {
                           return;
                       }
-                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          activity.recreate();
+                      event.setValue(eventResp);
+                      String photoPath = eventResp.getPhotoPath();
+                      if (photoPath == null) {
+                          return;
                       }
+                      imageDownloader.downloadEventImage(
+                            photoPath, ctx, ImagesHelper::bigCircleImage,
+                            eventPhoto::setValue, onNotAuthenticated);
                   }
               }
         );
@@ -72,12 +82,11 @@ public class EventViewModel extends ViewModel {
         super.onCleared();
     }
 
-    public LiveData<EventDTO> getEventLiveData() {
-        return eventLiveData;
+    public LiveData<EventDTO> getEvent() {
+        return event;
     }
 
-    public LiveData<ResponseBody> getEventPhotoLiveData() {
-        return eventPhotoLiveData;
+    public LiveData<Bitmap> getEventPhoto() {
+        return eventPhoto;
     }
 }
-

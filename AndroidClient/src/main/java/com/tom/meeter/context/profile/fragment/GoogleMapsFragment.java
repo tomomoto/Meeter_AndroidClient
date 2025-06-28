@@ -47,6 +47,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.domain.GMapEvent;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -339,10 +340,11 @@ public class GoogleMapsFragment extends Fragment
             return;
         }
         imageDownloader.downloadEventImage(
-              photoPath, getContext(),
+              photoPath, requireContext(),
+              ImagesHelper::circleImage,
               photo -> {
                   if (photo != null) {
-                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(circleImage(photo)));
+                      marker.setIcon(BitmapDescriptorFactory.fromBitmap(photo));
                   }
               },
               () -> InfrastructureHelper.restartActivityFromFragment(this));
@@ -368,8 +370,8 @@ public class GoogleMapsFragment extends Fragment
         if (!update.getName().equals(me.getName())) {
             me.updateName(update.getName());
         }
-        if (update.getLatitude() != me.getLatitude()
-              || update.getLongitude() != me.getLongitude()) {
+        if (!Objects.equals(update.getLatitude(), me.getLatitude())
+              || !Objects.equals(update.getLongitude(), me.getLongitude())) {
             Log.d(TAG, "Location for event " + update.getName()
                   + " " + update.getId() + " is changed. Moving the marker.");
             me.updatePosition(update.getLatitude(), update.getLongitude());
@@ -408,7 +410,7 @@ public class GoogleMapsFragment extends Fragment
     private static void searchForEvents(double latitude, double longitude, int searchArea) {
         if (searchArea > 0) {
             EventBus.getDefault()
-                  .post(new SearchForEvents((float) latitude, (float) longitude, searchArea));
+                  .post(new SearchForEvents(latitude, longitude, searchArea));
         }
     }
 

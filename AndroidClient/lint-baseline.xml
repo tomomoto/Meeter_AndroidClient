@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.10.1" type="baseline" client="gradle" dependencies="false" name="AGP (8.10.1)" variant="all" version="8.10.1">
+<issues format="6" by="lint 8.11.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.11.0)" variant="all" version="8.11.0">
 
     <issue
-        id="SimpleDateFormat"
-        message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
-        errorLine1="    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+        errorLine1="        targetSdk 35"
+        errorLine2="        ~~~~~~~~~~~~">
         <location
-            file="src/main/java/com/tom/meeter/context/profile/fragment/CreateNewEventFragment.java"
-            line="54"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="SimpleDateFormat"
-        message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
-        errorLine1="    private static final SimpleDateFormat FORMAT = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/tom/meeter/infrastructure/common/DateHelper.java"
-            line="31"
-            column="52"/>
+            file="build.gradle"
+            line="12"
+            column="9"/>
     </issue>
 
     <issue
@@ -30,41 +19,19 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="35"
+            line="38"
             column="9"/>
     </issue>
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.room:room-compiler than 2.0.0 is available: 2.7.2"
-        errorLine1="room = &quot;2.0.0&quot;"
-        errorLine2="       ~~~~~~~">
+        message="A newer version of `compileSdkVersion` than 35 is available: 36"
+        errorLine1="    compileSdk 35"
+        errorLine2="    ~~~~~~~~~~~~~">
         <location
-            file="../gradle/libs.versions.toml"
-            line="18"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-runtime than 2.0.0 is available: 2.7.2"
-        errorLine1="room = &quot;2.0.0&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="18"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of androidx.room:room-rxjava2 than 2.0.0 is available: 2.7.2"
-        errorLine1="room = &quot;2.0.0&quot;"
-        errorLine2="       ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="18"
-            column="8"/>
+            file="build.gradle"
+            line="7"
+            column="5"/>
     </issue>
 
     <issue
@@ -76,17 +43,6 @@
             file="../gradle/libs.versions.toml"
             line="22"
             column="18"/>
-    </issue>
-
-    <issue
-        id="GradleDependency"
-        message="A newer version of io.reactivex.rxjava2:rxjava than 2.2.6 is available: 2.2.9"
-        errorLine1="rxjava = &quot;2.2.6&quot;"
-        errorLine2="         ~~~~~~~">
-        <location
-            file="../gradle/libs.versions.toml"
-            line="25"
-            column="10"/>
     </issue>
 
     <issue
@@ -1051,12 +1007,34 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.string.failed` appears to be unused"
+        errorLine1="    &lt;string name=&quot;failed&quot;>Failed&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="214"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.failed_to_create_event` appears to be unused"
+        errorLine1="    &lt;string name=&quot;failed_to_create_event&quot;>Failed to create event.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="215"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.array.pref_upload_quality_entries` appears to be unused"
         errorLine1="    &lt;string-array name=&quot;pref_upload_quality_entries&quot;>"
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="207"
+            line="222"
             column="19"/>
     </issue>
 
@@ -1227,8 +1205,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="131"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="157"
             column="18"/>
     </issue>
 
@@ -1238,8 +1216,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="141"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="167"
             column="18"/>
     </issue>
 
@@ -1249,8 +1227,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="194"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="219"
             column="18"/>
     </issue>
 
@@ -1260,8 +1238,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="202"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="227"
             column="18"/>
     </issue>
 
@@ -1271,8 +1249,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="233"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="258"
             column="18"/>
     </issue>
 
@@ -1282,8 +1260,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="241"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="267"
             column="18"/>
     </issue>
 
@@ -1293,8 +1271,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="282"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="310"
             column="18"/>
     </issue>
 
@@ -1304,8 +1282,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="290"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="318"
             column="18"/>
     </issue>
 
@@ -1315,8 +1293,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="321"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="349"
             column="18"/>
     </issue>
 
@@ -1326,8 +1304,8 @@
         errorLine1="                &lt;Button"
         errorLine2="                 ~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="329"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="358"
             column="18"/>
     </issue>
 
@@ -1349,7 +1327,7 @@
         errorLine2="             ~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="208"
+            line="176"
             column="14"/>
     </issue>
 
@@ -1360,7 +1338,7 @@
         errorLine2="             ~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="235"
+            line="203"
             column="14"/>
     </issue>
 
@@ -1371,7 +1349,7 @@
         errorLine2="             ~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="272"
+            line="240"
             column="14"/>
     </issue>
 
@@ -1392,8 +1370,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="40"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="76"
             column="14"/>
     </issue>
 
@@ -1403,8 +1381,19 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="80"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="105"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="TextFields"
+        message="This text field does not specify an `inputType`"
+        errorLine1="            &lt;EditText"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="378"
             column="14"/>
     </issue>
 
@@ -1481,7 +1470,7 @@
         errorLine2="             ~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="208"
+            line="176"
             column="14"/>
     </issue>
 
@@ -1492,7 +1481,7 @@
         errorLine2="             ~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="235"
+            line="203"
             column="14"/>
     </issue>
 
@@ -1503,7 +1492,7 @@
         errorLine2="             ~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="272"
+            line="240"
             column="14"/>
     </issue>
 
@@ -1535,8 +1524,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="40"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="76"
             column="14"/>
     </issue>
 
@@ -1546,8 +1535,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="80"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="105"
             column="14"/>
     </issue>
 
@@ -1557,8 +1546,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="100"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="187"
             column="14"/>
     </issue>
 
@@ -1568,8 +1557,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="111"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="236"
             column="14"/>
     </issue>
 
@@ -1579,8 +1568,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="162"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="277"
             column="14"/>
     </issue>
 
@@ -1590,8 +1579,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="211"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="327"
             column="14"/>
     </issue>
 
@@ -1601,19 +1590,8 @@
         errorLine1="            &lt;EditText"
         errorLine2="             ~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="250"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="            &lt;EditText"
-        errorLine2="             ~~~~~~~~">
-        <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="299"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="378"
             column="14"/>
     </issue>
 
@@ -1800,7 +1778,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="23"
+            line="26"
             column="33"/>
     </issue>
 
@@ -1811,7 +1789,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="65"
+            line="62"
             column="20"/>
     </issue>
 
@@ -1822,7 +1800,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="68"
+            line="65"
             column="20"/>
     </issue>
 
@@ -1833,7 +1811,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="116"
+            line="113"
             column="31"/>
     </issue>
 
@@ -1910,7 +1888,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="212"
+            line="180"
             column="17"/>
     </issue>
 
@@ -1921,7 +1899,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_event_editable.xml"
-            line="239"
+            line="207"
             column="17"/>
     </issue>
 
@@ -2206,8 +2184,8 @@
         errorLine1="                android:hint=&quot;Date validity&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="180"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="205"
             column="17"/>
     </issue>
 
@@ -2217,8 +2195,8 @@
         errorLine1="                android:hint=&quot;Date validity&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/fragment_new_event.xml"
-            line="268"
+            file="src/main/res/layout/fragment_create_event.xml"
+            line="296"
             column="17"/>
     </issue>
 

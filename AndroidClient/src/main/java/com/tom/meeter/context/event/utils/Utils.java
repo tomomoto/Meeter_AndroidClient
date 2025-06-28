@@ -1,9 +1,13 @@
 package com.tom.meeter.context.event.utils;
 
-import static com.tom.meeter.infrastructure.common.CommonHelper.getFloatOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getDoubleOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getOffsetDateTime;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 
+import android.accounts.AccountManager;
+import android.util.Log;
+
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.message.UpdateEventRequest;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
@@ -12,6 +16,7 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class Utils {
+
     private Utils() {
     }
 
@@ -39,11 +44,11 @@ public class Utils {
         if (!Objects.equals(event.getCity(), eventCityChange)) {
             req.setCity(eventCityChange);
         }
-        Float eventLatitudeChange = getFloatOrNull(binding.latitude.getText());
+        Double eventLatitudeChange = getDoubleOrNull(binding.latitude.getText());
         if (!Objects.equals(event.getLatitude(), eventLatitudeChange)) {
             req.setLatitude(eventLatitudeChange);
         }
-        Float eventLongitudeChange = getFloatOrNull(binding.longitude.getText());
+        Double eventLongitudeChange = getDoubleOrNull(binding.longitude.getText());
         if (!Objects.equals(event.getLongitude(), eventLongitudeChange)) {
             req.setLongitude(eventLongitudeChange);
         }
@@ -52,5 +57,18 @@ public class Utils {
             req.setPhotoPath(photoPathChange);
         }
         return req;
+    }
+
+    public static boolean currentUserIsEventCreator(
+          AccountManager am, EventDTO event) {
+        return AuthHelper.getUserUuid(am).equals(event.getCreatorId());
+    }
+
+    public static void dumpEventDispatcherError(
+          String tag, AccountManager am, EventDTO event) {
+        Log.e(tag, "System error. EventDispatcher did wrong dispatching. " +
+              "Current user is [" + AuthHelper.getUserUuid(am) + "], " +
+              "eventId [" + event.getId() + "], eventCreatorId [" + event.getCreatorId() + "]. " +
+              "Please, check server code and related entities.");
     }
 }

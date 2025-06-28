@@ -9,10 +9,6 @@ import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.auth.DaggerAuthComponent;
 import com.tom.meeter.context.event.DaggerEventComponent;
 import com.tom.meeter.context.event.EventComponent;
-import com.tom.meeter.context.image.DaggerImageComponent;
-import com.tom.meeter.context.image.ImageComponent;
-import com.tom.meeter.context.token.DaggerTokenComponent;
-import com.tom.meeter.context.token.TokenComponent;
 import com.tom.meeter.context.user.DaggerUserComponent;
 import com.tom.meeter.context.user.UserComponent;
 
@@ -21,8 +17,6 @@ public class App extends Application {
     private static final String TAG = App.class.getCanonicalName();
     private AppComponent component;
     private AuthComponent authComponent;
-    private TokenComponent tokenComponent;
-    private ImageComponent imageComponent;
     private EventComponent eventComponent;
     private UserComponent userComponent;
 
@@ -31,16 +25,15 @@ public class App extends Application {
         super.onCreate();
         logMethod(TAG, this);
 
+        component = buildComponent();
+
         /* Independent */
-        tokenComponent = buildTokenComponent();
         authComponent = buildAuthComponent();
-        imageComponent = buildImageComponent();
 
         /* Dependent */
         eventComponent = buildEventComponent();
         userComponent = buildUserComponent();
 
-        component = buildComponent();
 
         createNotificationChannel(this);
     }
@@ -53,11 +46,6 @@ public class App extends Application {
 
     protected AppComponent buildComponent() {
         return DaggerAppComponent.builder()
-              .tokenComponent(tokenComponent)
-              .imageComponent(imageComponent)
-              .authComponent(authComponent)
-              .eventComponent(eventComponent)
-              .userComponent(userComponent)
               .application(this)
               .build();
     }
@@ -65,34 +53,21 @@ public class App extends Application {
     protected AuthComponent buildAuthComponent() {
         return DaggerAuthComponent.builder()
               .application(this)
-              .build();
-    }
-
-    protected TokenComponent buildTokenComponent() {
-        return DaggerTokenComponent.builder()
-              .application(this)
-              .build();
-    }
-
-    protected ImageComponent buildImageComponent() {
-        return DaggerImageComponent.builder()
-              .application(this)
+              .appComponent(component)
               .build();
     }
 
     protected EventComponent buildEventComponent() {
         return DaggerEventComponent.builder()
               .application(this)
-              .tokenComponent(tokenComponent)
-              .imageComponent(imageComponent)
+              .appComponent(component)
               .build();
     }
 
     protected UserComponent buildUserComponent() {
         return DaggerUserComponent.builder()
               .application(this)
-              .tokenComponent(tokenComponent)
-              .imageComponent(imageComponent)
+              .appComponent(component)
               .build();
     }
 
@@ -104,16 +79,8 @@ public class App extends Application {
         return authComponent;
     }
 
-    public TokenComponent getTokenComponent() {
-        return tokenComponent;
-    }
-
     public EventComponent getEventComponent() {
         return eventComponent;
-    }
-
-    public ImageComponent getImageComponent() {
-        return imageComponent;
     }
 
     public UserComponent getUserComponent() {

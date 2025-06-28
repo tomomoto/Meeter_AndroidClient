@@ -1,8 +1,9 @@
 package com.tom.meeter.context.profile.subscriber;
 
+import com.tom.meeter.context.network.dto.EntityBase;
 import com.tom.meeter.context.network.dto.UserDTO;
 
-public class Subscriber {
+public class Subscriber implements EntityBase {
 
     private UserDTO user;
     private boolean amISubscribedTo;
@@ -22,5 +23,10 @@ public class Subscriber {
 
     public void setAmISubscribedTo(boolean amISubscribedTo) {
         this.amISubscribedTo = amISubscribedTo;
+    }
+
+    @Override
+    public String getId() {
+        return user.getId();
     }
 }

@@ -14,12 +14,10 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.service.EventService;
-import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
@@ -67,15 +65,13 @@ public class EventDispatcherActivity extends AppCompatActivity {
     }
 
     private void onInit(String token, String eventId) {
-        //TODO make isCreatedByMe
-        eventService.getEvent(Globals.getAuthHeader(token), eventId)
-              .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
+        eventService.amICreator(Globals.getAuthHeader(token), eventId)
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                   @Override
-                  public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
+                  public void onResponse(Call<Boolean> call, Response<Boolean> resp) {
                       super.onResponse(call, resp);
                       if (resp.code() == HttpCodes.OK) {
-                          EventDTO event = resp.body();
-                          if (AuthHelper.getUserUuid(accountManager).equals(event.getCreatorId())) {
+                          if (resp.body()) {
                               dispatchToProfileEventActivity(EventDispatcherActivity.this, eventId);
                           } else {
                               dispatchToUserEventActivity(EventDispatcherActivity.this, eventId);

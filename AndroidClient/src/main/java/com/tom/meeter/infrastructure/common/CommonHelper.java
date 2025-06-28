@@ -10,6 +10,7 @@ import com.tom.meeter.context.network.dto.UserDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,6 +27,9 @@ public final class CommonHelper {
 
     public static final DateTimeFormatter UI_DATE_FORMAT =
           DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public static final DateTimeFormatter UI_TIME_FORMAT =
+          DateTimeFormatter.ofPattern("HH:mm");
 
     public static final String EMPTY_STR = "";
 
@@ -59,11 +63,22 @@ public final class CommonHelper {
         return input.toString();
     }
 
+    public static boolean isEmpty(CharSequence input) {
+        return input == null || EMPTY_STR.contentEquals(input);
+    }
+
     public static Float getFloatOrNull(CharSequence input) {
         if (input == null || EMPTY_STR.contentEquals(input)) {
             return null;
         }
         return Float.valueOf(input.toString());
+    }
+
+    public static Double getDoubleOrNull(CharSequence input) {
+        if (input == null || EMPTY_STR.contentEquals(input)) {
+            return null;
+        }
+        return Double.valueOf(input.toString());
     }
 
     public static OffsetDateTime getOffsetDateTime(CharSequence input) {
@@ -86,4 +101,17 @@ public final class CommonHelper {
             return null;
         }
     }
+
+    @Nullable
+    public static OffsetDateTime getOffsetDateTimeOrNull(
+          CharSequence date, CharSequence time) {
+        if (isEmpty(date) || isEmpty(time)) {
+            return null;
+        }
+        return OffsetDateTime.of(
+              LocalDate.parse(date),
+              LocalTime.parse(time),
+              OffsetDateTime.now().getOffset());
+    }
+
 }

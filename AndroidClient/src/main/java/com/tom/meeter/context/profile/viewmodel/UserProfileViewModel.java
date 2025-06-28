@@ -5,8 +5,8 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.tom.meeter.context.profile.user.domain.User;
-import com.tom.meeter.context.profile.user.repository.UserRepository;
+import com.tom.meeter.context.profile.repository.user.domain.User;
+import com.tom.meeter.context.profile.repository.user.repository.UserRepository;
 
 @Deprecated
 public class UserProfileViewModel extends ViewModel {

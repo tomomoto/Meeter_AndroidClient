@@ -1,8 +1,6 @@
 package com.tom.meeter.context.profile.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -10,26 +8,20 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.SubscribersAdapter;
-import com.tom.meeter.context.profile.subscriber.Subscriber;
+import com.tom.meeter.context.profile.factory.ProfileSubscriptionsAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileSubscriptionsViewModel;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.components.binder.PhotoDownloaderWithCacheSubscriberBinder;
-import com.tom.meeter.infrastructure.http.ActivityRecreatorOnAuthFailure;
-import com.tom.meeter.infrastructure.injection.viewmodel.ViewModelFactory;
+import com.tom.meeter.infrastructure.components.binder.SubscriberBinderImpl;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Response;
 
 public class SubscriptionsActivity extends AppCompatActivity {
 
@@ -38,19 +30,17 @@ public class SubscriptionsActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
     @Inject
-    ViewModelFactory viewModelFactory;
+    ProfileSubscriptionsAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
     @Inject
     UserService userService;
 
+    private final Runnable onAuthFail = this::recreate;
     private ActivityProfileSubscriptionsBinding binding;
-
     private AccountManager accountManager;
-
     private SubscribersAdapter adapter;
-
-    private ProfileSubscriptionsViewModel profileSubscriptionsViewModel;
+    private ProfileSubscriptionsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +52,11 @@ public class SubscriptionsActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         checkToken(
-              this::onInit, this::finish,
+              (token) -> onInit(), this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String token) {
+    private void onInit() {
         logMethod(TAG, this);
 
         binding = ActivityProfileSubscriptionsBinding.inflate(getLayoutInflater());
@@ -74,46 +64,19 @@ public class SubscriptionsActivity extends AppCompatActivity {
         setContentView(view);
 
         adapter = new SubscribersAdapter(
-              new PhotoDownloaderWithCacheSubscriberBinder(
-                    this, imgDownloader,
-                    (e) -> dispatchToUserActivity(this, e.getId()),
-                    this::onSubUnsubClick,
-                    this::recreate
-              ));
+              userService, onAuthFail, this,
+              new SubscriberBinderImpl(this, imgDownloader, onAuthFail));
 
-        profileSubscriptionsViewModel = ViewModelProviders.of(this, viewModelFactory)
-              .get(ProfileSubscriptionsViewModel.class);
-        profileSubscriptionsViewModel.fetchProfileSubscriptions(getAuthHeader(accountManager), this);
-
-        profileSubscriptionsViewModel.getSubscriptionsLiveData()
-              .observe(this, subs -> adapter.setData(subs));
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscriptions.setAdapter(adapter);
-    }
 
-    private void onSubUnsubClick(Subscriber sub, int position) {
-        if (sub.isAmISubscribedTo()) {
-            userService.unsubscribe(AuthHelper.getAuthHeader(accountManager), sub.getUser().getId())
-                  .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
-                      @Override
-                      public void onResponse(Call<Void> call, Response<Void> response) {
-                          super.onResponse(call, response);
-                          sub.setAmISubscribedTo(false);
-                          adapter.notifyItemChanged(position);
-                      }
-                  });
-        } else {
-            userService.subscribe(AuthHelper.getAuthHeader(accountManager), sub.getUser().getId())
-                  .enqueue(new ActivityRecreatorOnAuthFailure<>(this) {
-                      @Override
-                      public void onResponse(Call<Void> call, Response<Void> response) {
-                          super.onResponse(call, response);
-                          sub.setAmISubscribedTo(true);
-                          adapter.notifyItemChanged(position);
-                      }
-                  });
-        }
-        return;
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(assistedFactory, this, onAuthFail))
+              .get(ProfileSubscriptionsViewModel.class);
+
+        viewModel.getSubscriptions()
+              .observe(this, subs -> adapter.setData(subs));
     }
 
     @Override

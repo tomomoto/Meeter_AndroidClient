@@ -18,9 +18,8 @@ import android.widget.Toast;
 import com.tom.meeter.R;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.http.ErrorLogger;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
-import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -72,26 +71,28 @@ public final class AuthHelper {
           AccountManager am, Activity activity, TokenService tokenService) {
         Account account = getSingleAccount(am);
         String token = am.peekAuthToken(account, AUTH_TYPE);
-        if (token == null) {
-            am.getAuthToken(
-                  account, AUTH_TYPE, null, activity,
-                  future -> {
-                      Bundle result;
-                      try {
-                          result = future.getResult();
-                      } catch (AuthenticatorException e) {
-                          throw new RuntimeException(e);
-                      } catch (IOException e) {
-                          throw new RuntimeException(e);
-                      } catch (OperationCanceledException e) {
-                          onCancelledAuth.run();
-                          return;
-                      }
-                      onToken.accept(result.getString(AccountManager.KEY_AUTHTOKEN));
-                  }, null);
+        if (token != null) {
+            checkTokenWithRetry(
+                  tokenService, token, am, activity,
+                  onToken, onCancelledAuth, 0);
             return;
         }
-        checkTokenWithRetry(tokenService, token, am, activity, onToken, onCancelledAuth, 0);
+        am.getAuthToken(
+              account, AUTH_TYPE, null, activity,
+              future -> {
+                  Bundle result;
+                  try {
+                      result = future.getResult();
+                  } catch (AuthenticatorException e) {
+                      throw new RuntimeException(e);
+                  } catch (IOException e) {
+                      throw new RuntimeException(e);
+                  } catch (OperationCanceledException e) {
+                      onCancelledAuth.run();
+                      return;
+                  }
+                  onToken.accept(result.getString(AccountManager.KEY_AUTHTOKEN));
+              }, null);
     }
 
     private static void simpleCheckToken(
@@ -102,12 +103,12 @@ public final class AuthHelper {
           Consumer<String> onToken,
           Runnable onCancelledAuth) {
         tokenService.checkToken(Globals.getAuthHeader(token)).enqueue(
-              new ErrorLogger<>(activity) {
+              new BaseOnNotAuthenticatedCallback<>(
+                    activity,
+                    () -> invalidateToken(am, activity, onToken, onCancelledAuth)) {
                   @Override
                   public void onResponse(Call<Void> call, Response<Void> response) {
-                      if (response.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          invalidateToken(am, activity, onToken, onCancelledAuth);
-                      }
+                      super.onResponse(call, response);
                       if (response.code() == HttpCodes.OK) {
                           onToken.accept(token);
                       }
@@ -124,16 +125,14 @@ public final class AuthHelper {
           Runnable onCancelledAuth,
           int attempt) {
         tokenService.checkToken(Globals.getAuthHeader(token))
-              .enqueue(new HttpErrorLogger<>(activity) {
+              .enqueue(new BaseOnNotAuthenticatedCallback<>(
+                    activity,
+                    () -> invalidateToken(am, activity, onToken, onCancelledAuth)) {
                   @Override
                   public void onResponse(Call<Void> call, Response<Void> resp) {
                       super.onResponse(call, resp);
                       if (resp.code() == HttpCodes.OK) {
                           onToken.accept(token);
-                          return;
-                      }
-                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          invalidateToken(am, activity, onToken, onCancelledAuth);
                           return;
                       }
                   }
@@ -149,7 +148,7 @@ public final class AuthHelper {
 
                   private void retryIfPossible() {
                       if (attempt < MAX_RETRIES) {
-                          Log.w(TAG, "Повтор попытки " + (attempt + 1));
+                          Log.w(TAG, "Retry: " + (attempt + 1));
                           new Handler(Looper.getMainLooper())
                                 .postDelayed(
                                       () -> checkTokenWithRetry(
@@ -157,7 +156,7 @@ public final class AuthHelper {
                                             onCancelledAuth, attempt + 1),
                                       RETRY_DELAY_MS);
                       } else {
-                          Log.e(TAG, "Превышено количество попыток");
+                          Log.e(TAG, "Exceeded retry count.");
                       }
                   }
               });
