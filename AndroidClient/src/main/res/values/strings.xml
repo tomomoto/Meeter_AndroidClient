@@ -214,6 +214,10 @@
     <string name="failed">Failed</string>
     <string name="failed_to_create_event">Failed to create event.</string>
     <string name="mandatory_star">*</string>
+    <string name="network_channel">Network Channel</string>
+    <string name="new_events_channel">New events</string>
+    <string name="information_about_newly_created_events">Information about newly created events</string>
+    <string name="press_to_open_the_application">Press to open the application</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

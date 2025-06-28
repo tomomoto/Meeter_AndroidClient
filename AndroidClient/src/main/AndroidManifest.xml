@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
+
     <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />-->
     <uses-permission
@@ -106,6 +109,7 @@
         <service
             android:name=".context.network.service.SocketIOService"
             android:enabled="true"
+            android:foregroundServiceType="remoteMessaging"
             android:exported="false" />
         <service
             android:name=".context.gps.service.LocationTrackerService"

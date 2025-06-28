@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -145,8 +146,6 @@ public class ProfileActivity extends AppCompatActivity {
     @Inject
     TokenService tokenService;
 
-    private ServiceConnection socketServiceConnection;
-    private SocketIOService socketIOService;
     private AccountManager accountManager;
 
     private long lastNavItemId = DRAWER_PROFILE_ID;
@@ -170,18 +169,6 @@ public class ProfileActivity extends AppCompatActivity {
         ((App) getApplication()).getComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        socketServiceConnection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName name, IBinder binder) {
-                logMethod(TAG, this);
-                socketIOService = ((SocketIOService.ServiceBinder) binder).getService();
-            }
-
-            public void onServiceDisconnected(ComponentName name) {
-                logMethod(TAG, this);
-                socketIOService = null;
-            }
-        };
-
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(
               (token) -> onInit(savedInstanceState),
@@ -191,10 +178,8 @@ public class ProfileActivity extends AppCompatActivity {
     private void onInit(Bundle savedInstanceState) {
         logMethod(TAG, this);
 
-        Log.d(TAG, "ProfileActivity binding SocketIOService");
-        bindService(
-              new Intent(this, SocketIOService.class),
-              socketServiceConnection, BIND_AUTO_CREATE);
+        ContextCompat.startForegroundService(
+              this, new Intent(this, SocketIOService.class));
         setupPreferences();
 
         Toolbar toolbar = binding.profileActivityToolbar;
@@ -315,20 +300,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         logMethod(TAG, this);
-        unbindSocketService();
-    }
-
-    private void unbindSocketService() {
-        if (socketIOService == null || socketServiceConnection == null) {
-            return;
-        }
-        Log.d(TAG, "ProfileActivity unbinds SocketIOService via connection "
-              + socketServiceConnection);
-        unbindService(socketServiceConnection);
-        socketIOService = null;
-        socketServiceConnection = null;
+        super.onDestroy();
     }
 
     private boolean onDrawerItemClickListener(
@@ -438,6 +411,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
+        Intent stopIntent = new Intent(this, SocketIOService.class);
+        stopIntent.setAction(SocketIOService.STOP_CMD);
+        startService(stopIntent);
         getDefaultSharedPreferences(ProfileActivity.this)
               .edit().clear().apply();
         Account acc = getSingleAccount(accountManager);
@@ -445,7 +421,6 @@ public class ProfileActivity extends AppCompatActivity {
             accountManager.removeAccount(
                   acc, this, future -> {
                       Log.d(TAG, "Account '" + acc.name + "' removed.");
-                      unbindSocketService();
                       Intent intent = new Intent(this, LoginActivity.class);
                       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                       startActivity(intent);

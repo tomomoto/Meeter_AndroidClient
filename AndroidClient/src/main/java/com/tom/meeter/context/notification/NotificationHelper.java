@@ -29,14 +29,15 @@ public class NotificationHelper {
 
     public static void createNotificationChannel(Context ctx) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "New events";
-            String description = "Information about newly created events";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(
+                  EVENTS_NOTIFY,
+                  ctx.getString(R.string.new_events_channel),
+                  NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(
+                  ctx.getString(R.string.information_about_newly_created_events));
 
-            NotificationChannel channel = new NotificationChannel(EVENTS_NOTIFY, name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = ctx.getSystemService(NotificationManager.class);
+            NotificationManager notificationManager = ctx.getSystemService(
+                  NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
