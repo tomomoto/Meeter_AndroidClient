@@ -4,7 +4,7 @@ import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.context.profile.message.PublishEventRequest;
+import com.tom.meeter.context.profile.message.CreateEventRequest;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 
 import java.util.List;
@@ -34,6 +34,12 @@ public interface ProfileService {
     Call<List<UserDTO>> getMySubscriptions(@Header(AUTH_HEADER) String authHeader);
 
     @POST("/event")
+    Call<EventDTO> createEvent(@Header(AUTH_HEADER) String authHeader, @Body CreateEventRequest req);
+
+
+/* soon...
+  @GET("/publish")
     Call<EventDTO> publishEvent(
-          @Header(AUTH_HEADER) String authHeader, @Body PublishEventRequest req);
+          @Header(AUTH_HEADER) String authHeader, @Body CreateEventRequest req);*/
+
 }

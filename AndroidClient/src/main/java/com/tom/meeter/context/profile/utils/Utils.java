@@ -5,9 +5,9 @@ import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNu
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.context.profile.message.PublishEventRequest;
+import com.tom.meeter.context.profile.message.CreateEventRequest;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
-import com.tom.meeter.databinding.FragmentNewEventBinding;
+import com.tom.meeter.databinding.FragmentCreateEventBinding;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 
 import java.time.LocalDate;
@@ -47,16 +47,16 @@ public class Utils {
         return req;
     }
 
-    public static PublishEventRequest createPublishEventRequest(
-          FragmentNewEventBinding binding) {
+    public static CreateEventRequest createEventRequest(
+          FragmentCreateEventBinding binding) {
         //TODO in case of nulls...
-        String startDate = binding.newEventStartsDateEditText.getText().toString();
-        String startTime = binding.newEventStartsTimeEditText.getText().toString();
+        String startDate = binding.startsDate.getText().toString();
+        String startTime = binding.startsTime.getText().toString();
         LocalDate localStartDate = LocalDate.parse(startDate);
         LocalTime localStartTime = LocalTime.parse(startTime);
 
-        String endDate = binding.newEventEndsDateEditText.getText().toString();
-        String endTime = binding.newEventEndsTimeEditText.getText().toString();
+        String endDate = binding.endsDate.getText().toString();
+        String endTime = binding.endsTime.getText().toString();
         LocalDate localEndDate = LocalDate.parse(endDate);
         LocalTime localEndTime = LocalTime.parse(endTime);
 
@@ -64,14 +64,14 @@ public class Utils {
         OffsetDateTime starts = OffsetDateTime.of(localStartDate, localStartTime, offset);
         OffsetDateTime ends = OffsetDateTime.of(localEndDate, localEndTime, offset);
 
-        return new PublishEventRequest(
-              getStringOrNull(binding.newEventNameEditText.getText()),
+        return new CreateEventRequest(
+              getStringOrNull(binding.name.getText()),
               getStringOrNull(binding.newEventDescriptionEditText.getText()),
               starts,
               ends,
               getStringOrNull(binding.city.getText()),
-              getDoubleOrNull(binding.newEventLatitudeEditText.getText()),
-              getDoubleOrNull(binding.newEventLongitudeEditText.getText()),
+              getDoubleOrNull(binding.latitude.getText()),
+              getDoubleOrNull(binding.longitude.getText()),
               null//getStringOrNull(binding.photoPath.getText())
         );
     }

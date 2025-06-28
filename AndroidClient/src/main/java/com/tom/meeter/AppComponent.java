@@ -11,7 +11,7 @@ import com.tom.meeter.context.profile.activity.SettingsActivity;
 import com.tom.meeter.context.profile.activity.SubscribersActivity;
 import com.tom.meeter.context.profile.activity.SubscriptionsActivity;
 import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
-import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
+import com.tom.meeter.context.profile.fragment.CreateEventFragment;
 import com.tom.meeter.context.profile.fragment.GoogleMapsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
@@ -72,6 +72,6 @@ public interface AppComponent {
 
     void inject(BaseUploadActivity baseUploadActivity);
 
-    void inject(CreateNewEventFragment createNewEventFragment);
+    void inject(CreateEventFragment createEventFragment);
 
 }

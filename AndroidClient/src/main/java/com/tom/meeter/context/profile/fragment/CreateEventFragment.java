@@ -6,7 +6,7 @@ import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXT
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.ProfileEventActivity.dispatchToProfileEventActivity;
 import static com.tom.meeter.context.profile.activity.NewEventOnMapActivity.createNewEventOnMapActivityIntent;
-import static com.tom.meeter.context.profile.utils.Utils.createPublishEventRequest;
+import static com.tom.meeter.context.profile.utils.Utils.createEventRequest;
 import static com.tom.meeter.infrastructure.common.CommonHelper.isEmpty;
 import static com.tom.meeter.infrastructure.common.DateHelper.isDateValid;
 import static com.tom.meeter.infrastructure.common.DateHelper.setCurrentDate;
@@ -44,9 +44,9 @@ import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.context.profile.message.PublishEventRequest;
+import com.tom.meeter.context.profile.message.CreateEventRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
-import com.tom.meeter.databinding.FragmentNewEventBinding;
+import com.tom.meeter.databinding.FragmentCreateEventBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -59,20 +59,20 @@ import retrofit2.Response;
 /**
  * Created by Tom on 14.12.2016.
  */
-public class CreateNewEventFragment extends Fragment {
+public class CreateEventFragment extends Fragment {
 
-    private static final String TAG = CreateNewEventFragment.class.getCanonicalName();
+    private static final String TAG = CreateEventFragment.class.getCanonicalName();
 
     @Inject
     ProfileService service;
 
-    private FragmentNewEventBinding binding;
+    private FragmentCreateEventBinding binding;
     private ServiceConnection sConn;
     private LocationTrackerService locationService;
     private AccountManager accountManager;
     private ActivityResultLauncher<Intent> mapResult;
 
-    public CreateNewEventFragment() {
+    public CreateEventFragment() {
         logMethod(TAG, this);
     }
 
@@ -106,8 +106,8 @@ public class CreateNewEventFragment extends Fragment {
                   }
                   double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
                   double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
-                  binding.newEventLatitudeEditText.setText(String.valueOf(lat));
-                  binding.newEventLongitudeEditText.setText(String.valueOf(lng));
+                  binding.latitude.setText(String.valueOf(lat));
+                  binding.longitude.setText(String.valueOf(lng));
               });
 
         ctx.bindService(
@@ -119,7 +119,7 @@ public class CreateNewEventFragment extends Fragment {
     public View onCreateView(
           @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
-        binding = FragmentNewEventBinding.inflate(inflater, container, false);
+        binding = FragmentCreateEventBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
@@ -131,63 +131,55 @@ public class CreateNewEventFragment extends Fragment {
         Context ctx = requireContext();
 
         /* Starting */
-        binding.newEventStartsCurrentDateBtn.setOnClickListener(
-              v -> setCurrentDate(binding.newEventStartsDateEditText));
-        binding.newEventStartsOtherDateBtn.setOnClickListener(
-              v -> showDatePicker(ctx, binding.newEventStartsDateEditText));
-        binding.newEventStartsCurrentTimeBtn.setOnClickListener(
-              v -> setCurrentTime(binding.newEventStartsTimeEditText));
-        binding.newEventStartsOtherTimeBtn.setOnClickListener(
-              v -> showTimePicker(ctx, binding.newEventStartsTimeEditText));
-        binding.newEventStartsDateEditText.addTextChangedListener(
+        binding.startsCurrentDateBtn.setOnClickListener(v -> setCurrentDate(binding.startsDate));
+        binding.startsOtherDateBtn.setOnClickListener(v -> showDatePicker(ctx, binding.startsDate));
+        binding.startsCurrentTimeBtn.setOnClickListener(v -> setCurrentTime(binding.startsTime));
+        binding.startsOtherTimeBtn.setOnClickListener(v -> showTimePicker(ctx, binding.startsTime));
+        binding.startsDate.addTextChangedListener(
               createDataWatcher(
-                    binding.newEventStartsCurrentTimeBtn,
-                    binding.newEventStartsOtherTimeBtn,
-                    binding.newEventStartsDateTextView));
+                    binding.startsCurrentTimeBtn,
+                    binding.startsOtherTimeBtn,
+                    binding.startsDateValidator));
 
         /* Ending */
-        binding.newEventEndsCurrentDateBtn.setOnClickListener(
-              v -> setCurrentDate(binding.newEventEndsDateEditText));
-        binding.newEventEndsOtherDateBtn.setOnClickListener(
-              v -> showDatePicker(ctx, binding.newEventEndsDateEditText));
-        binding.newEventEndsCurrentTimeBtn.setOnClickListener(
-              v -> setCurrentTime(binding.newEventEndsTimeEditText));
-        binding.newEventEndsOtherTimeBtn.setOnClickListener(
-              v -> showTimePicker(ctx, binding.newEventEndsTimeEditText));
-        binding.newEventEndsDateEditText.addTextChangedListener(
+        binding.endsCurrentDateBtn.setOnClickListener(v -> setCurrentDate(binding.endsDate));
+        binding.endsOtherDateBtn.setOnClickListener(v -> showDatePicker(ctx, binding.endsDate));
+        binding.endsCurrentTimeBtn.setOnClickListener(v -> setCurrentTime(binding.endsTime));
+        binding.endsOtherTimeBtn.setOnClickListener(v -> showTimePicker(ctx, binding.endsTime));
+        binding.endsDate.addTextChangedListener(
               createDataWatcher(
-                    binding.newEventEndsCurrentTimeBtn,
-                    binding.newEventEndsOtherTimeBtn,
-                    binding.newEventEndsDateTextView));
+                    binding.endsCurrentTimeBtn,
+                    binding.endsOtherTimeBtn,
+                    binding.endsDateValidator));
 
         /* Location */
-        binding.newEventCurrentPlaceBtn.setOnClickListener(v -> {
+        binding.currentLocationBtn.setOnClickListener(v -> {
             Location location = locationService.getLastKnownLocation();
             if (location == null) {
                 showMessage(requireContext(), R.string.unable_to_get_the_location);
                 return;
             }
-            binding.newEventLatitudeEditText.setText(String.valueOf(location.getLatitude()));
-            binding.newEventLongitudeEditText.setText(String.valueOf(location.getLongitude()));
+            binding.latitude.setText(String.valueOf(location.getLatitude()));
+            binding.longitude.setText(String.valueOf(location.getLongitude()));
         });
-        binding.newEventOtherPlaceBtn.setOnClickListener(
+        binding.otherLocationBtn.setOnClickListener(
               v -> mapResult.launch(createNewEventOnMapActivityIntent(ctx)));
 
         TextWatcher watcher = createTextWatcher();
-        binding.newEventLatitudeEditText.addTextChangedListener(watcher);
-        binding.newEventLongitudeEditText.addTextChangedListener(watcher);
-        binding.newEventNameEditText.addTextChangedListener(watcher);
+        binding.latitude.addTextChangedListener(watcher);
+        binding.longitude.addTextChangedListener(watcher);
+        binding.name.addTextChangedListener(watcher);
 
-        binding.newEventCreateBtn.setOnClickListener(this::createEventClickHandler);
+        binding.createBtn.setOnClickListener(this::createEventClickHandler);
     }
 
     public void createEventClickHandler(View ign) {
-        PublishEventRequest req = createPublishEventRequest(binding);
+        CreateEventRequest req = createEventRequest(binding);
         if (req.isEmpty()) {
             showMessage(requireContext(), R.string.empty_create_request_is_not_sent);
             return;
         }
-        service.publishEvent(AuthHelper.getAuthHeader(accountManager), req)
+        service.createEvent(AuthHelper.getAuthHeader(accountManager), req)
               .enqueue(new BaseOnNotAuthenticatedCallback<>(
                     requireContext(),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)) {
@@ -215,25 +207,23 @@ public class CreateNewEventFragment extends Fragment {
         if (!allSet()) {
             return;
         }
-        binding.newEventCreateBtn.setEnabled(true);
+        binding.createBtn.setEnabled(true);
     }
 
     private boolean allSet() {
-        return !isEmpty(binding.newEventNameEditText.getText())
-              && !isEmpty(binding.newEventLatitudeEditText.getText())
-              && !isEmpty(binding.newEventLongitudeEditText.getText())
-              && isDateValid(binding.newEventStartsDateEditText.getText())
-              && isDateValid(binding.newEventEndsDateEditText.getText());
+        return !isEmpty(binding.name.getText())
+              && !isEmpty(binding.latitude.getText())
+              && !isEmpty(binding.longitude.getText())
+              && isDateValid(binding.startsDate.getText())
+              && isDateValid(binding.endsDate.getText());
     }
 
     private void showEventDialog(EventDTO event) {
         new AlertDialog.Builder(requireContext())
               .setIcon(R.drawable.ic_meeter_lr)
-              .setTitle(R.string.event_published)
+              .setTitle(R.string.event_created)
               .setMessage(
-                    getString(
-                          R.string.recently_created_event_is_published,
-                          event.getName()))
+                    getString(R.string.event_is_created, event.getName()))
               .setPositiveButton(
                     R.string.to_event,
                     (dialog, which) -> dispatchToProfileEventActivity(
@@ -252,7 +242,7 @@ public class CreateNewEventFragment extends Fragment {
             public void afterTextChanged(Editable e) {
                 if (!isDateValid(e.toString())) {
                     target.setText(R.string.wrong_date);
-                    binding.newEventCreateBtn.setEnabled(false);
+                    binding.createBtn.setEnabled(false);
                     currentTime.setEnabled(false);
                     otherTime.setEnabled(false);
                     return;
@@ -270,15 +260,15 @@ public class CreateNewEventFragment extends Fragment {
         return new BaseTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                CharSequence name = binding.newEventNameEditText.getText();
-                CharSequence latitude = binding.newEventLatitudeEditText.getText();
-                CharSequence longitude = binding.newEventLongitudeEditText.getText();
+                CharSequence name = binding.name.getText();
+                CharSequence latitude = binding.latitude.getText();
+                CharSequence longitude = binding.longitude.getText();
 
                 if (requiredFieldsProvided(name, latitude, longitude)) {
                     validateWholeForm();
                     return;
                 }
-                binding.newEventCreateBtn.setEnabled(false);
+                binding.createBtn.setEnabled(false);
             }
         };
     }

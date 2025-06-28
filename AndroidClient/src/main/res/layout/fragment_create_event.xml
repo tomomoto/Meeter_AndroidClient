@@ -38,7 +38,7 @@
             android:background="@drawable/edit_text_background_border">
 
             <EditText
-                android:id="@+id/newEventNameEditText"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -98,7 +98,7 @@
             android:background="@drawable/edit_text_background_border">
 
             <EditText
-                android:id="@+id/newEventLatitudeEditText"
+                android:id="@+id/latitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -109,10 +109,10 @@
                 android:textSize="20sp" />
 
             <EditText
-                android:id="@+id/newEventLongitudeEditText"
+                android:id="@+id/longitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventLatitudeEditText"
+                android:layout_below="@+id/latitude"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="50dp"
                 android:hint="@string/longitude"
@@ -124,12 +124,12 @@
                 android:id="@+id/place_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/newEventLongitudeEditText"
+                android:layout_below="@id/longitude"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp">
 
                 <Button
-                    android:id="@+id/newEventCurrentPlaceBtn"
+                    android:id="@+id/current_location_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -139,7 +139,7 @@
                     android:textSize="14sp" />
 
                 <Button
-                    android:id="@+id/newEventOtherPlaceBtn"
+                    android:id="@+id/other_location_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -160,7 +160,7 @@
 
 
             <EditText
-                android:id="@+id/newEventStartsDateEditText"
+                android:id="@+id/starts_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -171,10 +171,10 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/newEventStartsDateTextView"
+                android:id="@+id/starts_date_validator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventStartsDateEditText"
+                android:layout_below="@+id/starts_date"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="50dp"
                 android:hint="Date validity"
@@ -185,14 +185,14 @@
                 android:id="@+id/date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventStartsDateTextView"
+                android:layout_below="@+id/starts_date_validator"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <Button
-                    android:id="@+id/newEventStartsCurrentDateBtn"
+                    android:id="@+id/starts_current_date_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -200,7 +200,7 @@
                     android:textAllCaps="false" />
 
                 <Button
-                    android:id="@+id/newEventStartsOtherDateBtn"
+                    android:id="@+id/starts_other_date_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -209,7 +209,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/newEventStartsTimeEditText"
+                android:id="@+id/starts_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/date_buttons_layout"
@@ -224,14 +224,14 @@
                 android:id="@+id/start_time_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventStartsTimeEditText"
+                android:layout_below="@+id/starts_time"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <Button
-                    android:id="@+id/newEventStartsCurrentTimeBtn"
+                    android:id="@+id/starts_current_time_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -240,7 +240,7 @@
                     android:textAllCaps="false" />
 
                 <Button
-                    android:id="@+id/newEventStartsOtherTimeBtn"
+                    android:id="@+id/starts_other_time_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -250,7 +250,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/newEventEndsDateEditText"
+                android:id="@+id/ends_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/start_time_buttons_layout"
@@ -262,10 +262,10 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/newEventEndsDateTextView"
+                android:id="@+id/ends_date_validator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventEndsDateEditText"
+                android:layout_below="@+id/ends_date"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="50dp"
                 android:hint="Date validity"
@@ -276,14 +276,14 @@
                 android:id="@+id/end_date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventEndsDateTextView"
+                android:layout_below="@+id/ends_date_validator"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <Button
-                    android:id="@+id/newEventEndsCurrentDateBtn"
+                    android:id="@+id/ends_current_date_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -291,7 +291,7 @@
                     android:textAllCaps="false" />
 
                 <Button
-                    android:id="@+id/newEventEndsOtherDateBtn"
+                    android:id="@+id/ends_other_date_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -300,7 +300,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/newEventEndsTimeEditText"
+                android:id="@+id/ends_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/end_date_buttons_layout"
@@ -315,14 +315,14 @@
                 android:id="@+id/end_time_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/newEventEndsTimeEditText"
+                android:layout_below="@+id/ends_time"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
                 android:paddingTop="5dp">
 
                 <Button
-                    android:id="@+id/newEventEndsCurrentTimeBtn"
+                    android:id="@+id/ends_current_time_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -331,7 +331,7 @@
                     android:textAllCaps="false" />
 
                 <Button
-                    android:id="@+id/newEventEndsOtherTimeBtn"
+                    android:id="@+id/ends_other_time_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -362,7 +362,7 @@
         </RelativeLayout>
 
         <Button
-            android:id="@+id/newEventCreateBtn"
+            android:id="@+id/create_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/city_layout"

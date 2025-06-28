@@ -52,7 +52,7 @@ import com.tom.meeter.R;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.network.service.SocketIOService;
-import com.tom.meeter.context.profile.fragment.CreateNewEventFragment;
+import com.tom.meeter.context.profile.fragment.CreateEventFragment;
 import com.tom.meeter.context.profile.fragment.EventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.fragment.ProfileFragment;
@@ -485,7 +485,7 @@ public class ProfileActivity extends AppCompatActivity {
         } else if (navigationMenuIndex == DRAWER_EVENTS_ID) {
             result = new EventsFragment();
         } else if (navigationMenuIndex == DRAWER_NEW_EVENT_ID) {
-            result = new CreateNewEventFragment();
+            result = new CreateEventFragment();
         } else if (navigationMenuIndex == DRAWER_NOTIFICATION_ID) {
             result = new ProfileEventsFragment();
         } else {

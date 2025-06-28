@@ -51,7 +51,7 @@ public class StartActivityTemp extends AppCompatActivity {
         return new ProfileFragment();
 /*        switch (menuItem.getItemId()) {
             case R.id.bot_nav_home:
-                return new CreateNewEventFragment();
+                return new CreateEventFragment();
             case R.id.bot_nav_profile:
                 return new ProfileFragment();
             case R.id.bot_nav_events:
