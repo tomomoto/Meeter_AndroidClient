@@ -118,6 +118,13 @@ public class NewEventOnMapActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
+
+        /*
+        gmap.setOnMapLoadedCallback(
+        () -> {
+            Log.d("Map", "onMapLoaded — карта полностью отрисована");
+        });
+        */
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
         if (lastKnownLocation != null) {

@@ -61,6 +61,7 @@ public class SocketIOService extends Service {
     private static final String MESSAGE_KEY = "message";
     private static final String USER_KEY = "user";
     private static final String EVENT_KEY = "event";
+
     private AccountManager accountManager;
 
     public class ServiceBinder extends Binder {
