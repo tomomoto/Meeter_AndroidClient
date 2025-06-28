@@ -9,7 +9,7 @@ import org.json.JSONObject;
  * Created by Tom on 14.01.2017.
  */
 
-public record SearchForEvents(float latitude, float longitude, int distance)
+public record SearchForEvents(double latitude, double longitude, int distance)
       implements NetworkEvent {
 
     private static final String LATITUDE_KEY = "latitude";

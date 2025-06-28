@@ -410,7 +410,7 @@ public class GoogleMapsFragment extends Fragment
     private static void searchForEvents(double latitude, double longitude, int searchArea) {
         if (searchArea > 0) {
             EventBus.getDefault()
-                  .post(new SearchForEvents((float) latitude, (float) longitude, searchArea));
+                  .post(new SearchForEvents(latitude, longitude, searchArea));
         }
     }
 

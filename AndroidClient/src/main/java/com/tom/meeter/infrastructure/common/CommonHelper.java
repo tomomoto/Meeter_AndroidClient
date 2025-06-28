@@ -27,6 +27,9 @@ public final class CommonHelper {
     public static final DateTimeFormatter UI_DATE_FORMAT =
           DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    public static final DateTimeFormatter UI_TIME_FORMAT =
+          DateTimeFormatter.ofPattern("HH:mm");
+
     public static final String EMPTY_STR = "";
 
     public static String genderResolver(Context ctx, UserDTO.UserGender gender) {
@@ -57,6 +60,10 @@ public final class CommonHelper {
             return null;
         }
         return input.toString();
+    }
+
+    public static boolean isEmpty(CharSequence input) {
+        return input == null || EMPTY_STR.contentEquals(input);
     }
 
     public static Float getFloatOrNull(CharSequence input) {

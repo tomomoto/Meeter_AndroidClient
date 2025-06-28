@@ -94,6 +94,7 @@
         <activity android:name=".context.user.activity.UserSubscriptionsActivity" />
         <activity android:name=".context.image.activity.UploadUserImageActivity" />
         <activity android:name=".context.image.activity.UploadEventImageActivity" />
+        <activity android:name=".context.profile.activity.NewEventOnMapActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

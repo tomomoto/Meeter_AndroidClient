@@ -3,6 +3,8 @@ package com.tom.meeter.context.event.activity;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.EVENT_ID_KEY;
+import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LAT;
+import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
 import static com.tom.meeter.context.event.utils.Utils.createUpdateEventRequest;
 import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
@@ -58,9 +60,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class ProfileEventActivity extends AppCompatActivity {
-
-    public static final String EXTRA_LAT = "extra_lat";
-    public static final String EXTRA_LNG = "extra_lng";
 
     private static final String TAG = ProfileEventActivity.class.getCanonicalName();
 
@@ -182,16 +181,19 @@ public class ProfileEventActivity extends AppCompatActivity {
                 service.updateEvent(getAuthHeader(accountManager), eventCache.getId(), req)
                       .enqueue(new BaseOnNotAuthenticatedCallback<>(this, onNotAuthenticated) {
                           @Override
-                          public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
+                          public void onResponse(
+                                Call<EventDTO> call, Response<EventDTO> resp) {
                               super.onResponse(call, resp);
-                              if (resp.code() == HttpCodes.OK) {
-                                  String oldPhotoPath = eventCache.getPhotoPath();
-                                  eventCache = resp.body();
-                                  if (!Objects.equals(oldPhotoPath, eventCache.getPhotoPath())) {
-                                      downloadAndUpdateLayoutPhoto(eventCache.getPhotoPath());
-                                  }
-                                  showMessage(ProfileEventActivity.this, R.string.saved);
+                              if (resp.code() != HttpCodes.OK) {
+                                  updateLayout();
+                                  return;
                               }
+                              String oldPhotoPath = eventCache.getPhotoPath();
+                              eventCache = resp.body();
+                              if (!Objects.equals(oldPhotoPath, eventCache.getPhotoPath())) {
+                                  downloadAndUpdateLayoutPhoto(eventCache.getPhotoPath());
+                              }
+                              showMessage(ProfileEventActivity.this, R.string.saved);
                               updateLayout();
                           }
                       });

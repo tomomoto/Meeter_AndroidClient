@@ -19,15 +19,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.tom.meeter.context.network.domain.CreateNewEventAttempt;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.infrastructure.common.Globals;
-import com.tom.meeter.infrastructure.common.JsonHelper;
-import com.tom.meeter.infrastructure.eventbus.events.FailureEventCreation;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
-import com.tom.meeter.infrastructure.eventbus.events.SuccessfulEventCreation;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -53,7 +49,6 @@ public class SocketIOService extends Service {
     private static final String TAG = SocketIOService.class.getCanonicalName();
 
     private static final String GREETINGS_CHANNEL = "greetings";
-    private static final String EVENTS_CREATE_CHANNEL = "events:create";
     private static final String EVENTS_SEARCH_CHANNEL = "events:search";
     private static final String EVENTS_NOTIFICATIONS_CHANNEL = "events:notifications";
     private static final String NEW_SUBSCRIBER_CHANNEL = "user:subscription:new";
@@ -186,7 +181,6 @@ public class SocketIOService extends Service {
         socketClient.on(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.on(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
         socketClient.on(NEW_SUBSCRIBER_CHANNEL, this::newSubscriberNotificationsChannel);
-        socketClient.on(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         socketClient.connect();
         EventBus.getDefault().register(this);
         Log.d(TAG, "SocketIOClient is going to start... connected? {"
@@ -220,7 +214,6 @@ public class SocketIOService extends Service {
         socketClient.off(EVENTS_SEARCH_CHANNEL, SocketIOService::eventsSearchHandler);
         socketClient.off(EVENTS_NOTIFICATIONS_CHANNEL, this::eventsNotificationsChannel);
         socketClient.off(NEW_SUBSCRIBER_CHANNEL, this::newSubscriberNotificationsChannel);
-        socketClient.off(EVENTS_CREATE_CHANNEL, SocketIOService::eventsCreateHandler);
         initialized = false;
     }
 
@@ -228,12 +221,6 @@ public class SocketIOService extends Service {
     public void onMessageEvent(SearchForEvents event) {
         Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
         socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
-    }
-
-    @Subscribe
-    public void onMessageEvent(CreateNewEventAttempt event) {
-        Log.d(TAG, "onMessageEvent:CreateNewEventAttempt: " + event.toString());
-        socketClient.emit(EVENTS_CREATE_CHANNEL, event.toJson());
     }
 
     private static String readFlags(int flags) {
@@ -315,25 +302,4 @@ public class SocketIOService extends Service {
         }
         return true;
     }
-
-    private static void eventsCreateHandler(Object... args) {
-        JSONObject response = getSimpleResponse(JSONObject.class, args);
-        int code = JsonHelper.getInt(response, CODE_KEY);
-        Log.d(TAG, EVENTS_CREATE_CHANNEL + " : " + response);
-        switch (code) {
-            case CREATED_CODE:
-                Log.d(TAG, "Event successfully created. " + response);
-                EventBus.getDefault()
-                      .post(new SuccessfulEventCreation(JsonHelper.getString(response, ID_KEY)));
-                break;
-            case BAD_REQUEST:
-                Log.d(TAG, "Failed event creation. " + response);
-                EventBus.getDefault().post(new FailureEventCreation());
-                break;
-            default:
-                Log.d(TAG, "Unrecognized code from " + EVENTS_CREATE_CHANNEL + " [" + code + "]");
-                break;
-        }
-    }
 }
-

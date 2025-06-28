@@ -4,6 +4,7 @@ import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
+import com.tom.meeter.context.profile.message.PublishEventRequest;
 import com.tom.meeter.context.profile.message.UpdateProfileRequest;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
+import retrofit2.http.POST;
 
 public interface ProfileService {
     @GET("/profile")
@@ -30,4 +32,8 @@ public interface ProfileService {
 
     @GET("/profile/subscriptions")
     Call<List<UserDTO>> getMySubscriptions(@Header(AUTH_HEADER) String authHeader);
+
+    @POST("/event")
+    Call<EventDTO> publishEvent(
+          @Header(AUTH_HEADER) String authHeader, @Body PublishEventRequest req);
 }
