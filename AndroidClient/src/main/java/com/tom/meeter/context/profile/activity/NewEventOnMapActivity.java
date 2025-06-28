@@ -36,15 +36,13 @@ public class NewEventOnMapActivity extends AppCompatActivity
     public static final String EXTRA_LNG = "extra_lng";
 
     private static final String TAG = EventLocationMapActivity.class.getCanonicalName();
-    private Marker eventMarker;
-    private GoogleMap gmap;
 
-    private ServiceConnection locationServiceConn;
+    private ServiceConnection sConn;
     private LocationTrackerService locationService;
-    private boolean cameraMoved = false;
-
     private LocationTrackerListener singleLocationUpdateListener;
-    private LatLng userLocation;
+    private GoogleMap gmap;
+    private Marker eventMarker;
+    private Location lastKnownLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +50,8 @@ public class NewEventOnMapActivity extends AppCompatActivity
         ActivityEventPositionBinding binding =
               ActivityEventPositionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        bindLocationService();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
               .findFragmentById(R.id.eventSelectPosition);
@@ -73,38 +73,46 @@ public class NewEventOnMapActivity extends AppCompatActivity
         });
     }
 
-    private void setupSingleLocationListener() {
-        singleLocationUpdateListener = new LocationTrackerListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                logMethod(TAG, this);
-                if (gmap != null && !cameraMoved) {
-                    userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, ZOOM_VALUE));
-                    cameraMoved = true;
-                    locationService.removeLocationTrackerListener(this);
-                    singleLocationUpdateListener = null;
-                    unbindService(locationServiceConn);
-                    locationService = null;
-                    locationServiceConn = null;
-                }
-            }
-        };
-        locationServiceConn = new ServiceConnection() {
+    private void bindLocationService() {
+        sConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 logMethod(TAG, this);
                 locationService = ((LocationTrackerService.ServiceBinder) binder).getService();
+                lastKnownLocation = locationService.getLastKnownLocation();
+                if (lastKnownLocation != null) {
+                    return;
+                }
+                singleLocationUpdateListener = new LocationTrackerListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        logMethod(TAG, this);
+                        if (gmap == null) {
+                            Log.d(TAG, "Location update ignored...");
+                        }
+                        gmap.moveCamera(
+                              CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(location.getLatitude(), location.getLongitude()),
+                                    ZOOM_VALUE));
+                        locationService.removeLocationTrackerListener(this);
+                        singleLocationUpdateListener = null;
+                        unbindService(sConn);
+                        locationService = null;
+                        sConn = null;
+                    }
+                };
                 locationService.addLocationTrackerListener(singleLocationUpdateListener);
             }
 
             public void onServiceDisconnected(ComponentName name) {
                 logMethod(TAG, this);
                 locationService = null;
-                locationServiceConn = null;
+                sConn = null;
             }
         };
-        Intent service = new Intent(this, LocationTrackerService.class);
-        bindService(service, locationServiceConn, BIND_AUTO_CREATE);
+
+        bindService(
+              new Intent(this, LocationTrackerService.class),
+              sConn, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -112,20 +120,22 @@ public class NewEventOnMapActivity extends AppCompatActivity
         gmap = googleMap;
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
-
+        if (lastKnownLocation != null) {
+            gmap.moveCamera(
+                  CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(
+                              lastKnownLocation.getLatitude(),
+                              lastKnownLocation.getLongitude()),
+                        ZOOM_VALUE));
+        }
         gmap.setOnMapClickListener(
               latLng -> {
-                  if (eventMarker != null) {
-                      eventMarker.setPosition(latLng);
-                      return;
-                  }
-                  if (userLocation != null) {
+                  if (eventMarker == null) {
                       eventMarker = gmap.addMarker(new MarkerOptions().position(latLng));
+                  } else {
+                      eventMarker.setPosition(latLng);
                   }
-                  Log.d(TAG, "Event marker is null, user location" +
-                        " is null, nothing to do...");
               });
-        setupSingleLocationListener();
     }
 
     @Override
@@ -135,8 +145,8 @@ public class NewEventOnMapActivity extends AppCompatActivity
         if (locationService != null && singleLocationUpdateListener != null) {
             locationService.removeLocationTrackerListener(singleLocationUpdateListener);
         }
-        if (locationServiceConn != null) {
-            unbindService(locationServiceConn);
+        if (sConn != null) {
+            unbindService(sConn);
         }
     }
 
