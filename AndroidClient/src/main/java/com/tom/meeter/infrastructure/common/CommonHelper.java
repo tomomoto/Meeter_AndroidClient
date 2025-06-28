@@ -10,6 +10,7 @@ import com.tom.meeter.context.network.dto.UserDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -100,4 +101,17 @@ public final class CommonHelper {
             return null;
         }
     }
+
+    @Nullable
+    public static OffsetDateTime getOffsetDateTimeOrNull(
+          CharSequence date, CharSequence time) {
+        if (isEmpty(date) || isEmpty(time)) {
+            return null;
+        }
+        return OffsetDateTime.of(
+              LocalDate.parse(date),
+              LocalTime.parse(time),
+              OffsetDateTime.now().getOffset());
+    }
+
 }

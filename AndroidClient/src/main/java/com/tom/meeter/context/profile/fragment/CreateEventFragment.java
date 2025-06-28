@@ -5,6 +5,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LAT;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.ProfileEventActivity.dispatchToProfileEventActivity;
+import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
 import static com.tom.meeter.context.profile.activity.NewEventOnMapActivity.createNewEventOnMapActivityIntent;
 import static com.tom.meeter.context.profile.utils.Utils.createEventRequest;
 import static com.tom.meeter.infrastructure.common.CommonHelper.isEmpty;
@@ -17,6 +18,7 @@ import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMetho
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -43,10 +45,13 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
+import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.image.activity.UploadEventImageActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.profile.message.CreateEventRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.databinding.FragmentCreateEventBinding;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -65,12 +70,31 @@ public class CreateEventFragment extends Fragment {
 
     @Inject
     ProfileService service;
+    @Inject
+    ImageDownloader imgDownloader;
 
     private FragmentCreateEventBinding binding;
     private ServiceConnection sConn;
     private LocationTrackerService locationService;
     private AccountManager accountManager;
+
+    private final Runnable onNotAuthenticated =
+          () -> InfrastructureHelper.restartActivityFromFragment(this);
     private ActivityResultLauncher<Intent> mapResult;
+    private final ActivityResultLauncher<Intent> imageUploadLauncher =
+          registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String photoPath = result.getData().getStringExtra(PHOTO_PATH_RESULT);
+                    imgDownloader.downloadEventImage(
+                          photoPath, requireContext(), ImagesHelper::bigCircleImage,
+                          (photo) -> binding.photo.setImageBitmap(photo),
+                          onNotAuthenticated);
+                    binding.photoPath.setText(photoPath);
+                });
 
     public CreateEventFragment() {
         logMethod(TAG, this);
@@ -130,6 +154,18 @@ public class CreateEventFragment extends Fragment {
 
         Context ctx = requireContext();
 
+        /* Photo */
+        binding.selectPhotoButton.setOnClickListener(
+              v -> imageUploadLauncher.launch(new Intent(ctx, UploadEventImageActivity.class)));
+
+        /* Name */
+        binding.name.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateForm();
+            }
+        });
+
         /* Starting */
         binding.startsCurrentDateBtn.setOnClickListener(v -> setCurrentDate(binding.startsDate));
         binding.startsOtherDateBtn.setOnClickListener(v -> showDatePicker(ctx, binding.startsDate));
@@ -165,11 +201,6 @@ public class CreateEventFragment extends Fragment {
         binding.otherLocationBtn.setOnClickListener(
               v -> mapResult.launch(createNewEventOnMapActivityIntent(ctx)));
 
-        TextWatcher watcher = createTextWatcher();
-        binding.latitude.addTextChangedListener(watcher);
-        binding.longitude.addTextChangedListener(watcher);
-        binding.name.addTextChangedListener(watcher);
-
         binding.createBtn.setOnClickListener(this::createEventClickHandler);
     }
 
@@ -181,8 +212,7 @@ public class CreateEventFragment extends Fragment {
         }
         service.createEvent(AuthHelper.getAuthHeader(accountManager), req)
               .enqueue(new BaseOnNotAuthenticatedCallback<>(
-                    requireContext(),
-                    () -> InfrastructureHelper.restartActivityFromFragment(this)) {
+                    requireContext(), onNotAuthenticated) {
                   @Override
                   public void onResponse(
                         Call<EventDTO> call, Response<EventDTO> resp) {
@@ -195,19 +225,12 @@ public class CreateEventFragment extends Fragment {
               });
     }
 
-    private void validateWholeForm() {
-        if (!allSet()) {
-            return;
-        }
-        binding.createBtn.setEnabled(true);
+    private void validateForm() {
+        binding.createBtn.setEnabled(allSet());
     }
 
     private boolean allSet() {
-        return !isEmpty(binding.name.getText())
-              && !isEmpty(binding.latitude.getText())
-              && !isEmpty(binding.longitude.getText())
-              && isDateValid(binding.startsDate.getText())
-              && isDateValid(binding.endsDate.getText());
+        return !isEmpty(binding.name.getText());
     }
 
     private void showEventDialog(EventDTO event) {
@@ -232,35 +255,19 @@ public class CreateEventFragment extends Fragment {
         return new BaseTextWatcher() {
             @Override
             public void afterTextChanged(Editable e) {
-                if (!isDateValid(e.toString())) {
-                    target.setText(R.string.wrong_date);
-                    binding.createBtn.setEnabled(false);
+                if (isEmpty(e)) {
                     currentTime.setEnabled(false);
                     otherTime.setEnabled(false);
-                    return;
+                } else if (!isDateValid(e.toString())) {
+                    target.setText(R.string.wrong_date);
+                    currentTime.setEnabled(false);
+                    otherTime.setEnabled(false);
+                } else {
+                    target.setText(R.string.correct_date);
+                    currentTime.setEnabled(true);
+                    otherTime.setEnabled(true);
                 }
-                currentTime.setEnabled(true);
-                otherTime.setEnabled(true);
-                target.setText(R.string.correct_date);
-                validateWholeForm();
-            }
-        };
-    }
-
-    @NonNull
-    private TextWatcher createTextWatcher() {
-        return new BaseTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                CharSequence name = binding.name.getText();
-                CharSequence latitude = binding.latitude.getText();
-                CharSequence longitude = binding.longitude.getText();
-
-                if (requiredFieldsProvided(name, latitude, longitude)) {
-                    validateWholeForm();
-                    return;
-                }
-                binding.createBtn.setEnabled(false);
+                validateForm();
             }
         };
     }

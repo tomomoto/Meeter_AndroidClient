@@ -2,6 +2,7 @@ package com.tom.meeter.context.profile.utils;
 
 import static com.tom.meeter.infrastructure.common.CommonHelper.getDoubleOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getLocalDateOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getOffsetDateTimeOrNull;
 import static com.tom.meeter.infrastructure.common.CommonHelper.getStringOrNull;
 
 import com.tom.meeter.context.network.dto.UserDTO;
@@ -11,9 +12,6 @@ import com.tom.meeter.databinding.FragmentCreateEventBinding;
 import com.tom.meeter.databinding.FragmentProfileBinding;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Objects;
 
 public class Utils {
@@ -49,30 +47,17 @@ public class Utils {
 
     public static CreateEventRequest createEventRequest(
           FragmentCreateEventBinding binding) {
-        //TODO in case of nulls...
-        String startDate = binding.startsDate.getText().toString();
-        String startTime = binding.startsTime.getText().toString();
-        LocalDate localStartDate = LocalDate.parse(startDate);
-        LocalTime localStartTime = LocalTime.parse(startTime);
-
-        String endDate = binding.endsDate.getText().toString();
-        String endTime = binding.endsTime.getText().toString();
-        LocalDate localEndDate = LocalDate.parse(endDate);
-        LocalTime localEndTime = LocalTime.parse(endTime);
-
-        ZoneOffset offset = OffsetDateTime.now().getOffset();
-        OffsetDateTime starts = OffsetDateTime.of(localStartDate, localStartTime, offset);
-        OffsetDateTime ends = OffsetDateTime.of(localEndDate, localEndTime, offset);
-
         return new CreateEventRequest(
               getStringOrNull(binding.name.getText()),
-              getStringOrNull(binding.newEventDescriptionEditText.getText()),
-              starts,
-              ends,
+              getStringOrNull(binding.description.getText()),
+              getOffsetDateTimeOrNull(
+                    binding.startsDate.getText(), binding.startsTime.getText()),
+              getOffsetDateTimeOrNull(
+                    binding.endsDate.getText(), binding.endsTime.getText()),
               getStringOrNull(binding.city.getText()),
               getDoubleOrNull(binding.latitude.getText()),
               getDoubleOrNull(binding.longitude.getText()),
-              null//getStringOrNull(binding.photoPath.getText())
+              getStringOrNull(binding.photoPath.getText())
         );
     }
 }
