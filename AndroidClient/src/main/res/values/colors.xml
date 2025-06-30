@@ -9,4 +9,15 @@
     <color name="colorAccent2">#c8e8ff</color>
     <color name="editTextBorder">#b1c0ca</color>
     <color name="c0deef">#C0DEEF</color>
+
+    <color name="created_status">#BBDEFB</color>
+    <color name="published_status">#64B5F6</color>
+    <color name="unpublished_status">#2196F3</color>
+    <color name="scheduled_status">#EF9C1B</color>
+    <color name="started_status">#11ED18</color>
+    <color name="paused_status">#FFE60F</color>
+    <color name="resumed_status">#11ED18</color>
+    <color name="finished_status">#FB450D</color>
+    <color name="cancelled_status">#BC0606</color>
+    <color name="archived_status">#90A4AE</color>
 </resources>

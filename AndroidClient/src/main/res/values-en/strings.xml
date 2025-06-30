@@ -241,6 +241,16 @@
     <string name="event_is_archived">event is archived!</string>
     <string name="event_updated">Event updated</string>
     <string name="is_updated">event is updated!</string>
+    <string name="created_status">CREATED</string>
+    <string name="published_status">PUBLISHED</string>
+    <string name="unpublished_status">UNPUBLISHED</string>
+    <string name="scheduled_status">SCHEDULED</string>
+    <string name="started_status">STARTED</string>
+    <string name="paused_status">PAUSED</string>
+    <string name="resumed_status">RESUMED</string>
+    <string name="finished_status">FINISHED</string>
+    <string name="cancelled_status">CANCELLED</string>
+    <string name="archived_status">ARCHIVED</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

@@ -1,5 +1,8 @@
 package com.tom.meeter.infrastructure.components.binder;
 
+import static com.tom.meeter.infrastructure.common.CommonHelper.eventStatusResolver;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getStatusColor;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -29,13 +32,16 @@ public class EventBinderImpl
     public void bind(EventViewHolder holder, EventDTO event) {
         String photoPath = event.getPhotoPath();
 
-        Bitmap cached = photoPath != null ? cache.get(photoPath) : null;
+        Bitmap cachedPhoto = photoPath != null ? cache.get(photoPath) : null;
+        EventDTO.EventStatus eventStatus = event.getStatus();
 
         holder.bind(
-              event.getName(), event.getDescription(), cached,
-              v -> listener.onClick(event));
+              event.getName(), event.getDescription(),
+              eventStatusResolver(ctx, eventStatus),
+              getStatusColor(ctx, eventStatus),
+              cachedPhoto, v -> listener.onClick(event));
 
-        if (photoPath != null && cached == null) {
+        if (photoPath != null && cachedPhoto == null) {
             loadPhoto(photoPath, holder::updatePhoto);
         }
     }

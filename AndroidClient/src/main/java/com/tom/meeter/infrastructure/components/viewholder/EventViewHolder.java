@@ -1,5 +1,7 @@
 package com.tom.meeter.infrastructure.components.viewholder;
 
+import static com.tom.meeter.infrastructure.common.CommonHelper.setRoundedBackground;
+
 import android.graphics.Bitmap;
 import android.view.View;
 
@@ -17,11 +19,15 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(
-          String name, String description, Bitmap photo,
-          View.OnClickListener clickListener) {
+          String name, String description, String status, int colorRes,
+          Bitmap photo, View.OnClickListener clickListener) {
         binding.eventNameCardView.setText(name);
         binding.eventDescriptionCardView.setText(description);
         binding.eventPhotoCardView.setImageBitmap(photo);
+        binding.eventStatusCardView.setText(status);
+        setRoundedBackground(binding.eventStatusCardView, colorRes, 6f);
+        //binding.eventStatusCardView.setBackgroundColor(colorRes);
+        //binding.eventStatusCardView.setBackgroundResource(colorRes);
         binding.eventCardView.setOnClickListener(clickListener);
     }
 

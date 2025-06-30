@@ -27,6 +27,7 @@ public class EventDTO extends ServerEntityBase {
     private static final String STARTING_KEY = "starting";
     private static final String ENDING_KEY = "ending";
     private static final String CITY_KEY = "city";
+    private static final String STATUS_KEY = "status";
 
     //Non nullable, cannot be changed
     @JsonProperty(value = CREATOR_ID_KEY)
@@ -40,6 +41,7 @@ public class EventDTO extends ServerEntityBase {
     private OffsetDateTime starting;
     private OffsetDateTime ending;
     private String city;
+    private EventStatus status;
 
     public EventDTO() {
         //retrofit...
@@ -59,6 +61,7 @@ public class EventDTO extends ServerEntityBase {
             starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
             ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
             city = getStringOrNull(CITY_KEY, json);
+            status = EventStatus.fromString(json.getString(STATUS_KEY));
         } catch (JSONException e) {
             throw new RuntimeException("Unable to encode EventDTO from jsonObject: ", e);
         }
@@ -88,6 +91,9 @@ public class EventDTO extends ServerEntityBase {
         this.city = city;
     }
 
+    public void setStatus(EventStatus eventStatus) {
+        this.status = eventStatus;
+    }
 
     public String getDescription() {
         return description;
@@ -121,6 +127,10 @@ public class EventDTO extends ServerEntityBase {
         return city;
     }
 
+    public EventStatus getStatus() {
+        return status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -133,7 +143,8 @@ public class EventDTO extends ServerEntityBase {
               && Objects.equals(longitude, eventDTO.longitude)
               && Objects.equals(starting, eventDTO.starting)
               && Objects.equals(ending, eventDTO.ending)
-              && Objects.equals(city, eventDTO.city);
+              && Objects.equals(city, eventDTO.city)
+              && Objects.equals(status, eventDTO.status);
     }
 
     @Override
@@ -141,6 +152,61 @@ public class EventDTO extends ServerEntityBase {
         return Objects.hash(
               super.hashCode(), creatorId, created,
               description, latitude, longitude,
-              starting, ending, city);
+              starting, ending, city, status);
+    }
+
+
+    private static final String CREATED_VALUE = "CREATED";
+    private static final String PUBLISHED_VALUE = "PUBLISHED";
+    private static final String UNPUBLISHED_VALUE = "UNPUBLISHED";
+    private static final String SCHEDULED_VALUE = "SCHEDULED";
+    private static final String STARTED_VALUE = "STARTED";
+    private static final String PAUSED_VALUE = "PAUSED";
+    private static final String RESUMED_VALUE = "RESUMED";
+    private static final String FINISHED_VALUE = "FINISHED";
+    private static final String CANCELLED_VALUE = "CANCELLED";
+    private static final String ARCHIVED_VALUE = "ARCHIVED";
+
+    public enum EventStatus {
+
+        @JsonProperty(CREATED_VALUE)
+        CREATED(CREATED_VALUE),
+        @JsonProperty(PUBLISHED_VALUE)
+        PUBLISHED(PUBLISHED_VALUE),
+        @JsonProperty(UNPUBLISHED_VALUE)
+        UNPUBLISHED(UNPUBLISHED_VALUE),
+        @JsonProperty(SCHEDULED_VALUE)
+        SCHEDULED(SCHEDULED_VALUE),
+        @JsonProperty(STARTED_VALUE)
+        STARTED(STARTED_VALUE),
+        @JsonProperty(PAUSED_VALUE)
+        PAUSED(PAUSED_VALUE),
+        @JsonProperty(RESUMED_VALUE)
+        RESUMED(RESUMED_VALUE),
+        @JsonProperty(FINISHED_VALUE)
+        FINISHED(FINISHED_VALUE),
+        @JsonProperty(CANCELLED_VALUE)
+        CANCELLED(CANCELLED_VALUE),
+        @JsonProperty(ARCHIVED_VALUE)
+        ARCHIVED(ARCHIVED_VALUE);
+
+        private final String value;
+
+        EventStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static EventStatus fromString(String text) {
+            for (EventStatus val : EventStatus.values()) {
+                if (val.value.equalsIgnoreCase(text)) {
+                    return val;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with string value " + text);
+        }
     }
 }

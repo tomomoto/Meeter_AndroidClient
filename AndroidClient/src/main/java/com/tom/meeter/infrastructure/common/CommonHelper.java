@@ -1,11 +1,16 @@
 package com.tom.meeter.infrastructure.common;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.util.Log;
+import android.util.TypedValue;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
 import com.tom.meeter.R;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
 
 import java.time.LocalDate;
@@ -39,6 +44,60 @@ public final class CommonHelper {
             case MALE -> ctx.getString(R.string.male_gender);
             default -> throw new IllegalArgumentException("#args " + gender);
         };
+    }
+
+    public static String eventStatusResolver(Context ctx, EventDTO.EventStatus status) {
+        return switch (status) {
+            case CREATED -> ctx.getString(R.string.created_status);
+            case PUBLISHED -> ctx.getString(R.string.published_status);
+            case UNPUBLISHED -> ctx.getString(R.string.unpublished_status);
+            case SCHEDULED -> ctx.getString(R.string.scheduled_status);
+            case STARTED -> ctx.getString(R.string.started_status);
+            case PAUSED -> ctx.getString(R.string.paused_status);
+            case RESUMED -> ctx.getString(R.string.resumed_status);
+            case FINISHED -> ctx.getString(R.string.finished_status);
+            case CANCELLED -> ctx.getString(R.string.cancelled_status);
+            case ARCHIVED -> ctx.getString(R.string.archived_status);
+            default -> throw new IllegalArgumentException("#args " + status);
+        };
+    }
+
+    public static void setStatusColor(TextView statusView, int colorRes) {
+        statusView.setBackgroundResource(colorRes);
+    }
+
+    public static int getStatusColor(Context ctx, EventDTO.EventStatus status) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            throw new IllegalArgumentException("#Unable to get status color " + status);
+        }
+        return switch (status) {
+            case CREATED -> ctx.getColor(R.color.created_status);
+            case PUBLISHED -> ctx.getColor(R.color.published_status);
+            case UNPUBLISHED -> ctx.getColor(R.color.unpublished_status);
+            case SCHEDULED -> ctx.getColor(R.color.scheduled_status);
+            case STARTED -> ctx.getColor(R.color.started_status);
+            case PAUSED -> ctx.getColor(R.color.paused_status);
+            case RESUMED -> ctx.getColor(R.color.resumed_status);
+            case FINISHED -> ctx.getColor(R.color.finished_status);
+            case CANCELLED -> ctx.getColor(R.color.cancelled_status);
+            case ARCHIVED -> ctx.getColor(R.color.archived_status);
+            default -> throw new IllegalArgumentException("#args " + status);
+        };
+    }
+
+
+    public static void setRoundedBackground(
+          TextView view, int backgroundColor, float cornerRadiusDp) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.RECTANGLE);
+        drawable.setColor(backgroundColor);
+        float radiusPx = TypedValue.applyDimension(
+              TypedValue.COMPLEX_UNIT_DIP,
+              cornerRadiusDp,
+              view.getResources().getDisplayMetrics()
+        );
+        drawable.setCornerRadius(radiusPx);
+        view.setBackground(drawable);
     }
 
     @Nullable

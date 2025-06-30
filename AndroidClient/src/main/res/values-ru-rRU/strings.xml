@@ -239,6 +239,16 @@
     <string name="event_is_archived">событие архивировано!</string>
     <string name="event_updated">Событие обновлено</string>
     <string name="is_updated">событие обновлено!</string>
+    <string name="created_status">СОЗДАНО</string>
+    <string name="published_status">ОПУБЛИКОВАНО</string>
+    <string name="unpublished_status">СНЯТО</string>
+    <string name="scheduled_status">ЗАПЛАНИРОВАНО</string>
+    <string name="started_status">НАЧАЛОСЬ</string>
+    <string name="paused_status">ОСТАНОВЛЕНО</string>
+    <string name="resumed_status">ПРОДОЛЖЕНО</string>
+    <string name="finished_status">ЗАВЕРШЕНО</string>
+    <string name="cancelled_status">ОТМЕНЕНО</string>
+    <string name="archived_status">АРХИВ</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>
