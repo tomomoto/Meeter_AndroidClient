@@ -13,6 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/edit_text_background_border"
             android:orientation="vertical"
             android:padding="16dp">
@@ -41,6 +42,28 @@
                 android:text="@string/select_photo"
                 android:textAllCaps="false" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_background_border"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/edit_text_background_border"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:text="STATUS"
+                android:textAllCaps="true"
+                android:textSize="12sp" />
+        </LinearLayout>
+
         <!-- Name and description section -->
         <LinearLayout
             android:layout_width="match_parent"

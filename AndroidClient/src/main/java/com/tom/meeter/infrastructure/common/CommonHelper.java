@@ -85,6 +85,11 @@ public final class CommonHelper {
         };
     }
 
+    public static void handleEventStatus(
+          Context ctx, TextView view, EventDTO.EventStatus status) {
+        view.setText(eventStatusResolver(ctx, status));
+        setRoundedBackground(view, getStatusColor(ctx, status), 6f);
+    }
 
     public static void setRoundedBackground(
           TextView view, int backgroundColor, float cornerRadiusDp) {
