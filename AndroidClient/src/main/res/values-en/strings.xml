@@ -217,8 +217,8 @@
     <string name="failed_to_create_event">Failed to create event.</string>
     <string name="mandatory_star">*</string>
     <string name="network_channel">Network Channel</string>
-    <string name="new_events_channel">New events</string>
-    <string name="information_about_newly_created_events">Information about newly created events</string>
+    <string name="events_channel">Events</string>
+    <string name="information_about_events">Information about events and their statuses</string>
     <string name="press_to_open_the_application">Press to open the application</string>
     <string name="is_published">event is published!</string>
     <string name="event_published">Event published</string>

@@ -37,10 +37,10 @@ public class NotificationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                   EVENTS_NOTIFY,
-                  ctx.getString(R.string.new_events_channel),
+                  ctx.getString(R.string.events_channel),
                   NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription(
-                  ctx.getString(R.string.information_about_newly_created_events));
+                  ctx.getString(R.string.information_about_events));
 
             NotificationManager notificationManager = ctx.getSystemService(
                   NotificationManager.class);
