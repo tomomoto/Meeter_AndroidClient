@@ -114,4 +114,11 @@ public final class CommonHelper {
               OffsetDateTime.now().getOffset());
     }
 
+    public static int getAppLogo() {
+        return R.drawable.meeter_new_logo_512x512;
+    }
+
+    public static int getSmallAppLogo() {
+        return R.drawable.meeter_new_logo_64x64;
+    }
 }

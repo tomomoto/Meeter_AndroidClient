@@ -218,6 +218,27 @@
     <string name="new_events_channel">Канал новых событий</string>
     <string name="information_about_newly_created_events">Информация о только что созданных событиях</string>
     <string name="press_to_open_the_application">Нажмите, чтобы открыть приложение</string>
+    <string name="is_published">событие опубликовано!</string>
+    <string name="event_published">Событие опубликовано</string>
+    <string name="event_unpublished">Событие снято с публикации</string>
+    <string name="is_unpublished">событие снято с публикации!</string>
+    <string name="event_scheduled">Событие запланировано</string>
+    <string name="is_scheduled">cобытие запланировано!</string>
+    <string name="event_started">Событие началось</string>
+    <string name="event_is_started">событие началось!</string>
+    <string name="created_by_user">Созданное пользователем</string>
+    <string name="event_paused">Событие приостановлено</string>
+    <string name="event_is_paused">событие приостановлено!</string>
+    <string name="event_resumed">Событие возобновлено</string>
+    <string name="event_is_resumed">событие возобновлено!</string>
+    <string name="event_finished">Событие завершилось</string>
+    <string name="event_is_finished">событие завершилось!</string>
+    <string name="event_cancelled">Событие отменено</string>
+    <string name="event_is_cancelled">событие отменено!</string>
+    <string name="event_archived">Событие архивировано</string>
+    <string name="event_is_archived">событие архивировано!</string>
+    <string name="event_updated">Событие обновлено</string>
+    <string name="is_updated">событие обновлено!</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

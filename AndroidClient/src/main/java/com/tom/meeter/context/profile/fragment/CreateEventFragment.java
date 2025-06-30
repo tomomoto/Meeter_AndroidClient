@@ -8,6 +8,7 @@ import static com.tom.meeter.context.event.activity.ProfileEventActivity.dispatc
 import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
 import static com.tom.meeter.context.profile.activity.NewEventOnMapActivity.createNewEventOnMapActivityIntent;
 import static com.tom.meeter.context.profile.utils.Utils.createEventRequest;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getAppLogo;
 import static com.tom.meeter.infrastructure.common.CommonHelper.isEmpty;
 import static com.tom.meeter.infrastructure.common.DateHelper.isDateValid;
 import static com.tom.meeter.infrastructure.common.DateHelper.setCurrentDate;
@@ -235,7 +236,7 @@ public class CreateEventFragment extends Fragment {
 
     private void showEventDialog(EventDTO event) {
         new AlertDialog.Builder(requireContext())
-              .setIcon(R.drawable.ic_meeter_lr)
+              .setIcon(getAppLogo())
               .setTitle(R.string.event_created)
               .setMessage(
                     getString(R.string.event_is_created, event.getName()))

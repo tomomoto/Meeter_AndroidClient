@@ -1,9 +1,9 @@
 package com.tom.meeter.context.profile.subscriber;
 
-import com.tom.meeter.context.network.dto.EntityBase;
+import com.tom.meeter.context.network.dto.BaseEntity;
 import com.tom.meeter.context.network.dto.UserDTO;
 
-public class Subscriber implements EntityBase {
+public class Subscriber implements BaseEntity {
 
     private UserDTO user;
     private boolean amISubscribedTo;

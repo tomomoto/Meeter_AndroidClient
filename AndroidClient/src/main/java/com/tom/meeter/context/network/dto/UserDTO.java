@@ -3,61 +3,45 @@ package com.tom.meeter.context.network.dto;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getLocalDateOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getStringOrNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
-public class UserDTO implements EntityBase {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class UserDTO extends ServerEntityBase {
 
-    private static final String USER_ID_KEY = "id";
-    private static final String NAME_KEY = "name";
     private static final String GENDER_KEY = "gender";
     private static final String SURNAME_KEY = "surname";
     private static final String INFO_KEY = "info";
     private static final String BIRTHDAY_KEY = "birthday";
-    private static final String PHOTO_PATH_KEY = "photo_path";
 
-    private String id;
-    private String name;
     private UserGender gender;
     private String surname;
     private String info;
     private LocalDate birthday;
-    @JsonProperty(PHOTO_PATH_KEY)
-    private String photoPath;
 
     public UserDTO() {
+        //retrofit...
     }
 
-    public static UserDTO encode(JSONObject json) {
-        UserDTO result = new UserDTO();
+    public UserDTO(JSONObject json) {
+        super(json);
         try {
             //Non nullable.
-            result.id = json.getString(USER_ID_KEY);
-            result.name = json.getString(NAME_KEY);
-            result.gender = UserGender.fromString(json.getString(GENDER_KEY));
+            gender = UserGender.fromString(json.getString(GENDER_KEY));
 
             //Nullable.
-            result.surname = getStringOrNull(SURNAME_KEY, json);
-            result.info = getStringOrNull(INFO_KEY, json);
-            result.birthday = getLocalDateOrNull(BIRTHDAY_KEY, json);
-            result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
+            surname = getStringOrNull(SURNAME_KEY, json);
+            info = getStringOrNull(INFO_KEY, json);
+            birthday = getLocalDateOrNull(BIRTHDAY_KEY, json);
         } catch (JSONException e) {
             throw new RuntimeException("Unable to encode UserDTO from jsonObject: ", e);
         }
-        return result;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public UserGender getGender() {
@@ -74,10 +58,6 @@ public class UserDTO implements EntityBase {
 
     public LocalDate getBirthday() {
         return birthday;
-    }
-
-    public String getPhotoPath() {
-        return photoPath;
     }
 
     private static final String MALE_VALUE = "male";
@@ -108,5 +88,22 @@ public class UserDTO implements EntityBase {
             }
             throw new IllegalArgumentException("No enum constant with string value " + text);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        UserDTO userDTO = (UserDTO) o;
+        return gender == userDTO.gender
+              && Objects.equals(surname, userDTO.surname)
+              && Objects.equals(info, userDTO.info)
+              && Objects.equals(birthday, userDTO.birthday);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+              super.hashCode(), gender, surname, info, birthday);
     }
 }
