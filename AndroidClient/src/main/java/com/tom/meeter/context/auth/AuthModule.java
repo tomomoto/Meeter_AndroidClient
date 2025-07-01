@@ -32,7 +32,6 @@ public class AuthModule {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
               .addConverterFactory(JacksonConverterFactory.create())
-              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(AuthService.class);
     }

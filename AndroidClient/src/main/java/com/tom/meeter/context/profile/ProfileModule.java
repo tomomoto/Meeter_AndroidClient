@@ -1,17 +1,13 @@
 package com.tom.meeter.context.profile;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
+import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createBuilder;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tom.meeter.context.profile.repository.event.database.EventDao;
 import com.tom.meeter.context.profile.repository.event.database.EventDatabase;
 import com.tom.meeter.context.profile.repository.user.database.UserDao;
@@ -19,7 +15,6 @@ import com.tom.meeter.context.profile.repository.user.database.UserDatabase;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.settings.service.SettingsService;
 
-import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -40,7 +35,6 @@ public class ProfileModule {
         return new Retrofit.Builder()
               .baseUrl(getServerPath(app))
               .addConverterFactory(JacksonConverterFactory.create())
-              //.addConverterFactory(GsonConverterFactory.create())
               .build()
               .create(SettingsService.class);
     }
@@ -49,18 +43,7 @@ public class ProfileModule {
     @NonNull
     @Provides
     public ProfileService provideProfileService(Application app) {
-        return new Retrofit.Builder()
-              .baseUrl(getServerPath(app))
-              .addConverterFactory(JacksonConverterFactory.create(
-                    JsonMapper.builder()
-                          .addModule(new JavaTimeModule())
-                          .addModule(new Jdk8Module())
-                          .serializationInclusion(JsonInclude.Include.NON_NULL)
-                          .build()
-                          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                          .setTimeZone(TimeZone.getDefault())))
-              .build()
-              .create(ProfileService.class);
+        return createBuilder(app).create(ProfileService.class);
     }
 
 
