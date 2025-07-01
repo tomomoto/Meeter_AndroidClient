@@ -45,11 +45,13 @@ public class EventBinderImpl implements EventBinder<EventViewHolder> {
     public void setContext(Context ctx) {
         this.ctx = ctx;
         eventImageDownloader.setContext(ctx);
+        userDownloader.setContext(ctx);
     }
 
     @Override
     public void setOnAuthFailAction(Runnable onAuthFail) {
         eventImageDownloader.setOnAuthFailAction(onAuthFail);
+        userDownloader.setOnAuthFailAction(onAuthFail);
     }
 
     @Override

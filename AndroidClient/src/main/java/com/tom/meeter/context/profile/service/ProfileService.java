@@ -15,8 +15,10 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface ProfileService {
+
     @GET("/profile")
     Call<UserDTO> getProfile(@Header(AUTH_HEADER) String authHeader);
 
@@ -33,10 +35,19 @@ public interface ProfileService {
     @GET("/profile/subscriptions")
     Call<List<UserDTO>> getMySubscriptions(@Header(AUTH_HEADER) String authHeader);
 
+    @GET("/user/{id}/subscribe")
+    Call<Void> subscribe(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
+    @GET("/user/{id}/unsubscribe")
+    Call<Void> unsubscribe(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
+
     @POST("/event")
     Call<EventDTO> createEvent(@Header(AUTH_HEADER) String authHeader, @Body CreateEventRequest req);
 
 
+    @Deprecated
+    @GET("/user/{id}")
+    Call<UserDTO> getUser(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
 /* soon...
   @GET("/publish")
     Call<EventDTO> publishEvent(

@@ -1,4 +1,4 @@
-package com.tom.meeter;
+package com.tom.meeter.context.user;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -14,8 +14,6 @@ import com.tom.meeter.context.user.service.UserService;
 
 import java.util.TimeZone;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -30,7 +28,7 @@ public class UserModule {
         logMethod(TAG, this);
     }
 
-    @Singleton
+    @UserScope
     @NonNull
     @Provides
     public UserService provideUserService(Application app) {

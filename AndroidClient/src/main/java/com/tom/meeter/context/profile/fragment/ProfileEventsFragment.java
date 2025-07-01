@@ -16,11 +16,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.factory.ProfileEventsAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
-import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 
@@ -30,16 +28,12 @@ public class ProfileEventsFragment extends Fragment {
 
     private static final String TAG = ProfileEventsFragment.class.getCanonicalName();
 
-    SubFragmentUserEventsBinding binding;
-
-    @Inject
-    EventsAdapter adapter;
     @Inject
     ProfileEventsAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imageDownloader;
-    @Inject
-    UserService service;
+    EventsAdapter adapter;
+
+    private SubFragmentUserEventsBinding binding;
 
     private final Runnable onAuthFail =
           () -> InfrastructureHelper.restartActivityFromFragment(this);

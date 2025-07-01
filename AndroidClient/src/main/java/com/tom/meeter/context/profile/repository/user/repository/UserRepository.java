@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.repository.user.database.UserDao;
 import com.tom.meeter.context.profile.repository.user.domain.User;
-import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.context.profile.service.ProfileService;
 
 import java.time.LocalDate;
 import java.util.concurrent.Executor;
@@ -23,13 +23,14 @@ public class UserRepository {
     private static final String TAG = UserRepository.class.getCanonicalName();
     private static final Object MARKER = new Object();
 
-    private final UserService userService;
+    private final ProfileService service;
     private final UserDao userDao;
     private final Executor executor;
 
     //@Inject
-    public UserRepository(UserService userService, UserDao userDao, Executor executor) {
-        this.userService = userService;
+    public UserRepository(
+          ProfileService service, UserDao userDao, Executor executor) {
+        this.service = service;
         this.userDao = userDao;
         this.executor = executor;
     }
@@ -45,7 +46,7 @@ public class UserRepository {
               .flatMapCompletable(ign -> Completable.fromAction(() -> {
                   //TODO null
                   String header = null;
-                  Response<UserDTO> response = userService.getUser(header, id).execute();
+                  Response<UserDTO> response = service.getUser(header, id).execute();
                   if (response.isSuccessful()) {
                       UserDTO body = response.body();
                       LocalDate birthday = body.getBirthday();

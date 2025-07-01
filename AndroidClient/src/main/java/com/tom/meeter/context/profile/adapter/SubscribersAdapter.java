@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
-import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriberItemBinding;
 import com.tom.meeter.infrastructure.components.adapter.BaseAdapter;
 import com.tom.meeter.infrastructure.components.binder.SubscriberBinder;
@@ -31,7 +31,7 @@ public class SubscribersAdapter
 
     private static final String TAG = SubscribersAdapter.class.getCanonicalName();
 
-    private final UserService service;
+    private final ProfileService service;
     private final SubscriberBinder<SubscriberViewHolder> binder;
 
     private Context ctx;
@@ -39,7 +39,7 @@ public class SubscribersAdapter
 
     @Inject
     public SubscribersAdapter(
-          UserService service, SubscriberBinderImpl binder) {
+          ProfileService service, SubscriberBinderImpl binder) {
         super(binder);
         this.binder = binder;
         this.service = service;

@@ -6,7 +6,7 @@ import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.image.activity.BaseUploadActivity;
 import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.infrastructure.components.UserLoader;
 
 import javax.inject.Singleton;
 
@@ -17,8 +17,7 @@ import dagger.Component;
       modules = {
             AppModule.class,
             TokenModule.class,
-            ImageModule.class,
-            UserModule.class
+            ImageModule.class
       })
 @Singleton
 public interface AppComponent {
@@ -27,7 +26,7 @@ public interface AppComponent {
 
     ImageDownloader provideImageDownloader();
 
-    UserService provideUserService();
+    UserLoader provideUserLoader();
 
     @Component.Builder
     interface Builder {

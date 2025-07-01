@@ -12,12 +12,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.SubscribersAdapter;
 import com.tom.meeter.context.profile.factory.ProfileSubscribersAssistedFactory;
 import com.tom.meeter.context.profile.viewmodel.ProfileSubscribersViewModel;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscribersBinding;
 
 import javax.inject.Inject;
@@ -30,10 +28,6 @@ public class SubscribersActivity extends AppCompatActivity {
     TokenService tokenService;
     @Inject
     ProfileSubscribersAssistedFactory assistedFactory;
-    @Inject
-    ImageDownloader imgDownloader;
-    @Inject
-    UserService service;
     @Inject
     SubscribersAdapter adapter;
 
@@ -48,6 +42,10 @@ public class SubscribersActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
+        binding = ActivityProfileSubscribersBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         ((App) getApplication()).getProfileComponent().inject(this);
         accountManager = AccountManager.get(this);
 
@@ -58,10 +56,6 @@ public class SubscribersActivity extends AppCompatActivity {
 
     private void onInit(String token) {
         logMethod(TAG, this);
-
-        binding = ActivityProfileSubscribersBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
 
         adapter.initialize(this, onAuthFail);
 

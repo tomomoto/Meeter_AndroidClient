@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.infrastructure.components.SetContext;
+import com.tom.meeter.infrastructure.components.SetOnAuthFailAction;
+import com.tom.meeter.infrastructure.components.UserLoader;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 
 import java.util.Map;
@@ -16,11 +18,12 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class UserWithCacheDownloader {
+public class UserWithCacheDownloader
+      implements SetContext, SetOnAuthFailAction {
 
     private static final String TAG = PhotoWithCacheDownloader.class.getCanonicalName();
 
-    private final UserService service;
+    private final UserLoader service;
 
     private Context ctx;
     private Runnable onAuthFail;
@@ -28,25 +31,23 @@ public class UserWithCacheDownloader {
     protected final Map<String, UserDTO> cache = new ConcurrentHashMap<>();
 
     @Inject
-    public UserWithCacheDownloader(UserService service) {
+    public UserWithCacheDownloader(UserLoader service) {
         this.service = service;
     }
 
-    public void setup(Context ctx, Runnable onAuthFail) {
+    @Override
+    public void setContext(Context ctx) {
         this.ctx = ctx;
+    }
+
+    @Override
+    public void setOnAuthFailAction(Runnable onAuthFail) {
         this.onAuthFail = onAuthFail;
     }
 
     public UserDTO getUserCache(String userId) {
         return cache.get(userId);
     }
-
-/*    public UserWithCacheDownloader(
-          Context ctx, UserService service, Runnable onAuthFail) {
-        this.ctx = ctx;
-        this.service = service;
-        this.onAuthFail = onAuthFail;
-    }*/
 
     public void loadUser(
           String auth, String userId, Consumer<UserDTO> onUserReady) {

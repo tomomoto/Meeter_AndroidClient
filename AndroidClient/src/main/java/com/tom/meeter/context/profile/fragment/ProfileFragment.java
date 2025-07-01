@@ -67,7 +67,7 @@ public class ProfileFragment extends Fragment {
     @Inject
     ImageDownloader imageDownloader;
     @Inject
-    ProfileService profileService;
+    ProfileService service;
     @Inject
     EventsCardAdapter adapter;
 
@@ -152,7 +152,7 @@ public class ProfileFragment extends Fragment {
                     switchEditMode();
                     return;
                 }
-                profileService.updateProfile(getAuthHeader(accountManager), req)
+                service.updateProfile(getAuthHeader(accountManager), req)
                       .enqueue(new BaseOnNotAuthenticatedCallback<>(ctx, onAuthFail) {
                           @Override
                           public void onResponse(

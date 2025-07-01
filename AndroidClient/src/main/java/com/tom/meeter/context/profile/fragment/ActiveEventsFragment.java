@@ -15,9 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
-import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -35,10 +33,6 @@ public class ActiveEventsFragment extends Fragment {
 
     private static final String TAG = ActiveEventsFragment.class.getCanonicalName();
 
-    @Inject
-    ImageDownloader imageDownloader;
-    @Inject
-    UserService service;
     @Inject
     EventsAdapter adapter;
 
