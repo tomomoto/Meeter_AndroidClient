@@ -6,33 +6,13 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.room.Room;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tom.meeter.context.profile.repository.event.database.EventDao;
-import com.tom.meeter.context.profile.repository.event.database.EventDatabase;
-import com.tom.meeter.context.profile.repository.user.database.UserDao;
-import com.tom.meeter.context.profile.repository.user.database.UserDatabase;
-import com.tom.meeter.context.profile.service.ProfileService;
-import com.tom.meeter.context.profile.settings.service.SettingsService;
 import com.tom.meeter.infrastructure.http.HttpClient;
-
-import java.util.TimeZone;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Module
 public class AppModule {
@@ -41,76 +21,6 @@ public class AppModule {
 
     public AppModule() {
         Log.d(TAG, "Configuring AppModule...");
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public ProfileService provideProfileService(Application app) {
-        return new Retrofit.Builder()
-              .baseUrl(getServerPath(app))
-              .addConverterFactory(JacksonConverterFactory.create(
-                    JsonMapper.builder()
-                          .addModule(new JavaTimeModule())
-                          .addModule(new Jdk8Module())
-                          .serializationInclusion(JsonInclude.Include.NON_NULL)
-                          .build()
-                          .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                          .setTimeZone(TimeZone.getDefault())))
-              .build()
-              .create(ProfileService.class);
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public UserDatabase provideUserDb(Application app) {
-        return Room.databaseBuilder(app, UserDatabase.class, "user.db")
-              .fallbackToDestructiveMigration()
-              .build();
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public UserDao provideUserDao(UserDatabase userDatabase) {
-        return userDatabase.userDao();
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public Executor provideExecutor() {
-        return new ThreadPoolExecutor(4, 8, 1000, TimeUnit.SECONDS,
-              new ArrayBlockingQueue<>(15, false));
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public EventDatabase provideEventDb(Application app) {
-        return Room.databaseBuilder(app, EventDatabase.class, "event.db")
-              .fallbackToDestructiveMigration()
-              .build();
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public EventDao provideEventDao(EventDatabase eventDatabase) {
-        return eventDatabase.eventDao();
-    }
-
-    @Singleton
-    @NonNull
-    @Provides
-    public SettingsService provideSettingsService(Application app) {
-        return new Retrofit.Builder()
-              .baseUrl(getServerPath(app))
-              .addConverterFactory(JacksonConverterFactory.create())
-              //.addConverterFactory(GsonConverterFactory.create())
-              .build()
-              .create(SettingsService.class);
     }
 
     @Singleton

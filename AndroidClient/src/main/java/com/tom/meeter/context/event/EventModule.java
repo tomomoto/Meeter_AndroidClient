@@ -1,4 +1,4 @@
-package com.tom.meeter;
+package com.tom.meeter.context.event;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -16,8 +16,6 @@ import com.tom.meeter.context.event.service.EventService;
 
 import java.util.TimeZone;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -32,7 +30,7 @@ public class EventModule {
         logMethod(TAG, this);
     }
 
-    @Singleton
+    @EventScope
     @NonNull
     @Provides
     public EventService provideEventService(Application app) {
