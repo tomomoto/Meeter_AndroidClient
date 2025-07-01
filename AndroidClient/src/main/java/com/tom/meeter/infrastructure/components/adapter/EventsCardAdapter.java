@@ -1,5 +1,6 @@
 package com.tom.meeter.infrastructure.components.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -7,14 +8,27 @@ import androidx.annotation.NonNull;
 
 import com.tom.meeter.databinding.CardItemBinding;
 import com.tom.meeter.infrastructure.components.binder.EventBinder;
+import com.tom.meeter.infrastructure.components.binder.SimpleEventBinderImpl;
 import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
+
+import javax.inject.Inject;
 
 public class EventsCardAdapter extends BaseEventAdapter<CardItemHolder> {
 
     private static final String TAG = EventsCardAdapter.class.getCanonicalName();
 
-    public EventsCardAdapter(EventBinder<CardItemHolder> binder) {
+    private final EventBinder<CardItemHolder> binder;
+
+    @Inject
+    public EventsCardAdapter(SimpleEventBinderImpl binder) {
         super(binder);
+        this.binder = binder;
+    }
+
+    public void setupBinder(
+          Context ctx, Runnable onAuthFail,
+          OnEventClickListener listener) {
+        binder.setup(ctx, onAuthFail, listener);
     }
 
     @NonNull

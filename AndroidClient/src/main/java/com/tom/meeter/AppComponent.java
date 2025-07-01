@@ -42,7 +42,6 @@ public interface AppComponent {
 
     EventService provideEventService();
 
-
     @Component.Builder
     interface Builder {
 

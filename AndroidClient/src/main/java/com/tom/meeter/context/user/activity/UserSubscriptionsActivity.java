@@ -24,7 +24,6 @@ import com.tom.meeter.context.user.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscriptionsAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 
 import javax.inject.Inject;
 
@@ -38,10 +37,12 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
     UserSubscriptionsAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
+    @Inject
+    UsersAdapter adapter;
 
+    private final Runnable onAuthFail = this::recreate;
     private ActivityProfileSubscriptionsBinding binding;
     private UserSubscriptionsViewModel viewModel;
-    private UsersAdapter adapter;
     private AccountManager accountManager;
     private String userId;
 
@@ -67,9 +68,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        adapter = new UsersAdapter(
-              this,
-              new UserBinderImpl(this, imgDownloader, this::recreate));
+        adapter.setupBinder(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);

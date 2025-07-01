@@ -8,22 +8,30 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.CardItemHolder;
 
+import javax.inject.Inject;
+
 public class SimpleEventBinderImpl implements EventBinder<CardItemHolder> {
 
     private static final String TAG = SimpleEventBinderImpl.class.getCanonicalName();
 
-    private final Context ctx;
     private final ImageDownloader imageDownloader;
-    private final OnEventClickListener listener;
-    private final Runnable onAuthFail;
 
-    public SimpleEventBinderImpl(
-          Context ctx, ImageDownloader imageDownloader,
-          OnEventClickListener listener, Runnable onAuthFail) {
-        this.ctx = ctx;
+    private Context ctx;
+    private OnEventClickListener listener;
+    private Runnable onAuthFail;
+
+    @Inject
+    public SimpleEventBinderImpl(ImageDownloader imageDownloader) {
         this.imageDownloader = imageDownloader;
-        this.listener = listener;
+    }
+
+    @Override
+    public void setup(
+          Context ctx, Runnable onAuthFail,
+          OnEventClickListener listener) {
+        this.ctx = ctx;
         this.onAuthFail = onAuthFail;
+        this.listener = listener;
     }
 
     @Override

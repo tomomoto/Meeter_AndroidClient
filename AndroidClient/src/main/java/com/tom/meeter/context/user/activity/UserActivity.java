@@ -60,13 +60,15 @@ public class UserActivity extends AppCompatActivity {
     UserAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
+    @Inject
+    EventsCardAdapter adapter;
 
     private ActivityUserBinding binding;
     private UserViewModel viewModel;
     private String userId;
     private AccountManager accountManager;
-    private EventsCardAdapter adapter;
     private Boolean amISubscriber;
+    private final Runnable onAuthFail = this::recreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +82,9 @@ public class UserActivity extends AppCompatActivity {
 
         ((App) getApplication()).getUserComponent().inject(this);
 
-        adapter = new EventsCardAdapter(
-              new SimpleEventBinderImpl(
-                    this, imgDownloader,
-                    event -> dispatchToEventActivity(this, event.getId()), this::recreate));
+        adapter.setupBinder(
+              this, onAuthFail,
+              event -> dispatchToEventActivity(this, event.getId()));
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
@@ -123,7 +124,7 @@ public class UserActivity extends AppCompatActivity {
             }
             if (amISubscriber) {
                 userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
-                      new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
+                      new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
@@ -136,7 +137,7 @@ public class UserActivity extends AppCompatActivity {
                       });
             } else {
                 userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(
-                      new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
+                      new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
@@ -153,7 +154,7 @@ public class UserActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, userId, this, this::recreate))
+                    assistedFactory, userId, this, onAuthFail))
               .get(UserViewModel.class);
 
         binding.events.setLayoutManager(new GridLayoutManager(this, 2));

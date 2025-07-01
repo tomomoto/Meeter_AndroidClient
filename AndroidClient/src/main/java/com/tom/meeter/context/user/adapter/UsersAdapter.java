@@ -13,16 +13,28 @@ import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.databinding.ActivityUserSubscriberItemBinding;
 import com.tom.meeter.infrastructure.components.adapter.BaseAdapter;
 import com.tom.meeter.infrastructure.components.binder.UserBinder;
+import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
+
+import javax.inject.Inject;
 
 public class UsersAdapter extends BaseAdapter<UserViewHolder, UserDTO> {
 
     private static final String TAG = UsersAdapter.class.getCanonicalName();
 
-    public UsersAdapter(Context ctx, UserBinder<UserViewHolder> binder) {
+    private final UserBinder<UserViewHolder> binder;
+
+    @Inject
+    public UsersAdapter(UserBinderImpl binder) {
         super(binder);
+        this.binder = binder;
         logMethod(TAG, this);
-        binder.setup(user -> dispatchToUserActivity(ctx, user.getId()));
+    }
+
+    public void setupBinder(Context ctx, Runnable onAuthFail) {
+        binder.setup(
+              ctx, onAuthFail,
+              user -> dispatchToUserActivity(ctx, user.getId()));
     }
 
     @Override

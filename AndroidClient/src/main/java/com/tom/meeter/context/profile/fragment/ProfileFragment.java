@@ -44,7 +44,6 @@ import com.tom.meeter.databinding.FragmentProfileBinding;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
-import com.tom.meeter.infrastructure.components.binder.SimpleEventBinderImpl;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -69,11 +68,12 @@ public class ProfileFragment extends Fragment {
     ImageDownloader imageDownloader;
     @Inject
     ProfileService profileService;
+    @Inject
+    EventsCardAdapter adapter;
 
     private final Runnable onAuthFail =
           () -> InfrastructureHelper.restartActivityFromFragment(this);
     private AccountManager accountManager;
-    private EventsCardAdapter adapter;
     private FragmentProfileBinding binding;
     private ProfileViewModel viewModel;
     private boolean isEditableModeEnabled = false;
@@ -103,11 +103,9 @@ public class ProfileFragment extends Fragment {
 
         Context ctx = requireContext();
         accountManager = AccountManager.get(ctx);
-
-        adapter = new EventsCardAdapter(
-              new SimpleEventBinderImpl(ctx, imageDownloader,
-                    event -> dispatchToEventActivity(ctx, event.getId()),
-                    onAuthFail));
+        adapter.setupBinder(
+              ctx, onAuthFail,
+              event -> dispatchToEventActivity(ctx, event.getId()));
     }
 
     @Override

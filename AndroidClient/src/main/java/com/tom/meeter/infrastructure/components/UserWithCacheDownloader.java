@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -18,21 +20,33 @@ public class UserWithCacheDownloader {
 
     private static final String TAG = PhotoWithCacheDownloader.class.getCanonicalName();
 
-    private final Context ctx;
     private final UserService service;
-    private final Runnable onAuthFail;
+
+    private Context ctx;
+    private Runnable onAuthFail;
+
     protected final Map<String, UserDTO> cache = new ConcurrentHashMap<>();
+
+    @Inject
+    public UserWithCacheDownloader(UserService service) {
+        this.service = service;
+    }
+
+    public void setup(Context ctx, Runnable onAuthFail) {
+        this.ctx = ctx;
+        this.onAuthFail = onAuthFail;
+    }
 
     public UserDTO getUserCache(String userId) {
         return cache.get(userId);
     }
 
-    public UserWithCacheDownloader(
+/*    public UserWithCacheDownloader(
           Context ctx, UserService service, Runnable onAuthFail) {
         this.ctx = ctx;
         this.service = service;
         this.onAuthFail = onAuthFail;
-    }
+    }*/
 
     public void loadUser(
           String auth, String userId, Consumer<UserDTO> onUserReady) {

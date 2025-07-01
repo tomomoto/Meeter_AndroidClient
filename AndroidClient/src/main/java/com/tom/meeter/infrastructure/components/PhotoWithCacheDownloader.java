@@ -14,20 +14,24 @@ public abstract class PhotoWithCacheDownloader {
 
     private static final String TAG = PhotoWithCacheDownloader.class.getCanonicalName();
 
-    protected final Context ctx;
-    protected final ImageDownloader imgDownloader;
-    protected final Runnable onAuthFail;
+    protected ImageDownloader imgDownloader;
+
+    protected Context ctx;
+    protected Runnable onAuthFail;
+
     protected final Map<String, Bitmap> cache = new ConcurrentHashMap<>();
+
+    protected PhotoWithCacheDownloader(ImageDownloader imgDownloader) {
+        this.imgDownloader = imgDownloader;
+    }
+
+    public void setup(Context ctx, Runnable onAuthFail) {
+        this.ctx = ctx;
+        this.onAuthFail = onAuthFail;
+    }
 
     public Bitmap getCachedPhoto(String photoPath) {
         return cache.get(photoPath);
-    }
-
-    protected PhotoWithCacheDownloader(
-          Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
-        this.ctx = ctx;
-        this.imgDownloader = imgDownloader;
-        this.onAuthFail = onAuthFail;
     }
 
     public void loadPhoto(String photoPath, Consumer<Bitmap> onImageReady) {

@@ -3,7 +3,6 @@ package com.tom.meeter.context.profile.fragment;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.factory.ProfileEventsAssistedFactory;
@@ -25,7 +23,6 @@ import com.tom.meeter.context.profile.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.EventBinderImpl;
 
 import javax.inject.Inject;
 
@@ -35,8 +32,8 @@ public class ProfileEventsFragment extends Fragment {
 
     SubFragmentUserEventsBinding binding;
 
-    private EventsAdapter adapter;
-
+    @Inject
+    EventsAdapter adapter;
     @Inject
     ProfileEventsAssistedFactory assistedFactory;
     @Inject
@@ -44,6 +41,8 @@ public class ProfileEventsFragment extends Fragment {
     @Inject
     UserService service;
 
+    private final Runnable onAuthFail =
+          () -> InfrastructureHelper.restartActivityFromFragment(this);
     private ProfileEventsViewModel viewModel;
 
     public ProfileEventsFragment() {
@@ -59,12 +58,9 @@ public class ProfileEventsFragment extends Fragment {
 
         Context ctx = requireContext();
 
-        adapter = new EventsAdapter(
-              new EventBinderImpl(
-                    ctx, AuthHelper.getAuthHeader(AccountManager.get(ctx)),
-                    imageDownloader, service,
-                    (e) -> dispatchToEventActivity(ctx, e.getId()),
-                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
+        adapter.setupBinder(
+              ctx, onAuthFail,
+              (e) -> dispatchToEventActivity(ctx, e.getId()));
         /*
         btnDelete.setOnClickListener(v -> {
             if (onDeleteButtonClickListener != null)

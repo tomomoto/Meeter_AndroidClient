@@ -2,40 +2,46 @@ package com.tom.meeter.infrastructure.components.binder;
 
 import static com.tom.meeter.infrastructure.common.CommonHelper.handleEventStatus;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.infrastructure.components.EventImageDownloader;
 import com.tom.meeter.infrastructure.components.UserWithCacheDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 
+import javax.inject.Inject;
+
 public class EventBinderImpl implements EventBinder<EventViewHolder> {
 
     private static final String TAG = EventBinderImpl.class.getCanonicalName();
 
-    private final Context ctx;
-    private final String auth;
     private final EventImageDownloader eventImageDownloader;
     private final UserWithCacheDownloader userDownloader;
-    private final OnEventClickListener listener;
 
+    private Context ctx;
+    private OnEventClickListener listener;
+
+    @Inject
     public EventBinderImpl(
-          Context ctx, String auth, ImageDownloader imgDownloader,
-          UserService service, OnEventClickListener listener,
-          Runnable onAuthFail) {
+          EventImageDownloader eventImageDownloader, UserWithCacheDownloader userDownloader) {
+        this.eventImageDownloader = eventImageDownloader;
+        this.userDownloader = userDownloader;
+    }
+
+    @Override
+    public void setup(
+          Context ctx, Runnable onAuthFail,
+          OnEventClickListener listener) {
         this.ctx = ctx;
-        this.auth = auth;
         this.listener = listener;
-        this.eventImageDownloader = new EventImageDownloader(
-              ctx, imgDownloader, onAuthFail);
-        this.userDownloader = new UserWithCacheDownloader(
-              ctx, service, onAuthFail);
+        eventImageDownloader.setup(this.ctx, onAuthFail);
+        userDownloader.setup(this.ctx, onAuthFail);
     }
 
     @Override
@@ -57,7 +63,8 @@ public class EventBinderImpl implements EventBinder<EventViewHolder> {
 
         if (userCache == null) {
             userDownloader.loadUser(
-                  auth, event.getCreatorId(),
+                  AuthHelper.getAuthHeader(AccountManager.get(ctx)),
+                  event.getCreatorId(),
                   u -> {
                       Log.d(TAG, "Downloaded user by id " + event.getCreatorId() + " is " + u);
                       holder.updateCreator(getCreator(u));

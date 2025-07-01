@@ -3,20 +3,31 @@ package com.tom.meeter.infrastructure.components.binder;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.infrastructure.components.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
+import javax.inject.Inject;
+
 public class UserBinderImpl implements UserBinder<UserViewHolder> {
 
-    private UserImageDownloader userImageDownloader;
-    private OnUserClickListener userClickListener;
+    private final UserImageDownloader userImageDownloader;
 
+    private OnUserClickListener listener;
+
+    @Inject
     public UserBinderImpl(
-          Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
-        this.userImageDownloader = new UserImageDownloader(ctx, imgDownloader, onAuthFail);
+          UserImageDownloader userImageDownloader) {
+        this.userImageDownloader = userImageDownloader;
+    }
+
+    @Override
+    public void setup(
+          Context ctx, Runnable onAuthFail,
+          OnUserClickListener listener) {
+        this.listener = listener;
+        userImageDownloader.setup(ctx, onAuthFail);
     }
 
     @Override
@@ -28,15 +39,10 @@ public class UserBinderImpl implements UserBinder<UserViewHolder> {
 
         holder.bind(
               user.getName(), user.getSurname(), cached,
-              v -> userClickListener.onClick(user));
+              v -> listener.onClick(user));
 
         if (photoPath != null && cached == null) {
             userImageDownloader.loadPhoto(photoPath, holder::updatePhoto);
         }
-    }
-
-    @Override
-    public void setup(OnUserClickListener userClickListener) {
-        this.userClickListener = userClickListener;
     }
 }

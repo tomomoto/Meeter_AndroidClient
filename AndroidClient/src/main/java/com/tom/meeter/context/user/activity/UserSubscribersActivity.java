@@ -38,12 +38,13 @@ public class UserSubscribersActivity extends AppCompatActivity {
     UserSubscribersAssistedFactory assistedFactory;
     @Inject
     ImageDownloader imgDownloader;
+    @Inject
+    UsersAdapter adapter;
 
     private final Runnable onAuthFail = this::recreate;
     private AccountManager accountManager;
     private ActivityProfileSubscribersBinding binding;
     private UserSubscribersViewModel viewModel;
-    private UsersAdapter adapter;
     private String userId;
 
     @Override
@@ -68,9 +69,7 @@ public class UserSubscribersActivity extends AppCompatActivity {
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        adapter = new UsersAdapter(
-              this,
-              new UserBinderImpl(this, imgDownloader, onAuthFail));
+        adapter.setupBinder(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);

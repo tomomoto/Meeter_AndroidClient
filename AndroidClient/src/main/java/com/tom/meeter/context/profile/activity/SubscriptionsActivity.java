@@ -19,7 +19,6 @@ import com.tom.meeter.context.profile.viewmodel.ProfileSubscriptionsViewModel;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.components.binder.SubscriberBinderImpl;
 
 import javax.inject.Inject;
 
@@ -35,11 +34,12 @@ public class SubscriptionsActivity extends AppCompatActivity {
     ImageDownloader imgDownloader;
     @Inject
     UserService userService;
+    @Inject
+    SubscribersAdapter adapter;
 
     private final Runnable onAuthFail = this::recreate;
     private ActivityProfileSubscriptionsBinding binding;
     private AccountManager accountManager;
-    private SubscribersAdapter adapter;
     private ProfileSubscriptionsViewModel viewModel;
 
     @Override
@@ -63,9 +63,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        adapter = new SubscribersAdapter(
-              userService, onAuthFail, this,
-              new SubscriberBinderImpl(this, imgDownloader, onAuthFail));
+        adapter.setupAdapter(this, onAuthFail);
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscriptions.setAdapter(adapter);

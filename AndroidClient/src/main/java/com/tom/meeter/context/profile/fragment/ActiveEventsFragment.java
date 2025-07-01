@@ -43,9 +43,12 @@ public class ActiveEventsFragment extends Fragment {
     ImageDownloader imageDownloader;
     @Inject
     UserService service;
+    @Inject
+    EventsAdapter adapter;
 
     private SubFragmentActiveEventsBinding binding;
-    private EventsAdapter adapter;
+    private final Runnable onAuthFail =
+          () -> InfrastructureHelper.restartActivityFromFragment(this);
 
     public ActiveEventsFragment() {
         logMethod(TAG, this);
@@ -61,12 +64,9 @@ public class ActiveEventsFragment extends Fragment {
         EventBus.getDefault().register(this);
 
         Context ctx = requireContext();
-        adapter = new EventsAdapter(
-              new EventBinderImpl(
-                    ctx, AuthHelper.getAuthHeader(AccountManager.get(ctx)),
-                    imageDownloader, service,
-                    (e) -> dispatchToEventActivity(ctx, e.getId()),
-                    () -> InfrastructureHelper.restartActivityFromFragment(this)));
+        adapter.setupBinder(
+              ctx, onAuthFail,
+              (e) -> dispatchToEventActivity(ctx, e.getId()));
 
         Log.d(TAG, "ActiveEventsFragment Registering eventBus");
     }

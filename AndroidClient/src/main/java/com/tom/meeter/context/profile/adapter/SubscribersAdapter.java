@@ -16,9 +16,12 @@ import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.ActivityProfileSubscriberItemBinding;
 import com.tom.meeter.infrastructure.components.adapter.BaseAdapter;
 import com.tom.meeter.infrastructure.components.binder.SubscriberBinder;
+import com.tom.meeter.infrastructure.components.binder.SubscriberBinderImpl;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -29,20 +32,28 @@ public class SubscribersAdapter
     private static final String TAG = SubscribersAdapter.class.getCanonicalName();
 
     private final UserService service;
-    private final Runnable onAuthFail;
-    private final Context ctx;
+    private final SubscriberBinder<SubscriberViewHolder> binder;
 
+    private Context ctx;
+    private Runnable onAuthFail;
+
+    @Inject
     public SubscribersAdapter(
-          UserService service, Runnable onAuthFail, Context ctx,
-          SubscriberBinder<SubscriberViewHolder> binder) {
+          UserService service, SubscriberBinderImpl binder) {
         super(binder);
+        this.binder = binder;
+        this.service = service;
         logMethod(TAG, this);
-        binder.setup(
+    }
+
+    public void setupAdapter(Context ctx, Runnable onAuthFail) {
+        this.ctx = ctx;
+        this.onAuthFail = onAuthFail;
+
+        this.binder.setup(
+              ctx, onAuthFail,
               this::onSubUnSubClick,
               user -> dispatchToUserActivity(ctx, user.getId()));
-        this.service = service;
-        this.onAuthFail = onAuthFail;
-        this.ctx = ctx;
     }
 
     @Override

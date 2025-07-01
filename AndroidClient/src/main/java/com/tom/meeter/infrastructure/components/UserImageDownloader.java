@@ -1,6 +1,5 @@
 package com.tom.meeter.infrastructure.components;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.tom.meeter.context.image.ImageDownloader;
@@ -8,11 +7,13 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 
 import java.util.function.Consumer;
 
+import javax.inject.Inject;
+
 public class UserImageDownloader extends PhotoWithCacheDownloader {
 
-    public UserImageDownloader(
-          Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
-        super(ctx, imgDownloader, onAuthFail);
+    @Inject
+    public UserImageDownloader(ImageDownloader imgDownloader) {
+        super(imgDownloader);
     }
 
     @Override
