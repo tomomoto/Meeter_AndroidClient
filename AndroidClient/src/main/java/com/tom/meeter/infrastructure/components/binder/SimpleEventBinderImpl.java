@@ -26,12 +26,18 @@ public class SimpleEventBinderImpl implements EventBinder<CardItemHolder> {
     }
 
     @Override
-    public void setup(
-          Context ctx, Runnable onAuthFail,
-          OnEventClickListener listener) {
-        this.ctx = ctx;
-        this.onAuthFail = onAuthFail;
+    public void setupOnEventClickListener(OnEventClickListener listener) {
         this.listener = listener;
+    }
+
+    @Override
+    public void setContext(Context ctx) {
+        this.ctx = ctx;
+    }
+
+    @Override
+    public void setOnAuthFailAction(Runnable onAuthFail) {
+        this.onAuthFail = onAuthFail;
     }
 
     @Override

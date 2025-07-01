@@ -33,10 +33,12 @@ public class EventsAdapter extends BaseEventAdapter<EventViewHolder> {
         logMethod(TAG, this);
     }
 
-    public void setupBinder(
+    public void initialize(
           Context ctx, Runnable onAuthFail,
           OnEventClickListener listener) {
-        binder.setup(ctx, onAuthFail, listener);
+        binder.setContext(ctx);
+        binder.setOnAuthFailAction(onAuthFail);
+        binder.setupOnEventClickListener(listener);
     }
 
     @Override

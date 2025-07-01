@@ -1,4 +1,4 @@
-package com.tom.meeter.context.user.adapter;
+package com.tom.meeter.context.user.components.adapter;
 
 import android.content.Context;
 import android.view.View;

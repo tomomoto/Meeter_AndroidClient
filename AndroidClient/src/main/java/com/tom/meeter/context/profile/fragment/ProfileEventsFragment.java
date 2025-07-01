@@ -58,7 +58,7 @@ public class ProfileEventsFragment extends Fragment {
 
         Context ctx = requireContext();
 
-        adapter.setupBinder(
+        adapter.initialize(
               ctx, onAuthFail,
               (e) -> dispatchToEventActivity(ctx, e.getId()));
         /*

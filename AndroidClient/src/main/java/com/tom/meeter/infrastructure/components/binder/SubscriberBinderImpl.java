@@ -5,14 +5,15 @@ import android.graphics.Bitmap;
 
 import com.tom.meeter.context.network.dto.UserDTO;
 import com.tom.meeter.context.profile.subscriber.Subscriber;
-import com.tom.meeter.infrastructure.components.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnSubscribeUnsubscribeClickListener;
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
+import com.tom.meeter.infrastructure.components.downloader.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 
 import javax.inject.Inject;
 
-public class SubscriberBinderImpl implements SubscriberBinder<SubscriberViewHolder> {
+public class SubscriberBinderImpl
+      implements SubscriberBinder<SubscriberViewHolder> {
 
     private final UserImageDownloader userImageDownloader;
 
@@ -26,13 +27,25 @@ public class SubscriberBinderImpl implements SubscriberBinder<SubscriberViewHold
     }
 
     @Override
-    public void setup(
-          Context ctx, Runnable onAuthFail,
-          OnSubscribeUnsubscribeClickListener subUnSubClickListener,
-          OnUserClickListener userClickListener) {
+    public void setOnSubscribeUnsubscribeClickListener(
+          OnSubscribeUnsubscribeClickListener subUnSubClickListener) {
         this.subUnSubClickListener = subUnSubClickListener;
+    }
+
+    @Override
+    public void setOnUserClickListener(
+          OnUserClickListener userClickListener) {
         this.userClickListener = userClickListener;
-        userImageDownloader.setup(ctx, onAuthFail);
+    }
+
+    @Override
+    public void setContext(Context ctx) {
+        userImageDownloader.setContext(ctx);
+    }
+
+    @Override
+    public void setOnAuthFailAction(Runnable onAuthFail) {
+        userImageDownloader.setOnAuthFailAction(onAuthFail);
     }
 
     @Override

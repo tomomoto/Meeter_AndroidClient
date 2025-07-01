@@ -10,9 +10,9 @@ import android.util.Log;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.infrastructure.components.EventImageDownloader;
-import com.tom.meeter.infrastructure.components.UserWithCacheDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnEventClickListener;
+import com.tom.meeter.infrastructure.components.downloader.EventImageDownloader;
+import com.tom.meeter.infrastructure.components.downloader.UserWithCacheDownloader;
 import com.tom.meeter.infrastructure.components.viewholder.EventViewHolder;
 
 import javax.inject.Inject;
@@ -29,19 +29,27 @@ public class EventBinderImpl implements EventBinder<EventViewHolder> {
 
     @Inject
     public EventBinderImpl(
-          EventImageDownloader eventImageDownloader, UserWithCacheDownloader userDownloader) {
+          EventImageDownloader eventImageDownloader,
+          UserWithCacheDownloader userDownloader) {
         this.eventImageDownloader = eventImageDownloader;
         this.userDownloader = userDownloader;
     }
 
     @Override
-    public void setup(
-          Context ctx, Runnable onAuthFail,
+    public void setupOnEventClickListener(
           OnEventClickListener listener) {
-        this.ctx = ctx;
         this.listener = listener;
-        eventImageDownloader.setup(this.ctx, onAuthFail);
-        userDownloader.setup(this.ctx, onAuthFail);
+    }
+
+    @Override
+    public void setContext(Context ctx) {
+        this.ctx = ctx;
+        eventImageDownloader.setContext(ctx);
+    }
+
+    @Override
+    public void setOnAuthFailAction(Runnable onAuthFail) {
+        eventImageDownloader.setOnAuthFailAction(onAuthFail);
     }
 
     @Override

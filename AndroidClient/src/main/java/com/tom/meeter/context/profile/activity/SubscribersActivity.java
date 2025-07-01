@@ -63,7 +63,7 @@ public class SubscribersActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        adapter.setupAdapter(this, onAuthFail);
+        adapter.initialize(this, onAuthFail);
 
         binding.recyclerSubscribers.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscribers.setAdapter(adapter);

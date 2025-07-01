@@ -46,14 +46,14 @@ public class SubscribersAdapter
         logMethod(TAG, this);
     }
 
-    public void setupAdapter(Context ctx, Runnable onAuthFail) {
+    public void initialize(Context ctx, Runnable onAuthFail) {
         this.ctx = ctx;
         this.onAuthFail = onAuthFail;
 
-        this.binder.setup(
-              ctx, onAuthFail,
-              this::onSubUnSubClick,
-              user -> dispatchToUserActivity(ctx, user.getId()));
+        binder.setContext(ctx);
+        binder.setOnAuthFailAction(onAuthFail);
+        binder.setOnSubscribeUnsubscribeClickListener(this::onSubUnSubClick);
+        binder.setOnUserClickListener(user -> dispatchToUserActivity(ctx, user.getId()));
     }
 
     @Override

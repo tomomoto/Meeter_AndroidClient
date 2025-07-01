@@ -1,4 +1,4 @@
-package com.tom.meeter.context.user.adapter;
+package com.tom.meeter.context.user.components.adapter;
 
 import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 

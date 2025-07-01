@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.components;
+package com.tom.meeter.infrastructure.components.downloader;
 
 import android.graphics.Bitmap;
 
@@ -9,17 +9,17 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
-public class EventImageDownloader extends PhotoWithCacheDownloader {
+public class UserImageDownloader extends PhotoWithCacheDownloader {
 
     @Inject
-    public EventImageDownloader(ImageDownloader imgDownloader) {
+    public UserImageDownloader(ImageDownloader imgDownloader) {
         super(imgDownloader);
     }
 
     @Override
     protected void downloadImage(
           String photoPath, Consumer<Bitmap> onDownloaded) {
-        imgDownloader.downloadEventImage(
+        imgDownloader.downloadUserImage(
               photoPath, ctx,
               ImagesHelper::circleImage,
               onDownloaded, onAuthFail);

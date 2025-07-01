@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.adapter.UsersAdapter;
+import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscriptionsAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
@@ -68,7 +68,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        adapter.setupBinder(this, onAuthFail);
+        adapter.initialize(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);

@@ -1,11 +1,11 @@
-package com.tom.meeter.infrastructure.components.binder;
+package com.tom.meeter.context.user.components.binder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.tom.meeter.context.network.dto.UserDTO;
-import com.tom.meeter.infrastructure.components.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
+import com.tom.meeter.infrastructure.components.downloader.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
 import javax.inject.Inject;
@@ -23,11 +23,18 @@ public class UserBinderImpl implements UserBinder<UserViewHolder> {
     }
 
     @Override
-    public void setup(
-          Context ctx, Runnable onAuthFail,
-          OnUserClickListener listener) {
+    public void setOnUserClickListener(OnUserClickListener listener) {
         this.listener = listener;
-        userImageDownloader.setup(ctx, onAuthFail);
+    }
+
+    @Override
+    public void setContext(Context ctx) {
+        userImageDownloader.setContext(ctx);
+    }
+
+    @Override
+    public void setOnAuthFailAction(Runnable onAuthFail) {
+        userImageDownloader.setOnAuthFailAction(onAuthFail);
     }
 
     @Override

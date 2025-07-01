@@ -3,10 +3,8 @@ package com.tom.meeter.context.profile.fragment;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +15,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
 import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
-import com.tom.meeter.infrastructure.components.binder.EventBinderImpl;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,18 +53,16 @@ public class ActiveEventsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        logMethod(TAG, this);
+        logMethod(TAG, this, "Registering eventBus");
 
         ((App) getActivity().getApplication()).getComponent().inject(this);
 
         EventBus.getDefault().register(this);
 
         Context ctx = requireContext();
-        adapter.setupBinder(
+        adapter.initialize(
               ctx, onAuthFail,
               (e) -> dispatchToEventActivity(ctx, e.getId()));
-
-        Log.d(TAG, "ActiveEventsFragment Registering eventBus");
     }
 
     @Override
@@ -99,8 +93,7 @@ public class ActiveEventsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        logMethod(TAG, this);
         EventBus.getDefault().unregister(this);
-        Log.d(TAG, "ActiveEventsFragment Unregistered event bus");
+        logMethod(TAG, this, "Unregistered event bus");
     }
 }

@@ -63,7 +63,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        adapter.setupAdapter(this, onAuthFail);
+        adapter.initialize(this, onAuthFail);
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscriptions.setAdapter(adapter);

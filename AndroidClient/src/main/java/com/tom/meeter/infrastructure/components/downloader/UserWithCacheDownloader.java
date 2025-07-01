@@ -1,4 +1,4 @@
-package com.tom.meeter.infrastructure.components;
+package com.tom.meeter.infrastructure.components.downloader;
 
 import android.content.Context;
 import android.util.Log;

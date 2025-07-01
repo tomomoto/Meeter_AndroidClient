@@ -103,7 +103,7 @@ public class ProfileFragment extends Fragment {
 
         Context ctx = requireContext();
         accountManager = AccountManager.get(ctx);
-        adapter.setupBinder(
+        adapter.initialize(
               ctx, onAuthFail,
               event -> dispatchToEventActivity(ctx, event.getId()));
     }

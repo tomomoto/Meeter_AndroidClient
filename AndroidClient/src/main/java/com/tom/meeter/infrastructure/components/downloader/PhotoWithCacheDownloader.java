@@ -1,16 +1,19 @@
-package com.tom.meeter.infrastructure.components;
+package com.tom.meeter.infrastructure.components.downloader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.infrastructure.components.SetContext;
+import com.tom.meeter.infrastructure.components.SetOnAuthFailAction;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public abstract class PhotoWithCacheDownloader {
+public abstract class PhotoWithCacheDownloader
+      implements SetContext, SetOnAuthFailAction {
 
     private static final String TAG = PhotoWithCacheDownloader.class.getCanonicalName();
 
@@ -25,8 +28,13 @@ public abstract class PhotoWithCacheDownloader {
         this.imgDownloader = imgDownloader;
     }
 
-    public void setup(Context ctx, Runnable onAuthFail) {
+    @Override
+    public void setContext(Context ctx) {
         this.ctx = ctx;
+    }
+
+    @Override
+    public void setOnAuthFailAction(Runnable onAuthFail) {
         this.onAuthFail = onAuthFail;
     }
 

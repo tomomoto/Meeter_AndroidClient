@@ -36,7 +36,6 @@ import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
-import com.tom.meeter.infrastructure.components.binder.SimpleEventBinderImpl;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -82,7 +81,7 @@ public class UserActivity extends AppCompatActivity {
 
         ((App) getApplication()).getUserComponent().inject(this);
 
-        adapter.setupBinder(
+        adapter.initialize(
               this, onAuthFail,
               event -> dispatchToEventActivity(this, event.getId()));
 

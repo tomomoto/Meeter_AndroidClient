@@ -1,4 +1,4 @@
-package com.tom.meeter.context.user.adapter;
+package com.tom.meeter.context.user.components.adapter;
 
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tom.meeter.context.network.dto.UserDTO;
+import com.tom.meeter.context.user.components.binder.UserBinder;
+import com.tom.meeter.context.user.components.binder.UserBinderImpl;
 import com.tom.meeter.databinding.ActivityUserSubscriberItemBinding;
 import com.tom.meeter.infrastructure.components.adapter.BaseAdapter;
-import com.tom.meeter.infrastructure.components.binder.UserBinder;
-import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
 import javax.inject.Inject;
@@ -31,10 +31,12 @@ public class UsersAdapter extends BaseAdapter<UserViewHolder, UserDTO> {
         logMethod(TAG, this);
     }
 
-    public void setupBinder(Context ctx, Runnable onAuthFail) {
-        binder.setup(
-              ctx, onAuthFail,
+    public void initialize(
+          Context ctx, Runnable onAuthFail) {
+        binder.setContext(ctx);
+        binder.setOnUserClickListener(
               user -> dispatchToUserActivity(ctx, user.getId()));
+        binder.setOnAuthFailAction(onAuthFail);
     }
 
     @Override

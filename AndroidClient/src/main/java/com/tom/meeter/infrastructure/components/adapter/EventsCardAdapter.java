@@ -25,10 +25,12 @@ public class EventsCardAdapter extends BaseEventAdapter<CardItemHolder> {
         this.binder = binder;
     }
 
-    public void setupBinder(
+    public void initialize(
           Context ctx, Runnable onAuthFail,
           OnEventClickListener listener) {
-        binder.setup(ctx, onAuthFail, listener);
+        binder.setContext(ctx);
+        binder.setOnAuthFailAction(onAuthFail);
+        binder.setupOnEventClickListener(listener);
     }
 
     @NonNull
