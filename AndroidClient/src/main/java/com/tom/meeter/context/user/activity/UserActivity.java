@@ -28,7 +28,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.factory.UserAssistedFactory;
 import com.tom.meeter.context.user.service.UserService;

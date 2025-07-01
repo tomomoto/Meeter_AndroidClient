@@ -45,7 +45,7 @@ import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.image.activity.UploadEventImageActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.infrastructure.common.ImagesHelper;

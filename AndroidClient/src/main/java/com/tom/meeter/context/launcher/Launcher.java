@@ -24,7 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.LauncherBinding;
 

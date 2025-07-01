@@ -15,7 +15,6 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-//import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class TokenModule {

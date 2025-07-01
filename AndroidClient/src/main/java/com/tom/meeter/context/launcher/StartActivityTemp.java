@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.tom.meeter.R;
-import com.tom.meeter.context.profile.fragment.ProfileFragment;
+import com.tom.meeter.context.profile.component.fragment.ProfileFragment;
 import com.tom.meeter.databinding.StartActivityTempBinding;
 
 @Deprecated

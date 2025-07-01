@@ -1,6 +1,6 @@
 package com.tom.meeter.context.profile.factory;
 
-import com.tom.meeter.context.profile.viewmodel.ProfileViewModel;
+import com.tom.meeter.context.profile.component.viewmodel.ProfileViewModel;
 
 import dagger.assisted.AssistedFactory;
 

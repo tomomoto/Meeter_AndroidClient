@@ -3,15 +3,15 @@ package com.tom.meeter.context.profile;
 import android.app.Application;
 
 import com.tom.meeter.AppComponent;
-import com.tom.meeter.context.profile.activity.ProfileActivity;
-import com.tom.meeter.context.profile.activity.SettingsActivity;
-import com.tom.meeter.context.profile.activity.SubscribersActivity;
-import com.tom.meeter.context.profile.activity.SubscriptionsActivity;
-import com.tom.meeter.context.profile.fragment.ActiveEventsFragment;
-import com.tom.meeter.context.profile.fragment.CreateEventFragment;
-import com.tom.meeter.context.profile.fragment.GoogleMapsFragment;
-import com.tom.meeter.context.profile.fragment.ProfileEventsFragment;
-import com.tom.meeter.context.profile.fragment.ProfileFragment;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
+import com.tom.meeter.context.profile.component.activity.SettingsActivity;
+import com.tom.meeter.context.profile.component.activity.SubscribersActivity;
+import com.tom.meeter.context.profile.component.activity.SubscriptionsActivity;
+import com.tom.meeter.context.profile.component.fragment.ActiveEventsFragment;
+import com.tom.meeter.context.profile.component.fragment.CreateEventFragment;
+import com.tom.meeter.context.profile.component.fragment.GoogleMapsFragment;
+import com.tom.meeter.context.profile.component.fragment.ProfileEventsFragment;
+import com.tom.meeter.context.profile.component.fragment.ProfileFragment;
 
 import dagger.BindsInstance;
 import dagger.Component;
