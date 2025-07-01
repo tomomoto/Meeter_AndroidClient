@@ -48,7 +48,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getProfileComponent().inject(this);
         accountManager = AccountManager.get(this);
 
         checkToken(

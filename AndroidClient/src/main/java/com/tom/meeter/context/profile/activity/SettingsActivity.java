@@ -54,7 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getProfileComponent().inject(this);
         accountManager = AccountManager.get(this);
 
         binding = SettingsActivityBinding.inflate(getLayoutInflater());

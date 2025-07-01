@@ -1,4 +1,4 @@
-package com.tom.meeter;
+package com.tom.meeter.context.profile;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
 
@@ -25,8 +25,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -35,7 +33,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 @Module
 public class ProfileModule {
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public SettingsService provideSettingsService(Application app) {
@@ -47,7 +45,7 @@ public class ProfileModule {
               .create(SettingsService.class);
     }
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public ProfileService provideProfileService(Application app) {
@@ -66,7 +64,7 @@ public class ProfileModule {
     }
 
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public EventDatabase provideEventDb(Application app) {
@@ -75,14 +73,14 @@ public class ProfileModule {
               .build();
     }
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public EventDao provideEventDao(EventDatabase eventDatabase) {
         return eventDatabase.eventDao();
     }
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public UserDatabase provideUserDb(Application app) {
@@ -91,14 +89,14 @@ public class ProfileModule {
               .build();
     }
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public UserDao provideUserDao(UserDatabase userDatabase) {
         return userDatabase.userDao();
     }
 
-    @Singleton
+    @ProfileScope
     @NonNull
     @Provides
     public Executor provideExecutor() {

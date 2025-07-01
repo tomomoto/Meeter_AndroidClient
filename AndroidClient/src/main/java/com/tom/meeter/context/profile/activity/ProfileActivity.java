@@ -10,13 +10,10 @@ import static com.tom.meeter.infrastructure.utils.Utils.requireNonNull;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -166,7 +163,7 @@ public class ProfileActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        ((App) getApplication()).getComponent().inject(this);
+        ((App) getApplication()).getProfileComponent().inject(this);
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);

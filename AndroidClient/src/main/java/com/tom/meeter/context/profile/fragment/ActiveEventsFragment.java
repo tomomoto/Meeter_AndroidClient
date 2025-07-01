@@ -55,7 +55,7 @@ public class ActiveEventsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this, "Registering eventBus");
 
-        ((App) getActivity().getApplication()).getComponent().inject(this);
+        ((App) getActivity().getApplication()).getProfileComponent().inject(this);
 
         EventBus.getDefault().register(this);
 

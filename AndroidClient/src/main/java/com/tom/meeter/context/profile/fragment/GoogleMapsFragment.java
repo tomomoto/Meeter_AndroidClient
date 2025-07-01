@@ -2,7 +2,6 @@ package com.tom.meeter.context.profile.fragment;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
-import static com.tom.meeter.infrastructure.common.ImagesHelper.circleImage;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.ComponentName;
@@ -111,7 +110,7 @@ public class GoogleMapsFragment extends Fragment
         logMethod(TAG, this);
         readPreferences();
 
-        ((App) getActivity().getApplication()).getComponent().inject(this);
+        ((App) getActivity().getApplication()).getProfileComponent().inject(this);
 
         MapsInitializer.initialize(getContext());
         userIcon = BitmapDescriptorFactory.fromBitmap(

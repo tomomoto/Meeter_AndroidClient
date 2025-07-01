@@ -99,7 +99,7 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         logMethod(TAG, this);
 
-        ((App) getActivity().getApplication()).getComponent().inject(this);
+        ((App) getActivity().getApplication()).getProfileComponent().inject(this);
 
         Context ctx = requireContext();
         accountManager = AccountManager.get(ctx);
