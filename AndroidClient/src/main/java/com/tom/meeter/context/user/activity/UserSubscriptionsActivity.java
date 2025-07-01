@@ -18,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscriptionsAssistedFactory;
@@ -36,15 +35,13 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
     @Inject
     UserSubscriptionsAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imgDownloader;
-    @Inject
     UsersAdapter adapter;
 
-    private final Runnable onAuthFail = this::recreate;
     private ActivityProfileSubscriptionsBinding binding;
     private UserSubscriptionsViewModel viewModel;
     private AccountManager accountManager;
     private String userId;
+    private final Runnable onAuthFail = this::recreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +62,10 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
             return;
         }
 
+        binding = ActivityProfileSubscriptionsBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
@@ -76,14 +77,11 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
 
     private void onInit(String token) {
         logMethod(TAG, this);
-        binding = ActivityProfileSubscriptionsBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
 
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, userId, this, this::recreate))
+                    assistedFactory, userId, this, onAuthFail))
               .get(UserSubscriptionsViewModel.class);
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));

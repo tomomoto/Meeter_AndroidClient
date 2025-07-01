@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.factory.UserAssistedFactory;
@@ -57,8 +56,6 @@ public class UserActivity extends AppCompatActivity {
     UserService userService;
     @Inject
     UserAssistedFactory assistedFactory;
-    @Inject
-    ImageDownloader imgDownloader;
     @Inject
     EventsCardAdapter adapter;
 

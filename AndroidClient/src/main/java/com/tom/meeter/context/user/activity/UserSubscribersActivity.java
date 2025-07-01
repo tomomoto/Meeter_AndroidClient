@@ -18,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscribersAssistedFactory;
@@ -35,8 +34,6 @@ public class UserSubscribersActivity extends AppCompatActivity {
     TokenService tokenService;
     @Inject
     UserSubscribersAssistedFactory assistedFactory;
-    @Inject
-    ImageDownloader imgDownloader;
     @Inject
     UsersAdapter adapter;
 
