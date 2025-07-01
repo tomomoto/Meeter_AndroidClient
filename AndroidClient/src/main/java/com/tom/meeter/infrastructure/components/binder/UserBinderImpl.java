@@ -9,28 +9,29 @@ import com.tom.meeter.infrastructure.components.UserImageDownloader;
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.UserViewHolder;
 
-public class UserBinderImpl extends UserImageDownloader
-      implements UserBinder<UserViewHolder> {
+public class UserBinderImpl implements UserBinder<UserViewHolder> {
 
+    private UserImageDownloader userImageDownloader;
     private OnUserClickListener userClickListener;
 
     public UserBinderImpl(
           Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
-        super(ctx, imgDownloader, onAuthFail);
+        this.userImageDownloader = new UserImageDownloader(ctx, imgDownloader, onAuthFail);
     }
 
     @Override
     public void bind(UserViewHolder holder, UserDTO user) {
         String photoPath = user.getPhotoPath();
 
-        Bitmap cached = photoPath != null ? cache.get(photoPath) : null;
+        Bitmap cached = photoPath != null
+              ? userImageDownloader.getCachedPhoto(photoPath) : null;
 
         holder.bind(
               user.getName(), user.getSurname(), cached,
               v -> userClickListener.onClick(user));
 
         if (photoPath != null && cached == null) {
-            loadPhoto(photoPath, holder::updatePhoto);
+            userImageDownloader.loadPhoto(photoPath, holder::updatePhoto);
         }
     }
 

@@ -8,9 +8,9 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 
 import java.util.function.Consumer;
 
-public class UserImageDownloader extends PhotoWithCacheDownloader {
+public class EventImageDownloader extends PhotoWithCacheDownloader {
 
-    public UserImageDownloader(
+    public EventImageDownloader(
           Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
         super(ctx, imgDownloader, onAuthFail);
     }
@@ -18,7 +18,7 @@ public class UserImageDownloader extends PhotoWithCacheDownloader {
     @Override
     protected void downloadImage(
           String photoPath, Consumer<Bitmap> onDownloaded) {
-        imgDownloader.downloadUserImage(
+        imgDownloader.downloadEventImage(
               photoPath, ctx,
               ImagesHelper::circleImage,
               onDownloaded, onAuthFail);

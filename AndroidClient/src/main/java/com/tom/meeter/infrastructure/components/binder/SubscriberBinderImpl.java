@@ -11,15 +11,16 @@ import com.tom.meeter.infrastructure.components.adapter.OnSubscribeUnsubscribeCl
 import com.tom.meeter.infrastructure.components.adapter.OnUserClickListener;
 import com.tom.meeter.infrastructure.components.viewholder.SubscriberViewHolder;
 
-public class SubscriberBinderImpl extends UserImageDownloader
-      implements SubscriberBinder<SubscriberViewHolder> {
+public class SubscriberBinderImpl implements SubscriberBinder<SubscriberViewHolder> {
 
+    private final UserImageDownloader userImageDownloader;
     private OnUserClickListener userClickListener;
     private OnSubscribeUnsubscribeClickListener subUnSubClickListener;
 
     public SubscriberBinderImpl(
           Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
-        super(ctx, imgDownloader, onAuthFail);
+        this.userImageDownloader = new UserImageDownloader(
+              ctx, imgDownloader, onAuthFail);
     }
 
     @Override
@@ -35,7 +36,8 @@ public class SubscriberBinderImpl extends UserImageDownloader
         UserDTO user = target.getUser();
         String photoPath = user.getPhotoPath();
 
-        Bitmap cached = photoPath != null ? cache.get(photoPath) : null;
+        Bitmap cached = photoPath != null
+              ? userImageDownloader.getCachedPhoto(photoPath) : null;
 
         holder.bind(
               target.isAmISubscribedTo(),
@@ -45,7 +47,7 @@ public class SubscriberBinderImpl extends UserImageDownloader
         );
 
         if (photoPath != null && cached == null) {
-            loadPhoto(photoPath, holder::updatePhoto);
+            userImageDownloader.loadPhoto(photoPath, holder::updatePhoto);
         }
     }
 

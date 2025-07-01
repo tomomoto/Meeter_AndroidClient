@@ -3,6 +3,7 @@ package com.tom.meeter.context.profile.fragment;
 import static com.tom.meeter.context.event.activity.EventDispatcherActivity.dispatchToEventActivity;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,8 +17,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.profile.adapter.EventsAdapter;
+import com.tom.meeter.context.user.service.UserService;
 import com.tom.meeter.databinding.SubFragmentActiveEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 import com.tom.meeter.infrastructure.components.binder.EventBinderImpl;
@@ -38,6 +41,8 @@ public class ActiveEventsFragment extends Fragment {
 
     @Inject
     ImageDownloader imageDownloader;
+    @Inject
+    UserService service;
 
     private SubFragmentActiveEventsBinding binding;
     private EventsAdapter adapter;
@@ -58,7 +63,8 @@ public class ActiveEventsFragment extends Fragment {
         Context ctx = requireContext();
         adapter = new EventsAdapter(
               new EventBinderImpl(
-                    ctx, imageDownloader,
+                    ctx, AuthHelper.getAuthHeader(AccountManager.get(ctx)),
+                    imageDownloader, service,
                     (e) -> dispatchToEventActivity(ctx, e.getId()),
                     () -> InfrastructureHelper.restartActivityFromFragment(this)));
 

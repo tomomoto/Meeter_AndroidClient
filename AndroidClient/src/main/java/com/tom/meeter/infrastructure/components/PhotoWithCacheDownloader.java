@@ -19,6 +19,10 @@ public abstract class PhotoWithCacheDownloader {
     protected final Runnable onAuthFail;
     protected final Map<String, Bitmap> cache = new ConcurrentHashMap<>();
 
+    public Bitmap getCachedPhoto(String photoPath) {
+        return cache.get(photoPath);
+    }
+
     protected PhotoWithCacheDownloader(
           Context ctx, ImageDownloader imgDownloader, Runnable onAuthFail) {
         this.ctx = ctx;
@@ -26,19 +30,20 @@ public abstract class PhotoWithCacheDownloader {
         this.onAuthFail = onAuthFail;
     }
 
-    protected void loadPhoto(String photoPath, Consumer<Bitmap> onImageReady) {
+    public void loadPhoto(String photoPath, Consumer<Bitmap> onImageReady) {
         Bitmap cached = cache.get(photoPath);
         if (cached != null) {
             onImageReady.accept(cached);
             return;
         }
 
-        downloadImage(photoPath, photo -> {
-            cache.put(photoPath, photo);
-            onImageReady.accept(photo);
-            Log.d(TAG, getClass().getSimpleName() +
-                  ": image downloaded for [" + photoPath + "], cache updated.");
-        });
+        downloadImage(
+              photoPath, photo -> {
+                  cache.put(photoPath, photo);
+                  onImageReady.accept(photo);
+                  Log.d(TAG, getClass().getSimpleName() +
+                        ": image downloaded for [" + photoPath + "], cache updated.");
+              });
     }
 
     protected abstract void downloadImage(String photoPath, Consumer<Bitmap> onDownloaded);

@@ -44,24 +44,30 @@
                     android:text="STATUS"
                     android:textAllCaps="true"
                     android:textSize="12sp" />
-            </LinearLayout>
 
+                <TextView
+                    android:id="@+id/event_creator_card_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="11sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/event_name_card_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_toEndOf="@id/event_image_container"
-                android:textSize="30sp" />
-
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/event_description_card_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/event_name_card_view"
-                android:layout_toEndOf="@id/event_image_container" />
+                android:layout_toEndOf="@id/event_image_container"
+                android:maxLines="3"
+                android:textSize="14sp" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

@@ -20,18 +20,21 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(
-          String name, String description, Bitmap photo,
+          String name, String description, Bitmap photo, String creator,
           View.OnClickListener clickListener, Consumer<TextView> statusC) {
         binding.eventNameCardView.setText(name);
         binding.eventDescriptionCardView.setText(description);
+        binding.eventCreatorCardView.setText(creator);
         binding.eventPhotoCardView.setImageBitmap(photo);
-        statusC.accept(binding.eventStatusCardView);
-        //binding.eventStatusCardView.setBackgroundColor(colorRes);
-        //binding.eventStatusCardView.setBackgroundResource(colorRes);
         binding.eventCardView.setOnClickListener(clickListener);
+        statusC.accept(binding.eventStatusCardView);
     }
 
     public void updatePhoto(Bitmap photo) {
         binding.eventPhotoCardView.setImageBitmap(photo);
+    }
+
+    public void updateCreator(String creator) {
+        binding.eventCreatorCardView.setText(creator);
     }
 }
