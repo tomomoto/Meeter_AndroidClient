@@ -13,7 +13,7 @@ import com.tom.meeter.context.profile.repository.event.database.EventDatabase;
 import com.tom.meeter.context.profile.repository.user.database.UserDao;
 import com.tom.meeter.context.profile.repository.user.database.UserDatabase;
 import com.tom.meeter.context.profile.service.ProfileService;
-import com.tom.meeter.context.profile.settings.service.SettingsService;
+import com.tom.meeter.context.profile.service.SettingsService;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;

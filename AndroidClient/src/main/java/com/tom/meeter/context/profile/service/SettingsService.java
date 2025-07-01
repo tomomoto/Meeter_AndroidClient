@@ -1,9 +1,9 @@
-package com.tom.meeter.context.profile.settings.service;
+package com.tom.meeter.context.profile.service;
 
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 
-import com.tom.meeter.context.profile.settings.message.SettingsCreateOrUpdate;
-import com.tom.meeter.context.profile.settings.message.SettingsResponse;
+import com.tom.meeter.context.profile.message.SettingsCreateOrUpdate;
+import com.tom.meeter.context.profile.message.SettingsResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

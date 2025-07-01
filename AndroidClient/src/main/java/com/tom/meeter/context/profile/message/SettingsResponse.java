@@ -1,4 +1,4 @@
-package com.tom.meeter.context.profile.settings.message;
+package com.tom.meeter.context.profile.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
