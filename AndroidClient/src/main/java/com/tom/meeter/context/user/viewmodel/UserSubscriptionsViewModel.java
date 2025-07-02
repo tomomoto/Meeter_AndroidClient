@@ -51,12 +51,13 @@ public class UserSubscriptionsViewModel extends ViewModel {
         service.getSubscriptions(getAuthHeader(AccountManager.get(ctx)), userId).enqueue(
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
-                  public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {
+                  public void onResponse(
+                        Call<List<UserDTO>> call, Response<List<UserDTO>> resp) {
                       super.onResponse(call, resp);
                       if (resp.code() != HttpCodes.OK || resp.body() == null) {
                           return;
                       }
-                      subscriptions.setValue(resp.body());
+                      subscriptions.postValue(resp.body());
                       return;
                   }
               }

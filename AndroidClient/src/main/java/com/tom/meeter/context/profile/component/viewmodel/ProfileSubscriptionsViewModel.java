@@ -59,7 +59,7 @@ public class ProfileSubscriptionsViewModel extends ViewModel {
                       for (UserDTO subscription : resp.body()) {
                           result.add(new Subscriber(subscription, true));
                       }
-                      subscriptions.setValue(result);
+                      subscriptions.postValue(result);
                       return;
                   }
               }

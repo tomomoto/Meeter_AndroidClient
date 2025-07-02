@@ -63,7 +63,7 @@ public class EventViewModel extends ViewModel {
                       if (resp.code() != HttpCodes.OK || eventResp == null) {
                           return;
                       }
-                      event.setValue(eventResp);
+                      event.postValue(eventResp);
                       String photoPath = eventResp.getPhotoPath();
                       if (photoPath == null) {
                           return;
