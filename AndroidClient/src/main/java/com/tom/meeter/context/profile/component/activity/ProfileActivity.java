@@ -1,19 +1,19 @@
 package com.tom.meeter.context.profile.component.activity;
 
-import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getSingleAccount;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
 import static com.tom.meeter.context.profile.component.activity.DrawerUtils.getIconProvider;
 import static com.tom.meeter.context.profile.component.activity.DrawerUtils.updateIconFor;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.common.PreferencesHelper.cleanLocalPrefs;
+import static com.tom.meeter.infrastructure.common.PreferencesHelper.updateLocalPrefs;
 import static com.tom.meeter.infrastructure.utils.Utils.requireNonNull;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,9 +46,8 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
-import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.service.SocketIOService;
-import com.tom.meeter.context.profile.component.FilterBottomSheetDialog;
+import com.tom.meeter.context.profile.component.StatusesFilterDialog;
 import com.tom.meeter.context.profile.component.fragment.CreateEventFragment;
 import com.tom.meeter.context.profile.component.fragment.EventsFragment;
 import com.tom.meeter.context.profile.component.fragment.ProfileEventsFragment;
@@ -65,7 +64,6 @@ import com.tom.meeter.infrastructure.http.HttpCodes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -170,7 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         logMethod(TAG, this, item.getItemId());
         if (item.getItemId() == R.id.action_filter) {
-            new FilterBottomSheetDialog()
+            new StatusesFilterDialog()
                   .show(getSupportFragmentManager(), "FilterDialog");
             return true;
         }
@@ -209,7 +207,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         ContextCompat.startForegroundService(
               this, new Intent(this, SocketIOService.class));
-        setupPreferences();
+        loadPrefsFromServer();
 
         toolbar = binding.profileActivityToolbar;
         setSupportActionBar(toolbar);
@@ -231,45 +229,47 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void setupPreferences() {
+    private void loadPrefsFromServer() {
         settingsService.getSettings(AuthHelper.getAuthHeader(accountManager)).enqueue(
               new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(
-                        Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
+                        Call<SettingsResponse> call, Response<SettingsResponse> resp) {
+                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
                           invalidateToken(accountManager, ProfileActivity.this,
-                                fresh -> setupPreferencesRetry(fresh), () -> finishAndRemoveTask());
+                                fresh -> loadPrefsFromServerRetry(fresh), () -> finishAndRemoveTask());
                       }
-                      if (res.code() == HttpCodes.NOT_FOUND) {
+                      if (resp.code() == HttpCodes.NOT_FOUND) {
                           // As no settings on the server ...
+                          cleanLocalPrefs(ProfileActivity.this);
                           return;
                       }
-                      if (res.body() == null) {
+                      if (resp.body() == null) {
                           return;
                       }
                       // As settings exist on the server...
-                      updateLocalPreferences(res.body());
+                      updateLocalPrefs(ProfileActivity.this, resp.body());
                   }
               });
     }
 
-    private void setupPreferencesRetry(String freshToken) {
+    private void loadPrefsFromServerRetry(String freshToken) {
         settingsService.getSettings(Globals.getAuthHeader(freshToken))
               .enqueue(new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(
-                        Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      if (res.code() == HttpCodes.NOT_FOUND) {
+                        Call<SettingsResponse> call, Response<SettingsResponse> resp) {
+                      if (resp.code() == HttpCodes.NOT_FOUND) {
+                          cleanLocalPrefs(ProfileActivity.this);
                           // no settings on the server etc...
                           return;
                       }
-                      if (res.body() == null) {
+                      if (resp.body() == null) {
                           Log.d(TAG, "ProfileActivity: /settings returns null on retry...");
                           return;
                       }
                       // As settings exist on the server...
-                      updateLocalPreferences(res.body());
+                      updateLocalPrefs(ProfileActivity.this, resp.body());
                   }
               });
     }
@@ -298,26 +298,6 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
-    }
-
-    private void updateLocalPreferences(SettingsResponse res) {
-        SharedPreferences.Editor edit = getDefaultSharedPreferences(this).edit();
-        Integer searchArea = res.getSearchArea();
-        if (searchArea != null) {
-            edit.putInt(getString(R.string.prefs_search_area), searchArea);
-        }
-        Boolean needTrackUser = res.getNeedTrackUser();
-        if (needTrackUser != null) {
-            edit.putBoolean(getString(R.string.prefs_need_track_user), needTrackUser);
-        }
-        Set<EventDTO.EventStatus> statuses = res.getVisibleEventStatuses();
-        if (needTrackUser != null) {
-            edit.putBoolean(getString(R.string.prefs_visible_event_statuses), needTrackUser);
-        }
-
-        if (searchArea != null || needTrackUser != null || statuses != null) {
-            edit.apply();
-        }
     }
 
     @Override
@@ -437,10 +417,6 @@ public class ProfileActivity extends AppCompatActivity {
     @NonNull
     private static String getCurrentFragmentTag(FragmentManager fm) {
         List<Fragment> fragments = fm.getFragments();
-        int size = fragments.size();
-        if (size != 1) {
-            throw new IllegalStateException("Not exactly 1 fragments in manager, size {" + size + "}.");
-        }
         String tag = fragments.get(0).getTag();
         if (tag == null) {
             throw new IllegalStateException("Fragment tag is null.");
@@ -452,8 +428,7 @@ public class ProfileActivity extends AppCompatActivity {
         Intent stopIntent = new Intent(this, SocketIOService.class);
         stopIntent.setAction(SocketIOService.STOP_CMD);
         startService(stopIntent);
-        getDefaultSharedPreferences(ProfileActivity.this)
-              .edit().clear().apply();
+        cleanLocalPrefs(this);
         Account acc = getSingleAccount(accountManager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             accountManager.removeAccount(

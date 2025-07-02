@@ -11,7 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * created by Tom on 10.02.2017.
@@ -207,6 +209,24 @@ public class EventDTO extends ServerEntityBase {
                 }
             }
             throw new IllegalArgumentException("No enum constant with string value " + text);
+        }
+
+        public static Set<String> transformToStrings(
+              Set<EventDTO.EventStatus> statuses) {
+            Set<String> result = new HashSet<>(statuses.size());
+            for (EventDTO.EventStatus status : statuses) {
+                result.add(status.getValue());
+            }
+            return result;
+        }
+
+        public static Set<EventDTO.EventStatus> transformToEnums(
+              Set<String> statuses) {
+            Set<EventDTO.EventStatus> result = new HashSet<>(statuses.size());
+            for (String status : statuses) {
+                result.add(EventDTO.EventStatus.fromString(status));
+            }
+            return result;
         }
     }
 }

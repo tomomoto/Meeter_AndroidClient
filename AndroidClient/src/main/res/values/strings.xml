@@ -250,7 +250,10 @@
     <string name="cancelled_status">CANCELLED</string>
     <string name="archived_status">ARCHIVED</string>
     <string name="prefs_visible_event_statuses">prefs_visible_event_statuses</string>
-    <string name="status_filter">Status filter</string>
+    <string name="status_filter">Events status filter</string>
+    <string name="select_one_status_at_least">Select one status at least.</string>
+    <string name="apply">Apply</string>
+    <string name="select_interested_event_statuses">Select interested event statuses</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

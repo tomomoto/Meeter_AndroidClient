@@ -3,8 +3,12 @@ package com.tom.meeter.infrastructure.common;
 import android.content.Context;
 import android.util.Log;
 
+import com.tom.meeter.context.network.dto.EventDTO;
+
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Some well knows application constants.
@@ -29,6 +33,7 @@ public class Globals {
     public static final String LOCATION_TIME_PROPERTY = "location.time";
     public static final String MAP_EVENTS_AREA_PROPERTY = "map.events_area";
     public static final String MAP_TRACK_USER_PROPERTY = "map.track_user";
+    public static final String EVENTS_VISIBLE_STATUSES_PROPERTY = "events.visible_statuses";
 
     public static final String AUTH_HEADER = "Authorization";
     public static final String BEARER_FORMAT = "Bearer %s";
@@ -37,6 +42,7 @@ public class Globals {
     private static String socketIOPath;
     private static Boolean needTrackUserDefault;
     private static Integer searchAreaDefault;
+    private static Set<EventDTO.EventStatus> visibleEventsStatusesDefault;
 
 
     public static String getServerPath(Context ctx) {
@@ -85,6 +91,21 @@ public class Globals {
         searchAreaDefault = Integer.parseInt(
               tryGetProps(ctx).getProperty(MAP_EVENTS_AREA_PROPERTY));
         return searchAreaDefault;
+    }
+
+    public static Set<EventDTO.EventStatus> getDefaultVisibleEventsStatuses(
+          Context ctx) {
+        if (visibleEventsStatusesDefault != null) {
+            return visibleEventsStatusesDefault;
+        }
+        String[] statuses = tryGetProps(ctx)
+              .getProperty(EVENTS_VISIBLE_STATUSES_PROPERTY)
+              .split(",");
+        visibleEventsStatusesDefault = new HashSet<>(statuses.length);
+        for (String s : statuses) {
+            visibleEventsStatusesDefault.add(EventDTO.EventStatus.fromString(s));
+        }
+        return visibleEventsStatusesDefault;
     }
 
     private static Properties tryGetProps(Context ctx) {

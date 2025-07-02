@@ -21,6 +21,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class CommonHelper {
 
@@ -36,7 +38,34 @@ public final class CommonHelper {
     public static final DateTimeFormatter UI_TIME_FORMAT =
           DateTimeFormatter.ofPattern("HH:mm");
 
+    private static Map<String, EventDTO.EventStatus> nameToStatusMapping;
+
     public static final String EMPTY_STR = "";
+
+
+    public static EventDTO.EventStatus resolveStatus(Context ctx, String statusName) {
+        if (nameToStatusMapping == null) {
+            initializeNameToStatusMapping(ctx);
+        }
+        return nameToStatusMapping.get(statusName);
+    }
+
+    private static void initializeNameToStatusMapping(Context ctx) {
+        String[] statuses = ctx.getResources().getStringArray(R.array.statuses);
+        nameToStatusMapping = new HashMap<>(statuses.length);
+        nameToStatusMapping.put(statuses[0], EventDTO.EventStatus.CREATED);
+        nameToStatusMapping.put(statuses[1], EventDTO.EventStatus.PUBLISHED);
+        nameToStatusMapping.put(statuses[2], EventDTO.EventStatus.UNPUBLISHED);
+        nameToStatusMapping.put(statuses[3], EventDTO.EventStatus.SCHEDULED);
+        nameToStatusMapping.put(statuses[4], EventDTO.EventStatus.STARTED);
+        nameToStatusMapping.put(statuses[5], EventDTO.EventStatus.PAUSED);
+        nameToStatusMapping.put(statuses[6], EventDTO.EventStatus.RESUMED);
+        nameToStatusMapping.put(statuses[7], EventDTO.EventStatus.CANCELLED);
+        nameToStatusMapping.put(statuses[8], EventDTO.EventStatus.FINISHED);
+        // no name for EventDTO.EventStatus.ARCHIVED status,
+        // unable to select it for filtering
+        // nameToStatusMapping.put(statuses[9], EventDTO.EventStatus.ARCHIVED);
+    }
 
     public static String genderResolver(Context ctx, UserDTO.UserGender gender) {
         return switch (gender) {

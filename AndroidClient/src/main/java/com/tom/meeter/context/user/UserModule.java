@@ -1,13 +1,14 @@
 package com.tom.meeter.context.user;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
-import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createDefaultBuilder;
+import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createBuilder;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 
 import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.infrastructure.common.RetrofitBuilder;
 
 import dagger.Module;
 import dagger.Provides;
@@ -25,6 +26,7 @@ public class UserModule {
     @NonNull
     @Provides
     public UserService provideUserService(Application app) {
-        return createDefaultBuilder(app).create(UserService.class);
+        return createBuilder(app, RetrofitBuilder.jtm)
+              .create(UserService.class);
     }
 }

@@ -1,9 +1,8 @@
 package com.tom.meeter.context.profile.component.activity;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.common.PreferencesHelper.savePrefsToServer;
 
-import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,22 +16,13 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.infrastructure.AuthHelper;
-import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.profile.component.fragment.SettingsFragment;
 import com.tom.meeter.context.profile.message.SettingsCreateOrUpdate;
-import com.tom.meeter.context.profile.message.SettingsResponse;
 import com.tom.meeter.context.profile.service.SettingsService;
 import com.tom.meeter.databinding.SettingsActivityBinding;
-import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
-import com.tom.meeter.infrastructure.http.HttpCodes;
-import com.tom.meeter.infrastructure.http.HttpErrorLogger;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Response;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -42,8 +32,6 @@ public class SettingsActivity extends AppCompatActivity {
     SettingsService settingsService;
 
     private SettingsActivityBinding binding;
-
-    private AccountManager accountManager;
 
     private boolean trackUserBeforeChange;
     private int searchAreaBeforeChange;
@@ -55,7 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
         logMethod(TAG, this);
 
         ((App) getApplication()).getProfileComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         binding = SettingsActivityBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
@@ -101,53 +88,18 @@ public class SettingsActivity extends AppCompatActivity {
         logMethod(TAG, this);
         int searchArea = PreferencesHelper.getSearchArea(this);
         boolean trackUser = PreferencesHelper.getNeedTrackUser(this);
-        if (searchAreaBeforeChange != searchArea || trackUserBeforeChange != trackUser) {
-            sendSavePrefs(searchArea, trackUser);
+        SettingsCreateOrUpdate req = new SettingsCreateOrUpdate();
+        if (searchAreaBeforeChange != searchArea) {
+            req.setSearchArea(searchArea);
+        }
+        if (trackUserBeforeChange != trackUser) {
+            req.setNeedTrackUser(trackUser);
+        }
+        if (!req.isEmpty()) {
+            savePrefsToServer(this, settingsService, req);
         }
         startActivity(new Intent(this, ProfileActivity.class));
         super.onBackPressed();
-    }
-
-    private void sendSavePrefs(int searchArea, boolean trackUser) {
-        settingsService.createOrUpdateSettings(
-                    new SettingsCreateOrUpdate(searchArea, trackUser),
-                    Globals.getAuthHeader(AuthHelper.peekToken(accountManager)))
-              .enqueue(new HttpErrorLogger<>(this) {
-                  @Override
-                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      super.onResponse(call, res);
-                      if (res.code() == HttpCodes.NOT_AUTHENTICATED) {
-                          invalidateToken(
-                                accountManager, SettingsActivity.this,
-                                (freshToken) -> sendSavePrefsRetry(freshToken, searchArea, trackUser),
-                                () -> {
-                                    Log.d(TAG, "SettingsActivity: canceled auth.");
-                                    startActivity(new Intent(SettingsActivity.this, Launcher.class));
-                                });
-                          return;
-                      }
-                      if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
-                          Log.d(TAG, "SettingsActivity: created/updated server settings.");
-                          return;
-                      }
-                  }
-              });
-    }
-
-    private void sendSavePrefsRetry(String token, int searchArea, boolean trackUser) {
-        settingsService.createOrUpdateSettings(
-                    new SettingsCreateOrUpdate(searchArea, trackUser),
-                    Globals.getAuthHeader(token))
-              .enqueue(new HttpErrorLogger<>(this) {
-                  @Override
-                  public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> res) {
-                      super.onResponse(call, res);
-                      if (res.code() == HttpCodes.OK || res.code() == HttpCodes.CREATED) {
-                          Log.d(TAG, "SettingsActivity: created/updated server settings on retry.");
-                          return;
-                      }
-                  }
-              });
     }
 
     private void readCurrentPreferences() {

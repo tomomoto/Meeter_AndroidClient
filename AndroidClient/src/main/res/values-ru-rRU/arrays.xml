@@ -17,13 +17,12 @@
     <string-array name="statuses">
         <item>Создано</item>
         <item>Опубликовано</item>
-        <item>Снято</item>
+        <item>Снято c публикации</item>
         <item>Запланировано</item>
         <item>Началось</item>
         <item>Остановлено</item>
         <item>Продолжено</item>
         <item>Отменено</item>
-        <item>Закончено</item>
-        <item>Архив</item>
+        <item>Завершено</item>
     </string-array>
 </resources>

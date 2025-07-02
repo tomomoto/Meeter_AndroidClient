@@ -24,6 +24,5 @@
         <item>Resumed</item>
         <item>Cancelled</item>
         <item>Finished</item>
-        <item>Archived</item>
     </string-array>
 </resources>

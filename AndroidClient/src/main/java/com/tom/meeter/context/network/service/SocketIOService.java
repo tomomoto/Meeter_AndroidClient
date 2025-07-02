@@ -31,6 +31,7 @@ import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
+import com.tom.meeter.context.network.exception.IncorrectResponseType;
 import com.tom.meeter.context.network.utils.SocketIOEventCode;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
@@ -257,7 +258,7 @@ public class SocketIOService extends Service {
 
     @Subscribe
     public void onMessageEvent(SearchForEvents event) {
-        Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
+        Log.d(TAG, "onMessageEvent: [" + EVENTS_SEARCH_CHANNEL + "] : " + event);
         socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
     }
 
@@ -332,15 +333,20 @@ public class SocketIOService extends Service {
     }
 
     private static void eventsSearchHandler(Object... args) {
-        JSONArray response = getSimpleResponse(JSONArray.class, args);
-        Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
-        EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
+        try {
+            JSONArray response = getSimpleResponse(JSONArray.class, args);
+            Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
+            EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
+        } catch (IncorrectResponseType e) {
+            JSONObject response = getSimpleResponse(JSONObject.class, args);
+            Log.e(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
+        }
     }
 
     private static <T> T getSimpleResponse(
           Class<T> aClass, Object[] args) {
         if (!validateSingleMessageResponse(aClass, args)) {
-            throw new RuntimeException("Incorrect response for " + aClass
+            throw new IncorrectResponseType("Incorrect response for " + aClass
                   + " with response " + Arrays.toString(args));
         }
         return (T) args[0];

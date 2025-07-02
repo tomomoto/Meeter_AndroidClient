@@ -80,6 +80,7 @@ public class GoogleMapsFragment extends Fragment
     private String meString;
     private BitmapDescriptor userIcon;
     private boolean trackUser;
+    private Set<EventDTO.EventStatus> visibleEventStatuses;
     private int searchArea;
 
     private boolean firstOpening = true;
@@ -247,7 +248,9 @@ public class GoogleMapsFragment extends Fragment
             LatLng position = camPosition.target;
             Log.d(TAG, "onCameraIdleListener() target:" + position + " zoom:" + camPosition.zoom);
             searchCircle.setCenter(position);
-            searchForEvents(position.latitude, position.longitude, searchArea);
+            searchForEvents(
+                  position.latitude, position.longitude,
+                  searchArea, visibleEventStatuses);
         } else {
             // As new coordinates income...
             camPosition = gmap.getCameraPosition();
@@ -374,6 +377,7 @@ public class GoogleMapsFragment extends Fragment
     private void readPreferences() {
         searchArea = PreferencesHelper.getSearchArea(getContext());
         trackUser = PreferencesHelper.getNeedTrackUser(getContext());
+        visibleEventStatuses = PreferencesHelper.getVisibleEventsStatuses(getContext());
     }
 
     public static void moveCamera(
@@ -432,10 +436,14 @@ public class GoogleMapsFragment extends Fragment
               .fillColor(0x3aaaffff);
     }
 
-    private static void searchForEvents(double latitude, double longitude, int searchArea) {
+    private static void searchForEvents(
+          double latitude, double longitude, int searchArea,
+          Set<EventDTO.EventStatus> visibleEventStatuses) {
         if (searchArea > 0) {
             EventBus.getDefault()
-                  .post(new SearchForEvents(latitude, longitude, searchArea));
+                  .post(new SearchForEvents(
+                        latitude, longitude, searchArea,
+                        visibleEventStatuses));
         }
     }
 

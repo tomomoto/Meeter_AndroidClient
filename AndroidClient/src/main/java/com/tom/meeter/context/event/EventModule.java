@@ -1,13 +1,13 @@
 package com.tom.meeter.context.event;
 
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
-import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createBuilder;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 
 import com.tom.meeter.context.event.service.EventService;
+import com.tom.meeter.infrastructure.common.RetrofitBuilder;
 
 import dagger.Module;
 import dagger.Provides;
@@ -25,6 +25,6 @@ public class EventModule {
     @NonNull
     @Provides
     public EventService provideEventService(Application app) {
-        return createBuilder(app).create(EventService.class);
+        return RetrofitBuilder.createBuilder(app).create(EventService.class);
     }
 }

@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Выберите статусы"
+        android:text="@string/select_interested_event_statuses"
         android:textSize="18sp"
         android:textStyle="bold"/>
 
@@ -23,6 +23,6 @@
         android:id="@+id/applyButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Применить"
+        android:text="@string/apply"
         android:layout_marginTop="16dp"/>
 </LinearLayout>

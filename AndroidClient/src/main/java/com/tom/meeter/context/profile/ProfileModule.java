@@ -1,8 +1,5 @@
 package com.tom.meeter.context.profile;
 
-import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
-import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createBuilder;
-
 import android.app.Application;
 
 import androidx.annotation.NonNull;
@@ -14,6 +11,7 @@ import com.tom.meeter.context.profile.repository.user.database.UserDao;
 import com.tom.meeter.context.profile.repository.user.database.UserDatabase;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.service.SettingsService;
+import com.tom.meeter.infrastructure.common.RetrofitBuilder;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
@@ -22,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Module
 public class ProfileModule {
@@ -32,10 +28,7 @@ public class ProfileModule {
     @NonNull
     @Provides
     public SettingsService provideSettingsService(Application app) {
-        return new Retrofit.Builder()
-              .baseUrl(getServerPath(app))
-              .addConverterFactory(JacksonConverterFactory.create())
-              .build()
+        return RetrofitBuilder.createBuilder(app, RetrofitBuilder.jdk8m)
               .create(SettingsService.class);
     }
 
@@ -43,7 +36,8 @@ public class ProfileModule {
     @NonNull
     @Provides
     public ProfileService provideProfileService(Application app) {
-        return createBuilder(app).create(ProfileService.class);
+        return RetrofitBuilder.createBuilder(app)
+              .create(ProfileService.class);
     }
 
 

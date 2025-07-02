@@ -7,37 +7,43 @@ import static com.tom.meeter.context.profile.message.SettingsResponse.VISIBLE_EV
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tom.meeter.context.network.dto.EventDTO;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class SettingsCreateOrUpdate {
 
     @JsonProperty(value = SEARCH_AREA_KEY)
-    private Integer searchArea;
+    private Optional<Integer> searchArea;
     @JsonProperty(value = NEED_TRACK_USER_KEY)
-    private Boolean needTrackUser;
+    private Optional<Boolean> needTrackUser;
     @JsonProperty(value = VISIBLE_EVENT_STATUSES_KEY)
-    private Set<EventDTO.EventStatus> visibleEventStatuses;
+    private Optional<Set<EventDTO.EventStatus>> visibleEventStatuses;
 
-    public SettingsCreateOrUpdate(
-          Integer searchArea, Boolean needTrackUser) {
-        this.searchArea = searchArea;
-        this.needTrackUser = needTrackUser;
-    }
-
-    public SettingsCreateOrUpdate(
-          Set<EventDTO.EventStatus> visibleEventStatuses) {
-        this.visibleEventStatuses = visibleEventStatuses;
-    }
-
-    public Integer getSearchArea() {
+    public Optional<Integer> getSearchArea() {
         return searchArea;
     }
 
-    public Boolean getNeedTrackUser() {
+    public void setSearchArea(Integer searchArea) {
+        this.searchArea = Optional.ofNullable(searchArea);
+    }
+
+    public Optional<Boolean> getNeedTrackUser() {
         return needTrackUser;
     }
 
-    public Set<EventDTO.EventStatus> getVisibleEventStatuses() {
+    public void setNeedTrackUser(Boolean needTrackUser) {
+        this.needTrackUser = Optional.ofNullable(needTrackUser);
+    }
+
+    public Optional<Set<EventDTO.EventStatus>> getVisibleEventStatuses() {
         return visibleEventStatuses;
+    }
+
+    public void setVisibleEventStatuses(Set<EventDTO.EventStatus> visibleEventStatuses) {
+        this.visibleEventStatuses = Optional.ofNullable(visibleEventStatuses);
+    }
+
+    public boolean isEmpty() {
+        return searchArea == null && needTrackUser == null && visibleEventStatuses == null;
     }
 }

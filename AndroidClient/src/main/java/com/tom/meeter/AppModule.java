@@ -1,13 +1,14 @@
 package com.tom.meeter;
 
 import static com.tom.meeter.infrastructure.common.Globals.getServerPath;
-import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createDefaultBuilder;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.common.RetrofitBuilder.createBuilder;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.tom.meeter.infrastructure.common.RetrofitBuilder;
 import com.tom.meeter.infrastructure.components.UserLoader;
 import com.tom.meeter.infrastructure.http.HttpClient;
 
@@ -22,7 +23,7 @@ public class AppModule {
     private static final String TAG = AppModule.class.getCanonicalName();
 
     public AppModule() {
-        Log.d(TAG, "Configuring AppModule...");
+        logMethod(TAG, this);
     }
 
     @Singleton
@@ -36,6 +37,6 @@ public class AppModule {
     @NonNull
     @Provides
     public UserLoader provideUserLoader(Application app) {
-        return createDefaultBuilder(app).create(UserLoader.class);
+        return createBuilder(app, RetrofitBuilder.jtm).create(UserLoader.class);
     }
 }

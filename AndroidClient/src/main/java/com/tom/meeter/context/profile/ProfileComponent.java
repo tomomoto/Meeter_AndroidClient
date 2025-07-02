@@ -3,6 +3,7 @@ package com.tom.meeter.context.profile;
 import android.app.Application;
 
 import com.tom.meeter.AppComponent;
+import com.tom.meeter.context.profile.component.StatusesFilterDialog;
 import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.profile.component.activity.SettingsActivity;
 import com.tom.meeter.context.profile.component.activity.SubscribersActivity;
@@ -50,5 +51,7 @@ public interface ProfileComponent {
     void inject(SubscriptionsActivity subscriptionsActivity);
 
     void inject(CreateEventFragment createEventFragment);
+
+    void inject(StatusesFilterDialog statusesFilterDialog);
 
 }
