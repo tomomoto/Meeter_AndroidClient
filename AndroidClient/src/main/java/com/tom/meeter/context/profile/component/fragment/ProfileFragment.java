@@ -136,7 +136,10 @@ public class ProfileFragment extends Fragment {
                         updateLayoutValues();
                     });
 
-        binding.events.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.events.setLayoutManager(
+              new GridLayoutManager(
+                    getContext(),
+                    EventsCardAdapter.calculateNoOfColumns(150)));
         binding.events.setAdapter(adapter);
 
         viewModel.getEvents()

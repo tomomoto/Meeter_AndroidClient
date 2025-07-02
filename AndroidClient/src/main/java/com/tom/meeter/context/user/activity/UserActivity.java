@@ -76,6 +76,10 @@ public class UserActivity extends AppCompatActivity {
             return;
         }
 
+        binding = ActivityUserBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         ((App) getApplication()).getUserComponent().inject(this);
 
         adapter.initialize(
@@ -109,10 +113,6 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void onInit(String token) {
-        binding = ActivityUserBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-
         binding.subscribeBtn.setOnClickListener(v -> {
             if (amISubscriber == null) {
                 // As not initialized atm...
@@ -153,11 +153,17 @@ public class UserActivity extends AppCompatActivity {
                     assistedFactory, userId, this, onAuthFail))
               .get(UserViewModel.class);
 
-        binding.events.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
+        binding.events.setLayoutManager(
+              new GridLayoutManager(
+                    this,
+                    EventsCardAdapter.calculateNoOfColumns(150)));
         binding.events.setAdapter(adapter);
 
         viewModel.getUser()
               .observe(this, user -> {
+                  binding.swipeRefreshLayout.setRefreshing(false);
                   binding.name.setText(user.getName());
                   binding.gender.setText(genderResolver(getApplicationContext(), user.getGender()));
 
