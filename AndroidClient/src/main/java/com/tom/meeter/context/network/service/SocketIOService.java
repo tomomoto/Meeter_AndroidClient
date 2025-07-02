@@ -1,10 +1,11 @@
 package com.tom.meeter.context.network.service;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.peekToken;
-import static com.tom.meeter.context.network.utils.SocketIOCodes.EVENT_CREATED_CODE;
 import static com.tom.meeter.context.network.utils.SocketIOCodes.NEW_SUBSCRIBER_CODE;
-import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationEventCreated;
+import static com.tom.meeter.context.notification.NotificationHelper.sendEventDeletedNotification;
+import static com.tom.meeter.context.notification.NotificationHelper.sendEventNotification;
 import static com.tom.meeter.context.notification.NotificationHelper.sendNotificationNewSubscriber;
+import static com.tom.meeter.infrastructure.common.CommonHelper.getAppLogo;
 import static com.tom.meeter.infrastructure.common.Globals.AUTH_HEADER;
 import static com.tom.meeter.infrastructure.common.Globals.getSocketIOPath;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -30,6 +31,8 @@ import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.network.domain.SearchForEvents;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.dto.UserDTO;
+import com.tom.meeter.context.network.exception.IncorrectResponseType;
+import com.tom.meeter.context.network.utils.SocketIOEventCode;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.eventbus.events.IncomeEvents;
 
@@ -68,6 +71,7 @@ public class SocketIOService extends Service {
     private static final String MESSAGE_KEY = "message";
     private static final String USER_KEY = "user";
     private static final String EVENT_KEY = "event";
+    private static final String EVENT_ID_KEY = "eventId";
 
     private static final String CHANNEL_ID = "socket_channel";
 
@@ -167,7 +171,7 @@ public class SocketIOService extends Service {
               .setContentTitle(getString(R.string.app_name))
               .setContentText(getString(R.string.press_to_open_the_application))
               .setContentIntent(pendingIntent)
-              .setSmallIcon(R.drawable.ic_meeter_lr)
+              .setSmallIcon(getAppLogo())
               .setOngoing(true)
               .build();
     }
@@ -254,7 +258,7 @@ public class SocketIOService extends Service {
 
     @Subscribe
     public void onMessageEvent(SearchForEvents event) {
-        Log.d(TAG, "onMessageEvent:SearchForEvents: " + event.toString());
+        Log.d(TAG, "onMessageEvent: [" + EVENTS_SEARCH_CHANNEL + "] : " + event);
         socketClient.emit(EVENTS_SEARCH_CHANNEL, event.toJson());
     }
 
@@ -262,13 +266,22 @@ public class SocketIOService extends Service {
         JSONObject response = getSimpleResponse(JSONObject.class, args);
         Log.d(TAG, EVENTS_NOTIFICATIONS_CHANNEL + " : " + response);
         try {
-            if (response.getInt(CODE_KEY) == EVENT_CREATED_CODE) {
-                JSONObject message = response.getJSONObject(MESSAGE_KEY);
-                sendNotificationEventCreated(
-                      this,
-                      UserDTO.encode(message.getJSONObject(USER_KEY)),
-                      EventDTO.encode(message.getJSONObject(EVENT_KEY)));
+            int code = response.getInt(CODE_KEY);
+            SocketIOEventCode eventNotifyCode = SocketIOEventCode.fromCode(code);
+            if (eventNotifyCode == null) {
+                Log.d(TAG, "Unrecognized event code: " + code);
+                return;
             }
+            JSONObject msg = response.getJSONObject(MESSAGE_KEY);
+            UserDTO user = new UserDTO(msg.getJSONObject(USER_KEY));
+
+            if (eventNotifyCode == SocketIOEventCode.DELETED) {
+                sendEventDeletedNotification(this, user, msg.getString(EVENT_ID_KEY));
+                return;
+            }
+            sendEventNotification(
+                  this, user, eventNotifyCode,
+                  new EventDTO(msg.getJSONObject(EVENT_KEY)));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -281,7 +294,7 @@ public class SocketIOService extends Service {
             if (response.getInt(CODE_KEY) == NEW_SUBSCRIBER_CODE) {
                 sendNotificationNewSubscriber(
                       this,
-                      UserDTO.encode(response.getJSONObject(MESSAGE_KEY)));
+                      new UserDTO(response.getJSONObject(MESSAGE_KEY)));
             }
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -320,15 +333,20 @@ public class SocketIOService extends Service {
     }
 
     private static void eventsSearchHandler(Object... args) {
-        JSONArray response = getSimpleResponse(JSONArray.class, args);
-        Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
-        EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
+        try {
+            JSONArray response = getSimpleResponse(JSONArray.class, args);
+            Log.d(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
+            EventBus.getDefault().post(IncomeEvents.fromJsonArray(response));
+        } catch (IncorrectResponseType e) {
+            JSONObject response = getSimpleResponse(JSONObject.class, args);
+            Log.e(TAG, EVENTS_SEARCH_CHANNEL + " : " + response);
+        }
     }
 
     private static <T> T getSimpleResponse(
           Class<T> aClass, Object[] args) {
         if (!validateSingleMessageResponse(aClass, args)) {
-            throw new RuntimeException("Incorrect response for " + aClass
+            throw new IncorrectResponseType("Incorrect response for " + aClass
                   + " with response " + Arrays.toString(args));
         }
         return (T) args[0];

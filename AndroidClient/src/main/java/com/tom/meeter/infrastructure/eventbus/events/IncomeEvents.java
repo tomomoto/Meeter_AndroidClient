@@ -17,7 +17,7 @@ public record IncomeEvents(List<EventDTO> events) {
     public static IncomeEvents fromJsonArray(JSONArray msg) {
         List<EventDTO> events = new ArrayList<>();
         for (int i = 0; i < msg.length(); i++) {
-            events.add(EventDTO.encode((JSONObject) msg.opt(i)));
+            events.add(new EventDTO((JSONObject) msg.opt(i)));
         }
         return new IncomeEvents(events);
     }

@@ -12,7 +12,9 @@ import dagger.Component;
 
 @UserScope
 @Component(
-      dependencies = {AppComponent.class})
+      modules = {UserModule.class},
+      dependencies = {AppComponent.class}
+)
 public interface UserComponent {
 
     @Component.Builder

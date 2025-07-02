@@ -4,21 +4,23 @@ import static com.tom.meeter.infrastructure.common.JsonHelper.getDoubleOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getOffsetDateTimeOrNull;
 import static com.tom.meeter.infrastructure.common.JsonHelper.getStringOrNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * created by Tom on 10.02.2017.
  */
-public class EventDTO implements EntityBase {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class EventDTO extends ServerEntityBase {
 
-    private static final String EVENT_ID_KEY = "id";
-    private static final String NAME_KEY = "name";
     private static final String DESCRIPTION_KEY = "description";
     private static final String CREATOR_ID_KEY = "creator_id";
     private static final String LATITUDE_KEY = "latitude";
@@ -26,17 +28,13 @@ public class EventDTO implements EntityBase {
     private static final String CREATED_KEY = "created";
     private static final String STARTING_KEY = "starting";
     private static final String ENDING_KEY = "ending";
-    private static final String PHOTO_PATH_KEY = "photo_path";
     private static final String CITY_KEY = "city";
+    private static final String STATUS_KEY = "status";
 
     //Non nullable, cannot be changed
-    private String id;
     @JsonProperty(value = CREATOR_ID_KEY)
     private String creatorId;
     private OffsetDateTime created;
-
-    //Non nullable, can be changed
-    private String name;
 
     //Nullable
     private String description;
@@ -45,34 +43,30 @@ public class EventDTO implements EntityBase {
     private OffsetDateTime starting;
     private OffsetDateTime ending;
     private String city;
-    @JsonProperty(value = PHOTO_PATH_KEY)
-    private String photoPath;
+    private EventStatus status;
 
-    public static EventDTO encode(JSONObject json) {
-        EventDTO result = new EventDTO();
+    public EventDTO() {
+        //retrofit...
+    }
+
+    public EventDTO(JSONObject json) {
+        super(json);
         try {
             //Non nullable.
-            result.id = json.getString(EVENT_ID_KEY);
-            result.name = json.getString(NAME_KEY);
-            result.creatorId = json.getString(CREATOR_ID_KEY);
-            result.created = OffsetDateTime.parse(json.getString(CREATED_KEY));
+            creatorId = json.getString(CREATOR_ID_KEY);
+            created = OffsetDateTime.parse(json.getString(CREATED_KEY));
 
             //Nullable.
-            result.description = getStringOrNull(DESCRIPTION_KEY, json);
-            result.latitude = getDoubleOrNull(LATITUDE_KEY, json);
-            result.longitude = getDoubleOrNull(LONGITUDE_KEY, json);
-            result.starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
-            result.ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
-            result.photoPath = getStringOrNull(PHOTO_PATH_KEY, json);
-            result.city = getStringOrNull(CITY_KEY, json);
+            description = getStringOrNull(DESCRIPTION_KEY, json);
+            latitude = getDoubleOrNull(LATITUDE_KEY, json);
+            longitude = getDoubleOrNull(LONGITUDE_KEY, json);
+            starting = getOffsetDateTimeOrNull(STARTING_KEY, json);
+            ending = getOffsetDateTimeOrNull(ENDING_KEY, json);
+            city = getStringOrNull(CITY_KEY, json);
+            status = EventStatus.fromString(json.getString(STATUS_KEY));
         } catch (JSONException e) {
             throw new RuntimeException("Unable to encode EventDTO from jsonObject: ", e);
         }
-        return result;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setLatitude(Double latitude) {
@@ -83,20 +77,8 @@ public class EventDTO implements EntityBase {
         this.longitude = longitude;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public void setCreated(OffsetDateTime created) {
-        this.created = created;
     }
 
     public void setStarting(OffsetDateTime starting) {
@@ -111,17 +93,8 @@ public class EventDTO implements EntityBase {
         this.city = city;
     }
 
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    public void setStatus(EventStatus eventStatus) {
+        this.status = eventStatus;
     }
 
     public String getDescription() {
@@ -152,35 +125,108 @@ public class EventDTO implements EntityBase {
         return ending;
     }
 
-    public String getPhotoPath() {
-        return photoPath;
-    }
-
     public String getCity() {
         return city;
+    }
+
+    public EventStatus getStatus() {
+        return status;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         EventDTO eventDTO = (EventDTO) o;
-        return Objects.equals(id, eventDTO.id)
-              && Objects.equals(name, eventDTO.name)
+        return Objects.equals(creatorId, eventDTO.creatorId)
+              && Objects.equals(created, eventDTO.created)
               && Objects.equals(description, eventDTO.description)
               && Objects.equals(latitude, eventDTO.latitude)
               && Objects.equals(longitude, eventDTO.longitude)
-              && Objects.equals(creatorId, eventDTO.creatorId)
-              && Objects.equals(created, eventDTO.created)
               && Objects.equals(starting, eventDTO.starting)
               && Objects.equals(ending, eventDTO.ending)
               && Objects.equals(city, eventDTO.city)
-              && Objects.equals(photoPath, eventDTO.photoPath);
+              && Objects.equals(status, eventDTO.status);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-              id, name, description, latitude, longitude, creatorId,
-              created, starting, ending, city, photoPath);
+              super.hashCode(), creatorId, created,
+              description, latitude, longitude,
+              starting, ending, city, status);
+    }
+
+
+    private static final String CREATED_VALUE = "CREATED";
+    private static final String PUBLISHED_VALUE = "PUBLISHED";
+    private static final String UNPUBLISHED_VALUE = "UNPUBLISHED";
+    private static final String SCHEDULED_VALUE = "SCHEDULED";
+    private static final String STARTED_VALUE = "STARTED";
+    private static final String PAUSED_VALUE = "PAUSED";
+    private static final String RESUMED_VALUE = "RESUMED";
+    private static final String FINISHED_VALUE = "FINISHED";
+    private static final String CANCELLED_VALUE = "CANCELLED";
+    private static final String ARCHIVED_VALUE = "ARCHIVED";
+
+    public enum EventStatus {
+
+        @JsonProperty(CREATED_VALUE)
+        CREATED(CREATED_VALUE),
+        @JsonProperty(PUBLISHED_VALUE)
+        PUBLISHED(PUBLISHED_VALUE),
+        @JsonProperty(UNPUBLISHED_VALUE)
+        UNPUBLISHED(UNPUBLISHED_VALUE),
+        @JsonProperty(SCHEDULED_VALUE)
+        SCHEDULED(SCHEDULED_VALUE),
+        @JsonProperty(STARTED_VALUE)
+        STARTED(STARTED_VALUE),
+        @JsonProperty(PAUSED_VALUE)
+        PAUSED(PAUSED_VALUE),
+        @JsonProperty(RESUMED_VALUE)
+        RESUMED(RESUMED_VALUE),
+        @JsonProperty(FINISHED_VALUE)
+        FINISHED(FINISHED_VALUE),
+        @JsonProperty(CANCELLED_VALUE)
+        CANCELLED(CANCELLED_VALUE),
+        @JsonProperty(ARCHIVED_VALUE)
+        ARCHIVED(ARCHIVED_VALUE);
+
+        private final String value;
+
+        EventStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static EventStatus fromString(String text) {
+            for (EventStatus val : EventStatus.values()) {
+                if (val.value.equalsIgnoreCase(text)) {
+                    return val;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with string value " + text);
+        }
+
+        public static Set<String> transformToStrings(
+              Set<EventDTO.EventStatus> statuses) {
+            Set<String> result = new HashSet<>(statuses.size());
+            for (EventDTO.EventStatus status : statuses) {
+                result.add(status.getValue());
+            }
+            return result;
+        }
+
+        public static Set<EventDTO.EventStatus> transformToEnums(
+              Set<String> statuses) {
+            Set<EventDTO.EventStatus> result = new HashSet<>(statuses.size());
+            for (String status : statuses) {
+                result.add(EventDTO.EventStatus.fromString(status));
+            }
+            return result;
+        }
     }
 }

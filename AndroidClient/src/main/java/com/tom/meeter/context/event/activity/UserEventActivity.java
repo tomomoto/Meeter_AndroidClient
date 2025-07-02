@@ -7,6 +7,7 @@ import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
 import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.handleEventStatus;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
@@ -108,6 +109,7 @@ public class UserEventActivity extends AppCompatActivity {
         binding.locationMapButton.setOnClickListener(
               v -> dispatchToEventOnMapActivity(this, event.getId()));
 
+        handleEventStatus(this, binding.status, event.getStatus());
         binding.name.setText(event.getName());
         binding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(event.getCreated()));
         binding.description.setText(event.getDescription());

@@ -9,6 +9,8 @@ import com.tom.meeter.context.auth.AuthComponent;
 import com.tom.meeter.context.auth.DaggerAuthComponent;
 import com.tom.meeter.context.event.DaggerEventComponent;
 import com.tom.meeter.context.event.EventComponent;
+import com.tom.meeter.context.profile.DaggerProfileComponent;
+import com.tom.meeter.context.profile.ProfileComponent;
 import com.tom.meeter.context.user.DaggerUserComponent;
 import com.tom.meeter.context.user.UserComponent;
 
@@ -19,6 +21,7 @@ public class App extends Application {
     private AuthComponent authComponent;
     private EventComponent eventComponent;
     private UserComponent userComponent;
+    private ProfileComponent profileComponent;
 
     @Override
     public void onCreate() {
@@ -32,6 +35,7 @@ public class App extends Application {
 
         /* Dependent */
         eventComponent = buildEventComponent();
+        profileComponent = buildProfileComponent();
         userComponent = buildUserComponent();
 
 
@@ -71,6 +75,13 @@ public class App extends Application {
               .build();
     }
 
+    protected ProfileComponent buildProfileComponent() {
+        return DaggerProfileComponent.builder()
+              .application(this)
+              .appComponent(component)
+              .build();
+    }
+
     public AppComponent getComponent() {
         return component;
     }
@@ -85,5 +96,9 @@ public class App extends Application {
 
     public UserComponent getUserComponent() {
         return userComponent;
+    }
+
+    public ProfileComponent getProfileComponent() {
+        return profileComponent;
     }
 }

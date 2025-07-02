@@ -4,13 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tom.meeter.context.network.dto.EntityBase;
+import com.tom.meeter.context.network.dto.BaseEntity;
 import com.tom.meeter.infrastructure.components.binder.BaseViewHolderBinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends EntityBase>
+public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends BaseEntity>
       extends RecyclerView.Adapter<VH> {
 
     protected final BaseViewHolderBinder<VH, T> binder;
@@ -38,7 +38,7 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder, T extends 
         return targets.size();
     }
 
-    public static class EntityBaseDiffCallback<T extends EntityBase>
+    public static class EntityBaseDiffCallback<T extends BaseEntity>
           extends DiffUtil.Callback {
 
         private final List<T> oldTargets, newTargets;

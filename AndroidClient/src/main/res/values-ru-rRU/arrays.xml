@@ -14,4 +14,15 @@
         <item>entry_values4</item>
         <item>entry_values5</item>
     </string-array>
+    <string-array name="statuses">
+        <item>Создано</item>
+        <item>Опубликовано</item>
+        <item>Снято c публикации</item>
+        <item>Запланировано</item>
+        <item>Началось</item>
+        <item>Остановлено</item>
+        <item>Продолжено</item>
+        <item>Отменено</item>
+        <item>Завершено</item>
+    </string-array>
 </resources>

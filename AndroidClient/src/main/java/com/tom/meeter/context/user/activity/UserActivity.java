@@ -27,8 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
-import com.tom.meeter.context.image.ImageDownloader;
-import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.factory.UserAssistedFactory;
 import com.tom.meeter.context.user.service.UserService;
@@ -36,7 +35,6 @@ import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.components.adapter.EventsCardAdapter;
-import com.tom.meeter.infrastructure.components.binder.SimpleEventBinderImpl;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
@@ -59,14 +57,14 @@ public class UserActivity extends AppCompatActivity {
     @Inject
     UserAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imgDownloader;
+    EventsCardAdapter adapter;
 
     private ActivityUserBinding binding;
     private UserViewModel viewModel;
     private String userId;
     private AccountManager accountManager;
-    private EventsCardAdapter adapter;
     private Boolean amISubscriber;
+    private final Runnable onAuthFail = this::recreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +78,9 @@ public class UserActivity extends AppCompatActivity {
 
         ((App) getApplication()).getUserComponent().inject(this);
 
-        adapter = new EventsCardAdapter(
-              new SimpleEventBinderImpl(
-                    this, imgDownloader,
-                    event -> dispatchToEventActivity(this, event.getId()), this::recreate));
+        adapter.initialize(
+              this, onAuthFail,
+              event -> dispatchToEventActivity(this, event.getId()));
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
@@ -123,7 +120,7 @@ public class UserActivity extends AppCompatActivity {
             }
             if (amISubscriber) {
                 userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
-                      new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
+                      new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
@@ -136,7 +133,7 @@ public class UserActivity extends AppCompatActivity {
                       });
             } else {
                 userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(
-                      new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
+                      new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
                               super.onResponse(call, resp);
@@ -153,7 +150,7 @@ public class UserActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, userId, this, this::recreate))
+                    assistedFactory, userId, this, onAuthFail))
               .get(UserViewModel.class);
 
         binding.events.setLayoutManager(new GridLayoutManager(this, 2));

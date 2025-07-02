@@ -12,6 +12,7 @@ import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
 import static com.tom.meeter.context.image.activity.BaseUploadActivity.PHOTO_PATH_RESULT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
+import static com.tom.meeter.infrastructure.common.CommonHelper.handleEventStatus;
 import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
 import static com.tom.meeter.infrastructure.common.DateHelper.showDateTimePicker;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
@@ -44,7 +45,7 @@ import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.image.activity.UploadEventImageActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
-import com.tom.meeter.context.profile.activity.ProfileActivity;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
@@ -258,6 +259,7 @@ public class ProfileEventActivity extends AppCompatActivity {
 
     private void updateLayout() {
         binding.photoPath.setText(eventCache.getPhotoPath());
+        handleEventStatus(this, binding.status, eventCache.getStatus());
         binding.name.setText(eventCache.getName());
         binding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(eventCache.getCreated()));
 

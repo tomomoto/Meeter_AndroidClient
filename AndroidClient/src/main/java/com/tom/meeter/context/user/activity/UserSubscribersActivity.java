@@ -18,13 +18,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.adapter.UsersAdapter;
+import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscribersAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscribersViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscribersBinding;
-import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 
 import javax.inject.Inject;
 
@@ -37,13 +35,12 @@ public class UserSubscribersActivity extends AppCompatActivity {
     @Inject
     UserSubscribersAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imgDownloader;
+    UsersAdapter adapter;
 
     private final Runnable onAuthFail = this::recreate;
     private AccountManager accountManager;
     private ActivityProfileSubscribersBinding binding;
     private UserSubscribersViewModel viewModel;
-    private UsersAdapter adapter;
     private String userId;
 
     @Override
@@ -68,9 +65,7 @@ public class UserSubscribersActivity extends AppCompatActivity {
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        adapter = new UsersAdapter(
-              this,
-              new UserBinderImpl(this, imgDownloader, onAuthFail));
+        adapter.initialize(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);

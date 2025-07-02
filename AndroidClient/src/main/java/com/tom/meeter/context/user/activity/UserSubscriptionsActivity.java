@@ -18,13 +18,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.tom.meeter.App;
-import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.context.user.adapter.UsersAdapter;
+import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscriptionsAssistedFactory;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
-import com.tom.meeter.infrastructure.components.binder.UserBinderImpl;
 
 import javax.inject.Inject;
 
@@ -37,13 +35,13 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
     @Inject
     UserSubscriptionsAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imgDownloader;
+    UsersAdapter adapter;
 
     private ActivityProfileSubscriptionsBinding binding;
     private UserSubscriptionsViewModel viewModel;
-    private UsersAdapter adapter;
     private AccountManager accountManager;
     private String userId;
+    private final Runnable onAuthFail = this::recreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +62,14 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
             return;
         }
 
+        binding = ActivityProfileSubscriptionsBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         ((App) getApplication()).getUserComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        adapter = new UsersAdapter(
-              this,
-              new UserBinderImpl(this, imgDownloader, this::recreate));
+        adapter.initialize(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, accountManager, this, tokenService);
@@ -77,14 +77,11 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
 
     private void onInit(String token) {
         logMethod(TAG, this);
-        binding = ActivityProfileSubscriptionsBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
 
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, userId, this, this::recreate))
+                    assistedFactory, userId, this, onAuthFail))
               .get(UserSubscriptionsViewModel.class);
 
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
