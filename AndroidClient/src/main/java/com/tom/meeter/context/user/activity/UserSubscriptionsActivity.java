@@ -84,11 +84,16 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
                     assistedFactory, userId, this, onAuthFail))
               .get(UserSubscriptionsViewModel.class);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
         binding.recyclerSubscriptions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscriptions.setAdapter(adapter);
 
         viewModel.getSubscriptions()
-              .observe(this, subs -> adapter.setData(subs));
+              .observe(this, subs -> {
+                  binding.swipeRefreshLayout.setRefreshing(false);
+                  adapter.setData(subs);
+              });
     }
 
     @Nullable

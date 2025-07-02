@@ -67,8 +67,13 @@ public class SubscriptionsActivity extends AppCompatActivity {
               assistedFactory.factory(assistedFactory, this, onAuthFail))
               .get(ProfileSubscriptionsViewModel.class);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
         viewModel.getSubscriptions()
-              .observe(this, subs -> adapter.setData(subs));
+              .observe(this, subs -> {
+                  binding.swipeRefreshLayout.setRefreshing(false);
+                  adapter.setData(subs);
+              });
     }
 
     @Override

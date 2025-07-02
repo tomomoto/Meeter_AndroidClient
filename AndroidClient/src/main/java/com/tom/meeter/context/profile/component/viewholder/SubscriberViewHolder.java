@@ -24,8 +24,9 @@ public class SubscriberViewHolder extends RecyclerView.ViewHolder {
         binding.subscriberName.setText(name + " " + surname);
         if (photo != null) {
             binding.photo.setImageBitmap(photo);
+        } else {
+            binding.photo.setImageResource(R.drawable.user_500x500_removebg);
         }
-
         binding.subUnsubBtn.setOnClickListener(subUnSubClickListener);
         binding.subCard.setOnClickListener(cardClickListener);
         binding.subUnsubBtn.setText(isAmSubscribedTo ? R.string.unsubscribe : R.string.subscribe);

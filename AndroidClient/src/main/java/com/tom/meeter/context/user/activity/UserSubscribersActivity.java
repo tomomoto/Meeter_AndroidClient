@@ -86,8 +86,13 @@ public class UserSubscribersActivity extends AppCompatActivity {
                     assistedFactory, userId, this, onAuthFail))
               .get(UserSubscribersViewModel.class);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
         viewModel.getSubscribers()
-              .observe(this, subs -> adapter.setData(subs));
+              .observe(this, subs -> {
+                  binding.swipeRefreshLayout.setRefreshing(false);
+                  adapter.setData(subs);
+              });
     }
 
     @Nullable
