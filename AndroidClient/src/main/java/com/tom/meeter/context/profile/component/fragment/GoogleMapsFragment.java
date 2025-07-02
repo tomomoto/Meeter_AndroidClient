@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -73,25 +72,24 @@ public class GoogleMapsFragment extends Fragment
     private static final String TAG = GoogleMapsFragment.class.getCanonicalName();
     private static final LatLng DEFAULT = new LatLng(0.0, 0.0);
 
+    @Inject
+    ImageDownloader imageDownloader;
     private ServiceConnection locationServiceConnection;
     private LocationTrackerService locationService;
 
     private String meString;
+    private BitmapDescriptor userIcon;
     private boolean trackUser;
     private int searchArea;
 
     private boolean firstOpening = true;
+    private boolean needLocationUpdates = true;
     private Marker userMarker = null;
     private Circle searchCircle = null;
     private GoogleMap gmap = null;
     private CameraPosition camPosition = null;
     private final Map<String, GMapEvent> events = new HashMap<>();
-    private BitmapDescriptor userIcon;
-
     private GMapEvent lastClickedEvent;
-
-    @Inject
-    ImageDownloader imageDownloader;
 
     public GoogleMapsFragment() {
         logMethod(TAG, this);
@@ -107,12 +105,13 @@ public class GoogleMapsFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        logMethod(TAG, this);
+        logMethod(TAG, this, "Registering event bus");
         readPreferences();
 
         ((App) getActivity().getApplication()).getProfileComponent().inject(this);
 
-        MapsInitializer.initialize(getContext());
+        Context ctx = requireContext();
+        MapsInitializer.initialize(ctx);
         userIcon = BitmapDescriptorFactory.fromBitmap(
               Bitmap.createScaledBitmap(
                     BitmapFactory.decodeResource(
@@ -120,8 +119,6 @@ public class GoogleMapsFragment extends Fragment
 
 
         EventBus.getDefault().register(this);
-
-        Log.d(TAG, "GoogleMapsFragment registered event bus");
 
         locationServiceConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -133,14 +130,12 @@ public class GoogleMapsFragment extends Fragment
             public void onServiceDisconnected(ComponentName name) {
                 logMethod(TAG, this);
                 locationService = null;
+                locationServiceConnection = null;
             }
         };
-        Context ctx = getContext();
-        if (ctx == null) {
-            throw new IllegalStateException("Context is null");
-        }
-        Intent service = new Intent(ctx, LocationTrackerService.class);
-        ctx.bindService(service, locationServiceConnection, BIND_AUTO_CREATE);
+        ctx.bindService(
+              new Intent(ctx, LocationTrackerService.class),
+              locationServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -151,12 +146,10 @@ public class GoogleMapsFragment extends Fragment
         opts.zoomControlsEnabled(true);
         SupportMapFragment sMapFragment = SupportMapFragment.newInstance(opts);
         sMapFragment.getMapAsync(this);
-        FragmentManager fm = getFragmentManager();
-        if (fm != null) {
-            fm.beginTransaction()
-                  .replace(R.id.event_fragment_sub_fragment_gmap, sMapFragment)
-                  .commit();
-        }
+        getParentFragmentManager()
+              .beginTransaction()
+              .replace(R.id.event_fragment_sub_fragment_gmap, sMapFragment)
+              .commit();
         return inflater.inflate(R.layout.sub_fragment_gmaps, container, false);
     }
 
@@ -168,19 +161,17 @@ public class GoogleMapsFragment extends Fragment
         putExistingMarkersOnMap();
 
         if (locationService == null) {
-            Log.w(TAG, "Location service is not ready...");
+            Log.d(TAG, "Location service is not ready yet or already uninstalled.");
         }
         LatLng lastKnownUserLocation = null;
         if (locationService != null && locationService.canGetLocation()) {
             Location lkl = locationService.getLastKnownLocation();
             if (lkl != null) {
+                needLocationUpdates = false;
                 lastKnownUserLocation = mapToLatTng(lkl);
             } else {
                 Log.w(TAG, "Can get location, but service returns null.");
             }
-        } else {
-            Toast.makeText(getContext(), R.string.location_is_disabled, Toast.LENGTH_SHORT).show();
-            Log.w(TAG, "Unable to get last known user location.");
         }
 
         moveCamera(lastKnownUserLocation, gmap, firstOpening, camPosition);
@@ -204,32 +195,54 @@ public class GoogleMapsFragment extends Fragment
 
     @Override
     public void onLocationChanged(Location location) {
-        logMethod(TAG, this);
-        if (trackUser) {
-            Toast.makeText(getContext(), R.string.location_changed, Toast.LENGTH_SHORT).show();
+        logMethod(TAG, this,
+              "trackUser? " + trackUser +
+                    ", needLocationUpdates? " + needLocationUpdates);
+        if (trackUser || needLocationUpdates) {
             if (gmap == null) {
-                Log.w(TAG, "Gmap is not ready...");
+                Toast.makeText(
+                            requireContext(),
+                            "Skip location update since google map is not ready",
+                            Toast.LENGTH_SHORT)
+                      .show();
+
+                Log.w(TAG, "Skip location update since google map is not ready.");
                 if (userMarker != null) {
                     userMarker.setPosition(mapToLatTng(location));
                 }
             } else {
-                if (userMarker == null) {
-                    userMarker = gmap.addMarker(createUserMarkerOptions(mapToLatTng(location)));
-                } else {
-                    userMarker.setPosition(mapToLatTng(location));
-                }
+                needLocationUpdates = false;
+                moveUserMarker(location);
                 searchCircle.setCenter(userMarker.getPosition());
-                if (camPosition != null) {
-                    gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userMarker.getPosition(), camPosition.zoom), 1200, null);
+                gmap.animateCamera(
+                      CameraUpdateFactory.newLatLngZoom(
+                            mapToLatTng(location), ZOOM_VALUE), 6000, null);
+                if (!trackUser) {
+                    uninstallLocationService();
                 }
             }
+        } else {
+            uninstallLocationService();
+        }
+    }
+
+    private void moveUserMarker(Location location) {
+        LatLng latLng = mapToLatTng(location);
+        if (userMarker == null) {
+            userMarker = gmap.addMarker(createUserMarkerOptions(latLng));
+        } else {
+            userMarker.setPosition(latLng);
         }
     }
 
     private void idleListener() {
+        assert searchCircle != null;
         if (camPosition == null
               || camPosition.target.latitude != gmap.getCameraPosition().target.latitude
               || camPosition.target.longitude != gmap.getCameraPosition().target.longitude) {
+            if (needLocationUpdates) {
+                return;
+            }
             camPosition = gmap.getCameraPosition();
             LatLng position = camPosition.target;
             Log.d(TAG, "onCameraIdleListener() target:" + position + " zoom:" + camPosition.zoom);
@@ -250,7 +263,7 @@ public class GoogleMapsFragment extends Fragment
         }
         if (target.equals(lastClickedEvent)) {
             Log.d(TAG, "Double Click on: " + target.getName());
-            dispatchToEventActivity(getContext(), target.getId());
+            dispatchToEventActivity(requireContext(), target.getId());
             return false;
         }
         lastClickedEvent = target;
@@ -295,12 +308,21 @@ public class GoogleMapsFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
         logMethod(TAG, this);
+        uninstallLocationService();
+        EventBus.getDefault().unregister(this);
+        Log.d(TAG, "GoogleMapsFragment Unregistered event bus");
+    }
+
+    private void uninstallLocationService() {
+        logMethod(TAG, this);
         if (locationService != null) {
             locationService.removeLocationTrackerListener(this);
         }
-        getContext().unbindService(locationServiceConnection);
-        EventBus.getDefault().unregister(this);
-        Log.d(TAG, "GoogleMapsFragment Unregistered event bus");
+        if (locationServiceConnection != null) {
+            requireContext().unbindService(locationServiceConnection);
+        }
+        locationServiceConnection = null;
+        locationService = null;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -355,13 +377,17 @@ public class GoogleMapsFragment extends Fragment
     }
 
     public static void moveCamera(
-          LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening, CameraPosition camPosition) {
+          LatLng lastKnownUserLocation, GoogleMap gmap, boolean firstOpening,
+          CameraPosition camPosition) {
         if (firstOpening) {
             if (lastKnownUserLocation != null) {
-                gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastKnownUserLocation, ZOOM_VALUE), 6000, null);
+                gmap.animateCamera(
+                      CameraUpdateFactory.newLatLngZoom(
+                            lastKnownUserLocation, ZOOM_VALUE), 6000, null);
             }
         } else if (camPosition != null) {
-            gmap.moveCamera(CameraUpdateFactory.newCameraPosition(camPosition));
+            gmap.moveCamera(
+                  CameraUpdateFactory.newCameraPosition(camPosition));
         }
     }
 

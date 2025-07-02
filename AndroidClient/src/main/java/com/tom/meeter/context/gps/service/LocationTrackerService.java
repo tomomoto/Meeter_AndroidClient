@@ -201,7 +201,7 @@ public class LocationTrackerService extends Service {
     }
 
     private void dumpCurrentListeners() {
-        logMethod(TAG, this);
+        logMethod(TAG, this, "listeners size: " + listeners.size());
         for (LocationTrackerListener l : listeners) {
             Log.d(TAG, l.toString());
         }

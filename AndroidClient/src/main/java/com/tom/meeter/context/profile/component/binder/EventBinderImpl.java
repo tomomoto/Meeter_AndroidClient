@@ -57,7 +57,7 @@ public class EventBinderImpl implements EventBinder<EventViewHolder> {
 
     @Override
     public void bind(EventViewHolder holder, EventDTO event) {
-        Log.d(TAG, "Current thread: " + Thread.currentThread().getName());
+        //Log.d(TAG, "Current thread: " + Thread.currentThread().getName());
         String photoPath = event.getPhotoPath();
 
         Bitmap cachedPhoto = photoPath != null

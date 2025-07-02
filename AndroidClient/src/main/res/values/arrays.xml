@@ -14,5 +14,17 @@
         <item>entry_values4</item>
         <item>entry_values5</item>
     </string-array>
+    <string-array name="statuses">
+        <item>Created</item>
+        <item>Published</item>
+        <item>Unpublished</item>
+        <item>Scheduled</item>
+        <item>Started</item>
+        <item>Paused</item>
+        <item>Resumed</item>
+        <item>Cancelled</item>
+        <item>Finished</item>
+        <item>Archived</item>
+    </string-array>
 
 </resources>

@@ -41,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Inject
     SettingsService settingsService;
 
-    SettingsActivityBinding binding;
+    private SettingsActivityBinding binding;
 
     private AccountManager accountManager;
 

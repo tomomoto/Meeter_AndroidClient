@@ -4,6 +4,8 @@ import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getSingleAccount;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.invalidateToken;
+import static com.tom.meeter.context.profile.component.activity.DrawerUtils.getIconProvider;
+import static com.tom.meeter.context.profile.component.activity.DrawerUtils.updateIconFor;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.utils.Utils.requireNonNull;
 
@@ -15,6 +17,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -28,18 +32,11 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.mikepenz.fastadapter.FastAdapter;
-import com.mikepenz.fastadapter.IItem;
-import com.mikepenz.fastadapter.listeners.OnBindViewHolderListenerImpl;
-import com.mikepenz.fontawesome_typeface_library.FontAwesome;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.typeface.IIcon;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.holder.ImageHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -49,7 +46,9 @@ import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.network.service.SocketIOService;
+import com.tom.meeter.context.profile.component.FilterBottomSheetDialog;
 import com.tom.meeter.context.profile.component.fragment.CreateEventFragment;
 import com.tom.meeter.context.profile.component.fragment.EventsFragment;
 import com.tom.meeter.context.profile.component.fragment.ProfileEventsFragment;
@@ -66,6 +65,7 @@ import com.tom.meeter.infrastructure.http.HttpCodes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -78,24 +78,24 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = ProfileActivity.class.getCanonicalName();
 
-    private static final long DRAWER_PROFILE_ID = 0;
-    private static final String PROFILE_FRAGMENT_TAG = "profile_fragment_tag";
+    static final long DRAWER_PROFILE_ID = 0;
+    static final String PROFILE_FRAGMENT_TAG = "profile_fragment_tag";
 
-    private static final long DRAWER_EVENTS_ID = 1;
-    private static final String EVENTS_FRAGMENT_TAG = "events_fragment_tag";
+    static final long DRAWER_EVENTS_ID = 1;
+    static final String EVENTS_FRAGMENT_TAG = "events_fragment_tag";
 
-    private static final long DRAWER_NEW_EVENT_ID = 2;
-    private static final String NEW_EVENT_FRAGMENT_TAG = "new_event_fragment_tag";
+    static final long DRAWER_NEW_EVENT_ID = 2;
+    static final String NEW_EVENT_FRAGMENT_TAG = "new_event_fragment_tag";
 
-    private static final long DRAWER_NOTIFICATION_ID = 3;
-    private static final String NOTIFICATIONS_FRAGMENT_TAG = "notifications_fragment_tag";
+    static final long DRAWER_NOTIFICATION_ID = 3;
+    static final String NOTIFICATIONS_FRAGMENT_TAG = "notifications_fragment_tag";
 
-    private static final long DRAWER_SETTINGS_ID = 10; // -> no need a tag.
+    static final long DRAWER_SETTINGS_ID = 10; // -> no need a tag.
 
-    private static final long DRAWER_HELP_ID = 11;
-    private static final long DRAWER_OPEN_SOURCE_ID = 12;
-    private static final long DRAWER_CONTACT_ID = 13;
-    private static final long DRAWER_LOGOUT_ID = 99;
+    static final long DRAWER_HELP_ID = 11;
+    static final long DRAWER_OPEN_SOURCE_ID = 12;
+    static final long DRAWER_CONTACT_ID = 13;
+    static final long DRAWER_LOGOUT_ID = 99;
 
     private static final Map<Long, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
 
@@ -116,7 +116,10 @@ public class ProfileActivity extends AppCompatActivity {
          */
     }
 
-    private enum IconPackEnum {
+    private Toolbar toolbar;
+    private boolean showMenu = false;
+
+    enum IconPackEnum {
         FONT_AWESOME,
         GOOGLE_MATERIALS
     }
@@ -154,6 +157,35 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        logMethod(TAG, this);
+        if (showMenu) {
+            getMenuInflater().inflate(R.menu.events_menu, menu);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        logMethod(TAG, this, item.getItemId());
+        if (item.getItemId() == R.id.action_filter) {
+            new FilterBottomSheetDialog()
+                  .show(getSupportFragmentManager(), "FilterDialog");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void hideToolbar() {
+        toolbar.setVisibility(View.GONE);
+    }
+
+    private void showToolbar() {
+        toolbar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -179,7 +211,7 @@ public class ProfileActivity extends AppCompatActivity {
               this, new Intent(this, SocketIOService.class));
         setupPreferences();
 
-        Toolbar toolbar = binding.profileActivityToolbar;
+        toolbar = binding.profileActivityToolbar;
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -189,7 +221,7 @@ public class ProfileActivity extends AppCompatActivity {
         setupDrawer(toolbar, icons);
 
         drawer.getAdapter()
-              .withOnBindViewHolderListener(new OnBindViewHolderListenerImplBase());
+              .withOnBindViewHolderListener(new DrawerUtils.OnBindViewHolderListenerImplBase());
 
         if (savedInstanceState == null) {
             lastNavItemId = DRAWER_PROFILE_ID;
@@ -217,7 +249,7 @@ public class ProfileActivity extends AppCompatActivity {
                           return;
                       }
                       // As settings exist on the server...
-                      updatePreferences(res.body());
+                      updateLocalPreferences(res.body());
                   }
               });
     }
@@ -237,7 +269,7 @@ public class ProfileActivity extends AppCompatActivity {
                           return;
                       }
                       // As settings exist on the server...
-                      updatePreferences(res.body());
+                      updateLocalPreferences(res.body());
                   }
               });
     }
@@ -268,7 +300,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void updatePreferences(SettingsResponse res) {
+    private void updateLocalPreferences(SettingsResponse res) {
         SharedPreferences.Editor edit = getDefaultSharedPreferences(this).edit();
         Integer searchArea = res.getSearchArea();
         if (searchArea != null) {
@@ -278,7 +310,12 @@ public class ProfileActivity extends AppCompatActivity {
         if (needTrackUser != null) {
             edit.putBoolean(getString(R.string.prefs_need_track_user), needTrackUser);
         }
-        if (searchArea != null || needTrackUser != null) {
+        Set<EventDTO.EventStatus> statuses = res.getVisibleEventStatuses();
+        if (needTrackUser != null) {
+            edit.putBoolean(getString(R.string.prefs_visible_event_statuses), needTrackUser);
+        }
+
+        if (searchArea != null || needTrackUser != null || statuses != null) {
             edit.apply();
         }
     }
@@ -327,6 +364,7 @@ public class ProfileActivity extends AppCompatActivity {
                 DRAWER_OPEN_SOURCE_ID = 12;
                 DRAWER_CONTACT_ID = 13;
         */
+        showMenu = lastNavItemId == DRAWER_EVENTS_ID;
         renderSelectedFragment();
         return true;
     }
@@ -366,8 +404,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void restoreSettings() {
         logMethod(TAG, this);
-        Long fragmentId = getFragmentIdByTag(
-              getCurrentFragmentTag(getSupportFragmentManager()));
+        String tag = getCurrentFragmentTag(getSupportFragmentManager());
+        if (EVENTS_FRAGMENT_TAG.equals(tag)) {
+            showMenu = true;
+        }
+        Long fragmentId = getFragmentIdByTag(tag);
         drawer.setSelection(fragmentId, false);
         setupActionBarTitle(fragmentId);
         drawer.closeDrawer();
@@ -564,127 +605,5 @@ public class ProfileActivity extends AppCompatActivity {
         updateIconFor(drawer, iconProvider, DRAWER_CONTACT_ID);
         updateIconFor(drawer, iconProvider, DRAWER_LOGOUT_ID);
         icons = iconPack;
-    }
-
-    private static Function<Long, IIcon> getIconProvider(
-          IconPackEnum iconPack) {
-        return switch (iconPack) {
-            case FONT_AWESOME -> ProfileActivity::fontAwesomeIconPack;
-            case GOOGLE_MATERIALS -> ProfileActivity::googleMaterialIconPack;
-            default -> ProfileActivity::fontAwesomeIconPack;
-        };
-    }
-
-    private static IIcon googleMaterialIconPack(Long id) {
-        if (id == DRAWER_PROFILE_ID) {
-            //return GoogleMaterial.Icon.gmd_account_box;
-            return GoogleMaterial.Icon.gmd_person;
-        }
-        if (id == DRAWER_EVENTS_ID) {
-            return GoogleMaterial.Icon.gmd_public;
-        }
-        if (id == DRAWER_NEW_EVENT_ID) {
-            return GoogleMaterial.Icon.gmd_event;
-            //return GoogleMaterial.Icon.gmd_perm_contact_calendar;
-        }
-        if (id == DRAWER_NOTIFICATION_ID) {
-            //return GoogleMaterial.Icon.gmd_visibility;
-            //return GoogleMaterial.Icon.gmd_notifications;
-            return GoogleMaterial.Icon.gmd_notifications_active;
-        }
-        if (id == DRAWER_SETTINGS_ID) {
-            return GoogleMaterial.Icon.gmd_memory;
-        }
-        if (id == DRAWER_HELP_ID) {
-            return GoogleMaterial.Icon.gmd_help;
-        }
-        if (id == DRAWER_OPEN_SOURCE_ID) {
-            return GoogleMaterial.Icon.gmd_live_help;
-        }
-        if (id == DRAWER_CONTACT_ID) {
-            return GoogleMaterial.Icon.gmd_email;
-        }
-        if (id == DRAWER_LOGOUT_ID) {
-            return GoogleMaterial.Icon.gmd_settings_power;
-            //return GoogleMaterial.Icon.gmd_close;
-        }
-        return GoogleMaterial.Icon.gmd_help;
-    }
-
-    private static IIcon fontAwesomeIconPack(Long id) {
-        if (id == DRAWER_PROFILE_ID) {
-            return FontAwesome.Icon.faw_user;
-        }
-        if (id == DRAWER_EVENTS_ID) {
-            return FontAwesome.Icon.faw_globe;
-        }
-        if (id == DRAWER_NEW_EVENT_ID) {
-            return FontAwesome.Icon.faw_calendar;
-        }
-        if (id == DRAWER_NOTIFICATION_ID) {
-            return FontAwesome.Icon.faw_eye;
-        }
-        if (id == DRAWER_SETTINGS_ID) {
-            return FontAwesome.Icon.faw_cog;
-        }
-        if (id == DRAWER_HELP_ID) {
-            return FontAwesome.Icon.faw_question_circle;
-        }
-        if (id == DRAWER_OPEN_SOURCE_ID) {
-            return FontAwesome.Icon.faw_question;
-        }
-        if (id == DRAWER_CONTACT_ID) {
-            return FontAwesome.Icon.faw_github;
-        }
-        if (id == DRAWER_LOGOUT_ID) {
-            return FontAwesome.Icon.faw_power_off;
-        }
-        return FontAwesome.Icon.faw_coffee;
-    }
-
-    private static void updateIconFor(
-          Drawer drawer, Function<Long, IIcon> iconProvider, long itemId) {
-        IDrawerItem<?, ?> iDrawerItem = drawer.getDrawerItem(itemId);
-        if (iDrawerItem == null) {
-            Log.d(TAG, "Drawer item is not exist " + itemId);
-            return;
-        }
-        drawer.updateIcon(itemId, new ImageHolder(iconProvider.apply(itemId)));
-    }
-
-    /**
-     * Workaround for https://github.com/mikepenz/MaterialDrawer/issues/2789
-     * For base implementation look at the {@link OnBindViewHolderListenerImpl}
-     */
-    public static class OnBindViewHolderListenerImplBase extends OnBindViewHolderListenerImpl {
-
-        // Values was received from revers engineered variables for current library.
-        private final int fastadapter_item_adapter = 2131296379;
-        private final int fastadapter_item = 2131296378;
-        private final int unknown_item_id = 2131296441;
-
-        @Override
-        public void unBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            //logMethod(TAG, this);
-            //IItem item = FastAdapter.getHolderAdapterItemTag(viewHolder);
-            var item = (IItem<?, ? super RecyclerView.ViewHolder>) viewHolder.itemView.getTag(fastadapter_item);
-            if (item != null) {
-                item.unbindView(viewHolder);
-                if (viewHolder instanceof FastAdapter.ViewHolder) {
-                    ((FastAdapter.ViewHolder) viewHolder).unbindView(item);
-                }
-                //remove set tag's
-                viewHolder.itemView.setTag(fastadapter_item, null);
-                viewHolder.itemView.setTag(fastadapter_item_adapter, null);
-            }
-            //super.unBindViewHolder(viewHolder, position);
-        }
-
-        //@Override
-        public void unBindViewHolderWithoutUnbind(RecyclerView.ViewHolder viewHolder, int position) {
-            if (FastAdapter.getHolderAdapterItemTag(viewHolder) != null) {
-                super.unBindViewHolder(viewHolder, position);
-            }
-        }
     }
 }

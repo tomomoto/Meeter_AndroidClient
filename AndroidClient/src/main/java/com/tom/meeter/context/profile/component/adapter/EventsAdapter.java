@@ -43,7 +43,6 @@ public class EventsAdapter extends BaseEventAdapter<EventViewHolder> {
 
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        logMethod(TAG, this);
         return new EventViewHolder(
               EventViewBinding.inflate(
                     LayoutInflater.from(parent.getContext()), parent, false));
