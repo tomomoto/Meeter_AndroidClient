@@ -1,6 +1,7 @@
 package com.tom.meeter.context.event.viewmodel;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
+import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
@@ -19,6 +20,8 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
+import java.util.Set;
+
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedInject;
 import retrofit2.Call;
@@ -35,6 +38,7 @@ public class EventViewModel extends ViewModel {
     private final Runnable onNotAuthenticated;
 
     private final MutableLiveData<EventDTO> event = new MutableLiveData<>();
+    private final MutableLiveData<Set<EventDTO.EventStatus>> transitions = new MutableLiveData<>();
     private final MutableLiveData<Bitmap> eventPhoto = new MutableLiveData<>();
 
     @AssistedInject
@@ -53,7 +57,9 @@ public class EventViewModel extends ViewModel {
     }
 
     public void init() {
-        eventService.getEvent(getAuthHeader(AccountManager.get(ctx)), eventId).enqueue(
+        AccountManager am = AccountManager.get(ctx);
+        String auth = getAuthHeader(am);
+        eventService.getEvent(auth, eventId).enqueue(
               //TODO check toast...
               new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
                   @Override
@@ -64,16 +70,36 @@ public class EventViewModel extends ViewModel {
                           return;
                       }
                       event.postValue(eventResp);
+                      if (currentUserIsEventCreator(am, eventResp)) {
+                          fetchEventTransitions(auth);
+                      }
                       String photoPath = eventResp.getPhotoPath();
                       if (photoPath == null) {
                           return;
                       }
                       imageDownloader.downloadEventImage(
                             photoPath, ctx, ImagesHelper::bigCircleImage,
-                            eventPhoto::setValue, onNotAuthenticated);
+                            eventPhoto::postValue, onNotAuthenticated);
                   }
               }
         );
+    }
+
+    private void fetchEventTransitions(String auth) {
+        eventService.availableTransitions(auth, eventId).enqueue(
+              new BaseOnNotAuthenticatedCallback<>(ctx, onNotAuthenticated) {
+                  @Override
+                  public void onResponse(
+                        Call<Set<EventDTO.EventStatus>> call,
+                        Response<Set<EventDTO.EventStatus>> resp) {
+                      super.onResponse(call, resp);
+                      Set<EventDTO.EventStatus> eventStatuses = resp.body();
+                      if (resp.code() != HttpCodes.OK || eventStatuses == null) {
+                          return;
+                      }
+                      transitions.postValue(eventStatuses);
+                  }
+              });
     }
 
     @Override
@@ -88,5 +114,9 @@ public class EventViewModel extends ViewModel {
 
     public LiveData<Bitmap> getEventPhoto() {
         return eventPhoto;
+    }
+
+    public LiveData<Set<EventDTO.EventStatus>> getTransitions() {
+        return transitions;
     }
 }

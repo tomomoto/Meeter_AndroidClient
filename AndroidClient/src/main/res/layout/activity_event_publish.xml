@@ -43,7 +43,6 @@
                     android:id="@+id/select_photo_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:text="@string/select_photo"
                     android:textAllCaps="false" />
             </LinearLayout>
@@ -69,15 +68,6 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/actions_button_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background_border"
-                android:orientation="vertical"
-                android:layout_marginTop="12dp"
-                android:padding="16dp"/>
-
             <!-- Name and description section -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -87,20 +77,30 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/event_name_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:text="@string/event_name"
-                    android:textAlignment="center"
-                    android:textSize="20sp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/event_name_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:text="@string/event_name"
+                        android:textAlignment="center"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/name_m"
+                        android:layout_width="wrap_content"
+                        android:layout_toEndOf="@+id/event_name_label"
+                        android:layout_height="match_parent"
+                        android:text="@string/mandatory_star"
+                        android:textColor="@android:color/holo_red_dark" />
+                </RelativeLayout>
 
                 <EditText
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:hint="@string/enter_event_name"
                     android:textAlignment="center"
                     android:textSize="20sp" />
@@ -118,7 +118,6 @@
                     android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:hint="@string/enter_event_description"
                     android:inputType="textMultiLine"
                     android:textSize="20sp" />
@@ -132,15 +131,25 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/event_position_label"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="8dp"
-                    android:text="@string/position"
-                    android:textSize="20sp" />
-
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/event_position_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/position"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/position_m"
+                        android:layout_width="wrap_content"
+                        android:layout_toEndOf="@+id/event_position_label"
+                        android:layout_height="match_parent"
+                        android:text="@string/mandatory_star"
+                        android:textColor="@android:color/holo_red_dark" />
+                </RelativeLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -169,7 +178,6 @@
                     android:id="@+id/location_map_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:text="@string/open_map"
                     android:textAllCaps="false" />
             </LinearLayout>
@@ -213,7 +221,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:enabled="false"
                     android:focusable="false"
                     android:hint="@string/starting_date_and_time"
                     android:textSize="20sp" />
@@ -222,7 +229,6 @@
                     android:id="@+id/select_starting_date_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:text="@string/select_stating"
                     android:textAllCaps="false" />
 
@@ -240,7 +246,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:enabled="false"
                     android:focusable="false"
                     android:hint="@string/ending_date_and_time"
                     android:textSize="20sp" />
@@ -249,7 +254,6 @@
                     android:id="@+id/select_ending_date_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:text="@string/select_ending"
                     android:textAllCaps="false" />
 
@@ -276,26 +280,17 @@
                     android:id="@+id/city"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:hint="@string/enter_city"
                     android:textSize="20sp" />
 
             </LinearLayout>
-            <!-- Save Button -->
+            <!-- Publish Button -->
             <Button
-                android:id="@+id/edit_save_button"
+                android:id="@+id/publish_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:text="@string/edit" />
-
-            <!-- Delete Button -->
-            <Button
-                android:id="@+id/delete_event_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="@string/delete_event" />
+                android:text="@string/publish" />
         </LinearLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

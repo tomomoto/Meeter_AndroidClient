@@ -70,7 +70,7 @@ public class ProfileViewModel extends ViewModel {
                       imageDownloader.downloadUserImage(
                             photoPath, ctx,
                             ImagesHelper::bigCircleImage,
-                            photo::setValue,
+                            photo::postValue,
                             onNotAuthenticated);
                       return;
                   }

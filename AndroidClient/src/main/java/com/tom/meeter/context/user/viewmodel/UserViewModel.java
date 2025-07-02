@@ -75,7 +75,7 @@ public class UserViewModel extends ViewModel {
                       imgDownloader.downloadUserImage(
                             photoPath, ctx,
                             ImagesHelper::bigCircleImage,
-                            photo::setValue,
+                            photo::postValue,
                             onNotAuthenticated);
                       return;
                   }

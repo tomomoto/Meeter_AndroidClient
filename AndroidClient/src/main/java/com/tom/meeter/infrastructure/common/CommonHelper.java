@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public final class CommonHelper {
           DateTimeFormatter.ofPattern("HH:mm");
 
     private static Map<String, EventDTO.EventStatus> nameToStatusMapping;
+    private static Map<EventDTO.EventStatus, String> statusToActionMapping;
 
     public static final String EMPTY_STR = "";
 
@@ -48,6 +50,14 @@ public final class CommonHelper {
             initializeNameToStatusMapping(ctx);
         }
         return nameToStatusMapping.get(statusName);
+    }
+
+    public static String resolveStatusAction(
+          Context ctx, EventDTO.EventStatus status) {
+        if (statusToActionMapping == null) {
+            initializeStatusToActionMapping(ctx);
+        }
+        return statusToActionMapping.get(status);
     }
 
     private static void initializeNameToStatusMapping(Context ctx) {
@@ -65,6 +75,21 @@ public final class CommonHelper {
         // no name for EventDTO.EventStatus.ARCHIVED status,
         // unable to select it for filtering
         // nameToStatusMapping.put(statuses[9], EventDTO.EventStatus.ARCHIVED);
+    }
+
+    private static void initializeStatusToActionMapping(Context ctx) {
+        String[] statuses = ctx.getResources().getStringArray(R.array.event_actions);
+        statusToActionMapping = new EnumMap<>(EventDTO.EventStatus.class);
+        //statusToActionMapping.put(EventDTO.EventStatus.CREATED, statuses[0]);
+        statusToActionMapping.put(EventDTO.EventStatus.PUBLISHED, statuses[0]);
+        statusToActionMapping.put(EventDTO.EventStatus.UNPUBLISHED, statuses[1]);
+        statusToActionMapping.put(EventDTO.EventStatus.SCHEDULED, statuses[2]);
+        statusToActionMapping.put(EventDTO.EventStatus.STARTED, statuses[3]);
+        statusToActionMapping.put(EventDTO.EventStatus.PAUSED, statuses[4]);
+        statusToActionMapping.put(EventDTO.EventStatus.RESUMED, statuses[5]);
+        statusToActionMapping.put(EventDTO.EventStatus.CANCELLED, statuses[6]);
+        statusToActionMapping.put(EventDTO.EventStatus.FINISHED, statuses[7]);
+        statusToActionMapping.put(EventDTO.EventStatus.ARCHIVED, statuses[8]);
     }
 
     public static String genderResolver(Context ctx, UserDTO.UserGender gender) {
