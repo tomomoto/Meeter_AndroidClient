@@ -129,6 +129,10 @@ public class ProfileEventActivity extends AppCompatActivity {
 
         accountManager = AccountManager.get(this);
 
+        binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken((token) -> onInit(eventId), this::finish,
               accountManager, this, tokenService);
@@ -141,6 +145,8 @@ public class ProfileEventActivity extends AppCompatActivity {
                     assistedFactory, eventId, this, onNotAuthenticated))
               .get(EventViewModel.class);
 
+        binding.swipeRefresh.setOnRefreshListener(() -> viewModel.init());
+
         initLayout();
 
         viewModel.getEvent()
@@ -150,6 +156,7 @@ public class ProfileEventActivity extends AppCompatActivity {
                       finish();
                       return;
                   }
+                  binding.swipeRefresh.setRefreshing(false);
                   eventCache = event;
                   updateLayout();
                   viewModel.getEventPhoto()
@@ -158,10 +165,6 @@ public class ProfileEventActivity extends AppCompatActivity {
     }
 
     private void initLayout() {
-        binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-
         binding.selectStartingDateButton.setOnClickListener(
               v -> showDateTimePicker(this, binding.starting));
         binding.selectEndingDateButton.setOnClickListener(

@@ -71,6 +71,10 @@ public class UserEventActivity extends AppCompatActivity {
         ((App) getApplication()).getEventComponent().inject(this);
         accountManager = AccountManager.get(this);
 
+        binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken((token) -> onInit(eventId),
               this::finish, accountManager, this, tokenService);
@@ -83,6 +87,8 @@ public class UserEventActivity extends AppCompatActivity {
                     assistedFactory, eventId, this, this::recreate))
               .get(EventViewModel.class);
 
+        binding.swipeRefresh.setOnRefreshListener(() -> viewModel.init());
+
         viewModel.getEvent()
               .observe(this, event -> {
                   if (currentUserIsEventCreator(accountManager, event)) {
@@ -90,6 +96,7 @@ public class UserEventActivity extends AppCompatActivity {
                       finish();
                       return;
                   }
+                  binding.swipeRefresh.setRefreshing(false);
                   initLayout(event);
                   viewModel.getEventPhoto()
                         .observe(
@@ -100,10 +107,6 @@ public class UserEventActivity extends AppCompatActivity {
     }
 
     private void initLayout(EventDTO event) {
-        binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-
         binding.eventCreator.setOnClickListener(
               v -> dispatchToUserActivity(this, event.getCreatorId()));
         binding.locationMapButton.setOnClickListener(
