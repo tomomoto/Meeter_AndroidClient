@@ -43,7 +43,7 @@ public class EventDispatcherActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (!EventDispatcherActivity.validate(this)) {
+        if (EventDispatcherActivity.incorrect(this)) {
             return;
         }
 
@@ -74,23 +74,23 @@ public class EventDispatcherActivity extends AppCompatActivity {
               });
     }
 
-    public static boolean validate(Activity activity) {
+    public static boolean incorrect(Activity activity) {
         Bundle extras = activity.getIntent().getExtras();
         if (extras == null) {
             Log.e(TAG, "Unable to create ["
                   + activity.getClass().getCanonicalName()
                   + "] without extras.");
             activity.finish();
-            return false;
+            return true;
         }
         if (extras.getString(EVENT_ID_KEY) == null) {
             Log.e(TAG, "Unable to create ["
                   + activity.getClass().getCanonicalName()
                   + "] without [" + EVENT_ID_KEY + "] provided.");
             activity.finish();
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static String getEventId(Activity activity) {

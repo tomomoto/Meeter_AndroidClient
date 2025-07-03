@@ -137,7 +137,7 @@ public class ProfileEventActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (!EventDispatcherActivity.validate(this)) {
+        if (EventDispatcherActivity.incorrect(this)) {
             return;
         }
 
