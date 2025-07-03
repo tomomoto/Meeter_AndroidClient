@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
     @Inject
     ProfileAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imageDownloader;
+    ImageDownloader imgDownloader;
     @Inject
     ProfileService service;
     @Inject
@@ -79,10 +79,6 @@ public class ProfileFragment extends Fragment {
     private boolean isEditableModeEnabled = false;
     private UserDTO userCache;
 
-    public ProfileFragment() {
-        logMethod(TAG, this);
-    }
-
     private final ActivityResultLauncher<Intent> imageUploadLauncher =
           registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -93,6 +89,10 @@ public class ProfileFragment extends Fragment {
                         binding.photoPath.setText(photoPath);
                     }
                 });
+
+    public ProfileFragment() {
+        logMethod(TAG, this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,11 +127,14 @@ public class ProfileFragment extends Fragment {
               assistedFactory.factory(assistedFactory, ctx, onAuthFail))
               .get(ProfileViewModel.class);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
         LifecycleOwner owner = getViewLifecycleOwner();
         viewModel.getProfile()
               .observe(
                     owner,
                     user -> {
+                        binding.swipeRefreshLayout.setRefreshing(false);
                         userCache = user;
                         updateLayoutValues();
                     });
@@ -198,7 +201,7 @@ public class ProfileFragment extends Fragment {
     }
 
     void downloadAndUpdateLayoutPhoto(String photoPath) {
-        imageDownloader.downloadUserImage(
+        imgDownloader.downloadUserImage(
               photoPath, requireContext(), ImagesHelper::bigCircleImage,
               this::updateLayoutPhoto, onAuthFail);
     }
