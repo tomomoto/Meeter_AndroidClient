@@ -28,7 +28,7 @@ public class Utils {
             activity.finish();
             return true;
         }
-        return true;
+        return false;
     }
 
     public static String getUserId(Activity activity) {
