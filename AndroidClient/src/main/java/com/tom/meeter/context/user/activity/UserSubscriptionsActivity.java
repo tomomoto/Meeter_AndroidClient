@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscriptionsAssistedFactory;
+import com.tom.meeter.context.user.utils.Utils;
 import com.tom.meeter.context.user.viewmodel.UserSubscriptionsViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscriptionsBinding;
 
@@ -39,8 +39,6 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
 
     private ActivityProfileSubscriptionsBinding binding;
     private UserSubscriptionsViewModel viewModel;
-    private AccountManager accountManager;
-    private String userId;
     private final Runnable onAuthFail = this::recreate;
 
     @Override
@@ -49,16 +47,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create user activity without extras.");
-            finish();
-            return;
-        }
-        userId = extras.getString(UserActivity.USER_ID_KEY);
-        if (userId == null) {
-            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
-            finish();
+        if (Utils.incorrect(this)) {
             return;
         }
 
@@ -67,12 +56,11 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
         setContentView(view);
 
         ((App) getApplication()).getUserComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         adapter.initialize(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken(this::onInit, this::finish, accountManager, this, tokenService);
+        checkToken(this::onInit, this::finish, this, tokenService);
     }
 
     private void onInit(String token) {
@@ -81,7 +69,9 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, userId, this, onAuthFail))
+                    assistedFactory,
+                    Utils.getUserId(this),
+                    this, onAuthFail))
               .get(UserSubscriptionsViewModel.class);
 
         binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
@@ -146,6 +136,6 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
 
     private static Intent createUserSubscriptionsActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserSubscriptionsActivity.class)
-              .putExtra(UserActivity.USER_ID_KEY, userId);
+              .putExtra(Utils.USER_ID_KEY, userId);
     }
 }

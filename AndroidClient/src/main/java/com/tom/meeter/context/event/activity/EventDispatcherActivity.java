@@ -52,8 +52,7 @@ public class EventDispatcherActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken(this::onInit, this::finish,
-              accountManager, this, tokenService);
+        checkToken(this::onInit, this::finish, this, tokenService);
     }
 
     private void onInit(String token) {

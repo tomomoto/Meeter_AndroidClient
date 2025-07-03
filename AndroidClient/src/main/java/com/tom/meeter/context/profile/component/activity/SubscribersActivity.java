@@ -49,9 +49,7 @@ public class SubscribersActivity extends AppCompatActivity {
         ((App) getApplication()).getProfileComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        checkToken(
-              this::onInit, this::finish,
-              accountManager, this, tokenService);
+        checkToken(this::onInit, this::finish, this, tokenService);
     }
 
     private void onInit(String token) {

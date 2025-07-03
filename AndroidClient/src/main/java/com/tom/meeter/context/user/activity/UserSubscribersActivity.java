@@ -3,12 +3,10 @@ package com.tom.meeter.context.user.activity;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -21,6 +19,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.components.adapter.UsersAdapter;
 import com.tom.meeter.context.user.factory.UserSubscribersAssistedFactory;
+import com.tom.meeter.context.user.utils.Utils;
 import com.tom.meeter.context.user.viewmodel.UserSubscribersViewModel;
 import com.tom.meeter.databinding.ActivityProfileSubscribersBinding;
 
@@ -38,10 +37,8 @@ public class UserSubscribersActivity extends AppCompatActivity {
     UsersAdapter adapter;
 
     private final Runnable onAuthFail = this::recreate;
-    private AccountManager accountManager;
     private ActivityProfileSubscribersBinding binding;
     private UserSubscribersViewModel viewModel;
-    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,33 +46,24 @@ public class UserSubscribersActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create user activity without extras.");
-            finish();
-            return;
-        }
-        userId = extras.getString(UserActivity.USER_ID_KEY);
-        if (userId == null) {
-            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
-            finish();
+        if (Utils.incorrect(this)) {
             return;
         }
 
+        binding = ActivityProfileSubscribersBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+
         ((App) getApplication()).getUserComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         adapter.initialize(this, onAuthFail);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken(this::onInit, this::finish, accountManager, this, tokenService);
+        checkToken(this::onInit, this::finish, this, tokenService);
     }
 
     private void onInit(String token) {
         logMethod(TAG, this);
-        binding = ActivityProfileSubscribersBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
 
         binding.recyclerSubscribers.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerSubscribers.setAdapter(adapter);
@@ -83,7 +71,9 @@ public class UserSubscribersActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, userId, this, onAuthFail))
+                    assistedFactory,
+                    Utils.getUserId(this),
+                    this, onAuthFail))
               .get(UserSubscribersViewModel.class);
 
         binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
@@ -145,6 +135,6 @@ public class UserSubscribersActivity extends AppCompatActivity {
 
     private static Intent createUserSubscribersActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserSubscribersActivity.class)
-              .putExtra(UserActivity.USER_ID_KEY, userId);
+              .putExtra(Utils.USER_ID_KEY, userId);
     }
 }

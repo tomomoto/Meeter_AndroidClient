@@ -199,7 +199,7 @@ public class ProfileActivity extends AppCompatActivity {
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(
               (token) -> onInit(savedInstanceState),
-              this::finish, accountManager, this, tokenService);
+              this::finish, this, tokenService);
     }
 
     private void onInit(Bundle savedInstanceState) {

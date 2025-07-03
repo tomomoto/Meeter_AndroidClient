@@ -68,7 +68,8 @@ public final class AuthHelper {
 
     public static void checkToken(
           Consumer<String> onToken, Runnable onCancelledAuth,
-          AccountManager am, Activity activity, TokenService tokenService) {
+          Activity activity, TokenService tokenService) {
+        AccountManager am = AccountManager.get(activity);
         Account account = getSingleAccount(am);
         String token = am.peekAuthToken(account, AUTH_TYPE);
         if (token != null) {

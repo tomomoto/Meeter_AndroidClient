@@ -119,8 +119,7 @@ public class PublishEventActivity extends AppCompatActivity {
         setContentView(view);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(), this::finish,
-              accountManager, this, tokenService);
+        checkToken((token) -> onInit(), this::finish, this, tokenService);
     }
 
     private void onInit() {

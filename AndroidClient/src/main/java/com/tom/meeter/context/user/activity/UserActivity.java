@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -31,6 +30,7 @@ import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.factory.UserAssistedFactory;
 import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.context.user.utils.Utils;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
@@ -61,7 +61,6 @@ public class UserActivity extends AppCompatActivity {
 
     private ActivityUserBinding binding;
     private UserViewModel viewModel;
-    private String userId;
     private AccountManager accountManager;
     private Boolean amISubscriber;
     private final Runnable onAuthFail = this::recreate;
@@ -72,7 +71,14 @@ public class UserActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (!validate()) {
+        if (Utils.incorrect(this)) {
+            return;
+        }
+
+        accountManager = AccountManager.get(this);
+        if (Utils.getUserId(this).equals(AuthHelper.getUserUuid(accountManager))) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            finish();
             return;
         }
 
@@ -87,32 +93,11 @@ public class UserActivity extends AppCompatActivity {
               event -> dispatchToEventActivity(this, event.getId()));
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken(this::onInit, this::finish, accountManager, this, tokenService);
-    }
-
-    private boolean validate() {
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create user activity without extras.");
-            finish();
-            return false;
-        }
-        userId = extras.getString(USER_ID_KEY);
-        if (userId == null) {
-            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
-            finish();
-            return false;
-        }
-        accountManager = AccountManager.get(this);
-        if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
-            startActivity(new Intent(this, ProfileActivity.class));
-            finish();
-            return false;
-        }
-        return true;
+        checkToken(this::onInit, this::finish, this, tokenService);
     }
 
     private void onInit(String token) {
+        String userId = Utils.getUserId(this);
         binding.subscribeBtn.setOnClickListener(v -> {
             if (amISubscriber == null) {
                 // As not initialized atm...
