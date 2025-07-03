@@ -56,7 +56,7 @@ import com.tom.meeter.context.profile.message.SettingsResponse;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.service.SettingsService;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.databinding.ProfileActivityBinding;
+import com.tom.meeter.databinding.ActivityProfileBinding;
 import com.tom.meeter.infrastructure.common.Globals;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
@@ -125,7 +125,7 @@ public class ProfileActivity extends AppCompatActivity {
     private IconPackEnum icons = IconPackEnum.FONT_AWESOME;
     private final Map<Long, String> drawerFragmentNames = new HashMap<>();
 
-    private ProfileActivityBinding binding;
+    private ActivityProfileBinding binding;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
@@ -189,7 +189,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        binding = ProfileActivityBinding.inflate(getLayoutInflater());
+        binding = ActivityProfileBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
