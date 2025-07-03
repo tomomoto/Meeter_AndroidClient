@@ -8,6 +8,7 @@ import com.tom.meeter.context.event.activity.EventLocationMapActivity;
 import com.tom.meeter.context.event.activity.EventOnMapActivity;
 import com.tom.meeter.context.event.activity.ProfileEventActivity;
 import com.tom.meeter.context.event.activity.PublishEventActivity;
+import com.tom.meeter.context.event.activity.ScheduleEventActivity;
 import com.tom.meeter.context.event.activity.UserEventActivity;
 
 import dagger.BindsInstance;
@@ -30,16 +31,18 @@ public interface EventComponent {
         EventComponent build();
     }
 
-    void inject(EventDispatcherActivity eventDispatcherActivity);
+    void inject(EventDispatcherActivity activity);
 
-    void inject(ProfileEventActivity profileEventActivity);
+    void inject(ProfileEventActivity activity);
 
-    void inject(UserEventActivity userEventActivity);
+    void inject(UserEventActivity activity);
 
-    void inject(EventOnMapActivity eventOnMapActivity);
+    void inject(EventOnMapActivity activity);
 
-    void inject(EventLocationMapActivity eventLocationMapActivity);
+    void inject(EventLocationMapActivity activity);
 
-    void inject(PublishEventActivity pea);
+    void inject(PublishEventActivity activity);
+
+    void inject(ScheduleEventActivity activity);
 
 }

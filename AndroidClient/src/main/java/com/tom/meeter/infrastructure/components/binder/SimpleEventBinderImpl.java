@@ -1,6 +1,7 @@
 package com.tom.meeter.infrastructure.components.binder;
 
 import static com.tom.meeter.infrastructure.common.CommonHelper.handleEventStatus;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.content.Context;
 
@@ -44,6 +45,7 @@ public class SimpleEventBinderImpl implements EventBinder<CardItemHolder> {
 
     @Override
     public void bind(CardItemHolder holder, EventDTO event) {
+        logMethod(TAG, this);
         holder.bind(
               event.getName(), null,
               (view) -> listener.onClick(event),

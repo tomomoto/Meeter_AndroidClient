@@ -51,11 +51,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/photo"
                 android:layout_marginEnd="8dp"
-                android:layout_weight="1"
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="Photo path"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <!-- Photo Button -->
             <Button
@@ -67,11 +67,11 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_marginBottom="16dp"
-                android:enabled="false"
                 android:gravity="center"
                 android:text="@string/select_photo"
                 android:textAllCaps="false"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
 
             <LinearLayout

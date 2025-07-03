@@ -1,6 +1,7 @@
 package com.tom.meeter.context.profile.component.binder;
 
 import static com.tom.meeter.infrastructure.common.CommonHelper.handleEventStatus;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
 import android.content.Context;
@@ -57,6 +58,7 @@ public class EventBinderImpl implements EventBinder<EventViewHolder> {
 
     @Override
     public void bind(EventViewHolder holder, EventDTO event) {
+        logMethod(TAG, this);
         //Log.d(TAG, "Current thread: " + Thread.currentThread().getName());
         String photoPath = event.getPhotoPath();
 

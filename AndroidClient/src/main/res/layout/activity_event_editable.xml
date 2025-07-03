@@ -37,15 +37,16 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="8dp"
                     android:textAlignment="center"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/select_photo_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
                     android:text="@string/select_photo"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -73,10 +74,10 @@
                 android:id="@+id/actions_button_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/edit_text_background_border"
                 android:orientation="vertical"
-                android:layout_marginTop="12dp"
-                android:padding="16dp"/>
+                android:padding="16dp" />
 
             <!-- Name and description section -->
             <LinearLayout
@@ -102,7 +103,6 @@
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:hint="@string/enter_event_name"
-                    android:textAlignment="center"
                     android:textSize="20sp" />
 
                 <TextView
@@ -136,7 +136,6 @@
                     android:id="@+id/event_position_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
                     android:paddingBottom="8dp"
                     android:text="@string/position"
                     android:textSize="20sp" />
@@ -169,8 +168,14 @@
                     android:id="@+id/location_map_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
+                    android:visibility="gone"
                     android:text="@string/open_map"
+                    android:textAllCaps="false" />
+                <Button
+                    android:id="@+id/show_on_map_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_on_map"
                     android:textAllCaps="false" />
             </LinearLayout>
             <!-- Dates section -->
@@ -186,8 +191,6 @@
                     android:id="@+id/event_created_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="8dp"
                     android:text="@string/created"
                     android:textSize="20sp" />
 
@@ -222,7 +225,7 @@
                     android:id="@+id/select_starting_date_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
+                    android:visibility="gone"
                     android:text="@string/select_stating"
                     android:textAllCaps="false" />
 
@@ -249,7 +252,7 @@
                     android:id="@+id/select_ending_date_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:enabled="false"
+                    android:visibility="gone"
                     android:text="@string/select_ending"
                     android:textAllCaps="false" />
 
@@ -267,7 +270,6 @@
                     android:id="@+id/event_city_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
                     android:paddingBottom="8dp"
                     android:text="@string/city"
                     android:textSize="20sp" />

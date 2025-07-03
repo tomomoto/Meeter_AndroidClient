@@ -8,10 +8,12 @@ import android.accounts.AccountManager;
 import android.util.Log;
 
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.event.message.ScheduleEventRequest;
 import com.tom.meeter.context.event.message.UpdateEventRequest;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.databinding.ActivityEventPublishBinding;
+import com.tom.meeter.databinding.ActivityEventScheduleBinding;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -95,6 +97,20 @@ public class Utils {
         String photoPathChange = getStringOrNull(binding.photoPath.getText());
         if (!Objects.equals(event.getPhotoPath(), photoPathChange)) {
             req.setPhotoPath(photoPathChange);
+        }
+        return req;
+    }
+
+    public static ScheduleEventRequest createScheduleEventRequest(
+          EventDTO event, ActivityEventScheduleBinding binding) {
+        ScheduleEventRequest req = new ScheduleEventRequest();
+        OffsetDateTime eventStartingChange = getOffsetDateTime(binding.starting.getText());
+        if (!Objects.equals(event.getStarting(), eventStartingChange)) {
+            req.setStarting(eventStartingChange);
+        }
+        OffsetDateTime eventEndingChange = getOffsetDateTime(binding.ending.getText());
+        if (!Objects.equals(event.getEnding(), eventEndingChange)) {
+            req.setEnding(eventEndingChange);
         }
         return req;
     }

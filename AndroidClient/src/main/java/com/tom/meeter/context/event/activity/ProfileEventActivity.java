@@ -7,8 +7,9 @@ import static com.tom.meeter.context.event.activity.EventDispatcherActivity.EVEN
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LAT;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
+import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
 import static com.tom.meeter.context.event.activity.PublishEventActivity.createPublishEventActivityIntent;
-import static com.tom.meeter.context.event.activity.ScheduleEventActivity.dispatchToScheduleEventActivity;
+import static com.tom.meeter.context.event.activity.ScheduleEventActivity.createScheduleEventActivityIntent;
 import static com.tom.meeter.context.event.utils.Utils.createUpdateEventRequest;
 import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
 import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
@@ -121,6 +122,16 @@ public class ProfileEventActivity extends AppCompatActivity {
                 }
           );
 
+    private final ActivityResultLauncher<Intent> scheduleLauncher =
+          registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        viewModel.init();
+                    }
+                }
+          );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,6 +210,8 @@ public class ProfileEventActivity extends AppCompatActivity {
         binding.locationMapButton.setOnClickListener(
               v -> mapResult.launch(
                     createEventLocationMapActivityIntent(this, eventCache.getId())));
+        binding.showOnMapButton.setOnClickListener(
+              v -> dispatchToEventOnMapActivity(this, eventCache.getId()));
         binding.deleteEventButton.setOnClickListener(v -> showAlertDialog());
 
         binding.editSaveButton.setOnClickListener(v -> {
@@ -249,10 +262,7 @@ public class ProfileEventActivity extends AppCompatActivity {
     private void switchEditMode() {
         isEditableModeEnabled = !isEditableModeEnabled;
 
-        binding.selectPhotoButton.setEnabled(isEditableModeEnabled);
-        binding.locationMapButton.setEnabled(isEditableModeEnabled);
-        binding.selectStartingDateButton.setEnabled(isEditableModeEnabled);
-        binding.selectEndingDateButton.setEnabled(isEditableModeEnabled);
+        setButtonsVisibility(isEditableModeEnabled);
 
         binding.name.setEnabled(isEditableModeEnabled);
         binding.description.setEnabled(isEditableModeEnabled);
@@ -262,6 +272,18 @@ public class ProfileEventActivity extends AppCompatActivity {
         binding.ending.setEnabled(isEditableModeEnabled);
         binding.city.setEnabled(isEditableModeEnabled);
         binding.editSaveButton.setText(isEditableModeEnabled ? R.string.save : R.string.edit);
+    }
+
+    private void setButtonsVisibility(boolean isEditableModeEnabled) {
+        int onEdit = isEditableModeEnabled ? View.VISIBLE : View.GONE;
+        binding.locationMapButton.setVisibility(onEdit);
+        binding.selectPhotoButton.setVisibility(onEdit);
+        binding.photoPath.setVisibility(onEdit);
+        binding.selectStartingDateButton.setVisibility(onEdit);
+        binding.selectEndingDateButton.setVisibility(onEdit);
+
+        int onRead = isEditableModeEnabled ? View.GONE : View.VISIBLE;
+        binding.showOnMapButton.setVisibility(onRead);
     }
 
     private void showAlertDialog() {
@@ -338,70 +360,72 @@ public class ProfileEventActivity extends AppCompatActivity {
               LinearLayout.LayoutParams.WRAP_CONTENT));
         switch (status) {
             case PUBLISHED:
-                btn.setOnClickListener(v -> {
-                    publishLauncher.launch(createPublishEventActivityIntent(this, eventId));
-                });
+                btn.setOnClickListener(
+                      v -> publishLauncher.launch(
+                            createPublishEventActivityIntent(
+                                  this, eventId)));
                 break;
             case SCHEDULED:
-                btn.setOnClickListener(v -> {
-                    dispatchToScheduleEventActivity(this, eventId);
-                });
+                btn.setOnClickListener(
+                      v -> scheduleLauncher.launch(
+                            createScheduleEventActivityIntent(
+                                  this, eventId)));
                 break;
             case UNPUBLISHED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.UNPUBLISHED,
-                          () -> service.unpublishEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.UNPUBLISHED,
+                            () -> service.unpublishEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             case STARTED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.STARTED,
-                          () -> service.startEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.STARTED,
+                            () -> service.startEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             case PAUSED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.PAUSED,
-                          () -> service.pauseEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.PAUSED,
+                            () -> service.pauseEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             case RESUMED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.RESUMED,
-                          () -> service.resumeEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.RESUMED,
+                            () -> service.resumeEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             case FINISHED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.FINISHED,
-                          () -> service.finishEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.FINISHED,
+                            () -> service.finishEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             case CANCELLED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.CANCELLED,
-                          () -> service.cancelEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.CANCELLED,
+                            () -> service.cancelEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             case ARCHIVED:
-                btn.setOnClickListener(v -> {
-                    showConfirmStatusChangeDialog(
-                          this,
-                          EventDTO.EventStatus.ARCHIVED,
-                          () -> service.archiveEvent(auth, eventId).enqueue(refreshCallback));
-                });
+                btn.setOnClickListener(
+                      v -> showConfirmStatusChangeDialog(
+                            this,
+                            EventDTO.EventStatus.ARCHIVED,
+                            () -> service.archiveEvent(auth, eventId)
+                                  .enqueue(refreshCallback)));
                 break;
             default:
                 throw new IllegalStateException("Wrong status: " + status);

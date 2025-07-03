@@ -212,7 +212,13 @@ public class ProfileFragment extends Fragment {
 
     private void switchEditMode() {
         isEditableModeEnabled = !isEditableModeEnabled;
-        binding.btnPhoto.setEnabled(isEditableModeEnabled);
+        if (isEditableModeEnabled) {
+            binding.btnPhoto.setVisibility(View.VISIBLE);
+            binding.photoPath.setVisibility(View.VISIBLE);
+        } else {
+            binding.btnPhoto.setVisibility(View.GONE);
+            binding.photoPath.setVisibility(View.GONE);
+        }
         binding.name.setEnabled(isEditableModeEnabled);
         binding.surname.setEnabled(isEditableModeEnabled);
         binding.birthday.setEnabled(isEditableModeEnabled);
