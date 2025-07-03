@@ -55,7 +55,7 @@ public class SimpleEventBinderImpl implements EventBinder<CardItemHolder> {
             return;
         }
         imageDownloader.downloadEventImage(
-              photoPath, ctx, ImagesHelper::circleImage,
+              photoPath, ctx, ImagesHelper::bigCircleImage,
               holder::updatePhoto, onAuthFail);
     }
 }
