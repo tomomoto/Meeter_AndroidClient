@@ -103,13 +103,13 @@ public class ProfileEventsFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         logMethod(TAG, this);
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         logMethod(TAG, this);
+        super.onDestroy();
     }
 }

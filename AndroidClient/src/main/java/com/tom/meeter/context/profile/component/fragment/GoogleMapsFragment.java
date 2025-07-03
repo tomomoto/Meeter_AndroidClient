@@ -143,15 +143,17 @@ public class GoogleMapsFragment extends Fragment
     public View onCreateView(
           LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         logMethod(TAG, this);
+        View root = inflater.inflate(
+              R.layout.sub_fragment_gmaps, container, false);
         GoogleMapOptions opts = new GoogleMapOptions();
         opts.zoomControlsEnabled(true);
         SupportMapFragment sMapFragment = SupportMapFragment.newInstance(opts);
         sMapFragment.getMapAsync(this);
-        getParentFragmentManager()
+        getChildFragmentManager()
               .beginTransaction()
               .replace(R.id.event_fragment_sub_fragment_gmap, sMapFragment)
               .commit();
-        return inflater.inflate(R.layout.sub_fragment_gmaps, container, false);
+        return root;
     }
 
     @Override

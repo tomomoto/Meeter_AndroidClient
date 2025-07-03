@@ -90,4 +90,10 @@ public class ActiveEventsFragment extends Fragment {
         EventBus.getDefault().unregister(this);
         logMethod(TAG, this, "Unregistered event bus");
     }
+
+    @Override
+    public void onDestroyView() {
+        logMethod(TAG, this);
+        super.onDestroyView();
+    }
 }

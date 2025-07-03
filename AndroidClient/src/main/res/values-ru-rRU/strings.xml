@@ -74,9 +74,9 @@
     <string name="starting_time">Начинается в (чч:мм)</string>
     <string name="ending_time">Заканчивается в (чч:мм)</string>
     <string name="now">Сейчас</string>
-    <string name="map">Карта</string>
-    <string name="events">События</string>
-    <string name="your_events">Ваши события</string>
+    <string name="on_map">На карте</string>
+    <string name="listed">Списком</string>
+    <string name="your">Ваши</string>
     <string name="user_information">Пользовательская информация</string>
     <string name="me">Я</string>
     <string name="location_changed">Локация изменена</string>
@@ -259,6 +259,8 @@
     <string name="schedule">Запланировать</string>
     <string name="scheduling_event">Планирование события</string>
     <string name="scheduled">Запланировано</string>
+    <string name="date_validity">Валидность даты</string>
+    <string name="your_events">Ваши события</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

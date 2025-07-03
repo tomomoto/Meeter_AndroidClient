@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.tom.meeter.R;
 import com.tom.meeter.databinding.FragmentEventsBinding;
 
@@ -24,10 +27,9 @@ public class EventsFragment extends Fragment {
 
     private static final String TAG = EventsFragment.class.getCanonicalName();
 
-    FragmentEventsBinding binding;
+    private FragmentEventsBinding binding;
 
     public EventsFragment() {
-        // Required empty public constructor
         logMethod(TAG, this);
     }
 
@@ -49,52 +51,76 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
-        binding.fragmentEventsViewpager.setAdapter(
-              createViewPagerAdapter(
-                    getChildFragmentManager(),
-                    getString(R.string.map),
-                    getString(R.string.events),
-                    getString(R.string.your_events)));
 
-        binding.fragmentEventsTabs.setupWithViewPager(binding.fragmentEventsViewpager);
+        ViewPagerAdapter adapter = createViewPagerAdapter(requireActivity());
+
+        ViewPager2 viewPager = binding.fragmentEventsViewpager;
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(1);
+
+        new TabLayoutMediator(
+              binding.fragmentEventsTabs, viewPager,
+              (tab, position) -> tab.setText(adapter.getPageTitle(position))
+        ).attach();
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                // Disable tab scroll for GMaps fragment ([0]).
+                viewPager.setUserInputEnabled(position != 0);
+            }
+        });
     }
 
-    private static ViewPagerAdapter createViewPagerAdapter(
-          FragmentManager fMgr, String mapTitle,
-          String eventsTitle, String yourEventsTitle) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(fMgr);
-        adapter.addFragment(new GoogleMapsFragment(), mapTitle);
-        adapter.addFragment(new ActiveEventsFragment(), eventsTitle);
-        adapter.addFragment(new ProfileEventsFragment(), yourEventsTitle);
+    private static ViewPagerAdapter createViewPagerAdapter(FragmentActivity activity) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(activity);
+        adapter.addFragment(new GoogleMapsFragment(), activity.getString(R.string.on_map));
+        adapter.addFragment(new ActiveEventsFragment(), activity.getString(R.string.listed));
+        adapter.addFragment(new ProfileEventsFragment(), activity.getString(R.string.your));
         return adapter;
     }
 
-    static class ViewPagerAdapter extends FragmentPagerAdapter {
+    @Override
+    public void onDestroyView() {
+        logMethod(TAG, this);
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        logMethod(TAG, this);
+        super.onDestroy();
+    }
+
+    static class ViewPagerAdapter extends FragmentStateAdapter {
+
         private final List<Fragment> fragments = new ArrayList<>();
-        private final List<String> fragmentsTitles = new ArrayList<>();
+        private final List<String> fragmentTitles = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
+        public ViewPagerAdapter(
+              @NonNull FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
         }
 
         public void addFragment(Fragment fragment, String title) {
             fragments.add(fragment);
-            fragmentsTitles.add(title);
+            fragmentTitles.add(title);
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            return fragments.get(position);
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            return fragmentsTitles.get(position);
+        public int getItemCount() {
+            return fragments.size();
+        }
+
+        public String getPageTitle(int position) {
+            return fragmentTitles.get(position);
         }
     }
 }
