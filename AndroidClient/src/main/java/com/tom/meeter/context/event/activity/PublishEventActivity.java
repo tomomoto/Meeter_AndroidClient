@@ -2,7 +2,7 @@ package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.event.activity.EventDispatcherActivity.EVENT_ID_KEY;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getUserUuid;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LAT;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -74,8 +73,20 @@ public class PublishEventActivity extends AppCompatActivity {
     private ActivityEventPublishBinding binding;
     private AccountManager accountManager;
     private EventViewModel viewModel;
-    private ActivityResultLauncher<Intent> mapResult;
     private EventDTO eventCache;
+
+    private final ActivityResultLauncher<Intent> mapResult = registerForActivityResult(
+          new ActivityResultContracts.StartActivityForResult(),
+          result -> {
+              if (result.getResultCode() != RESULT_OK || result.getData() == null) {
+                  return;
+              }
+              double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
+              double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
+              binding.latitude.setText(String.valueOf(lat));
+              binding.longitude.setText(String.valueOf(lng));
+          });
+    ;
 
     private final ActivityResultLauncher<Intent> imageUploadLauncher =
           registerForActivityResult(
@@ -93,30 +104,9 @@ public class PublishEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mapResult = registerForActivityResult(
-              new ActivityResultContracts.StartActivityForResult(),
-              result -> {
-                  if (result.getResultCode() != RESULT_OK || result.getData() == null) {
-                      return;
-                  }
-                  double lat = result.getData().getDoubleExtra(EXTRA_LAT, 0.0);
-                  double lng = result.getData().getDoubleExtra(EXTRA_LNG, 0.0);
-                  binding.latitude.setText(String.valueOf(lat));
-                  binding.longitude.setText(String.valueOf(lng));
-              });
-
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.e(TAG, "Unable to create event activity without extras.");
-            finish();
-            return;
-        }
-        String eventId = extras.getString(EVENT_ID_KEY);
-        if (eventId == null) {
-            Log.e(TAG, "Unable to create event activity without 'event_id' provided.");
-            finish();
+        if (!EventDispatcherActivity.validate(this)) {
             return;
         }
 
@@ -129,15 +119,17 @@ public class PublishEventActivity extends AppCompatActivity {
         setContentView(view);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(eventId), this::finish,
+        checkToken((token) -> onInit(), this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String eventId) {
+    private void onInit() {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, eventId, this, onNotAuthenticated))
+                    assistedFactory,
+                    EventDispatcherActivity.getEventId(this),
+                    this, onNotAuthenticated))
               .get(EventViewModel.class);
 
         binding.swipeRefresh.setOnRefreshListener(() -> viewModel.init());
@@ -147,7 +139,7 @@ public class PublishEventActivity extends AppCompatActivity {
         viewModel.getEvent()
               .observe(this, event -> {
                   if (!currentUserIsEventCreator(accountManager, event)) {
-                      dumpEventDispatcherError(TAG, accountManager, event);
+                      dumpEventDispatcherError(TAG, getUserUuid(accountManager), event);
                       finish();
                       return;
                   }

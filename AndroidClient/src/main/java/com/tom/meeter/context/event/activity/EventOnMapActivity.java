@@ -1,6 +1,5 @@
 package com.tom.meeter.context.event.activity;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.profile.component.fragment.GoogleMapsFragment.ZOOM_VALUE;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.network.dto.EventDTO;
@@ -49,25 +49,13 @@ public class EventOnMapActivity extends AppCompatActivity
 
     //TODO remake onNotAuthenticated
     private final Runnable onNotAuthenticated = this::finish;
-    private GoogleMap gmap;
     private ActivityEventOnMapBinding binding;
-    private AccountManager accountManager;
-    private String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            showMessage(this, "Unable to show map without extras provided.");
-            finish();
-            return;
-        }
-        eventId = extras.getString(EventDispatcherActivity.EVENT_ID_KEY);
-        if (eventId == null) {
-            showMessage(this, "Unable to show map without event_id provided.");
-            finish();
+        if (!EventDispatcherActivity.validate(this)) {
             return;
         }
 
@@ -77,22 +65,22 @@ public class EventOnMapActivity extends AppCompatActivity
 
         ((App) getApplication()).getEventComponent().inject(this);
 
-        accountManager = AccountManager.get(this);
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
               .findFragmentById(R.id.eventOnMap);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+        if (mapFragment == null) {
+            return;
         }
+        mapFragment.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        gmap = googleMap;
-        UiSettings uiSettings = gmap.getUiSettings();
+        UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
 
-        service.getEvent(getAuthHeader(accountManager), eventId).enqueue(
+        service.getEvent(
+              AuthHelper.getAuthHeader(AccountManager.get(this)),
+              EventDispatcherActivity.getEventId(this)).enqueue(
               //TODO:
               // token is not checked at start,
               // in case of invalid token infinity recreation
@@ -113,13 +101,14 @@ public class EventOnMapActivity extends AppCompatActivity
                       LatLng latLng = new LatLng(latitude, longitude);
                       String photoPath = event.getPhotoPath();
                       if (photoPath == null) {
-                          addMarkerMoveCamera(latLng, event.getName(), null);
+                          addMarkerMoveCamera(googleMap, latLng, event.getName(), null);
                           return;
                       }
                       imgDownloader.downloadEventImage(
                             photoPath, EventOnMapActivity.this,
                             ImagesHelper::circleImage,
                             (photo) -> addMarkerMoveCamera(
+                                  googleMap,
                                   latLng,
                                   event.getName(),
                                   BitmapDescriptorFactory.fromBitmap(photo)),
@@ -130,14 +119,14 @@ public class EventOnMapActivity extends AppCompatActivity
     }
 
     private void addMarkerMoveCamera(
-          LatLng latLng, String title, BitmapDescriptor bmd) {
-        gmap.addMarker(
+          GoogleMap map, LatLng latLng,
+          String title, BitmapDescriptor bmd) {
+        map.addMarker(
               new MarkerOptions()
                     .position(latLng)
                     .title(title)
-                    .icon(bmd)
-        );
-        gmap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_VALUE));
+                    .icon(bmd));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_VALUE));
     }
 
     @Override

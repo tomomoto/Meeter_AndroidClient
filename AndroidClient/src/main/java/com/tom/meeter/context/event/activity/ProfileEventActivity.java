@@ -3,7 +3,7 @@ package com.tom.meeter.context.event.activity;
 import static android.view.View.GONE;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
-import static com.tom.meeter.context.event.activity.EventDispatcherActivity.EVENT_ID_KEY;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getUserUuid;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LAT;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.EXTRA_LNG;
 import static com.tom.meeter.context.event.activity.EventLocationMapActivity.createEventLocationMapActivityIntent;
@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -138,16 +137,7 @@ public class ProfileEventActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create event activity without extras.");
-            finish();
-            return;
-        }
-        String eventId = extras.getString(EVENT_ID_KEY);
-        if (eventId == null) {
-            Log.d(TAG, "Unable to create event activity without 'event_id' provided.");
-            finish();
+        if (!EventDispatcherActivity.validate(this)) {
             return;
         }
 
@@ -160,15 +150,17 @@ public class ProfileEventActivity extends AppCompatActivity {
         setContentView(view);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(eventId), this::finish,
+        checkToken((token) -> onInit(), this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String eventId) {
+    private void onInit() {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, eventId, this, onAuthFail))
+                    assistedFactory,
+                    EventDispatcherActivity.getEventId(this),
+                    this, onAuthFail))
               .get(EventViewModel.class);
 
         binding.swipeRefresh.setOnRefreshListener(() -> viewModel.init());
@@ -178,7 +170,7 @@ public class ProfileEventActivity extends AppCompatActivity {
         viewModel.getEvent()
               .observe(this, event -> {
                   if (!currentUserIsEventCreator(accountManager, event)) {
-                      dumpEventDispatcherError(TAG, accountManager, event);
+                      dumpEventDispatcherError(TAG, getUserUuid(accountManager), event);
                       finish();
                       return;
                   }

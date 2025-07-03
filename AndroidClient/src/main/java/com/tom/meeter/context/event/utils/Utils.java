@@ -121,9 +121,9 @@ public class Utils {
     }
 
     public static void dumpEventDispatcherError(
-          String tag, AccountManager am, EventDTO event) {
+          String tag, String userId, EventDTO event) {
         Log.e(tag, "System error. EventDispatcher did wrong dispatching. " +
-              "Current user is [" + AuthHelper.getUserUuid(am) + "], " +
+              "Current user is [" + userId + "], " +
               "eventId [" + event.getId() + "], eventCreatorId [" + event.getCreatorId() + "]. " +
               "Please, check server code and related entities.");
     }

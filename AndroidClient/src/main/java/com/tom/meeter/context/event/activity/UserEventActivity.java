@@ -1,6 +1,7 @@
 package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getUserUuid;
 import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
 import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
 import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
@@ -16,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -55,36 +55,30 @@ public class UserEventActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create event activity without extras.");
-            finish();
-            return;
-        }
-        String eventId = extras.getString(EventDispatcherActivity.EVENT_ID_KEY);
-        if (eventId == null) {
-            Log.d(TAG, "Unable to create event activity without 'event_id' provided.");
-            finish();
+        if (!EventDispatcherActivity.validate(this)) {
             return;
         }
 
         ((App) getApplication()).getEventComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
+        accountManager = AccountManager.get(this);
+
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(eventId),
-              this::finish, accountManager, this, tokenService);
+        checkToken((token) -> onInit(), this::finish,
+              accountManager, this, tokenService);
     }
 
-    private void onInit(String eventId) {
+    private void onInit() {
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, eventId, this, this::recreate))
+                    assistedFactory,
+                    EventDispatcherActivity.getEventId(this),
+                    this, this::recreate))
               .get(EventViewModel.class);
 
         binding.swipeRefresh.setOnRefreshListener(() -> viewModel.init());
@@ -92,7 +86,7 @@ public class UserEventActivity extends AppCompatActivity {
         viewModel.getEvent()
               .observe(this, event -> {
                   if (currentUserIsEventCreator(accountManager, event)) {
-                      dumpEventDispatcherError(TAG, accountManager, event);
+                      dumpEventDispatcherError(TAG, getUserUuid(accountManager), event);
                       finish();
                       return;
                   }

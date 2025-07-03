@@ -6,6 +6,7 @@ import static com.tom.meeter.context.event.activity.UserEventActivity.dispatchTo
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,16 +43,7 @@ public class EventDispatcherActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create event activity without extras.");
-            finish();
-            return;
-        }
-        String eventId = extras.getString(EVENT_ID_KEY);
-        if (eventId == null) {
-            Log.d(TAG, "Unable to create event activity without 'event_id' provided.");
-            finish();
+        if (!EventDispatcherActivity.validate(this)) {
             return;
         }
 
@@ -60,11 +52,12 @@ public class EventDispatcherActivity extends AppCompatActivity {
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken((token) -> onInit(token, eventId), this::finish,
+        checkToken(this::onInit, this::finish,
               accountManager, this, tokenService);
     }
 
-    private void onInit(String token, String eventId) {
+    private void onInit(String token) {
+        String eventId = getEventId(this);
         eventService.amICreator(Globals.getAuthHeader(token), eventId)
               .enqueue(new BaseOnNotAuthenticatedCallback<>(this, this::recreate) {
                   @Override
@@ -81,6 +74,28 @@ public class EventDispatcherActivity extends AppCompatActivity {
               });
     }
 
+    public static boolean validate(Activity activity) {
+        Bundle extras = activity.getIntent().getExtras();
+        if (extras == null) {
+            Log.e(TAG, "Unable to create ["
+                  + activity.getClass().getCanonicalName()
+                  + "] without extras.");
+            activity.finish();
+            return false;
+        }
+        if (extras.getString(EVENT_ID_KEY) == null) {
+            Log.e(TAG, "Unable to create ["
+                  + activity.getClass().getCanonicalName()
+                  + "] without [" + EVENT_ID_KEY + "] provided.");
+            activity.finish();
+            return false;
+        }
+        return true;
+    }
+
+    public static String getEventId(Activity activity) {
+        return activity.getIntent().getExtras().getString(EVENT_ID_KEY);
+    }
 
     public static void dispatchToEventActivity(Context ctx, String eventId) {
         ctx.startActivity(createEventActivityIntent(ctx, eventId));
