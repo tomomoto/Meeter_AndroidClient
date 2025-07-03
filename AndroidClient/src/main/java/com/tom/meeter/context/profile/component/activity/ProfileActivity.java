@@ -550,21 +550,20 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupDrawer(Toolbar toolbar, IconPackEnum icons) {
-        profile = new ProfileDrawerItem()
-              .withIdentifier(PROFILE_ID)
-              .withName("...")
-              //.withEmail("todo")
-              .withIcon(R.drawable.user_500x500_removebg);
-        header = new AccountHeaderBuilder()
-              .withActivity(this)
-              .withTextColor(Color.WHITE)
-              .withHeaderBackground(R.drawable.nav_menu_header_bg)
-              .addProfiles(profile)
-              .withSelectionListEnabledForSingleProfile(false)
-              .build();
         drawer = new DrawerBuilder()
               .withActivity(this)
-              .withAccountHeader(header)
+              .withAccountHeader(
+                    header = new AccountHeaderBuilder()
+                          .withActivity(this)
+                          .withTextColor(Color.WHITE)
+                          .withHeaderBackground(R.drawable.nav_menu_header_bg)
+                          .addProfiles(profile = new ProfileDrawerItem()
+                                .withIdentifier(PROFILE_ID)
+                                .withName("...")
+                                //.withEmail("todo")
+                                .withIcon(R.drawable.user_500x500_removebg))
+                          .withSelectionListEnabledForSingleProfile(false)
+                          .build())
               .withToolbar(toolbar)
               .withActionBarDrawerToggle(true)
               //.withHeader(R.layout.drawer_header)
