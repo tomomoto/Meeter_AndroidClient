@@ -10,7 +10,6 @@ import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,12 +47,11 @@ import retrofit2.Response;
 public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = UserActivity.class.getCanonicalName();
-    public static final String USER_ID_KEY = "user_id";
 
     @Inject
     TokenService tokenService;
     @Inject
-    UserService userService;
+    UserService service;
     @Inject
     UserAssistedFactory assistedFactory;
     @Inject
@@ -61,7 +59,6 @@ public class UserActivity extends AppCompatActivity {
 
     private ActivityUserBinding binding;
     private UserViewModel viewModel;
-    private AccountManager accountManager;
     private Boolean amISubscriber;
     private final Runnable onAuthFail = this::recreate;
 
@@ -71,12 +68,11 @@ public class UserActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (Utils.incorrect(this)) {
+        if (Utils.isIncorrect(this)) {
             return;
         }
 
-        accountManager = AccountManager.get(this);
-        if (Utils.getUserId(this).equals(AuthHelper.getUserUuid(accountManager))) {
+        if (Utils.getUserId(this).equals(AuthHelper.getUserUuid(this))) {
             startActivity(new Intent(this, ProfileActivity.class));
             finish();
             return;
@@ -104,7 +100,7 @@ public class UserActivity extends AppCompatActivity {
                 return;
             }
             if (amISubscriber) {
-                userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
+                service.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
                       new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
@@ -117,7 +113,7 @@ public class UserActivity extends AppCompatActivity {
                           }
                       });
             } else {
-                userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(
+                service.subscribe(Globals.getAuthHeader(token), userId).enqueue(
                       new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
@@ -211,6 +207,6 @@ public class UserActivity extends AppCompatActivity {
 
     public static Intent createUserActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserActivity.class)
-              .putExtra(USER_ID_KEY, userId);
+              .putExtra(Utils.USER_ID_KEY, userId);
     }
 }

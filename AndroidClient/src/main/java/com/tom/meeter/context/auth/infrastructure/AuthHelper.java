@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,6 +48,11 @@ public final class AuthHelper {
     }
 
     public static String getUserUuid(AccountManager am) {
+        return am.getUserData(getSingleAccount(am), USER_UUID_KEY);
+    }
+
+    public static String getUserUuid(Context ctx) {
+        AccountManager am = AccountManager.get(ctx);
         return am.getUserData(getSingleAccount(am), USER_UUID_KEY);
     }
 

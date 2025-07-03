@@ -3,7 +3,6 @@ package com.tom.meeter.context.user.activity;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,7 +46,7 @@ public class UserSubscriptionsActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (Utils.incorrect(this)) {
+        if (Utils.isIncorrect(this)) {
             return;
         }
 

@@ -62,15 +62,15 @@ public class ScheduleEventActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (EventDispatcherActivity.incorrect(this)) {
+        if (EventDispatcherActivity.isIncorrect(this)) {
             return;
         }
-
-        ((App) getApplication()).getEventComponent().inject(this);
 
         binding = ActivityEventScheduleBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        ((App) getApplication()).getEventComponent().inject(this);
 
         accountManager = AccountManager.get(this);
 

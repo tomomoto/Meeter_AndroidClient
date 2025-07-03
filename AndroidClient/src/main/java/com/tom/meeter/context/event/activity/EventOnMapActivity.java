@@ -55,7 +55,7 @@ public class EventOnMapActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (EventDispatcherActivity.incorrect(this)) {
+        if (EventDispatcherActivity.isIncorrect(this)) {
             return;
         }
 

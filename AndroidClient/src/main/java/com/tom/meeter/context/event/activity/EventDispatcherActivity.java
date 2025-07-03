@@ -31,11 +31,11 @@ public class EventDispatcherActivity extends AppCompatActivity {
     public static final String EVENT_ID_KEY = "event_id";
 
     private static final String TAG = EventDispatcherActivity.class.getCanonicalName();
+
     @Inject
     TokenService tokenService;
     @Inject
     EventService eventService;
-    private AccountManager accountManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +43,11 @@ public class EventDispatcherActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (EventDispatcherActivity.incorrect(this)) {
+        if (EventDispatcherActivity.isIncorrect(this)) {
             return;
         }
 
         ((App) getApplication()).getEventComponent().inject(this);
-
-        accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(this::onInit, this::finish, this, tokenService);
@@ -73,7 +71,7 @@ public class EventDispatcherActivity extends AppCompatActivity {
               });
     }
 
-    public static boolean incorrect(Activity activity) {
+    public static boolean isIncorrect(Activity activity) {
         Bundle extras = activity.getIntent().getExtras();
         if (extras == null) {
             Log.e(TAG, "Unable to create ["

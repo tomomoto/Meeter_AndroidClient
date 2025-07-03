@@ -46,7 +46,7 @@ public class UserSubscribersActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (Utils.incorrect(this)) {
+        if (Utils.isIncorrect(this)) {
             return;
         }
 

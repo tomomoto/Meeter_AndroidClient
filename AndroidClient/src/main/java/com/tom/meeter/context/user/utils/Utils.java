@@ -13,7 +13,7 @@ public class Utils {
     private Utils() {
     }
 
-    public static boolean incorrect(Activity activity) {
+    public static boolean isIncorrect(Activity activity) {
         Bundle extras = activity.getIntent().getExtras();
         if (extras == null) {
             Log.d(TAG, "Unable to create ["

@@ -73,7 +73,7 @@ public class EventLocationMapActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (EventDispatcherActivity.incorrect(this)) {
+        if (EventDispatcherActivity.isIncorrect(this)) {
             return;
         }
 
@@ -89,6 +89,7 @@ public class EventLocationMapActivity extends AppCompatActivity
             return;
         }
         mapFragment.getMapAsync(this);
+
         binding.btnConfirm.setOnClickListener(v -> {
             if (eventMarker != null) {
                 Intent resultIntent = new Intent();

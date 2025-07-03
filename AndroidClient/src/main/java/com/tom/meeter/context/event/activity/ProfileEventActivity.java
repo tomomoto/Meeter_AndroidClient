@@ -137,17 +137,17 @@ public class ProfileEventActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (EventDispatcherActivity.incorrect(this)) {
+        if (EventDispatcherActivity.isIncorrect(this)) {
             return;
         }
-
-        ((App) getApplication()).getEventComponent().inject(this);
-
-        accountManager = AccountManager.get(this);
 
         binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        ((App) getApplication()).getEventComponent().inject(this);
+
+        accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken((token) -> onInit(), this::finish, this, tokenService);
