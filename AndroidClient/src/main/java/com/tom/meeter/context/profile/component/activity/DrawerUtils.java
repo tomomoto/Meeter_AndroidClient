@@ -9,6 +9,7 @@ import static com.tom.meeter.context.profile.component.activity.ProfileActivity.
 import static com.tom.meeter.context.profile.component.activity.ProfileActivity.DRAWER_OPEN_SOURCE_ID;
 import static com.tom.meeter.context.profile.component.activity.ProfileActivity.DRAWER_PROFILE_ID;
 import static com.tom.meeter.context.profile.component.activity.ProfileActivity.DRAWER_SETTINGS_ID;
+import static com.tom.meeter.context.profile.component.activity.ProfileActivity.DRAWER_YOUR_EVENTS_ID;
 
 import android.util.Log;
 
@@ -53,6 +54,9 @@ public class DrawerUtils {
             return GoogleMaterial.Icon.gmd_event;
             //return GoogleMaterial.Icon.gmd_perm_contact_calendar;
         }
+        if (id == DRAWER_YOUR_EVENTS_ID) {
+            return GoogleMaterial.Icon.gmd_event;
+        }
         if (id == DRAWER_NOTIFICATION_ID) {
             //return GoogleMaterial.Icon.gmd_visibility;
             //return GoogleMaterial.Icon.gmd_notifications;
@@ -85,6 +89,9 @@ public class DrawerUtils {
             return FontAwesome.Icon.faw_globe;
         }
         if (id == DRAWER_NEW_EVENT_ID) {
+            return FontAwesome.Icon.faw_calendar;
+        }
+        if (id == DRAWER_YOUR_EVENTS_ID) {
             return FontAwesome.Icon.faw_calendar;
         }
         if (id == DRAWER_NOTIFICATION_ID) {

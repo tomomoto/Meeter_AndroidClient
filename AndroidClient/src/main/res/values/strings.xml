@@ -67,6 +67,7 @@
         <item>Profile</item>
         <item>Events</item>
         <item>New event</item>
+        <item>Your events</item>
         <item>Notifications</item>
         <item>Settings</item>
     </string-array>

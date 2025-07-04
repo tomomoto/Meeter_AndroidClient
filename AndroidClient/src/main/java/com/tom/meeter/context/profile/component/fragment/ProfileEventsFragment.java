@@ -19,7 +19,7 @@ import com.tom.meeter.App;
 import com.tom.meeter.context.profile.component.adapter.EventsAdapter;
 import com.tom.meeter.context.profile.component.viewmodel.ProfileEventsViewModel;
 import com.tom.meeter.context.profile.factory.ProfileEventsAssistedFactory;
-import com.tom.meeter.databinding.SubFragmentUserEventsBinding;
+import com.tom.meeter.databinding.FragmentUserEventsBinding;
 import com.tom.meeter.infrastructure.common.InfrastructureHelper;
 
 import javax.inject.Inject;
@@ -33,7 +33,7 @@ public class ProfileEventsFragment extends Fragment {
     @Inject
     EventsAdapter adapter;
 
-    private SubFragmentUserEventsBinding binding;
+    private FragmentUserEventsBinding binding;
 
     private final Runnable onAuthFail =
           () -> InfrastructureHelper.restartActivityFromFragment(this);
@@ -64,29 +64,34 @@ public class ProfileEventsFragment extends Fragment {
 
     @Override
     public View onCreateView(
-          @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater, ViewGroup container,
+          Bundle savedInstanceState) {
         logMethod(TAG, this);
-        binding = SubFragmentUserEventsBinding.inflate(inflater, container, false);
+        binding = FragmentUserEventsBinding.inflate(
+              inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+          @NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         logMethod(TAG, this);
 
         viewModel = new ViewModelProvider(
               this,
               assistedFactory.factory(
-                    assistedFactory, requireContext(),
-                    () -> InfrastructureHelper.restartActivityFromFragment(this)))
+                    assistedFactory, requireContext(), onAuthFail))
               .get(ProfileEventsViewModel.class);
 
-        binding.userEventsFragmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.userEventsFragmentRecyclerView.setAdapter(adapter);
+        binding.eventsRecyclerView.setLayoutManager(
+              new LinearLayoutManager(getActivity()));
+        binding.eventsRecyclerView.setAdapter(adapter);
 
         viewModel.getEvents()
-              .observe(getViewLifecycleOwner(), events -> adapter.setData(events));
+              .observe(
+                    getViewLifecycleOwner(),
+                    events -> adapter.setData(events));
     }
 
     @Override
