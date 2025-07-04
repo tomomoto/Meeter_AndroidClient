@@ -401,10 +401,9 @@ public class ProfileActivity extends AppCompatActivity {
         // Since new navigation comes...
         setupActionBarTitle(lastNavItemId);
 
-        if (!fm.isStateSaved()) {
-            replaceFragment(fm, () -> createFragment(lastNavItemId), () -> tag)
-                  .run();
-        }
+        replaceFragment(
+              fm, () -> createFragment(lastNavItemId), () -> tag)
+              .run();
 
 
         // show or hide the fab button
@@ -421,11 +420,11 @@ public class ProfileActivity extends AppCompatActivity {
         logMethod(TAG, this,
               "isStateSaved: " + fm.isStateSaved(),
               "fragments size: " + fragments.size());
-        StringWriter sw = new StringWriter();
-        fm.dump(TAG, null, new PrintWriter(sw), null);
         for (Fragment f : fragments) {
             Log.d(TAG, f.toString());
         }
+        StringWriter sw = new StringWriter();
+        fm.dump(TAG, null, new PrintWriter(sw), null);
         Log.d(TAG, sw.toString());
     }
 
@@ -504,14 +503,18 @@ public class ProfileActivity extends AppCompatActivity {
     private static Runnable replaceFragment(
           FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
         return () -> {
+            if (fm.isStateSaved()) {
+                Log.e(TAG, "in replaceFragment(), but state is saved, nothing to do. ");
+                return;
+            }
             // update the main content by replacing fragments
             FragmentTransaction txn = fm.beginTransaction();
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
             // for some reasons txn.commit leads to errors
             // and txn.commitAllowingStateLoss doesn't
-            txn.commit();
-            //txn.commitAllowingStateLoss();
+            //txn.commit();
+            txn.commitAllowingStateLoss();
         };
     }
 
