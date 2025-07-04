@@ -54,7 +54,7 @@ public class Globals {
               + p.getProperty(SERVER_IP_PROPERTY)
               + ":"
               + Integer.valueOf(p.getProperty(SERVER_PORT_PROPERTY));
-        Log.d(TAG, "Server URL is [" + serverPath + "].");
+        Log.i(TAG, "Server URL is [" + serverPath + "].");
         return serverPath;
     }
 
@@ -67,7 +67,7 @@ public class Globals {
               + p.getProperty(SERVER_IP_PROPERTY)
               + ":"
               + Integer.valueOf(p.getProperty(SERVER_IO_PORT_PROPERTY));
-        Log.d(TAG, "SocketIO path is [" + socketIOPath + "].");
+        Log.i(TAG, "SocketIO path is [" + socketIOPath + "].");
         return socketIOPath;
     }
 
