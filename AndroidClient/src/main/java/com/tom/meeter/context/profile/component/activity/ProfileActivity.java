@@ -552,11 +552,13 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupDrawer(Toolbar toolbar, IconPackEnum icons) {
         drawer = new DrawerBuilder()
               .withActivity(this)
+              //.withSliderBackgroundColorRes(R.color.navigationBarColor)
               .withAccountHeader(
                     header = new AccountHeaderBuilder()
                           .withActivity(this)
                           .withTextColor(Color.WHITE)
-                          .withHeaderBackground(R.drawable.nav_menu_header_bg)
+                          .withHeaderBackground(R.color.navigationBarColor)
+                          /*.withHeaderBackground(R.drawable.nav_menu_header_bg)*/
                           .addProfiles(profile = new ProfileDrawerItem()
                                 .withIdentifier(PROFILE_ID)
                                 .withName("...")
@@ -565,6 +567,8 @@ public class ProfileActivity extends AppCompatActivity {
                           .withSelectionListEnabledForSingleProfile(false)
                           .build())
               .withToolbar(toolbar)
+              .withTranslucentStatusBar(false)
+              .withDisplayBelowStatusBar(true)
               .withActionBarDrawerToggle(true)
               //.withHeader(R.layout.drawer_header)
               .addDrawerItems(
