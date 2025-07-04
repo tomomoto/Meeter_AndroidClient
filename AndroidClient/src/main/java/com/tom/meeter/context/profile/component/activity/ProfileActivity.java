@@ -69,6 +69,8 @@ import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -389,6 +391,7 @@ public class ProfileActivity extends AppCompatActivity {
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
         FragmentManager fm = getSupportFragmentManager();
+        dumpFragmentManagerState(fm);
         if (fm.findFragmentByTag(tag) != null) {
             drawer.closeDrawer();
             //toggleFab();
@@ -413,9 +416,24 @@ public class ProfileActivity extends AppCompatActivity {
         //invalidateOptionsMenu();
     }
 
+    private void dumpFragmentManagerState(FragmentManager fm) {
+        List<Fragment> fragments = fm.getFragments();
+        logMethod(TAG, this,
+              "isStateSaved: " + fm.isStateSaved(),
+              "fragments size: " + fragments.size());
+        StringWriter sw = new StringWriter();
+        fm.dump(TAG, null, new PrintWriter(sw), null);
+        for (Fragment f : fragments) {
+            Log.d(TAG, f.toString());
+        }
+        Log.d(TAG, sw.toString());
+    }
+
     private void restoreSettings() {
         logMethod(TAG, this);
-        String tag = getCurrentFragmentTag(getSupportFragmentManager());
+        FragmentManager fm = getSupportFragmentManager();
+        dumpFragmentManagerState(fm);
+        String tag = getCurrentFragmentTag(fm);
         if (EVENTS_FRAGMENT_TAG.equals(tag)) {
             showMenu = true;
         }
