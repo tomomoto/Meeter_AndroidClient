@@ -48,9 +48,9 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.component.StatusesFilterDialog;
 import com.tom.meeter.context.profile.component.fragment.CreateEventFragment;
@@ -483,7 +483,7 @@ public class ProfileActivity extends AppCompatActivity {
                   acc, this, future -> {
                       Log.d(TAG, "Account '" + acc.name + "' removed.");
                       startActivity(
-                            new Intent(this, LoginActivity.class)
+                            new Intent(this, Launcher.class)
                                   .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                       finish();
                   }, null);
