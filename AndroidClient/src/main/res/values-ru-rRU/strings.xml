@@ -261,6 +261,7 @@
     <string name="scheduled">Запланировано</string>
     <string name="date_validity">Валидность даты</string>
     <string name="your_events">Ваши события</string>
+    <string name="view_event">Просмотр события</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

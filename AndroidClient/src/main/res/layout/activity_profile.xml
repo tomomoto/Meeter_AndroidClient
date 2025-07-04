@@ -15,7 +15,7 @@
             android:id="@+id/profile_activity_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="36dp"
             android:background="?attr/colorPrimaryDark"
             android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="enterAlways"

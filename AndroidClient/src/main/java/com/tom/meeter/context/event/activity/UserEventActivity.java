@@ -21,20 +21,21 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
+import com.tom.meeter.R;
 import com.tom.meeter.context.event.factory.EventAssistedFactory;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventReadableBinding;
+import com.tom.meeter.infrastructure.components.activity.BaseBackToolbarActivity;
 
 import javax.inject.Inject;
 
-public class UserEventActivity extends AppCompatActivity {
+public class UserEventActivity extends BaseBackToolbarActivity {
 
     private static final String TAG = UserEventActivity.class.getCanonicalName();
 
@@ -62,6 +63,7 @@ public class UserEventActivity extends AppCompatActivity {
         binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        setupToolbar(binding.includeToolbar.toolbar, R.string.view_event);
 
         ((App) getApplication()).getEventComponent().inject(this);
 

@@ -39,7 +39,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
@@ -55,6 +54,7 @@ import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.databinding.ActivityEventEditableBinding;
 import com.tom.meeter.infrastructure.common.ImagesHelper;
+import com.tom.meeter.infrastructure.components.activity.BaseBackToolbarActivity;
 import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 import com.tom.meeter.infrastructure.http.HttpErrorLogger;
@@ -66,7 +66,7 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class ProfileEventActivity extends AppCompatActivity {
+public class ProfileEventActivity extends BaseBackToolbarActivity {
 
     private static final String TAG = ProfileEventActivity.class.getCanonicalName();
 
@@ -144,6 +144,7 @@ public class ProfileEventActivity extends AppCompatActivity {
         binding = ActivityEventEditableBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        setupToolbar(binding.includeToolbar.toolbar, R.string.view_event);
 
         ((App) getApplication()).getEventComponent().inject(this);
 
