@@ -15,12 +15,10 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/settings_activity_toolbar"
             android:layout_width="match_parent"
+            android:background="?attr/colorPrimaryDark"
             android:layout_height="match_parent"
             app:layout_scrollFlags="enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        <!--frame layout for displaying
-            our preference fragment-->
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
@@ -28,6 +26,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/settings_activity_appbar" />
-
-
 </RelativeLayout>
