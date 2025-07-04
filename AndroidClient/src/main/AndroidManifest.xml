@@ -58,11 +58,7 @@
         </activity>
         <activity
             android:name=".context.profile.component.activity.ProfileActivity"
-            android:label="@string/profile_activity_label"
-            android:parentActivityName=".context.auth.activity.LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".context.auth.activity.LoginActivity" />
+            android:label="@string/profile_activity_label">
         </activity>
         <activity
             android:name=".context.auth.activity.RegistrationActivity"

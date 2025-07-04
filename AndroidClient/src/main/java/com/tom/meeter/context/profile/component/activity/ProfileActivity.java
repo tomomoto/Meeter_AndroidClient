@@ -552,6 +552,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupDrawer(Toolbar toolbar, IconPackEnum icons) {
         drawer = new DrawerBuilder()
               .withActivity(this)
+              //? .withFullscreen(true)
               //.withSliderBackgroundColorRes(R.color.navigationBarColor)
               .withAccountHeader(
                     header = new AccountHeaderBuilder()
@@ -567,8 +568,6 @@ public class ProfileActivity extends AppCompatActivity {
                           .withSelectionListEnabledForSingleProfile(false)
                           .build())
               .withToolbar(toolbar)
-              .withTranslucentStatusBar(false)
-              .withDisplayBelowStatusBar(true)
               .withActionBarDrawerToggle(true)
               //.withHeader(R.layout.drawer_header)
               .addDrawerItems(
@@ -604,6 +603,7 @@ public class ProfileActivity extends AppCompatActivity {
                     this::getCurrentFocus,
                     () -> (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE)))
               .build();
+        drawer.getDrawerLayout().setFitsSystemWindows(false);
         updateDrawerIcons(icons);
     }
 
