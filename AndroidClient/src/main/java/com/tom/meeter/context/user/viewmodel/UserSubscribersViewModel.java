@@ -56,7 +56,7 @@ public class UserSubscribersViewModel extends ViewModel {
                       if (resp.code() != HttpCodes.OK || resp.body() == null) {
                           return;
                       }
-                      subscribers.setValue(resp.body());
+                      subscribers.postValue(resp.body());
                       return;
                   }
               }

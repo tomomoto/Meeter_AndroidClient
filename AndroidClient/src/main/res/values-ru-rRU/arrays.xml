@@ -20,9 +20,21 @@
         <item>Снято c публикации</item>
         <item>Запланировано</item>
         <item>Началось</item>
-        <item>Остановлено</item>
+        <item>Приостановлено</item>
         <item>Продолжено</item>
         <item>Отменено</item>
         <item>Завершено</item>
     </string-array>
+    <string-array name="event_actions">
+        <item>Опубликовать</item>
+        <item>Снять с публикации</item>
+        <item>Запланировать</item>
+        <item>Начать</item>
+        <item>Приостановить</item>
+        <item>Продолжить</item>
+        <item>Отменить</item>
+        <item>Закончить</item>
+        <item>Архивировать</item>
+    </string-array>
+
 </resources>

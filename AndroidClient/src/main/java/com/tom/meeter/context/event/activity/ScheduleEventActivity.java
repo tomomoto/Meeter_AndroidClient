@@ -1,16 +1,15 @@
 package com.tom.meeter.context.event.activity;
 
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.checkToken;
+import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getUserUuid;
-import static com.tom.meeter.context.event.activity.EventOnMapActivity.dispatchToEventOnMapActivity;
+import static com.tom.meeter.context.event.utils.Utils.createScheduleEventRequest;
 import static com.tom.meeter.context.event.utils.Utils.currentUserIsEventCreator;
 import static com.tom.meeter.context.event.utils.Utils.dumpEventDispatcherError;
-import static com.tom.meeter.context.user.activity.UserActivity.dispatchToUserActivity;
-import static com.tom.meeter.infrastructure.common.CommonHelper.UI_DATE_TIME_FORMAT;
 import static com.tom.meeter.infrastructure.common.CommonHelper.dateOrNull;
-import static com.tom.meeter.infrastructure.common.CommonHelper.handleEventStatus;
-import static com.tom.meeter.infrastructure.common.CommonHelper.textOrNull;
+import static com.tom.meeter.infrastructure.common.DateHelper.showDateTimePicker;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
+import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
 import android.content.Context;
@@ -21,6 +20,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.tom.meeter.App;
@@ -30,14 +30,18 @@ import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.event.viewmodel.EventViewModel;
 import com.tom.meeter.context.network.dto.EventDTO;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.databinding.ActivityEventReadableBinding;
-import com.tom.meeter.infrastructure.components.activity.BaseBackToolbarActivity;
+import com.tom.meeter.databinding.ActivityEventScheduleBinding;
+import com.tom.meeter.infrastructure.http.BaseOnNotAuthenticatedCallback;
+import com.tom.meeter.infrastructure.http.HttpCodes;
 
 import javax.inject.Inject;
 
-public class UserEventActivity extends BaseBackToolbarActivity {
+import retrofit2.Call;
+import retrofit2.Response;
 
-    private static final String TAG = UserEventActivity.class.getCanonicalName();
+public class ScheduleEventActivity extends AppCompatActivity {
+
+    private static final String TAG = ScheduleEventActivity.class.getCanonicalName();
 
     @Inject
     TokenService tokenService;
@@ -46,9 +50,11 @@ public class UserEventActivity extends BaseBackToolbarActivity {
     @Inject
     EventAssistedFactory assistedFactory;
 
-    private ActivityEventReadableBinding binding;
-    private EventViewModel viewModel;
+    private final Runnable onNotAuthenticated = this::recreate;
+    private ActivityEventScheduleBinding binding;
     private AccountManager accountManager;
+    private EventViewModel viewModel;
+    private EventDTO eventCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +66,9 @@ public class UserEventActivity extends BaseBackToolbarActivity {
             return;
         }
 
-        binding = ActivityEventReadableBinding.inflate(getLayoutInflater());
+        binding = ActivityEventScheduleBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        setupToolbar(binding.includeToolbar.toolbar, R.string.view_event);
 
         ((App) getApplication()).getEventComponent().inject(this);
 
@@ -79,43 +84,60 @@ public class UserEventActivity extends BaseBackToolbarActivity {
               assistedFactory.factory(
                     assistedFactory,
                     EventDispatcherActivity.getEventId(this),
-                    this, this::recreate))
+                    this, onNotAuthenticated))
               .get(EventViewModel.class);
 
         binding.swipeRefresh.setOnRefreshListener(() -> viewModel.init());
 
+        initLayout();
+
         viewModel.getEvent()
               .observe(this, event -> {
-                  if (currentUserIsEventCreator(accountManager, event)) {
+                  if (!currentUserIsEventCreator(accountManager, event)) {
                       dumpEventDispatcherError(TAG, getUserUuid(accountManager), event);
                       finish();
                       return;
                   }
                   binding.swipeRefresh.setRefreshing(false);
-                  initLayout(event);
-                  viewModel.getEventPhoto()
-                        .observe(
-                              this,
-                              photo -> binding.eventPhoto.setImageBitmap(photo));
+                  eventCache = event;
+                  updateLayout();
               });
-
     }
 
-    private void initLayout(EventDTO event) {
-        binding.eventCreator.setOnClickListener(
-              v -> dispatchToUserActivity(this, event.getCreatorId()));
-        binding.locationMapButton.setOnClickListener(
-              v -> dispatchToEventOnMapActivity(this, event.getId()));
+    private void initLayout() {
+        binding.selectStartingDateButton.setOnClickListener(
+              v -> showDateTimePicker(this, binding.starting));
+        binding.selectEndingDateButton.setOnClickListener(
+              v -> showDateTimePicker(this, binding.ending));
 
-        handleEventStatus(this, binding.status, event.getStatus());
-        binding.name.setText(event.getName());
-        binding.eventCreated.setText(UI_DATE_TIME_FORMAT.format(event.getCreated()));
-        binding.description.setText(event.getDescription());
-        binding.latitude.setText(textOrNull(event.getLatitude()));
-        binding.longitude.setText(textOrNull(event.getLongitude()));
-        binding.starting.setText(dateOrNull(event.getStarting()));
-        binding.ending.setText(dateOrNull(event.getEnding()));
-        binding.city.setText(event.getCity());
+        binding.scheduleButton.setOnClickListener(v -> {
+            service.scheduleEvent(
+                        getAuthHeader(accountManager),
+                        eventCache.getId(),
+                        createScheduleEventRequest(eventCache, binding))
+                  .enqueue(new BaseOnNotAuthenticatedCallback<>(this, onNotAuthenticated) {
+                      @Override
+                      public void onResponse(
+                            Call<EventDTO> call, Response<EventDTO> resp) {
+                          super.onResponse(call, resp);
+                          if (resp.code() != HttpCodes.OK) {
+                              showMessage(ScheduleEventActivity.this,
+                                    "Unable to schedule the event...");
+                              updateLayout();
+                              return;
+                          }
+                          showMessage(ScheduleEventActivity.this, R.string.scheduled);
+                          setResult(RESULT_OK);
+                          finish();
+                      }
+                  });
+        });
+    }
+
+    private void updateLayout() {
+        binding.name.setText(eventCache.getName());
+        binding.starting.setText(dateOrNull(eventCache.getStarting()));
+        binding.ending.setText(dateOrNull(eventCache.getEnding()));
     }
 
     @Nullable
@@ -144,12 +166,12 @@ public class UserEventActivity extends BaseBackToolbarActivity {
         super.onPause();
     }
 
-    public static void dispatchToUserEventActivity(Context ctx, String eventId) {
-        ctx.startActivity(createUserEventActivityIntent(ctx, eventId));
+    public static void dispatchToScheduleEventActivity(Context ctx, String eventId) {
+        ctx.startActivity(createScheduleEventActivityIntent(ctx, eventId));
     }
 
-    public static Intent createUserEventActivityIntent(Context ctx, String eventId) {
-        return new Intent(ctx, UserEventActivity.class)
+    public static Intent createScheduleEventActivityIntent(Context ctx, String eventId) {
+        return new Intent(ctx, ScheduleEventActivity.class)
               .putExtra(EventDispatcherActivity.EVENT_ID_KEY, eventId);
     }
 }

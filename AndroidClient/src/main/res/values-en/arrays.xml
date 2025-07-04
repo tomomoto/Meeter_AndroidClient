@@ -25,4 +25,16 @@
         <item>Cancelled</item>
         <item>Finished</item>
     </string-array>
+    <string-array name="event_actions">
+        <item>Publish</item>
+        <item>Unpublish</item>
+        <item>Schedule</item>
+        <item>Start</item>
+        <item>Pause</item>
+        <item>Resume</item>
+        <item>Cancel</item>
+        <item>Finish</item>
+        <item>Archive</item>
+    </string-array>
+
 </resources>

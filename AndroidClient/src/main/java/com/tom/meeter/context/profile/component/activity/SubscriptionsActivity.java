@@ -49,9 +49,7 @@ public class SubscriptionsActivity extends AppCompatActivity {
         ((App) getApplication()).getProfileComponent().inject(this);
         accountManager = AccountManager.get(this);
 
-        checkToken(
-              (token) -> onInit(), this::finish,
-              accountManager, this, tokenService);
+        checkToken((token) -> onInit(), this::finish, this, tokenService);
     }
 
     private void onInit() {
@@ -67,8 +65,13 @@ public class SubscriptionsActivity extends AppCompatActivity {
               assistedFactory.factory(assistedFactory, this, onAuthFail))
               .get(ProfileSubscriptionsViewModel.class);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
         viewModel.getSubscriptions()
-              .observe(this, subs -> adapter.setData(subs));
+              .observe(this, subs -> {
+                  binding.swipeRefreshLayout.setRefreshing(false);
+                  adapter.setData(subs);
+              });
     }
 
     @Override

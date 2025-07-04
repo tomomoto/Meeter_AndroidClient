@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
     @Inject
     ProfileAssistedFactory assistedFactory;
     @Inject
-    ImageDownloader imageDownloader;
+    ImageDownloader imgDownloader;
     @Inject
     ProfileService service;
     @Inject
@@ -79,10 +79,6 @@ public class ProfileFragment extends Fragment {
     private boolean isEditableModeEnabled = false;
     private UserDTO userCache;
 
-    public ProfileFragment() {
-        logMethod(TAG, this);
-    }
-
     private final ActivityResultLauncher<Intent> imageUploadLauncher =
           registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -93,6 +89,10 @@ public class ProfileFragment extends Fragment {
                         binding.photoPath.setText(photoPath);
                     }
                 });
+
+    public ProfileFragment() {
+        logMethod(TAG, this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,16 +127,22 @@ public class ProfileFragment extends Fragment {
               assistedFactory.factory(assistedFactory, ctx, onAuthFail))
               .get(ProfileViewModel.class);
 
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
         LifecycleOwner owner = getViewLifecycleOwner();
         viewModel.getProfile()
               .observe(
                     owner,
                     user -> {
+                        binding.swipeRefreshLayout.setRefreshing(false);
                         userCache = user;
                         updateLayoutValues();
                     });
 
-        binding.events.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.events.setLayoutManager(
+              new GridLayoutManager(
+                    getContext(),
+                    EventsCardAdapter.calculateNoOfColumns(150)));
         binding.events.setAdapter(adapter);
 
         viewModel.getEvents()
@@ -195,7 +201,7 @@ public class ProfileFragment extends Fragment {
     }
 
     void downloadAndUpdateLayoutPhoto(String photoPath) {
-        imageDownloader.downloadUserImage(
+        imgDownloader.downloadUserImage(
               photoPath, requireContext(), ImagesHelper::bigCircleImage,
               this::updateLayoutPhoto, onAuthFail);
     }
@@ -206,7 +212,13 @@ public class ProfileFragment extends Fragment {
 
     private void switchEditMode() {
         isEditableModeEnabled = !isEditableModeEnabled;
-        binding.btnPhoto.setEnabled(isEditableModeEnabled);
+        if (isEditableModeEnabled) {
+            binding.btnPhoto.setVisibility(View.VISIBLE);
+            binding.photoPath.setVisibility(View.VISIBLE);
+        } else {
+            binding.btnPhoto.setVisibility(View.GONE);
+            binding.photoPath.setVisibility(View.GONE);
+        }
         binding.name.setEnabled(isEditableModeEnabled);
         binding.surname.setEnabled(isEditableModeEnabled);
         binding.birthday.setEnabled(isEditableModeEnabled);
@@ -229,13 +241,13 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         logMethod(TAG, this);
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         logMethod(TAG, this);
+        super.onDestroy();
     }
 }

@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -50,6 +51,11 @@ public final class AuthHelper {
         return am.getUserData(getSingleAccount(am), USER_UUID_KEY);
     }
 
+    public static String getUserUuid(Context ctx) {
+        AccountManager am = AccountManager.get(ctx);
+        return am.getUserData(getSingleAccount(am), USER_UUID_KEY);
+    }
+
     public static void setToken(AccountManager am, String token) {
         am.setAuthToken(getSingleAccount(am), AccountAuthenticator.AUTH_TYPE, token);
     }
@@ -68,7 +74,8 @@ public final class AuthHelper {
 
     public static void checkToken(
           Consumer<String> onToken, Runnable onCancelledAuth,
-          AccountManager am, Activity activity, TokenService tokenService) {
+          Activity activity, TokenService tokenService) {
+        AccountManager am = AccountManager.get(activity);
         Account account = getSingleAccount(am);
         String token = am.peekAuthToken(account, AUTH_TYPE);
         if (token != null) {

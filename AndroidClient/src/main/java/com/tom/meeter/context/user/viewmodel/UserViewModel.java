@@ -67,7 +67,7 @@ public class UserViewModel extends ViewModel {
                           return;
                       }
                       UserDTO user = resp.body();
-                      UserViewModel.this.user.setValue(user);
+                      UserViewModel.this.user.postValue(user);
                       String photoPath = user.getPhotoPath();
                       if (photoPath == null) {
                           return;
@@ -75,7 +75,7 @@ public class UserViewModel extends ViewModel {
                       imgDownloader.downloadUserImage(
                             photoPath, ctx,
                             ImagesHelper::bigCircleImage,
-                            photo::setValue,
+                            photo::postValue,
                             onNotAuthenticated);
                       return;
                   }
@@ -91,7 +91,7 @@ public class UserViewModel extends ViewModel {
                       if (resp.code() != HttpCodes.OK) {
                           return;
                       }
-                      amISubscriber.setValue(resp.body());
+                      amISubscriber.postValue(resp.body());
                       return;
                   }
               }
@@ -106,7 +106,7 @@ public class UserViewModel extends ViewModel {
                       if (resp.code() != HttpCodes.OK) {
                           return;
                       }
-                      events.setValue(resp.body());
+                      events.postValue(resp.body());
                       return;
                   }
               });

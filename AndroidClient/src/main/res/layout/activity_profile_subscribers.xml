@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <!-- Заголовок -->
-    <TextView
-        android:id="@+id/subsLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/subscribers"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <!-- RecyclerView для списка подписчиков -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerSubscribers"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</LinearLayout>
+        <!-- Заголовок -->
+        <TextView
+            android:id="@+id/subsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/subscribers"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- RecyclerView для списка подписчиков -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerSubscribers"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

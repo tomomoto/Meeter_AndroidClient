@@ -54,7 +54,7 @@ public class ProfileEventsViewModel extends ViewModel {
                       if (response.code() != HttpCodes.OK || response.body() == null) {
                           return;
                       }
-                      events.setValue(response.body());
+                      events.postValue(response.body());
                       return;
                   }
               }

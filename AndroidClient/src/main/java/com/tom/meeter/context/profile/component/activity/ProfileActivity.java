@@ -14,6 +14,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,46 +22,55 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikepenz.iconics.typeface.IIcon;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
-import com.tom.meeter.context.auth.activity.LoginActivity;
 import com.tom.meeter.context.auth.infrastructure.AuthHelper;
+import com.tom.meeter.context.image.ImageDownloader;
+import com.tom.meeter.context.launcher.Launcher;
 import com.tom.meeter.context.network.service.SocketIOService;
 import com.tom.meeter.context.profile.component.StatusesFilterDialog;
 import com.tom.meeter.context.profile.component.fragment.CreateEventFragment;
 import com.tom.meeter.context.profile.component.fragment.EventsFragment;
 import com.tom.meeter.context.profile.component.fragment.ProfileEventsFragment;
 import com.tom.meeter.context.profile.component.fragment.ProfileFragment;
+import com.tom.meeter.context.profile.component.viewmodel.ProfileViewModel;
+import com.tom.meeter.context.profile.factory.ProfileAssistedFactory;
 import com.tom.meeter.context.profile.message.SettingsResponse;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.context.profile.service.SettingsService;
 import com.tom.meeter.context.token.service.TokenService;
-import com.tom.meeter.databinding.ProfileActivityBinding;
+import com.tom.meeter.databinding.ActivityProfileBinding;
 import com.tom.meeter.infrastructure.common.Globals;
+import com.tom.meeter.infrastructure.common.ImagesHelper;
 import com.tom.meeter.infrastructure.http.ErrorLogger;
 import com.tom.meeter.infrastructure.http.HttpCodes;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,32 +86,36 @@ public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = ProfileActivity.class.getCanonicalName();
 
-    static final long DRAWER_PROFILE_ID = 0;
+    static final short DRAWER_PROFILE_ID = 0;
     static final String PROFILE_FRAGMENT_TAG = "profile_fragment_tag";
 
-    static final long DRAWER_EVENTS_ID = 1;
+    static final short DRAWER_EVENTS_ID = 1;
     static final String EVENTS_FRAGMENT_TAG = "events_fragment_tag";
 
-    static final long DRAWER_NEW_EVENT_ID = 2;
+    static final short DRAWER_NEW_EVENT_ID = 2;
     static final String NEW_EVENT_FRAGMENT_TAG = "new_event_fragment_tag";
 
-    static final long DRAWER_NOTIFICATION_ID = 3;
+    static final short DRAWER_YOUR_EVENTS_ID = 3;
+    static final String YOUR_EVENTS_FRAGMENT_TAG = "your_events_fragment_tag";
+
+    static final short DRAWER_NOTIFICATION_ID = 4;
     static final String NOTIFICATIONS_FRAGMENT_TAG = "notifications_fragment_tag";
 
-    static final long DRAWER_SETTINGS_ID = 10; // -> no need a tag.
+    static final short DRAWER_SETTINGS_ID = 10; // -> no need a tag.
 
-    static final long DRAWER_HELP_ID = 11;
-    static final long DRAWER_OPEN_SOURCE_ID = 12;
-    static final long DRAWER_CONTACT_ID = 13;
-    static final long DRAWER_LOGOUT_ID = 99;
+    static final short DRAWER_HELP_ID = 11;
+    static final short DRAWER_OPEN_SOURCE_ID = 12;
+    static final short DRAWER_CONTACT_ID = 13;
+    static final short DRAWER_LOGOUT_ID = 99;
 
-    private static final Map<Long, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
+    private static final Map<Short, String> DRAWER_FRAGMENT_TAGS = new HashMap<>();
 
 
     static {
         DRAWER_FRAGMENT_TAGS.put(DRAWER_PROFILE_ID, PROFILE_FRAGMENT_TAG);
         DRAWER_FRAGMENT_TAGS.put(DRAWER_EVENTS_ID, EVENTS_FRAGMENT_TAG);
         DRAWER_FRAGMENT_TAGS.put(DRAWER_NEW_EVENT_ID, NEW_EVENT_FRAGMENT_TAG);
+        DRAWER_FRAGMENT_TAGS.put(DRAWER_YOUR_EVENTS_ID, YOUR_EVENTS_FRAGMENT_TAG);
         DRAWER_FRAGMENT_TAGS.put(DRAWER_NOTIFICATION_ID, NOTIFICATIONS_FRAGMENT_TAG);
 
         //DRAWER_SETTINGS_ID intentionally don't need to have a tag,
@@ -114,8 +128,10 @@ public class ProfileActivity extends AppCompatActivity {
          */
     }
 
-    private Toolbar toolbar;
     private boolean showMenu = false;
+    private ProfileDrawerItem profile;
+    private AccountHeader header;
+    private static final short PROFILE_ID = 1;
 
     enum IconPackEnum {
         FONT_AWESOME,
@@ -123,31 +139,29 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private IconPackEnum icons = IconPackEnum.FONT_AWESOME;
-    private final Map<Long, String> drawerFragmentNames = new HashMap<>();
+    private final Map<Short, String> drawerFragmentNames = new HashMap<>();
 
-    private ProfileActivityBinding binding;
+    private ActivityProfileBinding binding;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
-
-    // urls to load navigation header background image
-    // and profile image
-    private ImageView imgNavHeaderBg, imgProfile;
-    private TextView txtName, txtWebsite;
 
     private FloatingActionButton fab;
 
     @Inject
     SettingsService settingsService;
     @Inject
+    ImageDownloader imgDownloader;
+    @Inject
     ProfileService profileService;
     @Inject
     TokenService tokenService;
+    @Inject
+    ProfileAssistedFactory assistedFactory;
 
     private AccountManager accountManager;
-
-    private long lastNavItemId = DRAWER_PROFILE_ID;
-
+    private ProfileViewModel viewModel;
+    private short lastNavItemId = DRAWER_PROFILE_ID;
     private Drawer drawer = null;
 
     public ProfileActivity() {
@@ -176,11 +190,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void hideToolbar() {
-        toolbar.setVisibility(View.GONE);
+        binding.profileActivityToolbar.setVisibility(View.GONE);
     }
 
     private void showToolbar() {
-        toolbar.setVisibility(View.VISIBLE);
+        binding.profileActivityToolbar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -189,17 +203,18 @@ public class ProfileActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        binding = ProfileActivityBinding.inflate(getLayoutInflater());
+        binding = ActivityProfileBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
         ((App) getApplication()).getProfileComponent().inject(this);
+
         accountManager = AccountManager.get(this);
 
         //setToken(accountManager, Launcher.EXPIRED);
         checkToken(
               (token) -> onInit(savedInstanceState),
-              this::finish, accountManager, this, tokenService);
+              this::finish, this, tokenService);
     }
 
     private void onInit(Bundle savedInstanceState) {
@@ -207,16 +222,46 @@ public class ProfileActivity extends AppCompatActivity {
 
         ContextCompat.startForegroundService(
               this, new Intent(this, SocketIOService.class));
-        loadPrefsFromServer();
+        loadPrefsFromServer(null);
 
-        toolbar = binding.profileActivityToolbar;
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.profileActivityToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setupNameMapping(
               drawerFragmentNames,
               getResources().getStringArray(R.array.nav_item_activity_titles));
-        setupDrawer(toolbar, icons);
+        setupDrawer(icons);
+
+        viewModel = new ViewModelProvider(
+              this,
+              assistedFactory.factory(
+                    assistedFactory, this, this::recreate))
+              .get(ProfileViewModel.class);
+
+        viewModel.getProfile()
+              .observe(
+                    this,
+                    user -> {
+                        profile.withName(user.getName() + " " + user.getSurname());
+                        String photoPath = user.getPhotoPath();
+                        if (photoPath == null) {
+                            header.updateProfile(profile);
+                            return;
+                        }
+                        imgDownloader.downloadUserImage(
+                              photoPath, this,
+                              ImagesHelper::bigCircleImage,
+                              (photo) -> header.updateProfile(profile.withIcon(photo)),
+                              this::recreate);
+                    });
+
+        viewModel.getEvents()
+              .observe(
+                    this,
+                    es -> drawer.updateBadge(
+                          DRAWER_YOUR_EVENTS_ID,
+                          new StringHolder(String.valueOf(es.size())))
+              );
 
         drawer.getAdapter()
               .withOnBindViewHolderListener(new DrawerUtils.OnBindViewHolderListenerImplBase());
@@ -229,43 +274,27 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void loadPrefsFromServer() {
-        settingsService.getSettings(AuthHelper.getAuthHeader(accountManager)).enqueue(
+    private void loadPrefsFromServer(@Nullable String auth) {
+        settingsService.getSettings(getAuthFrom(auth)).enqueue(
               new ErrorLogger<>(this) {
                   @Override
                   public void onResponse(
-                        Call<SettingsResponse> call, Response<SettingsResponse> resp) {
-                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED) {
+                        Call<SettingsResponse> call,
+                        Response<SettingsResponse> resp) {
+                      if (resp.code() == HttpCodes.NOT_AUTHENTICATED && auth == null) {
                           invalidateToken(accountManager, ProfileActivity.this,
-                                fresh -> loadPrefsFromServerRetry(fresh), () -> finishAndRemoveTask());
-                      }
-                      if (resp.code() == HttpCodes.NOT_FOUND) {
-                          // As no settings on the server ...
-                          cleanLocalPrefs(ProfileActivity.this);
+                                token -> loadPrefsFromServer(Globals.getAuthHeader(token)),
+                                () -> finishAndRemoveTask());
                           return;
                       }
-                      if (resp.body() == null) {
-                          return;
-                      }
-                      // As settings exist on the server...
-                      updateLocalPrefs(ProfileActivity.this, resp.body());
-                  }
-              });
-    }
 
-    private void loadPrefsFromServerRetry(String freshToken) {
-        settingsService.getSettings(Globals.getAuthHeader(freshToken))
-              .enqueue(new ErrorLogger<>(this) {
-                  @Override
-                  public void onResponse(
-                        Call<SettingsResponse> call, Response<SettingsResponse> resp) {
                       if (resp.code() == HttpCodes.NOT_FOUND) {
                           cleanLocalPrefs(ProfileActivity.this);
                           // no settings on the server etc...
                           return;
                       }
                       if (resp.body() == null) {
-                          Log.d(TAG, "ProfileActivity: /settings returns null on retry...");
+                          Log.d(TAG, "ProfileActivity: /settings returns null...");
                           return;
                       }
                       // As settings exist on the server...
@@ -274,10 +303,14 @@ public class ProfileActivity extends AppCompatActivity {
               });
     }
 
+    @NonNull
+    private String getAuthFrom(@Nullable String auth) {
+        return auth != null ? auth : AuthHelper.getAuthHeader(accountManager);
+    }
+
     @Override
     public void onBackPressed() {
         logMethod(TAG, this);
-        //drawer.updateBadge(DRAWER_CONTACT_ID, new StringHolder("okok"));
         //switchDrawerIcons();
         //updateDrawerIcons(drawer, GOOGLE_MATERIAL_ICONS);
 
@@ -320,13 +353,13 @@ public class ProfileActivity extends AppCompatActivity {
 
     private boolean onDrawerItemClickListener(
           View view, int position, IDrawerItem<?, ?> drawerItem) {
-        long identifier = drawerItem.getIdentifier();
+        short identifier = (short) drawerItem.getIdentifier();
         Log.d(TAG, "User selected drawer item: "
               + identifier + " previous was: " + lastNavItemId);
         if (identifier == DRAWER_PROFILE_ID
               || identifier == DRAWER_EVENTS_ID
               || identifier == DRAWER_NEW_EVENT_ID
-              || identifier == DRAWER_NOTIFICATION_ID) {
+              || identifier == DRAWER_YOUR_EVENTS_ID) {
             lastNavItemId = identifier;
         } else if (identifier == DRAWER_LOGOUT_ID) {
             handleLogout();
@@ -358,6 +391,7 @@ public class ProfileActivity extends AppCompatActivity {
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
         FragmentManager fm = getSupportFragmentManager();
+        dumpFragmentManagerState(fm);
         if (fm.findFragmentByTag(tag) != null) {
             drawer.closeDrawer();
             //toggleFab();
@@ -367,10 +401,9 @@ public class ProfileActivity extends AppCompatActivity {
         // Since new navigation comes...
         setupActionBarTitle(lastNavItemId);
 
-        if (!fm.isStateSaved()) {
-            replaceFragment(fm, () -> createFragment(lastNavItemId), () -> tag)
-                  .run();
-        }
+        replaceFragment(
+              fm, () -> createFragment(lastNavItemId), () -> tag)
+              .run();
 
 
         // show or hide the fab button
@@ -382,19 +415,34 @@ public class ProfileActivity extends AppCompatActivity {
         //invalidateOptionsMenu();
     }
 
+    private void dumpFragmentManagerState(FragmentManager fm) {
+        List<Fragment> fragments = fm.getFragments();
+        logMethod(TAG, this,
+              "isStateSaved: " + fm.isStateSaved(),
+              "fragments size: " + fragments.size());
+        for (Fragment f : fragments) {
+            Log.d(TAG, f.toString());
+        }
+        StringWriter sw = new StringWriter();
+        fm.dump(TAG, null, new PrintWriter(sw), null);
+        Log.d(TAG, sw.toString());
+    }
+
     private void restoreSettings() {
         logMethod(TAG, this);
-        String tag = getCurrentFragmentTag(getSupportFragmentManager());
+        FragmentManager fm = getSupportFragmentManager();
+        dumpFragmentManagerState(fm);
+        String tag = getCurrentFragmentTag(fm);
         if (EVENTS_FRAGMENT_TAG.equals(tag)) {
             showMenu = true;
         }
-        Long fragmentId = getFragmentIdByTag(tag);
+        Short fragmentId = getFragmentIdByTag(tag);
         drawer.setSelection(fragmentId, false);
         setupActionBarTitle(fragmentId);
         drawer.closeDrawer();
     }
 
-    private void setupActionBarTitle(Long fragmentId) {
+    private void setupActionBarTitle(Short fragmentId) {
         String title = requireNonNull(
               drawerFragmentNames.get(fragmentId),
               "Drawer toolbar title should be present.");
@@ -405,8 +453,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private static Long getFragmentIdByTag(String tag) {
-        for (Long id : DRAWER_FRAGMENT_TAGS.keySet()) {
+    private static Short getFragmentIdByTag(String tag) {
+        for (Short id : DRAWER_FRAGMENT_TAGS.keySet()) {
             if (tag.equals(DRAWER_FRAGMENT_TAGS.get(id))) {
                 return id;
             }
@@ -425,43 +473,48 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
-        Intent stopIntent = new Intent(this, SocketIOService.class);
-        stopIntent.setAction(SocketIOService.STOP_CMD);
-        startService(stopIntent);
+        startService(
+              new Intent(this, SocketIOService.class)
+                    .setAction(SocketIOService.STOP_CMD));
         cleanLocalPrefs(this);
         Account acc = getSingleAccount(accountManager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             accountManager.removeAccount(
                   acc, this, future -> {
                       Log.d(TAG, "Account '" + acc.name + "' removed.");
-                      Intent intent = new Intent(this, LoginActivity.class);
-                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                      startActivity(intent);
+                      startActivity(
+                            new Intent(this, Launcher.class)
+                                  .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                       finish();
                   }, null);
         }
     }
 
     private static void setupNameMapping(
-          Map<Long, String> mapping, String[] namesFromResources) {
+          Map<Short, String> mapping, String[] namesFromResources) {
         mapping.put(DRAWER_PROFILE_ID, namesFromResources[0]);
         mapping.put(DRAWER_EVENTS_ID, namesFromResources[1]);
         mapping.put(DRAWER_NEW_EVENT_ID, namesFromResources[2]);
-        mapping.put(DRAWER_NOTIFICATION_ID, namesFromResources[3]);
-        mapping.put(DRAWER_SETTINGS_ID, namesFromResources[4]);
+        mapping.put(DRAWER_YOUR_EVENTS_ID, namesFromResources[3]);
+        mapping.put(DRAWER_NOTIFICATION_ID, namesFromResources[4]);
+        mapping.put(DRAWER_SETTINGS_ID, namesFromResources[5]);
     }
 
     private static Runnable replaceFragment(
           FragmentManager fm, Provider<Fragment> fragmentP, Provider<String> currentTagP) {
         return () -> {
+            if (fm.isStateSaved()) {
+                Log.e(TAG, "in replaceFragment(), but state is saved, nothing to do. ");
+                return;
+            }
             // update the main content by replacing fragments
             FragmentTransaction txn = fm.beginTransaction();
             //txn.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             txn.replace(R.id.profile_activity_frame, fragmentP.get(), currentTagP.get());
             // for some reasons txn.commit leads to errors
             // and txn.commitAllowingStateLoss doesn't
-            txn.commit();
-            //txn.commitAllowingStateLoss();
+            //txn.commit();
+            txn.commitAllowingStateLoss();
         };
     }
 
@@ -474,8 +527,10 @@ public class ProfileActivity extends AppCompatActivity {
             result = new EventsFragment();
         } else if (navigationMenuIndex == DRAWER_NEW_EVENT_ID) {
             result = new CreateEventFragment();
-        } else if (navigationMenuIndex == DRAWER_NOTIFICATION_ID) {
+        } else if (navigationMenuIndex == DRAWER_YOUR_EVENTS_ID) {
             result = new ProfileEventsFragment();
+/*        } else if (navigationMenuIndex == DRAWER_NOTIFICATION_ID) {
+            result = new ProfileEventsFragment();*/
         } else {
             result = new ProfileFragment();
         }
@@ -517,20 +572,36 @@ public class ProfileActivity extends AppCompatActivity {
         };
     }
 
-    private void setupDrawer(Toolbar toolbar, IconPackEnum icons) {
+    private void setupDrawer(IconPackEnum icons) {
         drawer = new DrawerBuilder()
               .withActivity(this)
-              .withToolbar(toolbar)
+              //? .withFullscreen(true)
+              //.withSliderBackgroundColorRes(R.color.navigationBarColor)
+              .withAccountHeader(
+                    header = new AccountHeaderBuilder()
+                          .withActivity(this)
+                          .withTextColor(Color.WHITE)
+                          .withHeaderBackground(R.color.navigationBarColor)
+                          /*.withHeaderBackground(R.drawable.nav_menu_header_bg)*/
+                          .addProfiles(profile = new ProfileDrawerItem()
+                                .withIdentifier(PROFILE_ID)
+                                .withName("...")
+                                //.withEmail("Email")
+                                .withIcon(R.drawable.user_500x500_removebg))
+                          .withSelectionListEnabledForSingleProfile(false)
+                          .build())
+              .withToolbar(binding.profileActivityToolbar)
               .withActionBarDrawerToggle(true)
-              .withHeader(R.layout.drawer_header)
+              //.withHeader(R.layout.drawer_header)
               .addDrawerItems(
                     new PrimaryDrawerItem()
-                          .withIdentifier(DRAWER_PROFILE_ID).withName(R.string.drawer_item_profile)
-                          .withBadge("99"),
+                          .withIdentifier(DRAWER_PROFILE_ID).withName(R.string.drawer_item_profile),
                     new PrimaryDrawerItem()
                           .withIdentifier(DRAWER_EVENTS_ID).withName(R.string.drawer_item_events),
                     new PrimaryDrawerItem()
                           .withIdentifier(DRAWER_NEW_EVENT_ID).withName(R.string.drawer_item_new_event),
+                    new PrimaryDrawerItem()
+                          .withIdentifier(DRAWER_YOUR_EVENTS_ID).withName(R.string.your_events),
                     new PrimaryDrawerItem()
                           .withIdentifier(DRAWER_NOTIFICATION_ID).withName(R.string.drawer_item_notifications)
                           .withBadge("6"),
@@ -556,6 +627,7 @@ public class ProfileActivity extends AppCompatActivity {
                     this::getCurrentFocus,
                     () -> (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE)))
               .build();
+        drawer.getDrawerLayout().setFitsSystemWindows(false);
         updateDrawerIcons(icons);
     }
 
@@ -573,6 +645,7 @@ public class ProfileActivity extends AppCompatActivity {
         updateIconFor(drawer, iconProvider, DRAWER_PROFILE_ID);
         updateIconFor(drawer, iconProvider, DRAWER_EVENTS_ID);
         updateIconFor(drawer, iconProvider, DRAWER_NEW_EVENT_ID);
+        updateIconFor(drawer, iconProvider, DRAWER_YOUR_EVENTS_ID);
         updateIconFor(drawer, iconProvider, DRAWER_NOTIFICATION_ID);
         updateIconFor(drawer, iconProvider, DRAWER_SETTINGS_ID);
         updateIconFor(drawer, iconProvider, DRAWER_HELP_ID);

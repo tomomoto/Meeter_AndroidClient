@@ -12,14 +12,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
 import com.tom.meeter.context.profile.component.fragment.SettingsFragment;
 import com.tom.meeter.context.profile.message.SettingsCreateOrUpdate;
 import com.tom.meeter.context.profile.service.SettingsService;
-import com.tom.meeter.databinding.SettingsActivityBinding;
+import com.tom.meeter.databinding.ActivitySettingsBinding;
 import com.tom.meeter.infrastructure.common.PreferencesHelper;
 
 import javax.inject.Inject;
@@ -31,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Inject
     SettingsService settingsService;
 
-    private SettingsActivityBinding binding;
+    private ActivitySettingsBinding binding;
 
     private boolean trackUserBeforeChange;
     private int searchAreaBeforeChange;
@@ -42,22 +41,17 @@ public class SettingsActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        ((App) getApplication()).getProfileComponent().inject(this);
-
-        binding = SettingsActivityBinding.inflate(getLayoutInflater());
+        binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-        Toolbar toolbar = binding.settingsActivityToolbar;
-        setSupportActionBar(toolbar);
+        ((App) getApplication()).getProfileComponent().inject(this);
+
+        setSupportActionBar(binding.includeToolbar.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        readCurrentPreferences();
-
-        // below line is to change
-        // the title of our action bar.
         getSupportActionBar().setTitle(R.string.settings);
 
+        readCurrentPreferences();
         // below line is used to check if
         // frame layout is empty or not.
         if (savedInstanceState != null) {

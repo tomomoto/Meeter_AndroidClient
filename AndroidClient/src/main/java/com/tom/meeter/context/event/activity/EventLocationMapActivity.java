@@ -1,9 +1,7 @@
 package com.tom.meeter.context.event.activity;
 
-import static com.tom.meeter.context.auth.infrastructure.AuthHelper.getAuthHeader;
 import static com.tom.meeter.context.profile.component.fragment.GoogleMapsFragment.ZOOM_VALUE;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
-import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
 import android.accounts.AccountManager;
 import android.content.ComponentName;
@@ -30,6 +28,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tom.meeter.App;
 import com.tom.meeter.R;
+import com.tom.meeter.context.auth.infrastructure.AuthHelper;
 import com.tom.meeter.context.event.service.EventService;
 import com.tom.meeter.context.gps.domain.LocationTrackerListener;
 import com.tom.meeter.context.gps.service.LocationTrackerService;
@@ -52,40 +51,29 @@ public class EventLocationMapActivity extends AppCompatActivity
     public static final String EXTRA_LNG = "extra_lng";
 
     private static final String TAG = EventLocationMapActivity.class.getCanonicalName();
-    private Marker eventMarker;
-    private GoogleMap gmap;
+
+    @Inject
+    EventService service;
+    @Inject
+    ImageDownloader imgDownloader;
+
     private ActivityEventPositionBinding binding;
-
-    private ServiceConnection locationServiceConn;
     private LocationTrackerService locationService;
-    private boolean cameraMoved = false;
-
+    private ServiceConnection sConn;
     private LocationTrackerListener singleLocationUpdateListener;
-    private String eventId;
+    private final Runnable onNotAuthenticated = this::finish;
+    private GoogleMap gmap;
 
-    @Inject
-    EventService eventService;
-    @Inject
-    ImageDownloader imageDownloader;
-    private AccountManager accountManager;
+    private Marker eventMarker;
+    private boolean cameraMoved = false;
     private LatLng userLocation;
 
-    private final Runnable onNotAuthenticated = this::finish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            showMessage(this, "Unable to show map without extras provided.");
-            finish();
-            return;
-        }
-        eventId = extras.getString(EventDispatcherActivity.EVENT_ID_KEY);
-        if (eventId == null) {
-            showMessage(this, "Unable to show map without event_id provided.");
-            finish();
+        if (EventDispatcherActivity.isIncorrect(this)) {
             return;
         }
 
@@ -94,13 +82,14 @@ public class EventLocationMapActivity extends AppCompatActivity
         setContentView(view);
 
         ((App) getApplication()).getEventComponent().inject(this);
-        accountManager = AccountManager.get(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
               .findFragmentById(R.id.eventSelectPosition);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+        if (mapFragment == null) {
+            return;
         }
+        mapFragment.getMapAsync(this);
+
         binding.btnConfirm.setOnClickListener(v -> {
             if (eventMarker != null) {
                 Intent resultIntent = new Intent();
@@ -127,13 +116,13 @@ public class EventLocationMapActivity extends AppCompatActivity
                     cameraMoved = true;
                     locationService.removeLocationTrackerListener(this);
                     singleLocationUpdateListener = null;
-                    unbindService(locationServiceConn);
+                    unbindService(sConn);
                     locationService = null;
-                    locationServiceConn = null;
+                    sConn = null;
                 }
             }
         };
-        locationServiceConn = new ServiceConnection() {
+        sConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 logMethod(TAG, this);
                 locationService = ((LocationTrackerService.ServiceBinder) binder).getService();
@@ -143,11 +132,12 @@ public class EventLocationMapActivity extends AppCompatActivity
             public void onServiceDisconnected(ComponentName name) {
                 logMethod(TAG, this);
                 locationService = null;
-                locationServiceConn = null;
+                sConn = null;
             }
         };
-        Intent service = new Intent(this, LocationTrackerService.class);
-        bindService(service, locationServiceConn, BIND_AUTO_CREATE);
+        bindService(
+              new Intent(this, LocationTrackerService.class),
+              sConn, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -156,7 +146,9 @@ public class EventLocationMapActivity extends AppCompatActivity
         UiSettings uiSettings = gmap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
 
-        eventService.getEvent(getAuthHeader(accountManager), eventId).enqueue(
+        service.getEvent(
+              AuthHelper.getAuthHeader(AccountManager.get(this)),
+              EventDispatcherActivity.getEventId(this)).enqueue(
               new BaseOnNotAuthenticatedCallback<>(this, onNotAuthenticated) {
                   @Override
                   public void onResponse(Call<EventDTO> call, Response<EventDTO> resp) {
@@ -199,7 +191,7 @@ public class EventLocationMapActivity extends AppCompatActivity
         if (photoPath == null) {
             return;
         }
-        imageDownloader.downloadEventImage(
+        imgDownloader.downloadEventImage(
               photoPath, this, ImagesHelper::circleImage,
               (photo) -> eventMarker.setIcon(BitmapDescriptorFactory.fromBitmap(photo)),
               onNotAuthenticated);
@@ -212,8 +204,8 @@ public class EventLocationMapActivity extends AppCompatActivity
         if (locationService != null && singleLocationUpdateListener != null) {
             locationService.removeLocationTrackerListener(singleLocationUpdateListener);
         }
-        if (locationServiceConn != null) {
-            unbindService(locationServiceConn);
+        if (sConn != null) {
+            unbindService(sConn);
         }
     }
 

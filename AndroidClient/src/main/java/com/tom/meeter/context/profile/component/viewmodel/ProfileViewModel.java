@@ -62,7 +62,7 @@ public class ProfileViewModel extends ViewModel {
                           return;
                       }
                       UserDTO user = resp.body();
-                      profile.setValue(user);
+                      profile.postValue(user);
                       String photoPath = user.getPhotoPath();
                       if (photoPath == null) {
                           return;
@@ -70,7 +70,7 @@ public class ProfileViewModel extends ViewModel {
                       imageDownloader.downloadUserImage(
                             photoPath, ctx,
                             ImagesHelper::bigCircleImage,
-                            photo::setValue,
+                            photo::postValue,
                             onNotAuthenticated);
                       return;
                   }
@@ -85,7 +85,7 @@ public class ProfileViewModel extends ViewModel {
                       if (resp.code() != HttpCodes.OK || resp.body() == null) {
                           return;
                       }
-                      events.setValue(resp.body());
+                      events.postValue(resp.body());
                       return;
                   }
               }

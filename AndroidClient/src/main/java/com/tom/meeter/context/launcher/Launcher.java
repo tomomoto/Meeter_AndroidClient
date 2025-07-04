@@ -84,7 +84,7 @@ public class Launcher extends AppCompatActivity {
         } else if (accounts.length == 1) {
             //accountManager.setAuthToken(accounts[0], AUTH_TYPE, EXPIRED);
             showMessage(Launcher.this, getString(R.string.check_token));
-            checkToken((ign) -> dispatch(), this::finish, accountManager, this, tokenService);
+            checkToken((ign) -> dispatch(), this::finish, this, tokenService);
         } else {
             removeAllAccounts();
             createAccountAndContinue();

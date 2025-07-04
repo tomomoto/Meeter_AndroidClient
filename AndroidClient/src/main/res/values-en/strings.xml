@@ -68,15 +68,16 @@
         <item>Profile</item>
         <item>Events</item>
         <item>New event</item>
+        <item>Your events</item>
         <item>Notifications</item>
         <item>Settings</item>
     </string-array>
     <string name="starting_time">Starts at (hh:mm)</string>
     <string name="ending_time">Ends at (hh:mm)</string>
     <string name="now">Now</string>
-    <string name="map">Map</string>
-    <string name="events">Events</string>
-    <string name="your_events">Your events</string>
+    <string name="on_map">On map</string>
+    <string name="listed">Listed</string>
+    <string name="your">Your</string>
     <string name="user_information">User information</string>
     <string name="me">Me</string>
     <string name="location_changed">Location changed</string>
@@ -256,6 +257,14 @@
     <string name="select_one_status_at_least">Select one status at least.</string>
     <string name="apply">Apply</string>
     <string name="select_interested_event_statuses">Select interested event statuses</string>
+    <string name="publish">Publish</string>
+    <string name="published">Published</string>
+    <string name="schedule">Schedule</string>
+    <string name="scheduling_event">Scheduling event</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="date_validity">Date validity</string>
+    <string name="your_events">Your events</string>
+    <string name="view_event">View event</string>
 
     <string-array name="pref_upload_quality_entries">
         <item>360p</item>

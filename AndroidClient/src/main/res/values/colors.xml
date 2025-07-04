@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    <color name="colorPrimaryDark">#125688</color>-->
     <color name="colorPrimary">#125688</color>
-    <color name="colorPrimaryDark">#125688</color>
+    <color name="colorPrimaryDark">#262626</color>
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="windowBackground">#FFFFFF</color>
-    <color name="navigationBarColor">#000000</color>
-    <color name="colorAccent">#cdd4d9</color>
+<!--    <color name="navigationBarColor">#000000</color>
+    <color name="colorAccent">#cdd4d9</color>-->
+    <color name="navigationBarColor">#262626</color>
+    <color name="statusBarColor">#262626</color>
+    <color name="colorAccent">#1A1919</color>
     <color name="colorAccent2">#c8e8ff</color>
     <color name="editTextBorder">#b1c0ca</color>
     <color name="c0deef">#C0DEEF</color>
 
-    <color name="created_status">#BBDEFB</color>
-    <color name="published_status">#64B5F6</color>
-    <color name="unpublished_status">#2196F3</color>
-    <color name="scheduled_status">#EF9C1B</color>
-    <color name="started_status">#11ED18</color>
-    <color name="paused_status">#FFE60F</color>
-    <color name="resumed_status">#11ED18</color>
-    <color name="finished_status">#FB450D</color>
-    <color name="cancelled_status">#BC0606</color>
-    <color name="archived_status">#90A4AE</color>
+    <color name="created_status">#E3F2FD</color>
+    <color name="published_status">#1976D2</color>
+    <color name="unpublished_status">#6A9BED</color>
+    <color name="scheduled_status">#F57C00</color>
+    <color name="started_status">#388E3C</color>
+    <color name="paused_status">#FBC02D</color>
+    <color name="resumed_status">#388E3C</color>
+    <color name="finished_status">#D84315</color>
+    <color name="cancelled_status">#B71C1C</color>
+    <color name="archived_status">#607D8B</color>
 </resources>

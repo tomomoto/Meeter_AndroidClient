@@ -10,12 +10,10 @@ import static com.tom.meeter.infrastructure.common.DateHelper.getAgeFromDate;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.logMethod;
 import static com.tom.meeter.infrastructure.common.InfrastructureHelper.showMessage;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -31,6 +29,7 @@ import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.token.service.TokenService;
 import com.tom.meeter.context.user.factory.UserAssistedFactory;
 import com.tom.meeter.context.user.service.UserService;
+import com.tom.meeter.context.user.utils.Utils;
 import com.tom.meeter.context.user.viewmodel.UserViewModel;
 import com.tom.meeter.databinding.ActivityUserBinding;
 import com.tom.meeter.infrastructure.common.Globals;
@@ -48,12 +47,11 @@ import retrofit2.Response;
 public class UserActivity extends AppCompatActivity {
 
     private static final String TAG = UserActivity.class.getCanonicalName();
-    public static final String USER_ID_KEY = "user_id";
 
     @Inject
     TokenService tokenService;
     @Inject
-    UserService userService;
+    UserService service;
     @Inject
     UserAssistedFactory assistedFactory;
     @Inject
@@ -61,8 +59,6 @@ public class UserActivity extends AppCompatActivity {
 
     private ActivityUserBinding binding;
     private UserViewModel viewModel;
-    private String userId;
-    private AccountManager accountManager;
     private Boolean amISubscriber;
     private final Runnable onAuthFail = this::recreate;
 
@@ -72,9 +68,19 @@ public class UserActivity extends AppCompatActivity {
 
         logMethod(TAG, this);
 
-        if (!validate()) {
+        if (Utils.isIncorrect(this)) {
             return;
         }
+
+        if (Utils.getUserId(this).equals(AuthHelper.getUserUuid(this))) {
+            startActivity(new Intent(this, ProfileActivity.class));
+            finish();
+            return;
+        }
+
+        binding = ActivityUserBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         ((App) getApplication()).getUserComponent().inject(this);
 
@@ -83,43 +89,18 @@ public class UserActivity extends AppCompatActivity {
               event -> dispatchToEventActivity(this, event.getId()));
 
         //setToken(accountManager, Launcher.EXPIRED);
-        checkToken(this::onInit, this::finish, accountManager, this, tokenService);
-    }
-
-    private boolean validate() {
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            Log.d(TAG, "Unable to create user activity without extras.");
-            finish();
-            return false;
-        }
-        userId = extras.getString(USER_ID_KEY);
-        if (userId == null) {
-            Log.d(TAG, "Unable to create user activity without 'user_id' provided.");
-            finish();
-            return false;
-        }
-        accountManager = AccountManager.get(this);
-        if (userId.equals(AuthHelper.getUserUuid(accountManager))) {
-            startActivity(new Intent(this, ProfileActivity.class));
-            finish();
-            return false;
-        }
-        return true;
+        checkToken(this::onInit, this::finish, this, tokenService);
     }
 
     private void onInit(String token) {
-        binding = ActivityUserBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
-
+        String userId = Utils.getUserId(this);
         binding.subscribeBtn.setOnClickListener(v -> {
             if (amISubscriber == null) {
                 // As not initialized atm...
                 return;
             }
             if (amISubscriber) {
-                userService.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
+                service.unsubscribe(Globals.getAuthHeader(token), userId).enqueue(
                       new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
@@ -132,7 +113,7 @@ public class UserActivity extends AppCompatActivity {
                           }
                       });
             } else {
-                userService.subscribe(Globals.getAuthHeader(token), userId).enqueue(
+                service.subscribe(Globals.getAuthHeader(token), userId).enqueue(
                       new BaseOnNotAuthenticatedCallback<>(this, onAuthFail) {
                           @Override
                           public void onResponse(Call<Void> call, Response<Void> resp) {
@@ -153,11 +134,17 @@ public class UserActivity extends AppCompatActivity {
                     assistedFactory, userId, this, onAuthFail))
               .get(UserViewModel.class);
 
-        binding.events.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> viewModel.init());
+
+        binding.events.setLayoutManager(
+              new GridLayoutManager(
+                    this,
+                    EventsCardAdapter.calculateNoOfColumns(150)));
         binding.events.setAdapter(adapter);
 
         viewModel.getUser()
               .observe(this, user -> {
+                  binding.swipeRefreshLayout.setRefreshing(false);
                   binding.name.setText(user.getName());
                   binding.gender.setText(genderResolver(getApplicationContext(), user.getGender()));
 
@@ -220,6 +207,6 @@ public class UserActivity extends AppCompatActivity {
 
     public static Intent createUserActivityIntent(Context ctx, String userId) {
         return new Intent(ctx, UserActivity.class)
-              .putExtra(USER_ID_KEY, userId);
+              .putExtra(Utils.USER_ID_KEY, userId);
     }
 }

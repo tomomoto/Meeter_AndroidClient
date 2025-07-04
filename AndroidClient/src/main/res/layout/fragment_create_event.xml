@@ -3,38 +3,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="32dp">
+        android:padding="16dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/label_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/edit_text_background_border">
+            android:background="@drawable/edit_text_background_border"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/newEventLabel"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
                 android:hint="@string/create_event"
-                android:inputType="none"
                 android:textAlignment="center"
                 android:textSize="20sp" />
-        </RelativeLayout>
-
+        </LinearLayout>
 
         <!-- Photo section -->
         <LinearLayout
             android:id="@+id/photo_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/label_layout"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background_border"
             android:orientation="vertical"
@@ -68,8 +65,6 @@
             android:id="@+id/event_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/photo_layout"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background_border">
 
@@ -86,19 +81,16 @@
             <TextView
                 android:id="@+id/name_m"
                 android:layout_width="wrap_content"
-                android:layout_toEndOf="@+id/name"
                 android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/name"
                 android:text="@string/mandatory_star"
                 android:textColor="@android:color/holo_red_dark" />
-
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/description_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/event_name_layout"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background_border">
 
@@ -109,25 +101,21 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="50dp"
                 android:hint="@string/description"
-                android:textAlignment="center"
                 android:textSize="20sp" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/location_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/description_layout"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
-            android:background="@drawable/edit_text_background_border">
+            android:background="@drawable/edit_text_background_border"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/latitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
                 android:layout_marginTop="15dp"
                 android:hint="@string/latitude"
                 android:textAlignment="center"
@@ -137,10 +125,7 @@
                 android:id="@+id/longitude"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/latitude"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
-                android:layout_marginStart="50dp"
                 android:hint="@string/longitude"
                 android:textAlignment="center"
                 android:textSize="20sp" />
@@ -149,7 +134,6 @@
                 android:id="@+id/location_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/longitude"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="10dp">
@@ -169,27 +153,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/map"
+                    android:text="@string/on_map"
                     android:textAllCaps="false"
                     android:textSize="14sp" />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/date_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/location_layout"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
-            android:background="@drawable/edit_text_background_border">
+            android:background="@drawable/edit_text_background_border"
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/starts_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
+                android:layout_marginHorizontal="25dp"
                 android:hint="@string/starts"
                 android:inputType="date"
                 android:textAlignment="center"
@@ -199,10 +181,7 @@
                 android:id="@+id/starts_date_validator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/starts_date"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
-                android:hint="Date validity"
+                android:hint="@string/date_validity"
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
@@ -210,7 +189,6 @@
                 android:id="@+id/date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/starts_date_validator"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
@@ -237,9 +215,7 @@
                 android:id="@+id/starts_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/date_buttons_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
+                android:layout_marginHorizontal="25dp"
                 android:hint="@string/starting_time"
                 android:inputType="time"
                 android:textAlignment="center"
@@ -249,7 +225,6 @@
                 android:id="@+id/start_time_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/starts_time"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
@@ -278,9 +253,7 @@
                 android:id="@+id/ends_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/start_time_buttons_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
+                android:layout_marginHorizontal="25dp"
                 android:hint="@string/ends"
                 android:inputType="date"
                 android:textAlignment="center"
@@ -290,10 +263,7 @@
                 android:id="@+id/ends_date_validator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ends_date"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
-                android:hint="Date validity"
+                android:hint="@string/date_validity"
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
@@ -301,7 +271,6 @@
                 android:id="@+id/end_date_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ends_date_validator"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
@@ -328,9 +297,7 @@
                 android:id="@+id/ends_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/end_date_buttons_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="50dp"
+                android:layout_marginHorizontal="25dp"
                 android:hint="@string/ending_time"
                 android:inputType="time"
                 android:textAlignment="center"
@@ -340,7 +307,6 @@
                 android:id="@+id/end_time_buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ends_time"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:orientation="horizontal"
@@ -364,14 +330,12 @@
                     android:text="@string/other"
                     android:textAllCaps="false" />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/city_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/date_layout"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_background_border">
 
@@ -390,11 +354,9 @@
             android:id="@+id/create_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/city_layout"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="47dp"
+            android:layout_marginTop="18dp"
             android:enabled="false"
             android:text="@string/create_event"
             android:textAllCaps="false" />
-    </RelativeLayout>
+    </LinearLayout>
 </ScrollView>

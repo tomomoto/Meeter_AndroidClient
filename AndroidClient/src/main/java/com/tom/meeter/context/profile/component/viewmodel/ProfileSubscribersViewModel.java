@@ -85,7 +85,7 @@ public class ProfileSubscribersViewModel extends ViewModel {
                                       subscriber,
                                       mySubscriptions.get(subscriber.getId()) != null));
                       }
-                      ProfileSubscribersViewModel.this.subscribers.setValue(result);
+                      ProfileSubscribersViewModel.this.subscribers.postValue(result);
                       return;
                   }
               }

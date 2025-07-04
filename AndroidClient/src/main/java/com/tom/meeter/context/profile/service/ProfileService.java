@@ -48,9 +48,5 @@ public interface ProfileService {
     @Deprecated
     @GET("/user/{id}")
     Call<UserDTO> getUser(@Header(AUTH_HEADER) String authHeader, @Path("id") String userId);
-/* soon...
-  @GET("/publish")
-    Call<EventDTO> publishEvent(
-          @Header(AUTH_HEADER) String authHeader, @Body CreateEventRequest req);*/
 
 }

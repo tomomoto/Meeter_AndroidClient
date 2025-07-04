@@ -49,6 +49,7 @@ import com.tom.meeter.context.gps.service.LocationTrackerService;
 import com.tom.meeter.context.image.ImageDownloader;
 import com.tom.meeter.context.image.activity.UploadEventImageActivity;
 import com.tom.meeter.context.network.dto.EventDTO;
+import com.tom.meeter.context.profile.component.activity.ProfileActivity;
 import com.tom.meeter.context.profile.message.CreateEventRequest;
 import com.tom.meeter.context.profile.service.ProfileService;
 import com.tom.meeter.databinding.FragmentCreateEventBinding;
@@ -136,7 +137,8 @@ public class CreateEventFragment extends Fragment {
               });
 
         ctx.bindService(
-              new Intent(ctx, LocationTrackerService.class), sConn, BIND_AUTO_CREATE);
+              new Intent(ctx, LocationTrackerService.class),
+              sConn, BIND_AUTO_CREATE);
     }
 
     @Nullable
@@ -246,7 +248,11 @@ public class CreateEventFragment extends Fragment {
                           requireContext(), event.getId()))
               .setNegativeButton(
                     R.string.back,
-                    (dialog, which) -> dialog.dismiss())
+                    (dialog, which) -> {
+                        startActivity(new Intent(requireContext(), ProfileActivity.class));
+                        requireActivity().finish();
+                        dialog.dismiss();
+                    })
               .show();
     }
 

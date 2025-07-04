@@ -1,6 +1,8 @@
 package com.tom.meeter.infrastructure.components.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -39,5 +41,12 @@ public class EventsCardAdapter extends BaseEventAdapter<CardItemHolder> {
         return new CardItemHolder(
               CardItemBinding.inflate(
                     LayoutInflater.from(parent.getContext()), parent, false));
+    }
+
+    public static int calculateNoOfColumns(float columnWidthDp) {
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (screenWidthDp / columnWidthDp);
+        return Math.max(1, noOfColumns);
     }
 }
