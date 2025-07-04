@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.tom.meeter.App;
 import com.tom.meeter.R;
@@ -48,16 +47,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         ((App) getApplication()).getProfileComponent().inject(this);
 
-        Toolbar toolbar = binding.settingsActivityToolbar;
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.includeToolbar.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        readCurrentPreferences();
-
-        // below line is to change
-        // the title of our action bar.
         getSupportActionBar().setTitle(R.string.settings);
 
+        readCurrentPreferences();
         // below line is used to check if
         // frame layout is empty or not.
         if (savedInstanceState != null) {
